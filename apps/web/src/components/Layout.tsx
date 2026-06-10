@@ -27,7 +27,17 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'menu.expedicao', icone: '🚚', to: '/estoque/expedicao', cap: 'comercial.pedido.gerenciar' },
       { rotulo: 'menu.posicao', icone: '📦', to: '/estoque/posicao', cap: 'estoque.saldo.ver' },
       { rotulo: 'menu.entrada', icone: '📥', to: '/estoque/entrada', cap: 'estoque.entrada.criar' },
+      { rotulo: 'menu.recebimento', icone: '📦', to: '/estoque/recebimento', cap: 'estoque.entrada.criar' },
       { rotulo: 'menu.baixa', icone: '📉', to: '/estoque/baixa', cap: 'estoque.baixa.criar' },
+    ] }],
+  },
+  {
+    rotulo: 'menu.financeiro',
+    secoes: [{ itens: [
+      { rotulo: 'menu.receber', icone: '💰', to: '/financeiro/receber', cap: 'financeiro.receber.listar' },
+      { rotulo: 'menu.pagar', icone: '💸', to: '/financeiro/pagar', cap: 'financeiro.pagar.listar' },
+      { rotulo: 'menu.fluxo', icone: '📊', to: '/financeiro/fluxo', cap: 'financeiro.fluxo.ver' },
+      { rotulo: 'menu.nota', icone: '🧾', to: '/financeiro/nota', cap: 'financeiro.compra.criar' },
     ] }],
   },
   {

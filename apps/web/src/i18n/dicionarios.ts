@@ -497,3 +497,99 @@ Object.assign(es, {
   'perda.motivo': 'Motivo', 'perda.confirmar': 'Confirmar baja', 'perda.ok': 'Baja registrada.', 'perda.max': 'Máximo',
   'estoque.motivo_invalido': 'Indica el motivo.', 'estoque.lote_invalido': 'Lote no encontrado.',
 });
+
+// --- Fase 5A: Financeiro ---
+Object.assign(pt, {
+  'menu.financeiro': 'Financeiro', 'menu.receber': 'Contas a receber', 'menu.pagar': 'Contas a pagar',
+  'cap.modulo.financeiro': 'Financeiro',
+  'cap.financeiro.receber.listar': 'Ver contas a receber', 'cap.financeiro.receber.gerenciar': 'Gerenciar contas a receber',
+  'cap.financeiro.pagar.listar': 'Ver contas a pagar', 'cap.financeiro.pagar.gerenciar': 'Gerenciar contas a pagar',
+  'fin.receber': 'Contas a receber', 'fin.pagar': 'Contas a pagar', 'fin.novo': 'Novo título',
+  'fin.descricao': 'Descrição', 'fin.cliente': 'Cliente', 'fin.fornecedor': 'Fornecedor', 'fin.vencimento': 'Vencimento',
+  'fin.valor': 'Valor', 'fin.situacao': 'Situação', 'fin.aberto': 'Em aberto', 'fin.vencido': 'Vencido', 'fin.pago': 'Pago',
+  'fin.baixar': 'Baixar', 'fin.cancelar_baixa': 'Cancelar baixa', 'fin.confirmar_baixa': 'Confirmar baixa',
+  'fin.aberto_receber': 'A receber (em aberto)', 'fin.aberto_pagar': 'A pagar (em aberto)', 'fin.vencidos': 'Vencidos',
+  'fin.titulos': 'título(s)', 'fin.do_pedido': 'do pedido',
+  'financeiro.descricao_invalida': 'Informe uma descrição.', 'financeiro.valor_invalido': 'Valor inválido.',
+  'financeiro.vencimento_invalido': 'Vencimento inválido.', 'financeiro.nao_encontrado': 'Título não encontrado.',
+  'financeiro.ja_pago': 'Título já está pago.',
+});
+Object.assign(en, {
+  'menu.financeiro': 'Finance', 'menu.receber': 'Receivables', 'menu.pagar': 'Payables',
+  'cap.modulo.financeiro': 'Finance',
+  'cap.financeiro.receber.listar': 'View receivables', 'cap.financeiro.receber.gerenciar': 'Manage receivables',
+  'cap.financeiro.pagar.listar': 'View payables', 'cap.financeiro.pagar.gerenciar': 'Manage payables',
+  'fin.receber': 'Receivables', 'fin.pagar': 'Payables', 'fin.novo': 'New entry',
+  'fin.descricao': 'Description', 'fin.cliente': 'Customer', 'fin.fornecedor': 'Supplier', 'fin.vencimento': 'Due date',
+  'fin.valor': 'Amount', 'fin.situacao': 'Status', 'fin.aberto': 'Open', 'fin.vencido': 'Overdue', 'fin.pago': 'Paid',
+  'fin.baixar': 'Settle', 'fin.cancelar_baixa': 'Undo settlement', 'fin.confirmar_baixa': 'Confirm settlement',
+  'fin.aberto_receber': 'Receivable (open)', 'fin.aberto_pagar': 'Payable (open)', 'fin.vencidos': 'Overdue',
+  'fin.titulos': 'entry(ies)', 'fin.do_pedido': 'from order',
+  'financeiro.descricao_invalida': 'Provide a description.', 'financeiro.valor_invalido': 'Invalid amount.',
+  'financeiro.vencimento_invalido': 'Invalid due date.', 'financeiro.nao_encontrado': 'Entry not found.',
+  'financeiro.ja_pago': 'Entry already paid.',
+});
+Object.assign(es, {
+  'menu.financeiro': 'Finanzas', 'menu.receber': 'Cuentas a cobrar', 'menu.pagar': 'Cuentas a pagar',
+  'cap.modulo.financeiro': 'Finanzas',
+  'cap.financeiro.receber.listar': 'Ver cuentas a cobrar', 'cap.financeiro.receber.gerenciar': 'Gestionar cuentas a cobrar',
+  'cap.financeiro.pagar.listar': 'Ver cuentas a pagar', 'cap.financeiro.pagar.gerenciar': 'Gestionar cuentas a pagar',
+  'fin.receber': 'Cuentas a cobrar', 'fin.pagar': 'Cuentas a pagar', 'fin.novo': 'Nuevo título',
+  'fin.descricao': 'Descripción', 'fin.cliente': 'Cliente', 'fin.fornecedor': 'Proveedor', 'fin.vencimento': 'Vencimiento',
+  'fin.valor': 'Valor', 'fin.situacao': 'Estado', 'fin.aberto': 'Abierto', 'fin.vencido': 'Vencido', 'fin.pago': 'Pagado',
+  'fin.baixar': 'Liquidar', 'fin.cancelar_baixa': 'Cancelar liquidación', 'fin.confirmar_baixa': 'Confirmar liquidación',
+  'fin.aberto_receber': 'A cobrar (abierto)', 'fin.aberto_pagar': 'A pagar (abierto)', 'fin.vencidos': 'Vencidos',
+  'fin.titulos': 'título(s)', 'fin.do_pedido': 'del pedido',
+  'financeiro.descricao_invalida': 'Indica una descripción.', 'financeiro.valor_invalido': 'Valor inválido.',
+  'financeiro.vencimento_invalido': 'Vencimiento inválido.', 'financeiro.nao_encontrado': 'Título no encontrado.',
+  'financeiro.ja_pago': 'El título ya está pagado.',
+});
+
+// --- Fase 5B-i: Fluxo de caixa ---
+Object.assign(pt, {
+  'menu.fluxo': 'Fluxo de caixa', 'cap.financeiro.fluxo.ver': 'Ver fluxo de caixa',
+  'fluxo.titulo': 'Fluxo de caixa', 'fluxo.sub': 'Entradas e saídas pela data da baixa dos títulos.',
+  'fluxo.entradas': 'Entradas', 'fluxo.saidas': 'Saídas', 'fluxo.saldo': 'Saldo',
+  'fluxo.entrada': 'Entrada', 'fluxo.saida': 'Saída', 'fluxo.vazio': 'Nenhuma baixa registrada ainda.',
+});
+Object.assign(en, {
+  'menu.fluxo': 'Cash flow', 'cap.financeiro.fluxo.ver': 'View cash flow',
+  'fluxo.titulo': 'Cash flow', 'fluxo.sub': 'Inflows and outflows by the settlement date.',
+  'fluxo.entradas': 'Inflows', 'fluxo.saidas': 'Outflows', 'fluxo.saldo': 'Balance',
+  'fluxo.entrada': 'In', 'fluxo.saida': 'Out', 'fluxo.vazio': 'No settlements yet.',
+});
+Object.assign(es, {
+  'menu.fluxo': 'Flujo de caja', 'cap.financeiro.fluxo.ver': 'Ver flujo de caja',
+  'fluxo.titulo': 'Flujo de caja', 'fluxo.sub': 'Entradas y salidas por la fecha de liquidación.',
+  'fluxo.entradas': 'Entradas', 'fluxo.saidas': 'Salidas', 'fluxo.saldo': 'Saldo',
+  'fluxo.entrada': 'Entrada', 'fluxo.saida': 'Salida', 'fluxo.vazio': 'Aún no hay liquidaciones.',
+});
+
+// --- Fase 5B-ii: Nota de entrada + Recebimento ---
+Object.assign(pt, {
+  'menu.nota': 'Nota de entrada', 'menu.recebimento': 'Recebimento', 'cap.financeiro.compra.criar': 'Lançar nota de entrada (compra)',
+  'nota.titulo': 'Nota de entrada (compra)', 'nota.sub': 'Lança a compra: gera título a pagar e uma pendência de recebimento no estoque.',
+  'nota.forn_ph': 'Nome do fornecedor', 'nota.nf': 'NF', 'nota.total': 'Total', 'nota.lancar': 'Lançar nota',
+  'nota.gera': 'gera título a pagar + pendência de recebimento', 'nota.ok': 'Nota lançada. Veja em Contas a pagar e em Estoque › Recebimento.',
+  'receb.titulo': 'Recebimento', 'receb.sub': 'Pendências de recebimento das notas de entrada. Receber dá entrada no estoque.',
+  'receb.vazio': 'Nenhuma pendência de recebimento.', 'receb.receber': 'Receber', 'receb.confirmar': 'Confirmar recebimento', 'receb.un': 'un',
+  'recebimento.nao_encontrado': 'Pendência não encontrada.',
+});
+Object.assign(en, {
+  'menu.nota': 'Purchase entry', 'menu.recebimento': 'Receiving', 'cap.financeiro.compra.criar': 'Create purchase entry',
+  'nota.titulo': 'Purchase entry', 'nota.sub': 'Records the purchase: creates a payable and a pending receipt in inventory.',
+  'nota.forn_ph': 'Supplier name', 'nota.nf': 'Invoice', 'nota.total': 'Total', 'nota.lancar': 'Create entry',
+  'nota.gera': 'creates payable + pending receipt', 'nota.ok': 'Entry created. See Payables and Inventory › Receiving.',
+  'receb.titulo': 'Receiving', 'receb.sub': 'Pending receipts from purchase entries. Receiving adds to stock.',
+  'receb.vazio': 'No pending receipts.', 'receb.receber': 'Receive', 'receb.confirmar': 'Confirm receipt', 'receb.un': 'un',
+  'recebimento.nao_encontrado': 'Pending receipt not found.',
+});
+Object.assign(es, {
+  'menu.nota': 'Nota de entrada', 'menu.recebimento': 'Recepción', 'cap.financeiro.compra.criar': 'Crear nota de entrada (compra)',
+  'nota.titulo': 'Nota de entrada (compra)', 'nota.sub': 'Registra la compra: genera cuenta a pagar y una pendencia de recepción en el stock.',
+  'nota.forn_ph': 'Nombre del proveedor', 'nota.nf': 'Factura', 'nota.total': 'Total', 'nota.lancar': 'Crear nota',
+  'nota.gera': 'genera cuenta a pagar + pendencia de recepción', 'nota.ok': 'Nota creada. Ver en Cuentas a pagar y Stock › Recepción.',
+  'receb.titulo': 'Recepción', 'receb.sub': 'Pendencias de recepción de las notas de entrada. Recibir da entrada al stock.',
+  'receb.vazio': 'Sin pendencias de recepción.', 'receb.receber': 'Recibir', 'receb.confirmar': 'Confirmar recepción', 'receb.un': 'un',
+  'recebimento.nao_encontrado': 'Pendencia no encontrada.',
+});

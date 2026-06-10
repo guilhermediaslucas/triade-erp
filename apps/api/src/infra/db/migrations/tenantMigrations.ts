@@ -186,4 +186,42 @@ export const tenantMigrations: MigracaoTenant[] = [
       );
     `,
   },
+  {
+    nome: '010_financeiro',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".titulo (
+        id              uuid PRIMARY KEY,
+        tipo            text NOT NULL,
+        descricao       text NOT NULL,
+        pessoa_nome     text,
+        valor           numeric(14,2) NOT NULL,
+        vencimento      date NOT NULL,
+        status          text NOT NULL DEFAULT 'aberto',
+        forma_pagamento text,
+        pago_em         timestamptz,
+        origem          text NOT NULL DEFAULT 'manual',
+        pedido_id       uuid,
+        criado_em       timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_${s}_titulo_tipo ON "${s}".titulo(tipo);
+    `,
+  },
+  {
+    nome: '011_recebimento',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".recebimento (
+        id             uuid PRIMARY KEY,
+        fornecedor_nome text,
+        produto_id     uuid REFERENCES "${s}".produto(id),
+        produto_nome   text NOT NULL,
+        quantidade     numeric(14,3) NOT NULL,
+        custo_unitario numeric(14,2) NOT NULL,
+        total          numeric(14,2) NOT NULL,
+        nf             text,
+        titulo_id      uuid,
+        status         text NOT NULL DEFAULT 'pendente',
+        criado_em      timestamptz NOT NULL DEFAULT now()
+      );
+    `,
+  },
 ];

@@ -3,6 +3,7 @@ import type { PrecoBaseRepository } from '../../domain/comercial/PrecoBase.js';
 import type { ProdutoRepository } from '../../domain/cadastro/Produto.js';
 import type { ClienteRepository, EnderecoCliente } from '../../domain/pessoa/Cliente.js';
 import type { EstoqueRepository } from '../../domain/estoque/Estoque.js';
+import type { TituloRepository } from '../../domain/financeiro/Titulo.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
 const TRANSICOES: Record<StatusPedido, StatusPedido[]> = {
@@ -28,6 +29,7 @@ export class PedidosService {
     private readonly precos: PrecoBaseRepository,
     private readonly clientes: ClienteRepository,
     private readonly estoque: EstoqueRepository,
+    private readonly titulos: TituloRepository,
   ) {}
 
   listar(schema: string): Promise<PedidoResumo[]> { return this.pedidos.listar(schema); }
@@ -90,6 +92,9 @@ export class PedidosService {
         const usado = await this.pedidos.somaEmAberto(schema, cliente.id, pedido.id);
         if (usado + pedido.total > cliente.limiteCredito) throw new ErroAplicacao('pedido.limite_estourado', 409);
       }
+      // Gera o título a receber do pedido (vencimento padrão em 30 dias).
+      const ref = 'Pedido PE-' + String(pedido.numero).padStart(6, '0');
+      await this.titulos.criarReceberDePedido(schema, ref, pedido.clienteNome, pedido.total, pedido.id, 30);
     }
     // Baixa de estoque ao enviar para separação (consome lotes por validade — FIFO).
     if (novo === 'separacao') {
