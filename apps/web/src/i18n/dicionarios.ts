@@ -639,3 +639,20 @@ Object.assign(es, {
   'rel.total_vendas': 'Total de ventas', 'rel.por_vendedor': 'Total por vendedor', 'rel.vazio': 'Sin ventas en el período.',
   'rel.qtd': 'Cant.', 'rel.total': 'Total',
 });
+
+// --- Refinamento: preço por cliente ---
+Object.assign(pt, {
+  'precos.modo': 'Modo', 'precos.modo_base': 'Preço base (geral)', 'precos.modo_cliente': 'Por cliente',
+  'precos.preco_cliente': 'Preço do cliente (R$)', 'precos.sub_cliente': 'Preço negociado por cliente — sobrepõe o preço base no pedido. Em branco = usa o base.',
+  'precos.escolha_cliente': 'Escolha um cliente para definir os preços negociados.', 'precos.usa_base': 'usa o base',
+});
+Object.assign(en, {
+  'precos.modo': 'Mode', 'precos.modo_base': 'Base price (general)', 'precos.modo_cliente': 'Per customer',
+  'precos.preco_cliente': 'Customer price (R$)', 'precos.sub_cliente': 'Negotiated price per customer — overrides the base price in orders. Blank = uses base.',
+  'precos.escolha_cliente': 'Choose a customer to set negotiated prices.', 'precos.usa_base': 'uses base',
+});
+Object.assign(es, {
+  'precos.modo': 'Modo', 'precos.modo_base': 'Precio base (general)', 'precos.modo_cliente': 'Por cliente',
+  'precos.preco_cliente': 'Precio del cliente (R$)', 'precos.sub_cliente': 'Precio negociado por cliente — sustituye el base en el pedido. Vacío = usa el base.',
+  'precos.escolha_cliente': 'Elige un cliente para definir los precios negociados.', 'precos.usa_base': 'usa el base',
+});

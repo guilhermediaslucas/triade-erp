@@ -1,5 +1,6 @@
 import type { NovoPedido, Pedido, PedidoItem, PedidoRepository, PedidoResumo, StatusPedido } from '../../domain/comercial/Pedido.js';
 import type { PrecoBaseRepository } from '../../domain/comercial/PrecoBase.js';
+import type { PrecoClienteRepository } from '../../domain/comercial/PrecoCliente.js';
 import type { ProdutoRepository } from '../../domain/cadastro/Produto.js';
 import type { ClienteRepository, EnderecoCliente } from '../../domain/pessoa/Cliente.js';
 import type { EstoqueRepository } from '../../domain/estoque/Estoque.js';
@@ -27,6 +28,7 @@ export class PedidosService {
     private readonly pedidos: PedidoRepository,
     private readonly produtos: ProdutoRepository,
     private readonly precos: PrecoBaseRepository,
+    private readonly precosCliente: PrecoClienteRepository,
     private readonly clientes: ClienteRepository,
     private readonly estoque: EstoqueRepository,
     private readonly titulos: TituloRepository,
@@ -53,7 +55,7 @@ export class PedidosService {
       if (!prod) throw new ErroAplicacao('pedido.produto_invalido', 400);
       const quantidade = Number(it?.quantidade);
       if (!Number.isFinite(quantidade) || quantidade <= 0) throw new ErroAplicacao('pedido.qtd_invalida', 400);
-      const precoUnitario = await this.precos.precoDe(schema, prod.id);
+      const precoUnitario = (await this.precosCliente.precoDe(schema, cliente.id, prod.id)) ?? (await this.precos.precoDe(schema, prod.id));
       const subtotal = Math.round(quantidade * precoUnitario * 100) / 100;
       itens.push({ produtoId: prod.id, produtoNome: prod.nome, quantidade, precoUnitario, subtotal });
     }

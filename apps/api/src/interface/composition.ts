@@ -21,6 +21,7 @@ import { SqlVendedorRepository } from '../infra/repositories/SqlVendedorReposito
 import { ClientesService, FornecedoresService, VendedoresService } from '../application/pessoa/PessoasServices.js';
 import { SqlPrecoBaseRepository } from '../infra/repositories/SqlPrecoBaseRepository.js';
 import { PrecosService } from '../application/comercial/PrecosService.js';
+import { SqlPrecoClienteRepository } from '../infra/repositories/SqlPrecoClienteRepository.js';
 import { SqlPedidoRepository } from '../infra/repositories/SqlPedidoRepository.js';
 import { PedidosService } from '../application/comercial/PedidosService.js';
 import { SqlEstoqueRepository } from '../infra/repositories/SqlEstoqueRepository.js';
@@ -47,6 +48,7 @@ export function montarDependencias() {
   const fornecedoresRepo = new SqlFornecedorRepository(AppDataSource);
   const vendedoresRepo = new SqlVendedorRepository(AppDataSource);
   const precoBaseRepo = new SqlPrecoBaseRepository(AppDataSource);
+  const precoClienteRepo = new SqlPrecoClienteRepository(AppDataSource);
   const pedidoRepo = new SqlPedidoRepository(AppDataSource);
   const estoqueRepo = new SqlEstoqueRepository(AppDataSource);
   const tituloRepo = new SqlTituloRepository(AppDataSource);
@@ -66,8 +68,8 @@ export function montarDependencias() {
     clientesService: new ClientesService(clientesRepo),
     fornecedoresService: new FornecedoresService(fornecedoresRepo),
     vendedoresService: new VendedoresService(vendedoresRepo),
-    precosService: new PrecosService(precoBaseRepo),
-    pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, clientesRepo, estoqueRepo, tituloRepo),
+    precosService: new PrecosService(precoBaseRepo, precoClienteRepo),
+    pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, precoClienteRepo, clientesRepo, estoqueRepo, tituloRepo),
     financeiroService: new FinanceiroService(tituloRepo),
     comprasService: new ComprasService(produtosRepo, tituloRepo, recebimentoRepo, estoqueRepo),
     dashboardService: new DashboardService(new SqlDashboardRepository(AppDataSource)),

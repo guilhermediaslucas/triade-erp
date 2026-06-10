@@ -176,6 +176,19 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-10** — **Refinamento — Preço por cliente (Tabela de preço) + uso no pedido.**
+  Migration tenant 012 `preco_cliente` (cliente_id+produto_id PK, preco). **Backend:** domínio
+  `PrecoClienteRepository`; `SqlPrecoClienteRepository` (listarPorCliente c/ base de referência via
+  LEFT JOIN preco_base, `definir` upsert — preço 0 **remove** o registro, `precoDe`). `PrecosService`
+  ganhou `listarCliente`/`definirCliente`. **`PedidosService` agora resolve o preço do item como
+  preço do cliente (se houver) → senão preço base.** Rotas `GET /precos/cliente/:clienteId` e
+  `PUT /precos/cliente/:clienteId/:produtoId`. **Frontend:** Tabela de preço com seletor de **modo
+  Base × Por cliente**; no modo cliente, escolhe o cliente e edita o preço por produto (mostra o base
+  como referência; em branco = usa base); i18n pt/en/es. **Validação:** type-check 3 pacotes + build
+  Vite + **e2e Postgres real (6 PASS)**: lista base sem preço de cliente, define 800, pedido do VIP usa
+  800 (total 1600) e do comum usa base 1000 (2000), preço 0 remove. **Pendente:** Gui rodar
+  `db-setup.bat` (migration 012) + testar + commit. Próximos refinamentos do mockup: campanhas de
+  preço (período), comissões, condições de pagamento/parcelas, código de barras, CRM.
 - **2026-06-10** — **Fase 6 — Entrega 6B (Relatórios: vendas + produtos mais vendidos). Fase 6 concluída.**
   Cap `relatorios.ver` (módulo Relatórios). **Backend:** domínio `Relatorio`/`RelatorioRepository`;
   `SqlRelatorioRepository.vendas` (pedidos não orçamento/cancelado no período, filtro `criado_em::date`

@@ -15,5 +15,11 @@ export function rotasPrecos(deps: Dependencias): Router {
   r.put('/precos/:produtoId', aut, az('comercial.preco.gerenciar'), async (req, res: Response) => {
     try { await deps.precosService.definir(sch(req), req.params.produtoId!, (req.body ?? {}).preco); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });
+  r.get('/precos/cliente/:clienteId', aut, az('comercial.preco.listar'), async (req, res: Response) => {
+    try { res.json(await deps.precosService.listarCliente(sch(req), req.params.clienteId!)); } catch (e) { tratarErro(res, e); }
+  });
+  r.put('/precos/cliente/:clienteId/:produtoId', aut, az('comercial.preco.gerenciar'), async (req, res: Response) => {
+    try { await deps.precosService.definirCliente(sch(req), req.params.clienteId!, req.params.produtoId!, (req.body ?? {}).preco); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
   return r;
 }

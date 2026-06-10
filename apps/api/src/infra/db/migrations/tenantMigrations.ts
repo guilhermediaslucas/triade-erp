@@ -224,4 +224,15 @@ export const tenantMigrations: MigracaoTenant[] = [
       );
     `,
   },
+  {
+    nome: '012_preco_cliente',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".preco_cliente (
+        cliente_id uuid NOT NULL REFERENCES "${s}".cliente(id) ON DELETE CASCADE,
+        produto_id uuid NOT NULL REFERENCES "${s}".produto(id) ON DELETE CASCADE,
+        preco      numeric(14,2) NOT NULL,
+        PRIMARY KEY (cliente_id, produto_id)
+      );
+    `,
+  },
 ];
