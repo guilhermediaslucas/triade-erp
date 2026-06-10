@@ -31,6 +31,7 @@ export const CAPABILITIES: Capability[] = [
   { id: 'financeiro.pagar.gerenciar',   moduloChave: 'cap.modulo.financeiro', labelChave: 'cap.financeiro.pagar.gerenciar' },
   { id: 'financeiro.fluxo.ver',         moduloChave: 'cap.modulo.financeiro', labelChave: 'cap.financeiro.fluxo.ver' },
   { id: 'financeiro.compra.criar',      moduloChave: 'cap.modulo.financeiro', labelChave: 'cap.financeiro.compra.criar' },
+  { id: 'relatorios.ver',                moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.ver' },
   { id: 'superadmin.empresa.provisionar', moduloChave: 'cap.modulo.superadmin', labelChave: 'cap.superadmin.empresa.provisionar' },
 ];
 

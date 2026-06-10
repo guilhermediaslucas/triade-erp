@@ -613,3 +613,29 @@ Object.assign(es, {
   'dash.vencido': 'vencido', 'dash.em_dia': 'Al día', 'dash.pedidos_status': 'Pedidos por estado',
   'dash.top_produtos': 'Productos más vendidos', 'dash.sem_vendas': 'Aún sin ventas registradas.',
 });
+
+// --- Fase 6B: Relatórios ---
+Object.assign(pt, {
+  'menu.relatorios': 'Relatórios', 'menu.rel_vendas': 'Vendas', 'menu.rel_produtos': 'Produtos mais vendidos',
+  'cap.modulo.relatorios': 'Relatórios', 'cap.relatorios.ver': 'Ver relatórios',
+  'rel.vendas': 'Relatório de vendas', 'rel.produtos': 'Produtos mais vendidos',
+  'rel.de': 'De', 'rel.ate': 'Até', 'rel.gerar': 'Gerar', 'rel.exportar': 'Exportar CSV',
+  'rel.total_vendas': 'Total de vendas', 'rel.por_vendedor': 'Total por vendedor', 'rel.vazio': 'Nenhuma venda no período.',
+  'rel.qtd': 'Qtd', 'rel.total': 'Total',
+});
+Object.assign(en, {
+  'menu.relatorios': 'Reports', 'menu.rel_vendas': 'Sales', 'menu.rel_produtos': 'Best sellers',
+  'cap.modulo.relatorios': 'Reports', 'cap.relatorios.ver': 'View reports',
+  'rel.vendas': 'Sales report', 'rel.produtos': 'Best-selling products',
+  'rel.de': 'From', 'rel.ate': 'To', 'rel.gerar': 'Generate', 'rel.exportar': 'Export CSV',
+  'rel.total_vendas': 'Total sales', 'rel.por_vendedor': 'Total by sales rep', 'rel.vazio': 'No sales in the period.',
+  'rel.qtd': 'Qty', 'rel.total': 'Total',
+});
+Object.assign(es, {
+  'menu.relatorios': 'Informes', 'menu.rel_vendas': 'Ventas', 'menu.rel_produtos': 'Más vendidos',
+  'cap.modulo.relatorios': 'Informes', 'cap.relatorios.ver': 'Ver informes',
+  'rel.vendas': 'Informe de ventas', 'rel.produtos': 'Productos más vendidos',
+  'rel.de': 'Desde', 'rel.ate': 'Hasta', 'rel.gerar': 'Generar', 'rel.exportar': 'Exportar CSV',
+  'rel.total_vendas': 'Total de ventas', 'rel.por_vendedor': 'Total por vendedor', 'rel.vazio': 'Sin ventas en el período.',
+  'rel.qtd': 'Cant.', 'rel.total': 'Total',
+});
