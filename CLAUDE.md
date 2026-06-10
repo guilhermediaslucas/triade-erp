@@ -16,7 +16,9 @@
 > (super-admin: cria tenant + schema + perfil Administrador + 1º usuário),
 > isolamento entre tenants e idioma padrão da empresa aplicado no login —
 > testado e2e (10 PASS). **Fase 1 concluída** (resta só, opcional, idioma/timezone
-> por usuário — pode ir junto com Fase 2). Próximo: Fase 2 (Cadastros).
+> por usuário — pode ir junto com Fase 2). **Fase 2 em andamento. Entrega 2A feita:**
+> Categorias + Produtos (CRUD backend hexagonal + telas + menu Cadastros por permissão),
+> testado e2e Postgres real (11 PASS). Falta 2B: Clientes, Fornecedores, Vendedores.
 > Mockup em `Info/mockups/erp-mockup.html` segue como referência visual.
 > Orçamento em `Info/ORCAMENTO-FASES.md`. Decidido: MVP sem fiscal (Fase 7 depois);
 > banco = Postgres na nuvem (Neon).
@@ -165,6 +167,22 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-10** — **Fase 2 — Entrega 2A (Cadastros: Categorias e Produtos).**
+  **Banco (migration tenant 003):** tabelas `categoria` (id, nome) e `produto` (id, nome,
+  categoria_id→categoria, unidade, preco numeric(14,2), estoque_minimo, ativo). **Caps novas:**
+  `cadastros.categoria.listar/gerenciar`, `cadastros.produto.listar/gerenciar` (módulo Cadastros).
+  Seed agora **sincroniza** todas as caps no perfil Administrador a cada execução (corrige o
+  caso de caps novas não chegarem a perfis já existentes). **Backend (hexagonal):** domínio
+  `Categoria`/`Produto` + repos como interface; `SqlCategoriaRepository`, `SqlProdutoRepository`;
+  `CategoriasService`, `ProdutosService` (validações: nome, preço ≥ 0, mínimo inteiro ≥ 0,
+  categoria existente — via `ErroAplicacao` i18n); rotas `/categorias` (GET/POST/PUT) e
+  `/produtos` (GET/POST/PUT + PATCH ativo), guard por capability. **Frontend:** telas
+  **Cadastros › Categorias** e **Produtos** (lista + modal; produto com categoria, unidade,
+  preço, estoque mínimo, ativar/inativar), menu Cadastros por permissão, i18n pt/en/es.
+  **Validação:** type-check 3 pacotes + build Vite + **e2e Postgres real (11 PASS)**: cria/lista
+  categoria e produto (com nome da categoria e preço), valida nome curto/preço negativo/categoria
+  inexistente (400), edita e inativa, guard 403 p/ usuário sem a cap. **Pendente:** Gui rodar
+  `db-setup.bat` (aplica migration 003) + testar telas + commit. Falta 2B: Clientes, Fornecedores, Vendedores.
 - **2026-06-10** — **Fase 1 — Entrega B2 (Provisionar empresas / super-admin). Fase 1 concluída.**
   Nova capability `superadmin.empresa.provisionar` (módulo Super-admin) no registry.
   **Backend:** `EmpresaRepository` ganhou `listarTodas`/`existeCodigo`/`criar`; porta

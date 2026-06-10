@@ -1,0 +1,56 @@
+import { randomUUID } from 'node:crypto';
+import type { DataSource } from 'typeorm';
+import type { NovoProduto, Produto, ProdutoRepository, ProdutoResumo } from '../../domain/cadastro/Produto.js';
+import { validarSchema } from '../tenant/validarSchema.js';
+
+function mapProduto(r: any): Produto {
+  return {
+    id: r.id, nome: r.nome, categoriaId: r.categoria_id ?? null, unidade: r.unidade,
+    preco: Number(r.preco), estoqueMinimo: r.estoque_minimo, ativo: r.ativo, criadoEm: new Date(r.criado_em),
+  };
+}
+
+export class SqlProdutoRepository implements ProdutoRepository {
+  constructor(private readonly ds: DataSource) {}
+
+  async listar(schema: string): Promise<ProdutoResumo[]> {
+    const s = validarSchema(schema);
+    const linhas = await this.ds.query(
+      `SELECT p.*, c.nome AS categoria_nome
+         FROM "${s}".produto p
+         LEFT JOIN "${s}".categoria c ON c.id = p.categoria_id
+        ORDER BY p.nome`,
+    );
+    return linhas.map((r: any) => ({ ...mapProduto(r), categoriaNome: r.categoria_nome ?? null }));
+  }
+
+  async buscarPorId(schema: string, id: string): Promise<Produto | null> {
+    const s = validarSchema(schema);
+    const r = (await this.ds.query(`SELECT * FROM "${s}".produto WHERE id = $1`, [id]))[0];
+    return r ? mapProduto(r) : null;
+  }
+
+  async criar(schema: string, d: NovoProduto): Promise<string> {
+    const s = validarSchema(schema);
+    const id = randomUUID();
+    await this.ds.query(
+      `INSERT INTO "${s}".produto (id, nome, categoria_id, unidade, preco, estoque_minimo)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [id, d.nome, d.categoriaId, d.unidade, d.preco, d.estoqueMinimo],
+    );
+    return id;
+  }
+
+  async atualizar(schema: string, id: string, d: NovoProduto): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(
+      `UPDATE "${s}".produto SET nome=$2, categoria_id=$3, unidade=$4, preco=$5, estoque_minimo=$6 WHERE id=$1`,
+      [id, d.nome, d.categoriaId, d.unidade, d.preco, d.estoqueMinimo],
+    );
+  }
+
+  async definirAtivo(schema: string, id: string, ativo: boolean): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(`UPDATE "${s}".produto SET ativo = $2 WHERE id = $1`, [id, ativo]);
+  }
+}

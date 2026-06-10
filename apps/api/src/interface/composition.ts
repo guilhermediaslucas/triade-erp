@@ -11,6 +11,10 @@ import { UsuariosService } from '../application/usuario/UsuariosService.js';
 import { PerfisService } from '../application/perfil/PerfisService.js';
 import { EmpresaService } from '../application/empresa/EmpresaService.js';
 import { ProvisionarEmpresa } from '../application/empresa/ProvisionarEmpresa.js';
+import { SqlCategoriaRepository } from '../infra/repositories/SqlCategoriaRepository.js';
+import { SqlProdutoRepository } from '../infra/repositories/SqlProdutoRepository.js';
+import { CategoriasService } from '../application/cadastro/CategoriasService.js';
+import { ProdutosService } from '../application/cadastro/ProdutosService.js';
 
 export function montarDependencias() {
   const empresasRepo = new SqlEmpresaRepository(AppDataSource);
@@ -19,6 +23,8 @@ export function montarDependencias() {
   const hash = new BcryptHashSenha();
   const tokens = new JwtGeradorToken(env.jwtSecret);
   const migrador = new TypeOrmMigrador(AppDataSource);
+  const categoriasRepo = new SqlCategoriaRepository(AppDataSource);
+  const produtosRepo = new SqlProdutoRepository(AppDataSource);
 
   return {
     tokens,
@@ -29,6 +35,8 @@ export function montarDependencias() {
     perfisService: new PerfisService(perfisRepo),
     empresaService: new EmpresaService(empresasRepo),
     provisionarEmpresa: new ProvisionarEmpresa(empresasRepo, migrador, perfisRepo, usuariosRepo, hash),
+    categoriasService: new CategoriasService(categoriasRepo),
+    produtosService: new ProdutosService(produtosRepo, categoriasRepo),
   };
 }
 

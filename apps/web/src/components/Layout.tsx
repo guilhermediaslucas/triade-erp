@@ -11,6 +11,13 @@ interface GrupoNav { rotulo?: string; itens: ItemNav[]; }
 const GRUPOS: GrupoNav[] = [
   { itens: [{ rotulo: 'menu.dashboard', icone: '▦', to: '/', cap: 'dashboard.ver' }] },
   {
+    rotulo: 'menu.cadastros',
+    itens: [
+      { rotulo: 'menu.categorias', icone: '🏷️', to: '/cadastros/categorias', cap: 'cadastros.categoria.listar' },
+      { rotulo: 'menu.produtos', icone: '📦', to: '/cadastros/produtos', cap: 'cadastros.produto.listar' },
+    ],
+  },
+  {
     rotulo: 'menu.acesso',
     itens: [
       { rotulo: 'menu.usuarios', icone: '👤', to: '/acesso/usuarios', cap: 'acesso.usuario.listar' },

@@ -202,3 +202,44 @@ Object.assign(es, {
   'empresa.codigo_invalido': 'Código inválido (usa letras y números, sin espacios).',
   'empresa.codigo_em_uso': 'Ya existe una empresa con este código.', 'empresa.nome_invalido': 'Ingresa una razón social válida.',
 });
+
+// --- Fase 2A: Cadastros (Categorias, Produtos) ---
+Object.assign(pt, {
+  'menu.cadastros': 'Cadastros', 'menu.categorias': 'Categorias', 'menu.produtos': 'Produtos',
+  'cap.modulo.cadastros': 'Cadastros',
+  'cap.cadastros.categoria.listar': 'Listar categorias', 'cap.cadastros.categoria.gerenciar': 'Criar e editar categorias',
+  'cap.cadastros.produto.listar': 'Listar produtos', 'cap.cadastros.produto.gerenciar': 'Criar e editar produtos',
+  'categorias.titulo': 'Categorias', 'categorias.nova': 'Nova categoria', 'categorias.nome': 'Nome',
+  'produtos.titulo': 'Produtos', 'produtos.novo': 'Novo produto', 'produtos.nome': 'Nome',
+  'produtos.categoria': 'Categoria', 'produtos.unidade': 'Unidade', 'produtos.preco': 'Preço',
+  'produtos.minimo': 'Estoque mínimo', 'produtos.sem_categoria': '(sem categoria)',
+  'cadastro.nome_invalido': 'Informe um nome válido.', 'cadastro.nao_encontrado': 'Registro não encontrado.',
+  'produto.preco_invalido': 'Preço inválido.', 'produto.minimo_invalido': 'Estoque mínimo inválido.',
+  'produto.categoria_invalida': 'Categoria inválida.',
+});
+Object.assign(en, {
+  'menu.cadastros': 'Records', 'menu.categorias': 'Categories', 'menu.produtos': 'Products',
+  'cap.modulo.cadastros': 'Records',
+  'cap.cadastros.categoria.listar': 'List categories', 'cap.cadastros.categoria.gerenciar': 'Create and edit categories',
+  'cap.cadastros.produto.listar': 'List products', 'cap.cadastros.produto.gerenciar': 'Create and edit products',
+  'categorias.titulo': 'Categories', 'categorias.nova': 'New category', 'categorias.nome': 'Name',
+  'produtos.titulo': 'Products', 'produtos.novo': 'New product', 'produtos.nome': 'Name',
+  'produtos.categoria': 'Category', 'produtos.unidade': 'Unit', 'produtos.preco': 'Price',
+  'produtos.minimo': 'Minimum stock', 'produtos.sem_categoria': '(no category)',
+  'cadastro.nome_invalido': 'Enter a valid name.', 'cadastro.nao_encontrado': 'Record not found.',
+  'produto.preco_invalido': 'Invalid price.', 'produto.minimo_invalido': 'Invalid minimum stock.',
+  'produto.categoria_invalida': 'Invalid category.',
+});
+Object.assign(es, {
+  'menu.cadastros': 'Registros', 'menu.categorias': 'Categorías', 'menu.produtos': 'Productos',
+  'cap.modulo.cadastros': 'Registros',
+  'cap.cadastros.categoria.listar': 'Listar categorías', 'cap.cadastros.categoria.gerenciar': 'Crear y editar categorías',
+  'cap.cadastros.produto.listar': 'Listar productos', 'cap.cadastros.produto.gerenciar': 'Crear y editar productos',
+  'categorias.titulo': 'Categorías', 'categorias.nova': 'Nueva categoría', 'categorias.nome': 'Nombre',
+  'produtos.titulo': 'Productos', 'produtos.novo': 'Nuevo producto', 'produtos.nome': 'Nombre',
+  'produtos.categoria': 'Categoría', 'produtos.unidade': 'Unidad', 'produtos.preco': 'Precio',
+  'produtos.minimo': 'Stock mínimo', 'produtos.sem_categoria': '(sin categoría)',
+  'cadastro.nome_invalido': 'Ingresa un nombre válido.', 'cadastro.nao_encontrado': 'Registro no encontrado.',
+  'produto.preco_invalido': 'Precio inválido.', 'produto.minimo_invalido': 'Stock mínimo inválido.',
+  'produto.categoria_invalida': 'Categoría inválida.',
+});

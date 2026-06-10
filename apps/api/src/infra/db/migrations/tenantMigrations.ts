@@ -35,4 +35,24 @@ export const tenantMigrations: MigracaoTenant[] = [
         ADD COLUMN IF NOT EXISTS perfil_id uuid REFERENCES "${s}".perfil(id);
     `,
   },
+  {
+    nome: '003_cadastros',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".categoria (
+        id        uuid PRIMARY KEY,
+        nome      text NOT NULL,
+        criado_em timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE TABLE IF NOT EXISTS "${s}".produto (
+        id             uuid PRIMARY KEY,
+        nome           text NOT NULL,
+        categoria_id   uuid REFERENCES "${s}".categoria(id),
+        unidade        text NOT NULL DEFAULT 'UN',
+        preco          numeric(14,2) NOT NULL DEFAULT 0,
+        estoque_minimo integer NOT NULL DEFAULT 0,
+        ativo          boolean NOT NULL DEFAULT true,
+        criado_em      timestamptz NOT NULL DEFAULT now()
+      );
+    `,
+  },
 ];
