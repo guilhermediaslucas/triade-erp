@@ -318,3 +318,26 @@ Object.assign(es, {
   'clientes.logradouro': 'Calle', 'clientes.numero': 'Número', 'clientes.bairro': 'Barrio',
   'clientes.cnpj_incompleto': 'Ingresa un CNPJ completo para buscar.', 'clientes.cnpj_nao_encontrado': 'CNPJ no encontrado.',
 });
+
+// --- Fidelidade Produto/Fornecedor/Vendedor ---
+Object.assign(pt, {
+  'produtos.local': 'Localização', 'produtos.local_ph': 'Depósito / prateleira', 'produtos.anvisa': 'Registro ANVISA',
+  'produtos.nota_preco': 'O preço de venda é definido em Comercial › Tabela de preço (será criado na Fase 3). Lote e validade pertencem à entrada de estoque.',
+  'vendedores.regiao': 'Região / carteira', 'vendedores.regiao_ph': 'Ex.: SP Capital, Interior SP',
+  'vendedores.meta': 'Meta mensal (R$)', 'vendedores.regra_geral': 'Seguir regra geral de comissão (ignora o % individual)',
+  'vendedores.regra_geral_curta': 'Regra geral', 'vendedor.meta_invalida': 'Meta mensal inválida.',
+});
+Object.assign(en, {
+  'produtos.local': 'Location', 'produtos.local_ph': 'Warehouse / shelf', 'produtos.anvisa': 'ANVISA registration',
+  'produtos.nota_preco': 'Sale price is set in Sales › Price table (coming in Phase 3). Batch and expiry belong to stock entry.',
+  'vendedores.regiao': 'Region / territory', 'vendedores.regiao_ph': 'e.g., SP Capital, Interior SP',
+  'vendedores.meta': 'Monthly target (R$)', 'vendedores.regra_geral': 'Follow general commission rule (ignores individual %)',
+  'vendedores.regra_geral_curta': 'General rule', 'vendedor.meta_invalida': 'Invalid monthly target.',
+});
+Object.assign(es, {
+  'produtos.local': 'Ubicación', 'produtos.local_ph': 'Depósito / estante', 'produtos.anvisa': 'Registro ANVISA',
+  'produtos.nota_preco': 'El precio de venta se define en Comercial › Tabla de precios (Fase 3). Lote y validez pertenecen a la entrada de stock.',
+  'vendedores.regiao': 'Región / cartera', 'vendedores.regiao_ph': 'Ej.: SP Capital, Interior SP',
+  'vendedores.meta': 'Meta mensual (R$)', 'vendedores.regra_geral': 'Seguir regla general de comisión (ignora el % individual)',
+  'vendedores.regra_geral_curta': 'Regla general', 'vendedor.meta_invalida': 'Meta mensual inválida.',
+});

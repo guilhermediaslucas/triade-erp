@@ -5,7 +5,8 @@ import { validarSchema } from '../tenant/validarSchema.js';
 
 function map(r: any): Vendedor {
   return { id: r.id, nome: r.nome, email: r.email ?? null, telefone: r.telefone ?? null,
-    comissaoPercentual: Number(r.comissao_percentual), ativo: r.ativo, criadoEm: new Date(r.criado_em) };
+    regiao: r.regiao ?? null, metaMensal: Number(r.meta_mensal), comissaoPercentual: Number(r.comissao_percentual),
+    segueRegraGeral: r.segue_regra_geral, ativo: r.ativo, criadoEm: new Date(r.criado_em) };
 }
 export class SqlVendedorRepository implements VendedorRepository {
   constructor(private readonly ds: DataSource) {}
@@ -20,14 +21,14 @@ export class SqlVendedorRepository implements VendedorRepository {
   }
   async criar(schema: string, d: NovoVendedor): Promise<string> {
     const s = validarSchema(schema); const id = randomUUID();
-    await this.ds.query(`INSERT INTO "${s}".vendedor (id,nome,email,telefone,comissao_percentual) VALUES ($1,$2,$3,$4,$5)`,
-      [id, d.nome, d.email, d.telefone, d.comissaoPercentual]);
+    await this.ds.query(`INSERT INTO "${s}".vendedor (id,nome,email,telefone,regiao,meta_mensal,comissao_percentual,segue_regra_geral) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+      [id, d.nome, d.email, d.telefone, d.regiao, d.metaMensal, d.comissaoPercentual, d.segueRegraGeral]);
     return id;
   }
   async atualizar(schema: string, id: string, d: NovoVendedor): Promise<void> {
     const s = validarSchema(schema);
-    await this.ds.query(`UPDATE "${s}".vendedor SET nome=$2,email=$3,telefone=$4,comissao_percentual=$5 WHERE id=$1`,
-      [id, d.nome, d.email, d.telefone, d.comissaoPercentual]);
+    await this.ds.query(`UPDATE "${s}".vendedor SET nome=$2,email=$3,telefone=$4,regiao=$5,meta_mensal=$6,comissao_percentual=$7,segue_regra_geral=$8 WHERE id=$1`,
+      [id, d.nome, d.email, d.telefone, d.regiao, d.metaMensal, d.comissaoPercentual, d.segueRegraGeral]);
   }
   async definirAtivo(schema: string, id: string, ativo: boolean): Promise<void> {
     const s = validarSchema(schema);

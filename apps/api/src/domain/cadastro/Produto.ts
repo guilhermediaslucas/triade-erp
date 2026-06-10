@@ -3,23 +3,21 @@ export interface Produto {
   nome: string;
   categoriaId: string | null;
   unidade: string;
-  preco: number;
   estoqueMinimo: number;
+  localizacao: string | null;
+  registroAnvisa: string | null;
   ativo: boolean;
   criadoEm: Date;
 }
-
-// Para listagem com o nome da categoria resolvido.
 export interface ProdutoResumo extends Produto { categoriaNome: string | null; }
-
 export interface NovoProduto {
   nome: string;
   categoriaId: string | null;
   unidade: string;
-  preco: number;
   estoqueMinimo: number;
+  localizacao: string | null;
+  registroAnvisa: string | null;
 }
-
 export interface ProdutoRepository {
   listar(schema: string): Promise<ProdutoResumo[]>;
   buscarPorId(schema: string, id: string): Promise<Produto | null>;

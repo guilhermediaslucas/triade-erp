@@ -1,9 +1,11 @@
 export interface Vendedor {
   id: string; nome: string; email: string | null; telefone: string | null;
-  comissaoPercentual: number; ativo: boolean; criadoEm: Date;
+  regiao: string | null; metaMensal: number; comissaoPercentual: number;
+  segueRegraGeral: boolean; ativo: boolean; criadoEm: Date;
 }
 export interface NovoVendedor {
-  nome: string; email: string | null; telefone: string | null; comissaoPercentual: number;
+  nome: string; email: string | null; telefone: string | null;
+  regiao: string | null; metaMensal: number; comissaoPercentual: number; segueRegraGeral: boolean;
 }
 export interface VendedorRepository {
   listar(schema: string): Promise<Vendedor[]>;

@@ -1,9 +1,12 @@
 export interface Fornecedor {
   id: string; nome: string; fantasia: string | null; documento: string;
-  email: string | null; telefone: string | null; ativo: boolean; criadoEm: Date;
+  email: string | null; telefone: string | null;
+  cep: string | null; cidade: string | null; uf: string | null;
+  ativo: boolean; criadoEm: Date;
 }
 export interface NovoFornecedor {
   nome: string; fantasia: string | null; documento: string; email: string | null; telefone: string | null;
+  cep: string | null; cidade: string | null; uf: string | null;
 }
 export interface FornecedorRepository {
   listar(schema: string): Promise<Fornecedor[]>;

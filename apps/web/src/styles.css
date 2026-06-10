@@ -115,3 +115,8 @@ a { text-decoration: none; color: inherit; }
 .end-grid { display: flex; gap: 8px; margin-bottom: 8px; }
 .end-grid input { flex: 1; padding: 9px 10px; border: 1px solid var(--borda); border-radius: 8px; font-size: 13px; }
 .end-grid input:focus { border-color: var(--accent); outline: none; }
+
+/* fidelidade produto/vendedor */
+.nota-info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; padding: 9px 12px; border-radius: 8px; font-size: 12px; margin: 4px 0 4px; }
+.chk-linha { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink); margin-bottom: 6px; cursor: pointer; }
+.chk-linha input { width: 16px; height: 16px; }

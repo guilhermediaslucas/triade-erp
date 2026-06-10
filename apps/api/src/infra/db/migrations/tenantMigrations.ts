@@ -109,4 +109,18 @@ export const tenantMigrations: MigracaoTenant[] = [
       CREATE INDEX IF NOT EXISTS idx_${s}_cliente_endereco ON "${s}".cliente_endereco(cliente_id);
     `,
   },
+  {
+    nome: '006_fidelidade_mockup',
+    sql: (s) => `
+      ALTER TABLE "${s}".produto DROP COLUMN IF EXISTS preco;
+      ALTER TABLE "${s}".produto ADD COLUMN IF NOT EXISTS localizacao text;
+      ALTER TABLE "${s}".produto ADD COLUMN IF NOT EXISTS registro_anvisa text;
+      ALTER TABLE "${s}".fornecedor ADD COLUMN IF NOT EXISTS cep text;
+      ALTER TABLE "${s}".fornecedor ADD COLUMN IF NOT EXISTS cidade text;
+      ALTER TABLE "${s}".fornecedor ADD COLUMN IF NOT EXISTS uf text;
+      ALTER TABLE "${s}".vendedor ADD COLUMN IF NOT EXISTS regiao text;
+      ALTER TABLE "${s}".vendedor ADD COLUMN IF NOT EXISTS meta_mensal numeric(14,2) NOT NULL DEFAULT 0;
+      ALTER TABLE "${s}".vendedor ADD COLUMN IF NOT EXISTS segue_regra_geral boolean NOT NULL DEFAULT false;
+    `,
+  },
 ];

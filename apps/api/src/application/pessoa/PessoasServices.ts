@@ -56,7 +56,7 @@ export class FornecedoresService {
   constructor(private readonly repo: FornecedorRepository) {}
   listar(s: string): Promise<Fornecedor[]> { return this.repo.listar(s); }
   private montar(e: any): NovoFornecedor {
-    return { nome: exigeNome(e?.nome), fantasia: limpo(e?.fantasia), documento: exigeDoc(e?.documento), email: limpo(e?.email), telefone: limpo(e?.telefone) };
+    return { nome: exigeNome(e?.nome), fantasia: limpo(e?.fantasia), documento: exigeDoc(e?.documento), email: limpo(e?.email), telefone: limpo(e?.telefone), cep: limpo(e?.cep), cidade: limpo(e?.cidade), uf: limpo(e?.uf) };
   }
   criar(s: string, e: any): Promise<string> { return this.repo.criar(s, this.montar(e)); }
   async editar(s: string, id: string, e: any): Promise<void> {
@@ -75,7 +75,9 @@ export class VendedoresService {
   private montar(e: any): NovoVendedor {
     const c = Number(e?.comissaoPercentual ?? 0);
     if (!Number.isFinite(c) || c < 0 || c > 100) throw new ErroAplicacao('vendedor.comissao_invalida', 400);
-    return { nome: exigeNome(e?.nome), email: limpo(e?.email), telefone: limpo(e?.telefone), comissaoPercentual: c };
+    const meta = Number(e?.metaMensal ?? 0);
+    if (!Number.isFinite(meta) || meta < 0) throw new ErroAplicacao('vendedor.meta_invalida', 400);
+    return { nome: exigeNome(e?.nome), email: limpo(e?.email), telefone: limpo(e?.telefone), regiao: limpo(e?.regiao), metaMensal: meta, comissaoPercentual: c, segueRegraGeral: !!e?.segueRegraGeral };
   }
   criar(s: string, e: any): Promise<string> { return this.repo.criar(s, this.montar(e)); }
   async editar(s: string, id: string, e: any): Promise<void> {
