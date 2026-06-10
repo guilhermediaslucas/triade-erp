@@ -10,8 +10,10 @@
 > perfis, permissões auto-descobertas (CapabilityRegistry no `packages/shared`),
 > guard de autorização por capability, CRUD de Usuários e Perfis (backend + telas),
 > menu respeitando permissões — tudo testado e2e contra Postgres real (12 testes PASS).
-> **Falta na Fase 1 (Entrega B):** branding white-label (Dados da empresa),
-> provisionar empresas (super-admin), idioma/timezone por empresa/usuário.
+> **Fase 1 Entrega B1 feita:** branding white-label (Dados da empresa — logo,
+> nome fantasia, paleta aplicada ao tema, idioma/timezone padrão da empresa),
+> testado e2e (6 PASS). **Falta na Fase 1 (Entrega B2):** provisionar empresas
+> (super-admin) e idioma/timezone por usuário (override).
 > Mockup em `Info/mockups/erp-mockup.html` segue como referência visual.
 > Orçamento em `Info/ORCAMENTO-FASES.md`. Decidido: MVP sem fiscal (Fase 7 depois);
 > banco = Postgres na nuvem (Neon).
@@ -160,6 +162,21 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-10** — **Fase 1 — Entrega B1 (Dados da empresa / branding white-label).**
+  **Banco (migration public 002):** colunas em `public.empresa` — `logo` (data URI/URL),
+  `cor_primaria`, `cor_menu_fundo`, `cor_menu_fonte` (hex, com defaults), `idioma_padrao`,
+  `timezone_padrao`. **Backend:** `Empresa` ganhou `BrandingEmpresa`; `SqlEmpresaRepository`
+  lê os campos novos + `atualizar(codigo, dados)`; `EmpresaService` (valida hex, idioma em
+  IDIOMAS, fantasia/timezone); rotas `GET /empresa` (qualquer logado, p/ aplicar tema) e
+  `PUT /empresa` (cap `acesso.empresa.editar`); `express.json` subiu p/ 3mb (logo). **Frontend:**
+  `branding/tema.ts` (`aplicarTema` seta `--accent`/`--accent-fg` por luminância/`--side-bg`/
+  `--side-fg`; lista de TIMEZONES), `BrandingContext` (busca `/empresa` ao logar e aplica;
+  reseta no logout), tela **Dados da empresa** (fantasia, upload de logo→data URI c/ preview,
+  3 color pickers, idioma/timezone), `Layout` mostra logo no sidebar + fantasia do branding,
+  menu **Configurações › Dados da empresa** (cap), i18n pt/en/es. **Validação:** type-check
+  3 pacotes + build Vite + **e2e Postgres real** (6 PASS): GET defaults, PUT atualiza e
+  reflete, cor inválida→400, guard 403 p/ quem não tem a cap, leitura liberada a logado.
+  **Pendente:** Gui rodar `db-setup.bat` (aplica public 002) + testar tela + commit.
 - **2026-06-10** — **Fase 1 — Entrega A (Acesso: Perfis, Permissões, Usuários).**
   **Permissões auto-descobertas:** `CAPABILITIES` em `packages/shared/src/capabilities.ts`
   (id + chave i18n de módulo/label) — fonte única; backend valida contra ela, frontend

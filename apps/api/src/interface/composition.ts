@@ -8,9 +8,10 @@ import { JwtGeradorToken } from '../infra/security/JwtGeradorToken.js';
 import { AutenticarUsuario } from '../application/auth/AutenticarUsuario.js';
 import { UsuariosService } from '../application/usuario/UsuariosService.js';
 import { PerfisService } from '../application/perfil/PerfisService.js';
+import { EmpresaService } from '../application/empresa/EmpresaService.js';
 
 export function montarDependencias() {
-  const empresas = new SqlEmpresaRepository(AppDataSource);
+  const empresasRepo = new SqlEmpresaRepository(AppDataSource);
   const usuariosRepo = new SqlUsuarioRepository(AppDataSource);
   const perfisRepo = new SqlPerfilRepository(AppDataSource);
   const hash = new BcryptHashSenha();
@@ -19,9 +20,10 @@ export function montarDependencias() {
   return {
     tokens,
     usuariosRepo,
-    autenticarUsuario: new AutenticarUsuario(empresas, usuariosRepo, hash, tokens),
+    autenticarUsuario: new AutenticarUsuario(empresasRepo, usuariosRepo, hash, tokens),
     usuariosService: new UsuariosService(usuariosRepo, perfisRepo, hash),
     perfisService: new PerfisService(perfisRepo),
+    empresaService: new EmpresaService(empresasRepo),
   };
 }
 

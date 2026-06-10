@@ -1,6 +1,10 @@
-import type { Empresa } from './Empresa.js';
+import type { BrandingEmpresa, Empresa } from './Empresa.js';
 
-// Porta: implementacao concreta vive na infra. Busca no schema public.
+export interface AtualizacaoEmpresa extends BrandingEmpresa {
+  fantasia: string;
+}
+
 export interface EmpresaRepository {
   buscarPorCodigo(codigo: string): Promise<Empresa | null>;
+  atualizar(codigo: string, dados: AtualizacaoEmpresa): Promise<void>;
 }

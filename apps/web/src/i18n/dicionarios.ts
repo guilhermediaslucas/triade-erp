@@ -126,3 +126,41 @@ const es: Dict = {
 };
 
 export const dicionarios: Record<Idioma, Dict> = { 'pt-BR': pt, 'en-US': en, es };
+
+// --- Fase 1B: Dados da empresa ---
+Object.assign(pt, {
+  'menu.config': 'Configurações', 'menu.empresa': 'Dados da empresa',
+  'empresa.titulo': 'Dados da empresa', 'empresa.fantasia': 'Nome fantasia',
+  'empresa.logo': 'Logotipo', 'empresa.logo_enviar': 'Enviar imagem', 'empresa.logo_remover': 'Remover',
+  'empresa.logo_hint': 'PNG ou JPG, até 1,5 MB. Aparece no menu lateral.',
+  'empresa.cor_primaria': 'Cor primária', 'empresa.cor_menu_fundo': 'Menu — fundo', 'empresa.cor_menu_fonte': 'Menu — fonte',
+  'empresa.idioma_padrao': 'Idioma padrão', 'empresa.timezone_padrao': 'Fuso horário padrão',
+  'empresa.salvo': 'Dados da empresa salvos.',
+  'empresa.nao_encontrada': 'Empresa não encontrada.', 'empresa.fantasia_invalida': 'Informe um nome fantasia válido.',
+  'empresa.cor_invalida': 'Cor inválida.', 'empresa.idioma_invalido': 'Idioma inválido.',
+  'empresa.timezone_invalido': 'Fuso horário inválido.', 'empresa.logo_grande': 'A imagem é muito grande (máx. 1,5 MB).',
+});
+Object.assign(en, {
+  'menu.config': 'Settings', 'menu.empresa': 'Company data',
+  'empresa.titulo': 'Company data', 'empresa.fantasia': 'Trade name',
+  'empresa.logo': 'Logo', 'empresa.logo_enviar': 'Upload image', 'empresa.logo_remover': 'Remove',
+  'empresa.logo_hint': 'PNG or JPG, up to 1.5 MB. Shown in the sidebar.',
+  'empresa.cor_primaria': 'Primary color', 'empresa.cor_menu_fundo': 'Menu — background', 'empresa.cor_menu_fonte': 'Menu — text',
+  'empresa.idioma_padrao': 'Default language', 'empresa.timezone_padrao': 'Default timezone',
+  'empresa.salvo': 'Company data saved.',
+  'empresa.nao_encontrada': 'Company not found.', 'empresa.fantasia_invalida': 'Enter a valid trade name.',
+  'empresa.cor_invalida': 'Invalid color.', 'empresa.idioma_invalido': 'Invalid language.',
+  'empresa.timezone_invalido': 'Invalid timezone.', 'empresa.logo_grande': 'Image too large (max 1.5 MB).',
+});
+Object.assign(es, {
+  'menu.config': 'Configuración', 'menu.empresa': 'Datos de la empresa',
+  'empresa.titulo': 'Datos de la empresa', 'empresa.fantasia': 'Nombre comercial',
+  'empresa.logo': 'Logotipo', 'empresa.logo_enviar': 'Subir imagen', 'empresa.logo_remover': 'Quitar',
+  'empresa.logo_hint': 'PNG o JPG, hasta 1,5 MB. Aparece en el menú lateral.',
+  'empresa.cor_primaria': 'Color primario', 'empresa.cor_menu_fundo': 'Menú — fondo', 'empresa.cor_menu_fonte': 'Menú — texto',
+  'empresa.idioma_padrao': 'Idioma predeterminado', 'empresa.timezone_padrao': 'Zona horaria predeterminada',
+  'empresa.salvo': 'Datos de la empresa guardados.',
+  'empresa.nao_encontrada': 'Empresa no encontrada.', 'empresa.fantasia_invalida': 'Ingresa un nombre comercial válido.',
+  'empresa.cor_invalida': 'Color inválido.', 'empresa.idioma_invalido': 'Idioma inválido.',
+  'empresa.timezone_invalido': 'Zona horaria inválida.', 'empresa.logo_grande': 'La imagen es muy grande (máx. 1,5 MB).',
+});

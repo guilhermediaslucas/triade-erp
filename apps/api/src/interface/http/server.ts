@@ -6,10 +6,12 @@ import { rotasMe } from './rotas/me.js';
 import { rotasCapabilities } from './rotas/capabilities.js';
 import { rotasPerfis } from './rotas/perfis.js';
 import { rotasUsuarios } from './rotas/usuarios.js';
+import { rotasEmpresa } from './rotas/empresa.js';
 
 export function criarServidor(): Express {
   const app = express();
-  app.use(express.json());
+  // Limite maior para acomodar logo em data URI.
+  app.use(express.json({ limit: '3mb' }));
 
   const deps = montarDependencias();
 
@@ -28,6 +30,7 @@ export function criarServidor(): Express {
   app.use(rotasCapabilities(deps.tokens));
   app.use(rotasPerfis(deps));
   app.use(rotasUsuarios(deps));
+  app.use(rotasEmpresa(deps));
 
   return app;
 }
