@@ -21,6 +21,7 @@ import { PedidoDetalhe } from './pages/PedidoDetalhe.js';
 import { PosicaoEstoque } from './pages/PosicaoEstoque.js';
 import { EntradaEstoque } from './pages/EntradaEstoque.js';
 import { KanbanExpedicao } from './pages/KanbanExpedicao.js';
+import { BaixaPerda } from './pages/BaixaPerda.js';
 import { Layout } from './components/Layout.js';
 import { ProtectedRoute } from './components/ProtectedRoute.js';
 
@@ -45,6 +46,7 @@ export function App() {
               <Route path="/comercial/pedidos/:id" element={<Protegida cap="comercial.pedido.listar"><PedidoDetalhe /></Protegida>} />
               <Route path="/comercial/precos" element={<Protegida cap="comercial.preco.listar"><TabelaPreco /></Protegida>} />
               <Route path="/estoque/expedicao" element={<Protegida cap="comercial.pedido.gerenciar"><KanbanExpedicao /></Protegida>} />
+              <Route path="/estoque/baixa" element={<Protegida cap="estoque.baixa.criar"><BaixaPerda /></Protegida>} />
               <Route path="/estoque/posicao" element={<Protegida cap="estoque.saldo.ver"><PosicaoEstoque /></Protegida>} />
               <Route path="/estoque/entrada" element={<Protegida cap="estoque.entrada.criar"><EntradaEstoque /></Protegida>} />
               <Route path="/cadastros/clientes" element={<Protegida cap="cadastros.cliente.listar"><Clientes /></Protegida>} />

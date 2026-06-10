@@ -15,5 +15,8 @@ export function rotasEstoque(deps: Dependencias): Router {
   r.post('/estoque/entrada', aut, az('estoque.entrada.criar'), async (req, res: Response) => {
     try { await deps.estoqueService.entrada(sch(req), req.body ?? {}); res.status(201).json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });
+  r.post('/estoque/baixa', aut, az('estoque.baixa.criar'), async (req, res: Response) => {
+    try { await deps.estoqueService.baixaPerda(sch(req), req.body ?? {}); res.status(201).json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
   return r;
 }

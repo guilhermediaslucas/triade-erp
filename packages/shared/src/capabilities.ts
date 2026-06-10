@@ -24,6 +24,7 @@ export const CAPABILITIES: Capability[] = [
   { id: 'comercial.pedido.gerenciar', moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.pedido.gerenciar' },
   { id: 'estoque.saldo.ver',     moduloChave: 'cap.modulo.estoque', labelChave: 'cap.estoque.saldo.ver' },
   { id: 'estoque.entrada.criar', moduloChave: 'cap.modulo.estoque', labelChave: 'cap.estoque.entrada.criar' },
+  { id: 'estoque.baixa.criar',   moduloChave: 'cap.modulo.estoque', labelChave: 'cap.estoque.baixa.criar' },
   { id: 'superadmin.empresa.provisionar', moduloChave: 'cap.modulo.superadmin', labelChave: 'cap.superadmin.empresa.provisionar' },
 ];
 

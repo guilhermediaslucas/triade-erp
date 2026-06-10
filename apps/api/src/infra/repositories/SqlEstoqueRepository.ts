@@ -54,6 +54,21 @@ export class SqlEstoqueRepository implements EstoqueRepository {
     }
   }
 
+  async saldoLote(schema: string, loteId: string): Promise<{ produtoId: string; saldo: number } | null> {
+    const s = validarSchema(schema);
+    const r = (await this.ds.query(`SELECT produto_id, quantidade FROM "${s}".estoque_lote WHERE id = $1`, [loteId]))[0];
+    return r ? { produtoId: r.produto_id, saldo: Number(r.quantidade) } : null;
+  }
+
+  async baixarLote(schema: string, loteId: string, produtoId: string, quantidade: number, motivo: string): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(`UPDATE "${s}".estoque_lote SET quantidade = quantidade - $2 WHERE id = $1`, [loteId, quantidade]);
+    await this.ds.query(
+      `INSERT INTO "${s}".estoque_movimento (id, produto_id, lote_id, tipo, quantidade, observacao)
+       VALUES ($1, $2, $3, 'perda', $4, $5)`,
+      [randomUUID(), produtoId, loteId, quantidade, motivo]);
+  }
+
   async produtoExiste(schema: string, produtoId: string): Promise<boolean> {
     const s = validarSchema(schema);
     const r = await this.ds.query(`SELECT 1 FROM "${s}".produto WHERE id = $1`, [produtoId]);

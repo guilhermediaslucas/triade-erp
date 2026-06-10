@@ -14,4 +14,6 @@ export interface EstoqueRepository {
   produtoExiste(schema: string, produtoId: string): Promise<boolean>;
   disponivel(schema: string, produtoId: string): Promise<number>;
   baixarFifo(schema: string, produtoId: string, quantidade: number, ref: string): Promise<void>;
+  saldoLote(schema: string, loteId: string): Promise<{ produtoId: string; saldo: number } | null>;
+  baixarLote(schema: string, loteId: string, produtoId: string, quantidade: number, motivo: string): Promise<void>;
 }

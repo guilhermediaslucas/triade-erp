@@ -15,4 +15,15 @@ export class EstoqueService {
     const lote = (e?.lote && String(e.lote).trim()) || null;
     await this.repo.registrarEntrada(schema, { produtoId: e.produtoId, lote, validade, quantidade, custoUnitario: custo });
   }
+
+  async baixaPerda(schema: string, e: any): Promise<void> {
+    const quantidade = Number(e?.quantidade);
+    if (!Number.isFinite(quantidade) || quantidade <= 0) throw new ErroAplicacao('estoque.qtd_invalida', 400);
+    const motivo = (e?.motivo && String(e.motivo).trim()) || '';
+    if (motivo.length < 2) throw new ErroAplicacao('estoque.motivo_invalido', 400);
+    const lote = await this.repo.saldoLote(schema, e?.loteId);
+    if (!lote) throw new ErroAplicacao('estoque.lote_invalido', 404);
+    if (quantidade > lote.saldo) throw new ErroAplicacao('estoque.insuficiente', 409);
+    await this.repo.baixarLote(schema, e.loteId, lote.produtoId, quantidade, motivo);
+  }
 }

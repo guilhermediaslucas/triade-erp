@@ -477,3 +477,23 @@ Object.assign(es, {
   'expedicao.titulo': 'Expedición', 'expedicao.sub': 'Arrastra las tarjetas para cambiar el estado. Al pasar a "En preparación", el stock se descuenta automáticamente.',
   'estoque.insuficiente': 'Stock insuficiente para preparar el pedido.',
 });
+
+// --- Fase 4C: Baixa / perda ---
+Object.assign(pt, {
+  'menu.baixa': 'Baixa / perda', 'cap.estoque.baixa.criar': 'Registrar baixa/perda de estoque',
+  'perda.titulo': 'Baixa / perda de estoque', 'perda.sub': 'Retira itens do estoque por vencimento, avaria, furto ou ajuste.',
+  'perda.motivo': 'Motivo', 'perda.confirmar': 'Confirmar baixa', 'perda.ok': 'Baixa registrada.', 'perda.max': 'Máximo',
+  'estoque.motivo_invalido': 'Informe o motivo da baixa.', 'estoque.lote_invalido': 'Lote não encontrado.',
+});
+Object.assign(en, {
+  'menu.baixa': 'Write-off / loss', 'cap.estoque.baixa.criar': 'Register stock write-off/loss',
+  'perda.titulo': 'Stock write-off / loss', 'perda.sub': 'Removes items from stock due to expiry, damage, theft or adjustment.',
+  'perda.motivo': 'Reason', 'perda.confirmar': 'Confirm write-off', 'perda.ok': 'Write-off registered.', 'perda.max': 'Max',
+  'estoque.motivo_invalido': 'Provide a reason.', 'estoque.lote_invalido': 'Batch not found.',
+});
+Object.assign(es, {
+  'menu.baixa': 'Baja / pérdida', 'cap.estoque.baixa.criar': 'Registrar baja/pérdida de stock',
+  'perda.titulo': 'Baja / pérdida de stock', 'perda.sub': 'Retira ítems del stock por caducidad, avería, robo o ajuste.',
+  'perda.motivo': 'Motivo', 'perda.confirmar': 'Confirmar baja', 'perda.ok': 'Baja registrada.', 'perda.max': 'Máximo',
+  'estoque.motivo_invalido': 'Indica el motivo.', 'estoque.lote_invalido': 'Lote no encontrado.',
+});
