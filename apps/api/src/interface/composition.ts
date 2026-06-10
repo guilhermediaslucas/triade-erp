@@ -5,10 +5,12 @@ import { SqlUsuarioRepository } from '../infra/repositories/SqlUsuarioRepository
 import { SqlPerfilRepository } from '../infra/repositories/SqlPerfilRepository.js';
 import { BcryptHashSenha } from '../infra/security/BcryptHashSenha.js';
 import { JwtGeradorToken } from '../infra/security/JwtGeradorToken.js';
+import { TypeOrmMigrador } from '../infra/db/TypeOrmMigrador.js';
 import { AutenticarUsuario } from '../application/auth/AutenticarUsuario.js';
 import { UsuariosService } from '../application/usuario/UsuariosService.js';
 import { PerfisService } from '../application/perfil/PerfisService.js';
 import { EmpresaService } from '../application/empresa/EmpresaService.js';
+import { ProvisionarEmpresa } from '../application/empresa/ProvisionarEmpresa.js';
 
 export function montarDependencias() {
   const empresasRepo = new SqlEmpresaRepository(AppDataSource);
@@ -16,14 +18,17 @@ export function montarDependencias() {
   const perfisRepo = new SqlPerfilRepository(AppDataSource);
   const hash = new BcryptHashSenha();
   const tokens = new JwtGeradorToken(env.jwtSecret);
+  const migrador = new TypeOrmMigrador(AppDataSource);
 
   return {
     tokens,
     usuariosRepo,
+    empresasRepo,
     autenticarUsuario: new AutenticarUsuario(empresasRepo, usuariosRepo, hash, tokens),
     usuariosService: new UsuariosService(usuariosRepo, perfisRepo, hash),
     perfisService: new PerfisService(perfisRepo),
     empresaService: new EmpresaService(empresasRepo),
+    provisionarEmpresa: new ProvisionarEmpresa(empresasRepo, migrador, perfisRepo, usuariosRepo, hash),
   };
 }
 

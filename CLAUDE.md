@@ -12,8 +12,11 @@
 > menu respeitando permissões — tudo testado e2e contra Postgres real (12 testes PASS).
 > **Fase 1 Entrega B1 feita:** branding white-label (Dados da empresa — logo,
 > nome fantasia, paleta aplicada ao tema, idioma/timezone padrão da empresa),
-> testado e2e (6 PASS). **Falta na Fase 1 (Entrega B2):** provisionar empresas
-> (super-admin) e idioma/timezone por usuário (override).
+> testado e2e (6 PASS). **Fase 1 Entrega B2 feita:** provisionar empresas
+> (super-admin: cria tenant + schema + perfil Administrador + 1º usuário),
+> isolamento entre tenants e idioma padrão da empresa aplicado no login —
+> testado e2e (10 PASS). **Fase 1 concluída** (resta só, opcional, idioma/timezone
+> por usuário — pode ir junto com Fase 2). Próximo: Fase 2 (Cadastros).
 > Mockup em `Info/mockups/erp-mockup.html` segue como referência visual.
 > Orçamento em `Info/ORCAMENTO-FASES.md`. Decidido: MVP sem fiscal (Fase 7 depois);
 > banco = Postgres na nuvem (Neon).
@@ -162,6 +165,22 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-10** — **Fase 1 — Entrega B2 (Provisionar empresas / super-admin). Fase 1 concluída.**
+  Nova capability `superadmin.empresa.provisionar` (módulo Super-admin) no registry.
+  **Backend:** `EmpresaRepository` ganhou `listarTodas`/`existeCodigo`/`criar`; porta
+  `Migrador` + `TypeOrmMigrador` (aplica migrations de tenant no schema novo); use case
+  `ProvisionarEmpresa` (valida código slug `^[a-z][a-z0-9]{1,30}$`, único; cria
+  `public.empresa` + schema `t_<codigo>` + migra tenant + perfil Administrador com todas
+  as caps + 1º usuário admin hasheado); rotas `GET /empresas` (lista) e `POST /empresas`
+  (provisiona), ambas guard `superadmin.empresa.provisionar`. **Frontend:** tela
+  **Super-admin › Empresas** (lista + form provisionar), `BrandingContext` aplica o
+  **idioma padrão da empresa no login** quando o usuário não escolheu idioma; i18n pt/en/es.
+  **Validação:** type-check 3 pacotes + build Vite + **e2e Postgres real (10 PASS)**:
+  provisiona empresa nova, admin dela loga com todas as caps no próprio tenant,
+  **isolamento** (cada tenant só vê seus usuários), código duplicado→409, código
+  inválido→400, guard 403 p/ usuário sem a cap. **Pendente:** Gui rodar `db-setup.bat`
+  + testar (provisionar uma empresa e logar nela) + commit. Falta opcional da Fase 1:
+  idioma/timezone por usuário (override) — adiável p/ Fase 2.
 - **2026-06-10** — **Fase 1 — Entrega B1 (Dados da empresa / branding white-label).**
   **Banco (migration public 002):** colunas em `public.empresa` — `logo` (data URI/URL),
   `cor_primaria`, `cor_menu_fundo`, `cor_menu_fonte` (hex, com defaults), `idioma_padrao`,

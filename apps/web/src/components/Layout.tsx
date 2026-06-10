@@ -21,6 +21,10 @@ const GRUPOS: GrupoNav[] = [
     rotulo: 'menu.config',
     itens: [{ rotulo: 'menu.empresa', icone: '🏢', to: '/config/empresa', cap: 'acesso.empresa.editar' }],
   },
+  {
+    rotulo: 'menu.superadmin',
+    itens: [{ rotulo: 'menu.empresas', icone: '🏬', to: '/superadmin/empresas', cap: 'superadmin.empresa.provisionar' }],
+  },
 ];
 
 export function Layout({ children }: { children: ReactNode }) {

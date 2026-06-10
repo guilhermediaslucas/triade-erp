@@ -164,3 +164,41 @@ Object.assign(es, {
   'empresa.cor_invalida': 'Color inválido.', 'empresa.idioma_invalido': 'Idioma inválido.',
   'empresa.timezone_invalido': 'Zona horaria inválida.', 'empresa.logo_grande': 'La imagen es muy grande (máx. 1,5 MB).',
 });
+
+// --- Fase 1B2: Super-admin / Empresas ---
+Object.assign(pt, {
+  'menu.superadmin': 'Super-admin', 'menu.empresas': 'Empresas',
+  'cap.modulo.superadmin': 'Super-admin', 'cap.superadmin.empresa.provisionar': 'Provisionar empresas',
+  'empresas.titulo': 'Empresas', 'empresas.codigo': 'Código', 'empresas.nome': 'Razão social',
+  'empresas.fantasia': 'Nome fantasia', 'empresas.admin': 'Administrador inicial',
+  'empresas.provisionar': 'Provisionar empresa',
+  'empresas.provisionar_hint': 'Cria uma nova empresa com seu banco isolado, perfil Administrador e o primeiro usuário.',
+  'empresas.codigo_hint': 'Só letras e números, sem espaços. Usado no login.',
+  'empresas.criada': 'Empresa provisionada com sucesso.',
+  'empresa.codigo_invalido': 'Código inválido (use letras e números, sem espaços).',
+  'empresa.codigo_em_uso': 'Já existe uma empresa com este código.', 'empresa.nome_invalido': 'Informe uma razão social válida.',
+});
+Object.assign(en, {
+  'menu.superadmin': 'Super-admin', 'menu.empresas': 'Companies',
+  'cap.modulo.superadmin': 'Super-admin', 'cap.superadmin.empresa.provisionar': 'Provision companies',
+  'empresas.titulo': 'Companies', 'empresas.codigo': 'Code', 'empresas.nome': 'Legal name',
+  'empresas.fantasia': 'Trade name', 'empresas.admin': 'Initial administrator',
+  'empresas.provisionar': 'Provision company',
+  'empresas.provisionar_hint': 'Creates a new company with its own isolated database, an Administrator role and the first user.',
+  'empresas.codigo_hint': 'Letters and numbers only, no spaces. Used at login.',
+  'empresas.criada': 'Company provisioned successfully.',
+  'empresa.codigo_invalido': 'Invalid code (use letters and numbers, no spaces).',
+  'empresa.codigo_em_uso': 'A company with this code already exists.', 'empresa.nome_invalido': 'Enter a valid legal name.',
+});
+Object.assign(es, {
+  'menu.superadmin': 'Super-admin', 'menu.empresas': 'Empresas',
+  'cap.modulo.superadmin': 'Super-admin', 'cap.superadmin.empresa.provisionar': 'Aprovisionar empresas',
+  'empresas.titulo': 'Empresas', 'empresas.codigo': 'Código', 'empresas.nome': 'Razón social',
+  'empresas.fantasia': 'Nombre comercial', 'empresas.admin': 'Administrador inicial',
+  'empresas.provisionar': 'Aprovisionar empresa',
+  'empresas.provisionar_hint': 'Crea una nueva empresa con su base de datos aislada, un perfil Administrador y el primer usuario.',
+  'empresas.codigo_hint': 'Solo letras y números, sin espacios. Se usa en el inicio de sesión.',
+  'empresas.criada': 'Empresa aprovisionada con éxito.',
+  'empresa.codigo_invalido': 'Código inválido (usa letras y números, sin espacios).',
+  'empresa.codigo_em_uso': 'Ya existe una empresa con este código.', 'empresa.nome_invalido': 'Ingresa una razón social válida.',
+});

@@ -12,7 +12,8 @@ export interface ResultadoSeed {
   criado: boolean;
 }
 
-// Idempotente: nao recria o que ja existe.
+// Idempotente. Tambem SINCRONIZA as capabilities do perfil Administrador
+// (assim novas permissoes criadas em versoes futuras passam a valer ao re-seedar).
 export async function seedDemo(ds: DataSource): Promise<ResultadoSeed> {
   await migrarPublic(ds);
 
@@ -30,15 +31,19 @@ export async function seedDemo(ds: DataSource): Promise<ResultadoSeed> {
 
   await migrarTenant(ds, schema);
 
-  // Perfil Administrador com TODAS as capabilities.
+  // Garante o perfil Administrador.
   let perfilAdmin = (await ds.query(`SELECT id FROM "${schema}".perfil WHERE nome = $1`, ['Administrador']))[0];
   if (!perfilAdmin) {
     const pid = randomUUID();
     await ds.query(`INSERT INTO "${schema}".perfil (id, nome) VALUES ($1, $2)`, [pid, 'Administrador']);
-    for (const cap of CAPABILITY_IDS) {
-      await ds.query(`INSERT INTO "${schema}".perfil_capability (perfil_id, capability) VALUES ($1, $2)`, [pid, cap]);
-    }
     perfilAdmin = { id: pid };
+  }
+  // SINCRONIZA todas as capabilities atuais no perfil Administrador (adiciona as que faltam).
+  for (const cap of CAPABILITY_IDS) {
+    await ds.query(
+      `INSERT INTO "${schema}".perfil_capability (perfil_id, capability) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+      [perfilAdmin.id, cap],
+    );
   }
 
   const email = 'admin@belle.com.br';
@@ -53,7 +58,6 @@ export async function seedDemo(ds: DataSource): Promise<ResultadoSeed> {
     return { empresa: codigo, schema, usuario: email, senhaPadrao: 'admin123', criado: true };
   }
 
-  // Garante que o admin demo tenha o perfil (caso tenha sido criado antes da Fase 1).
   if (!usuario.perfil_id) {
     await ds.query(`UPDATE "${schema}".usuario SET perfil_id = $2 WHERE id = $1`, [usuario.id, perfilAdmin.id]);
   }
