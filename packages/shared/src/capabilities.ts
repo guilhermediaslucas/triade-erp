@@ -11,6 +11,8 @@ export const CAPABILITIES: Capability[] = [
   { id: 'cadastros.categoria.gerenciar', moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.categoria.gerenciar' },
   { id: 'cadastros.produto.listar',      moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.produto.listar' },
   { id: 'cadastros.produto.gerenciar',   moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.produto.gerenciar' },
+  { id: 'cadastros.condicao.listar',     moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.condicao.listar' },
+  { id: 'cadastros.condicao.gerenciar',  moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.condicao.gerenciar' },
   { id: 'cadastros.cliente.listar',      moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.cliente.listar' },
   { id: 'cadastros.cliente.gerenciar',   moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.cliente.gerenciar' },
   { id: 'cadastros.fornecedor.listar',   moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.fornecedor.listar' },

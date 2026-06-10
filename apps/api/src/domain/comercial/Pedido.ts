@@ -24,6 +24,8 @@ export interface Pedido {
   subtotal: number;
   frete: number;
   total: number;
+  condicaoParcelas: number;
+  condicaoIntervalo: number;
   criadoEm: Date;
   itens: PedidoItem[];
 }
@@ -43,6 +45,8 @@ export interface NovoPedido {
   itens: PedidoItem[];
   subtotal: number;
   total: number;
+  condicaoParcelas: number;
+  condicaoIntervalo: number;
 }
 
 export interface PedidoRepository {

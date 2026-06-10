@@ -250,4 +250,19 @@ export const tenantMigrations: MigracaoTenant[] = [
       CREATE INDEX IF NOT EXISTS idx_${s}_campanha_prod ON "${s}".preco_campanha(produto_id);
     `,
   },
+  {
+    nome: '014_condicao',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".condicao_pagamento (
+        id            uuid PRIMARY KEY,
+        nome          text NOT NULL,
+        parcelas      integer NOT NULL DEFAULT 1,
+        intervalo_dias integer NOT NULL DEFAULT 30,
+        ativo         boolean NOT NULL DEFAULT true,
+        criado_em     timestamptz NOT NULL DEFAULT now()
+      );
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS condicao_parcelas integer NOT NULL DEFAULT 1;
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS condicao_intervalo integer NOT NULL DEFAULT 30;
+    `,
+  },
 ];

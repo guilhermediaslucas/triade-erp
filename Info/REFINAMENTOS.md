@@ -7,7 +7,7 @@
 ## Comercial
 - [x] **Campanhas de preço** (preço promocional por período sobre o preço base)
 - [x] Preço por cliente (negociado, sobrepõe o base no pedido)
-- [ ] Condições de pagamento (cadastro) + **parcelamento** do título no pedido
+- [x] Condições de pagamento (cadastro) + **parcelamento** do título no pedido
 - [ ] Orçamentos como etapa explícita (hoje é o status "orçamento" do pedido)
 - [ ] CRM (histórico por cliente, previsão de recompra, funil de oportunidades, inativos)
 - [ ] Comissões por vendedor (apuração) — ver também Financeiro

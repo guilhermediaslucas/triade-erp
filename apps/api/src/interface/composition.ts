@@ -22,6 +22,8 @@ import { ClientesService, FornecedoresService, VendedoresService } from '../appl
 import { SqlPrecoBaseRepository } from '../infra/repositories/SqlPrecoBaseRepository.js';
 import { PrecosService } from '../application/comercial/PrecosService.js';
 import { SqlPrecoClienteRepository } from '../infra/repositories/SqlPrecoClienteRepository.js';
+import { SqlCondicaoRepository } from '../infra/repositories/SqlCondicaoRepository.js';
+import { CondicoesService } from '../application/comercial/CondicoesService.js';
 import { SqlPedidoRepository } from '../infra/repositories/SqlPedidoRepository.js';
 import { PedidosService } from '../application/comercial/PedidosService.js';
 import { SqlEstoqueRepository } from '../infra/repositories/SqlEstoqueRepository.js';
@@ -49,6 +51,7 @@ export function montarDependencias() {
   const vendedoresRepo = new SqlVendedorRepository(AppDataSource);
   const precoBaseRepo = new SqlPrecoBaseRepository(AppDataSource);
   const precoClienteRepo = new SqlPrecoClienteRepository(AppDataSource);
+  const condicaoRepo = new SqlCondicaoRepository(AppDataSource);
   const pedidoRepo = new SqlPedidoRepository(AppDataSource);
   const estoqueRepo = new SqlEstoqueRepository(AppDataSource);
   const tituloRepo = new SqlTituloRepository(AppDataSource);
@@ -69,7 +72,8 @@ export function montarDependencias() {
     fornecedoresService: new FornecedoresService(fornecedoresRepo),
     vendedoresService: new VendedoresService(vendedoresRepo),
     precosService: new PrecosService(precoBaseRepo, precoClienteRepo),
-    pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, precoClienteRepo, clientesRepo, estoqueRepo, tituloRepo),
+    pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, precoClienteRepo, clientesRepo, estoqueRepo, tituloRepo, condicaoRepo),
+    condicoesService: new CondicoesService(condicaoRepo),
     financeiroService: new FinanceiroService(tituloRepo),
     comprasService: new ComprasService(produtosRepo, tituloRepo, recebimentoRepo, estoqueRepo),
     dashboardService: new DashboardService(new SqlDashboardRepository(AppDataSource)),

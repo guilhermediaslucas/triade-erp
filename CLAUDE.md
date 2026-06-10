@@ -176,6 +176,21 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-10** — **Refinamento — Condições de pagamento + parcelamento do pedido.**
+  Migration tenant 014 `condicao_pagamento` (nome, parcelas, intervalo_dias, ativo) +
+  `pedido.condicao_parcelas`/`condicao_intervalo` (snapshot, defaults 1/30). Caps
+  `cadastros.condicao.listar/gerenciar`. **Backend:** domínio `Condicao` + repo + `CondicoesService`
+  (CRUD, valida parcelas 1–99 e intervalo≥0); `PedidosService` recebe `CondicaoRepository`, no
+  **criar** resolve a condição e grava o snapshot no pedido; `TituloRepository.criarReceberDePedido`
+  virou **`criarParcelasDePedido`** (gera N parcelas: valor total/N c/ ajuste na última, descricao
+  "PE-xxxxxx (i/N)", vencimento `CURRENT_DATE + i*intervalo`); confirmar o pedido usa o snapshot.
+  Rotas `/condicoes` (GET/POST/PUT/PATCH ativo). **Frontend:** cadastro **Cadastros › Comercial ›
+  Condições de pagamento** (lista + modal parcelas/intervalo) e **seletor de condição no Novo pedido**
+  (em branco = à vista/título único); i18n pt/en/es. **Bug corrigido no caminho:** o INSERT do pedido
+  não casou na 1ª substituição (faltou `numero` no alvo) → snapshot não gravava; ajustado. **Validação:**
+  type-check 3 pacotes + build Vite + **e2e Postgres real (7 PASS)**: condição 3x gera 3 parcelas
+  (soma=total, vencimentos 30/60/90, descrição i/3), parcelas 0→400, pedido sem condição = 1 título.
+  **Pendente:** Gui rodar `db-setup.bat` (migration 014) + testar + commit. Próximo: comissões de vendedores.
 - **2026-06-10** — **Refinamento — Campanhas de preço (preço por período sobre o base).**
   Checklist mestre dos refinamentos do mockup criado em `Info/REFINAMENTOS.md`. Migration tenant 013
   `preco_campanha` (produto_id, preco, motivo, de/ate date). **Backend:** `PrecoBaseRepository.precoDe`

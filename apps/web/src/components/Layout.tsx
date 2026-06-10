@@ -51,6 +51,12 @@ const GRUPOS: Grupo[] = [
     rotulo: 'menu.cadastros',
     secoes: [
       {
+        sublabel: 'menu.sub.comercial',
+        itens: [
+          { rotulo: 'menu.condicoes', icone: '💳', to: '/cadastros/condicoes', cap: 'cadastros.condicao.listar' },
+        ],
+      },
+      {
         sublabel: 'menu.sub.pessoas',
         itens: [
           { rotulo: 'menu.clientes', icone: '🧑‍⚕️', to: '/cadastros/clientes', cap: 'cadastros.cliente.listar' },

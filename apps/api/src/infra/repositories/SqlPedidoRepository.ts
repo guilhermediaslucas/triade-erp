@@ -19,9 +19,9 @@ export class SqlPedidoRepository implements PedidoRepository {
     const s = validarSchema(schema);
     const id = randomUUID();
     await this.ds.query(
-      `INSERT INTO "${s}".pedido (id, numero, cliente_id, vendedor_id, status, forma_pagamento, observacao, endereco_entrega, subtotal, frete, total)
-       VALUES ($1,$2,$3,$4,'orcamento',$5,$6,$7,$8,$9,$10)`,
-      [id, numero, p.clienteId, p.vendedorId, p.formaPagamento, p.observacao, p.enderecoEntrega, p.subtotal, p.frete, p.total]);
+      `INSERT INTO "${s}".pedido (id, numero, cliente_id, vendedor_id, status, forma_pagamento, observacao, endereco_entrega, subtotal, frete, total, condicao_parcelas, condicao_intervalo)
+       VALUES ($1,$2,$3,$4,'orcamento',$5,$6,$7,$8,$9,$10,$11,$12)`,
+      [id, numero, p.clienteId, p.vendedorId, p.formaPagamento, p.observacao, p.enderecoEntrega, p.subtotal, p.frete, p.total, p.condicaoParcelas, p.condicaoIntervalo]);
     for (const it of p.itens) {
       await this.ds.query(
         `INSERT INTO "${s}".pedido_item (id, pedido_id, produto_id, produto_nome, quantidade, preco_unitario, subtotal)
@@ -60,7 +60,8 @@ export class SqlPedidoRepository implements PedidoRepository {
       id: r.id, numero: r.numero, clienteId: r.cliente_id ?? null, clienteNome: r.cliente_nome ?? null,
       vendedorId: r.vendedor_id ?? null, vendedorNome: r.vendedor_nome ?? null, status: r.status,
       formaPagamento: r.forma_pagamento ?? null, observacao: r.observacao ?? null, enderecoEntrega: r.endereco_entrega ?? null,
-      subtotal: Number(r.subtotal), frete: Number(r.frete), total: Number(r.total), criadoEm: new Date(r.criado_em),
+      subtotal: Number(r.subtotal), frete: Number(r.frete), total: Number(r.total),
+      condicaoParcelas: r.condicao_parcelas ?? 1, condicaoIntervalo: r.condicao_intervalo ?? 30, criadoEm: new Date(r.criado_em),
       itens: itens.map((i: any) => ({
         id: i.id, produtoId: i.produto_id ?? null, produtoNome: i.produto_nome,
         quantidade: Number(i.quantidade), precoUnitario: Number(i.preco_unitario), subtotal: Number(i.subtotal),

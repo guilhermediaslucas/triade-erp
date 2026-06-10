@@ -21,5 +21,5 @@ export interface TituloRepository {
   baixar(schema: string, id: string, formaPagamento: string | null): Promise<void>;
   cancelarBaixa(schema: string, id: string): Promise<void>;
   excluir(schema: string, id: string): Promise<void>;
-  criarReceberDePedido(schema: string, descricao: string, pessoaNome: string | null, valor: number, pedidoId: string, diasVencimento: number): Promise<void>;
+  criarParcelasDePedido(schema: string, descricao: string, pessoaNome: string | null, valorTotal: number, pedidoId: string, parcelas: number, intervaloDias: number): Promise<void>;
 }

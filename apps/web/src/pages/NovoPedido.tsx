@@ -8,6 +8,7 @@ import { moeda } from '../lib/pedido.js';
 interface Endereco { logradouro: string | null; numero: string | null; bairro: string | null; cidade: string | null; uf: string | null; favorito: boolean; }
 interface Cliente { id: string; nome: string; enderecos: Endereco[]; }
 interface Vendedor { id: string; nome: string; }
+interface Condicao { id: string; nome: string; parcelas: number; }
 interface PrecoProduto { produtoId: string; produtoNome: string; preco: number; ativo: boolean; }
 interface ItemForm { produtoId: string; quantidade: string; }
 
@@ -23,6 +24,8 @@ export function NovoPedido() {
   const nav = useNavigate();
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [vendedores, setVendedores] = useState<Vendedor[]>([]);
+  const [condicoes, setCondicoes] = useState<Condicao[]>([]);
+  const [condicaoId, setCondicaoId] = useState('');
   const [produtos, setProdutos] = useState<PrecoProduto[]>([]);
   const [clienteId, setClienteId] = useState('');
   const [vendedorId, setVendedorId] = useState('');
@@ -39,7 +42,8 @@ export function NovoPedido() {
       api.get<Cliente[]>('/clientes', token!).catch(() => []),
       api.get<Vendedor[]>('/vendedores', token!).catch(() => []),
       api.get<PrecoProduto[]>('/precos', token!).catch(() => []),
-    ]).then(([c, v, p]) => { setClientes(c); setVendedores(v); setProdutos(p.filter((x) => x.ativo)); });
+      api.get<Condicao[]>('/condicoes', token!).catch(() => []),
+    ]).then(([c, v, p, cond]) => { setClientes(c); setVendedores(v); setProdutos(p.filter((x) => x.ativo)); setCondicoes((cond as Condicao[]).filter((x: any) => x.ativo !== false)); });
     /* eslint-disable-next-line */
   }, []);
 
@@ -60,7 +64,7 @@ export function NovoPedido() {
   async function salvar() {
     setErro(null); setSalv(true);
     const corpo = {
-      clienteId, vendedorId: vendedorId || null, formaPagamento, enderecoEntrega: endereco,
+      clienteId, vendedorId: vendedorId || null, condicaoId: condicaoId || null, formaPagamento, enderecoEntrega: endereco,
       observacao: obs, frete: Number(frete) || 0,
       itens: itens.filter((it) => it.produtoId).map((it) => ({ produtoId: it.produtoId, quantidade: Number(it.quantidade) })),
     };
@@ -87,6 +91,11 @@ export function NovoPedido() {
           <label className="campo">{t('pedidos.forma_pgto')}
             <select value={formaPagamento} onChange={(e) => setFormaPagamento(e.target.value)}>
               <option>Pix</option><option>Boleto</option><option>Cartão</option><option>Dinheiro</option>
+            </select>
+          </label>
+          <label className="campo">{t('cond.titulo_s')}
+            <select value={condicaoId} onChange={(e) => setCondicaoId(e.target.value)}>
+              <option value="">{t('cond.avista_pad')}</option>{condicoes.map((c) => <option key={c.id} value={c.id}>{c.nome} ({c.parcelas}x)</option>)}
             </select>
           </label>
         </div>

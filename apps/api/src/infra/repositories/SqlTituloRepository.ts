@@ -59,11 +59,18 @@ export class SqlTituloRepository implements TituloRepository {
     const s = validarSchema(schema);
     await this.ds.query(`DELETE FROM "${s}".titulo WHERE id=$1`, [id]);
   }
-  async criarReceberDePedido(schema: string, descricao: string, pessoaNome: string | null, valor: number, pedidoId: string, dias: number): Promise<void> {
+  async criarParcelasDePedido(schema: string, descricao: string, pessoaNome: string | null, valorTotal: number, pedidoId: string, parcelas: number, intervaloDias: number): Promise<void> {
     const s = validarSchema(schema);
-    await this.ds.query(
-      `INSERT INTO "${s}".titulo (id, tipo, descricao, pessoa_nome, valor, vencimento, origem, pedido_id)
-       VALUES ($1,'receber',$2,$3,$4,(CURRENT_DATE + $5::int),'pedido',$6)`,
-      [randomUUID(), descricao, pessoaNome, valor, dias, pedidoId]);
+    const n = Math.max(1, parcelas);
+    const base = Math.floor((valorTotal / n) * 100) / 100;
+    for (let i = 1; i <= n; i++) {
+      const valor = i === n ? Math.round((valorTotal - base * (n - 1)) * 100) / 100 : base;
+      const desc = n > 1 ? `${descricao} (${i}/${n})` : descricao;
+      const dias = i * intervaloDias;
+      await this.ds.query(
+        `INSERT INTO "${s}".titulo (id, tipo, descricao, pessoa_nome, valor, vencimento, origem, pedido_id)
+         VALUES ($1,'receber',$2,$3,$4,(CURRENT_DATE + $5::int),'pedido',$6)`,
+        [randomUUID(), desc, pessoaNome, valor, dias, pedidoId]);
+    }
   }
 }

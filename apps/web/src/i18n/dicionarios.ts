@@ -673,3 +673,26 @@ Object.assign(es, {
   'camp.vigente': 'Vigente', 'camp.encerrada': 'Finalizada', 'camp.vazia': 'Sin campañas.', 'camp.nova': 'Nueva campaña',
   'camp.add': 'Agregar campaña', 'campanha.periodo_invalido': 'Período inválido (fin antes del inicio).',
 });
+
+// --- Refinamento: condições de pagamento ---
+Object.assign(pt, {
+  'menu.condicoes': 'Condições de pagamento', 'cap.cadastros.condicao.listar': 'Listar condições de pagamento', 'cap.cadastros.condicao.gerenciar': 'Criar e editar condições de pagamento',
+  'cond.titulo': 'Condições de pagamento', 'cond.titulo_s': 'Condição', 'cond.nova': 'Nova condição',
+  'cond.parcelas': 'Parcelas', 'cond.intervalo': 'Intervalo', 'cond.dias': 'dias', 'cond.avista_pad': 'À vista (padrão)',
+  'cond.dica': 'No pedido, gera N parcelas no Contas a receber (vencimento = nº da parcela × intervalo).',
+  'condicao.parcelas_invalida': 'Número de parcelas inválido.', 'condicao.intervalo_invalido': 'Intervalo inválido.',
+});
+Object.assign(en, {
+  'menu.condicoes': 'Payment terms', 'cap.cadastros.condicao.listar': 'List payment terms', 'cap.cadastros.condicao.gerenciar': 'Create and edit payment terms',
+  'cond.titulo': 'Payment terms', 'cond.titulo_s': 'Term', 'cond.nova': 'New term',
+  'cond.parcelas': 'Installments', 'cond.intervalo': 'Interval', 'cond.dias': 'days', 'cond.avista_pad': 'Cash (default)',
+  'cond.dica': 'On the order, generates N installments in receivables (due = installment # × interval).',
+  'condicao.parcelas_invalida': 'Invalid number of installments.', 'condicao.intervalo_invalido': 'Invalid interval.',
+});
+Object.assign(es, {
+  'menu.condicoes': 'Condiciones de pago', 'cap.cadastros.condicao.listar': 'Listar condiciones de pago', 'cap.cadastros.condicao.gerenciar': 'Crear y editar condiciones de pago',
+  'cond.titulo': 'Condiciones de pago', 'cond.titulo_s': 'Condición', 'cond.nova': 'Nueva condición',
+  'cond.parcelas': 'Cuotas', 'cond.intervalo': 'Intervalo', 'cond.dias': 'días', 'cond.avista_pad': 'Al contado (predet.)',
+  'cond.dica': 'En el pedido, genera N cuotas en cuentas a cobrar (vencimiento = nº cuota × intervalo).',
+  'condicao.parcelas_invalida': 'Número de cuotas inválido.', 'condicao.intervalo_invalido': 'Intervalo inválido.',
+});

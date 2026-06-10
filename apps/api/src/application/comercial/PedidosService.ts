@@ -5,6 +5,7 @@ import type { ProdutoRepository } from '../../domain/cadastro/Produto.js';
 import type { ClienteRepository, EnderecoCliente } from '../../domain/pessoa/Cliente.js';
 import type { EstoqueRepository } from '../../domain/estoque/Estoque.js';
 import type { TituloRepository } from '../../domain/financeiro/Titulo.js';
+import type { CondicaoRepository } from '../../domain/comercial/Condicao.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
 const TRANSICOES: Record<StatusPedido, StatusPedido[]> = {
@@ -32,6 +33,7 @@ export class PedidosService {
     private readonly clientes: ClienteRepository,
     private readonly estoque: EstoqueRepository,
     private readonly titulos: TituloRepository,
+    private readonly condicoes: CondicaoRepository,
   ) {}
 
   listar(schema: string): Promise<PedidoResumo[]> { return this.pedidos.listar(schema); }
@@ -60,6 +62,11 @@ export class PedidosService {
       itens.push({ produtoId: prod.id, produtoNome: prod.nome, quantidade, precoUnitario, subtotal });
     }
 
+    let condParcelas = 1, condIntervalo = 30;
+    if (e?.condicaoId) {
+      const c = await this.condicoes.buscarPorId(schema, e.condicaoId);
+      if (c) { condParcelas = c.parcelas; condIntervalo = c.intervaloDias; }
+    }
     const subtotal = Math.round(itens.reduce((acc, i) => acc + i.subtotal, 0) * 100) / 100;
     const frete = Number(e?.frete ?? 0) || 0;
     const total = Math.round((subtotal + frete) * 100) / 100;
@@ -74,7 +81,7 @@ export class PedidosService {
       clienteId: cliente.id, vendedorId: e?.vendedorId || null,
       formaPagamento: (e?.formaPagamento && String(e.formaPagamento).trim()) || null,
       observacao: (e?.observacao && String(e.observacao).trim()) || null,
-      enderecoEntrega: endereco, frete, itens, subtotal, total,
+      enderecoEntrega: endereco, frete, itens, subtotal, total, condicaoParcelas: condParcelas, condicaoIntervalo: condIntervalo,
     };
     const numero = await this.pedidos.proximoNumero(schema);
     const id = await this.pedidos.criar(schema, numero, novo);
@@ -96,7 +103,7 @@ export class PedidosService {
       }
       // Gera o título a receber do pedido (vencimento padrão em 30 dias).
       const ref = 'Pedido PE-' + String(pedido.numero).padStart(6, '0');
-      await this.titulos.criarReceberDePedido(schema, ref, pedido.clienteNome, pedido.total, pedido.id, 30);
+      await this.titulos.criarParcelasDePedido(schema, ref, pedido.clienteNome, pedido.total, pedido.id, pedido.condicaoParcelas, pedido.condicaoIntervalo);
     }
     // Baixa de estoque ao enviar para separação (consome lotes por validade — FIFO).
     if (novo === 'separacao') {
