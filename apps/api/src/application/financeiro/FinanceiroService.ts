@@ -18,11 +18,11 @@ export class FinanceiroService {
     }, 'manual', null);
   }
 
-  async baixar(schema: string, id: string, formaPagamento: string | null): Promise<void> {
+  async baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null): Promise<void> {
     const t = await this.repo.buscarPorId(schema, id);
     if (!t) throw new ErroAplicacao('financeiro.nao_encontrado', 404);
     if (t.status === 'pago') throw new ErroAplicacao('financeiro.ja_pago', 409);
-    await this.repo.baixar(schema, id, (formaPagamento && String(formaPagamento).trim()) || null);
+    await this.repo.baixar(schema, id, (formaPagamento && String(formaPagamento).trim()) || null, contaCorrenteId || null);
   }
   async cancelarBaixa(schema: string, id: string): Promise<void> {
     const t = await this.repo.buscarPorId(schema, id);

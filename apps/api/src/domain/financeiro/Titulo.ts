@@ -18,7 +18,7 @@ export interface TituloRepository {
   listar(schema: string, tipo: TipoTitulo): Promise<Titulo[]>;
   buscarPorId(schema: string, id: string): Promise<Titulo | null>;
   criar(schema: string, t: NovoTitulo, origem: string, pedidoId: string | null): Promise<string>;
-  baixar(schema: string, id: string, formaPagamento: string | null): Promise<void>;
+  baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null): Promise<void>;
   cancelarBaixa(schema: string, id: string): Promise<void>;
   excluir(schema: string, id: string): Promise<void>;
   criarParcelasDePedido(schema: string, descricao: string, pessoaNome: string | null, valorTotal: number, pedidoId: string, parcelas: number, intervaloDias: number): Promise<void>;

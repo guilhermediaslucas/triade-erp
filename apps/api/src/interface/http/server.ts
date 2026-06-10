@@ -18,6 +18,7 @@ import { rotasFinanceiro } from './rotas/financeiro.js';
 import { rotasDashboard } from './rotas/dashboard.js';
 import { rotasRelatorios } from './rotas/relatorios.js';
 import { rotasCondicoes } from './rotas/condicoes.js';
+import { rotasContas } from './rotas/contas.js';
 
 export function criarServidor(): Express {
   const app = express();
@@ -52,6 +53,7 @@ export function criarServidor(): Express {
   app.use(rotasDashboard(deps));
   app.use(rotasRelatorios(deps));
   app.use(rotasCondicoes(deps));
+  app.use(rotasContas(deps));
 
   return app;
 }

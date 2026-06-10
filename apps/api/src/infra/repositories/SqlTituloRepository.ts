@@ -47,13 +47,13 @@ export class SqlTituloRepository implements TituloRepository {
       [id, t.tipo, t.descricao, t.pessoaNome, t.valor, t.vencimento, origem, pedidoId]);
     return id;
   }
-  async baixar(schema: string, id: string, formaPagamento: string | null): Promise<void> {
+  async baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null): Promise<void> {
     const s = validarSchema(schema);
-    await this.ds.query(`UPDATE "${s}".titulo SET status='pago', forma_pagamento=$2, pago_em=now() WHERE id=$1`, [id, formaPagamento]);
+    await this.ds.query(`UPDATE "${s}".titulo SET status='pago', forma_pagamento=$2, conta_corrente_id=$3, pago_em=now() WHERE id=$1`, [id, formaPagamento, contaCorrenteId]);
   }
   async cancelarBaixa(schema: string, id: string): Promise<void> {
     const s = validarSchema(schema);
-    await this.ds.query(`UPDATE "${s}".titulo SET status='aberto', forma_pagamento=NULL, pago_em=NULL WHERE id=$1`, [id]);
+    await this.ds.query(`UPDATE "${s}".titulo SET status='aberto', forma_pagamento=NULL, conta_corrente_id=NULL, pago_em=NULL WHERE id=$1`, [id]);
   }
   async excluir(schema: string, id: string): Promise<void> {
     const s = validarSchema(schema);

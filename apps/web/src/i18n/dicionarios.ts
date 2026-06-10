@@ -696,3 +696,46 @@ Object.assign(es, {
   'cond.dica': 'En el pedido, genera N cuotas en cuentas a cobrar (vencimiento = nº cuota × intervalo).',
   'condicao.parcelas_invalida': 'Número de cuotas inválido.', 'condicao.intervalo_invalido': 'Intervalo inválido.',
 });
+
+// --- Refinamento: comissões ---
+Object.assign(pt, {
+  'menu.comissoes': 'Controle de comissões', 'cap.financeiro.comissao.ver': 'Ver comissões', 'cap.financeiro.comissao.gerenciar': 'Fechar competência de comissões',
+  'com.titulo': 'Controle de comissões', 'com.total': 'Total de comissões', 'com.vendido': 'Vendido no período', 'com.pct': 'Comissão (%)',
+  'com.comissao': 'Comissão (R$)', 'com.vazio': 'Sem vendas com vendedor no período.',
+  'com.fechar': 'Fechar competência', 'com.fechar_dica': 'Gera um título a pagar com o total das comissões do período.',
+  'com.vencimento': 'Vencimento do título', 'com.gerar_titulo': 'Gerar título de comissões', 'com.fechado': 'Competência fechada: título gerado em Contas a pagar.',
+  'comissao.nada_apurar': 'Nenhuma comissão a apurar no período.',
+});
+Object.assign(en, {
+  'menu.comissoes': 'Commissions', 'cap.financeiro.comissao.ver': 'View commissions', 'cap.financeiro.comissao.gerenciar': 'Close commission period',
+  'com.titulo': 'Commissions', 'com.total': 'Total commissions', 'com.vendido': 'Sold in period', 'com.pct': 'Commission (%)',
+  'com.comissao': 'Commission (R$)', 'com.vazio': 'No sales with a sales rep in the period.',
+  'com.fechar': 'Close period', 'com.fechar_dica': 'Creates a payable with the period total commissions.',
+  'com.vencimento': 'Entry due date', 'com.gerar_titulo': 'Generate commission entry', 'com.fechado': 'Period closed: entry created in Payables.',
+  'comissao.nada_apurar': 'No commission to calculate in the period.',
+});
+Object.assign(es, {
+  'menu.comissoes': 'Comisiones', 'cap.financeiro.comissao.ver': 'Ver comisiones', 'cap.financeiro.comissao.gerenciar': 'Cerrar período de comisiones',
+  'com.titulo': 'Comisiones', 'com.total': 'Total de comisiones', 'com.vendido': 'Vendido en el período', 'com.pct': 'Comisión (%)',
+  'com.comissao': 'Comisión (R$)', 'com.vazio': 'Sin ventas con vendedor en el período.',
+  'com.fechar': 'Cerrar período', 'com.fechar_dica': 'Genera una cuenta a pagar con el total de comisiones del período.',
+  'com.vencimento': 'Vencimiento del título', 'com.gerar_titulo': 'Generar título de comisiones', 'com.fechado': 'Período cerrado: título creado en Cuentas a pagar.',
+  'comissao.nada_apurar': 'Sin comisión a calcular en el período.',
+});
+
+// --- Refinamento: contas correntes ---
+Object.assign(pt, {
+  'menu.contas_correntes': 'Contas correntes', 'cap.cadastros.conta.listar': 'Ver contas correntes', 'cap.cadastros.conta.gerenciar': 'Gerenciar contas correntes',
+  'cc.titulo': 'Contas correntes', 'cc.nova': 'Nova conta', 'cc.banco': 'Banco', 'cc.saldo_inicial': 'Saldo inicial',
+  'cc.vazio': 'Nenhuma conta cadastrada.', 'cc.conta': 'Conta corrente', 'cc.nenhuma': '(nenhuma)',
+});
+Object.assign(en, {
+  'menu.contas_correntes': 'Bank accounts', 'cap.cadastros.conta.listar': 'View bank accounts', 'cap.cadastros.conta.gerenciar': 'Manage bank accounts',
+  'cc.titulo': 'Bank accounts', 'cc.nova': 'New account', 'cc.banco': 'Bank', 'cc.saldo_inicial': 'Initial balance',
+  'cc.vazio': 'No accounts yet.', 'cc.conta': 'Bank account', 'cc.nenhuma': '(none)',
+});
+Object.assign(es, {
+  'menu.contas_correntes': 'Cuentas bancarias', 'cap.cadastros.conta.listar': 'Ver cuentas bancarias', 'cap.cadastros.conta.gerenciar': 'Gestionar cuentas bancarias',
+  'cc.titulo': 'Cuentas bancarias', 'cc.nova': 'Nueva cuenta', 'cc.banco': 'Banco', 'cc.saldo_inicial': 'Saldo inicial',
+  'cc.vazio': 'Sin cuentas.', 'cc.conta': 'Cuenta bancaria', 'cc.nenhuma': '(ninguna)',
+});

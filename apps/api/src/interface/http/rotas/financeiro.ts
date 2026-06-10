@@ -17,7 +17,7 @@ function registrar(r: Router, deps: Dependencias, tipo: TipoTitulo, capBase: str
     try { res.status(201).json({ id: await deps.financeiroService.criar(sch(req), tipo, req.body ?? {}) }); } catch (e) { tratarErro(res, e); }
   });
   r.patch(`${base}/:id/baixar`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
-    try { await deps.financeiroService.baixar(sch(req), req.params.id!, (req.body ?? {}).formaPagamento ?? null); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+    try { await deps.financeiroService.baixar(sch(req), req.params.id!, (req.body ?? {}).formaPagamento ?? null, (req.body ?? {}).contaCorrenteId ?? null); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });
   r.patch(`${base}/:id/cancelar`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
     try { await deps.financeiroService.cancelarBaixa(sch(req), req.params.id!); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
@@ -36,6 +36,12 @@ export function rotasFinanceiro(deps: Dependencias): Router {
   });
   r.post('/financeiro/nota', autF, azF('financeiro.compra.criar'), async (req, res) => {
     try { res.status(201).json(await deps.comprasService.lancarNota(req.usuario!.schema, req.body ?? {})); } catch (e) { tratarErro(res, e); }
+  });
+  r.get('/financeiro/comissoes', autF, azF('financeiro.comissao.ver'), async (req, res) => {
+    try { res.json(await deps.comissoesService.apurar(req.usuario!.schema, req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
+  });
+  r.post('/financeiro/comissoes/fechar', autF, azF('financeiro.comissao.gerenciar'), async (req, res) => {
+    try { res.status(201).json(await deps.comissoesService.fechar(req.usuario!.schema, req.body ?? {})); } catch (e) { tratarErro(res, e); }
   });
   registrar(r, deps, 'receber', 'financeiro.receber');
   registrar(r, deps, 'pagar', 'financeiro.pagar');

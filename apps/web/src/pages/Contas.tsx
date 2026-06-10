@@ -95,11 +95,14 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
 }
 
 function ModalBaixa({ tipo, titulo, onFechar, onSalvo }: { tipo: Tipo; titulo: Titulo; onFechar: () => void; onSalvo: () => void; }) {
-  const { token } = useAuth(); const { t } = useI18n();
-  const [forma, setForma] = useState('Pix'); const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
+  const { token, temCapability } = useAuth(); const { t } = useI18n();
+  const [forma, setForma] = useState('Pix'); const [contaId, setContaId] = useState('');
+  const [contas, setContas] = useState<{ id: string; nome: string }[]>([]);
+  const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
+  useEffect(() => { if (temCapability('cadastros.conta.listar')) api.get<{ id: string; nome: string }[]>('/contas-correntes', token!).then(setContas).catch(() => {}); /* eslint-disable-next-line */ }, []);
   async function salvar() {
     setErro(null); setSalv(true);
-    try { await api.patch('/financeiro/' + tipo + '/' + titulo.id + '/baixar', { formaPagamento: forma }, token!); onSalvo(); }
+    try { await api.patch('/financeiro/' + tipo + '/' + titulo.id + '/baixar', { formaPagamento: forma, contaCorrenteId: contaId || null }, token!); onSalvo(); }
     catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
   return (
@@ -108,6 +111,9 @@ function ModalBaixa({ tipo, titulo, onFechar, onSalvo }: { tipo: Tipo; titulo: T
       <label className="campo">{t('pedidos.forma_pgto')}
         <select value={forma} onChange={(e) => setForma(e.target.value)}><option>Pix</option><option>Boleto</option><option>Cartão</option><option>Dinheiro</option><option>Transferência</option></select>
       </label>
+      {contas.length > 0 && <label className="campo">{t('cc.conta')}
+        <select value={contaId} onChange={(e) => setContaId(e.target.value)}><option value="">{t('cc.nenhuma')}</option>{contas.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}</select>
+      </label>}
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv} onClick={salvar}>{t('fin.confirmar_baixa')}</button></div>
     </div></div>

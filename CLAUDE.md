@@ -176,6 +176,30 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-10** — **Refinamento — Contas correntes (bancos) + saldo + vínculo na baixa.**
+  Migration tenant 015 `conta_corrente` (nome, banco, saldo_inicial, ativo) + `titulo.conta_corrente_id`.
+  Caps `cadastros.conta.listar/gerenciar`. **Backend:** domínio `ContaCorrente`/repo + `ContasService`
+  (CRUD); `saldos` = saldo_inicial + Σ recebíveis pagos na conta − Σ pagáveis pagos na conta.
+  `TituloRepository.baixar` agora grava `conta_corrente_id` (e `cancelarBaixa` limpa). `FinanceiroService.baixar`
+  recebe contaCorrenteId; rota de baixa repassa. Rotas `/contas-correntes` (CRUD) + `/contas-correntes/saldos`.
+  **Frontend:** **Cadastros › Financeiro › Contas correntes** (cards com saldo + saldo inicial + editar) e
+  **seletor de conta no modal de baixa** do Contas a receber/pagar; i18n pt/en/es. **Validação:** type-check
+  3 pacotes + build Vite + **e2e Postgres real (6 PASS)**: saldo inicial 1000, baixa receber+pagar na conta
+  → 1300, cancelar baixa do receber → 800, nome curto→400, guard 403. **Pendente:** Gui rodar `db-setup.bat`
+  (migration 015) + testar + commit. Próximo: conciliação bancária ou código de barras (ver `Info/REFINAMENTOS.md`).
+- **2026-06-10** — **Refinamento — Comissões de vendedores (apuração + fechar competência).**
+  Caps `financeiro.comissao.ver/gerenciar`. **Backend:** domínio `Comissao`/`ComissaoRepository`;
+  `SqlComissaoRepository.apurar` (JOIN pedido×vendedor, pedidos não orçamento/cancelado no período,
+  por vendedor: vendido + comissão = vendido×%/100). `ComissoesService.fechar` soma e cria **título a
+  pagar** "Comissões {de a ate}" (origem 'comissao', pessoa "Comissões (vendedores)"). Rotas
+  `GET /financeiro/comissoes` e `POST /financeiro/comissoes/fechar`. **Frontend:** **Financeiro ›
+  Controle de comissões** (filtro período → tabela vendedor/vendido/%/comissão + KPI total; bloco
+  Fechar competência c/ vencimento → gera o título); i18n pt/en/es. **Nota:** regra geral de comissão
+  (`segue_regra_geral` do vendedor) fica como evolução futura — hoje usa o % individual. **Validação:**
+  type-check 3 pacotes + build Vite + **e2e Postgres real (5 PASS)**: apura vendido 5000 (orçamento
+  ignorado), comissão 250 (5%), fechar gera título a pagar de 250 origem=comissao, guard 403.
+  **Pendente:** Gui rodar `db-setup.bat` + testar + commit. Próximo: contas correntes/bancos ou
+  código de barras (ver `Info/REFINAMENTOS.md`).
 - **2026-06-10** — **Refinamento — Condições de pagamento + parcelamento do pedido.**
   Migration tenant 014 `condicao_pagamento` (nome, parcelas, intervalo_dias, ativo) +
   `pedido.condicao_parcelas`/`condicao_intervalo` (snapshot, defaults 1/30). Caps

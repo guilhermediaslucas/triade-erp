@@ -13,6 +13,8 @@ export const CAPABILITIES: Capability[] = [
   { id: 'cadastros.produto.gerenciar',   moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.produto.gerenciar' },
   { id: 'cadastros.condicao.listar',     moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.condicao.listar' },
   { id: 'cadastros.condicao.gerenciar',  moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.condicao.gerenciar' },
+  { id: 'cadastros.conta.listar',        moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.conta.listar' },
+  { id: 'cadastros.conta.gerenciar',     moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.conta.gerenciar' },
   { id: 'cadastros.cliente.listar',      moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.cliente.listar' },
   { id: 'cadastros.cliente.gerenciar',   moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.cliente.gerenciar' },
   { id: 'cadastros.fornecedor.listar',   moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.fornecedor.listar' },
@@ -33,6 +35,8 @@ export const CAPABILITIES: Capability[] = [
   { id: 'financeiro.pagar.gerenciar',   moduloChave: 'cap.modulo.financeiro', labelChave: 'cap.financeiro.pagar.gerenciar' },
   { id: 'financeiro.fluxo.ver',         moduloChave: 'cap.modulo.financeiro', labelChave: 'cap.financeiro.fluxo.ver' },
   { id: 'financeiro.compra.criar',      moduloChave: 'cap.modulo.financeiro', labelChave: 'cap.financeiro.compra.criar' },
+  { id: 'financeiro.comissao.ver',      moduloChave: 'cap.modulo.financeiro', labelChave: 'cap.financeiro.comissao.ver' },
+  { id: 'financeiro.comissao.gerenciar',moduloChave: 'cap.modulo.financeiro', labelChave: 'cap.financeiro.comissao.gerenciar' },
   { id: 'relatorios.ver',                moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.ver' },
   { id: 'superadmin.empresa.provisionar', moduloChave: 'cap.modulo.superadmin', labelChave: 'cap.superadmin.empresa.provisionar' },
 ];

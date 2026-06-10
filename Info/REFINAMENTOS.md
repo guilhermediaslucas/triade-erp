@@ -10,7 +10,7 @@
 - [x] Condições de pagamento (cadastro) + **parcelamento** do título no pedido
 - [ ] Orçamentos como etapa explícita (hoje é o status "orçamento" do pedido)
 - [ ] CRM (histórico por cliente, previsão de recompra, funil de oportunidades, inativos)
-- [ ] Comissões por vendedor (apuração) — ver também Financeiro
+- [x] Comissões por vendedor (apuração + fechar competência → título a pagar)
 
 ## Estoque / Logística
 - [ ] Código de barras / etiquetas por item (bipagem na entrada e na separação)
@@ -23,8 +23,8 @@
 - [ ] Recebimento multi-lote com bipagem (hoje é 1 lote simples)
 
 ## Financeiro
-- [ ] Controle de comissões (fechar competência → título a pagar)
-- [ ] Contas correntes / Bancos (cadastro + saldos)
+- [x] Controle de comissões (fechar competência → título a pagar)
+- [x] Contas correntes / Bancos (cadastro + saldos + vínculo na baixa)
 - [ ] Conciliação bancária
 - [ ] Parcelar / Multiplicar títulos
 - [ ] Tipos de documento, Categorias financeiras, Credores/Reembolso (cadastros)

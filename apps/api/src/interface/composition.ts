@@ -32,6 +32,10 @@ import { SqlTituloRepository } from '../infra/repositories/SqlTituloRepository.j
 import { FinanceiroService } from '../application/financeiro/FinanceiroService.js';
 import { SqlRecebimentoRepository } from '../infra/repositories/SqlRecebimentoRepository.js';
 import { ComprasService } from '../application/financeiro/ComprasService.js';
+import { SqlComissaoRepository } from '../infra/repositories/SqlComissaoRepository.js';
+import { ComissoesService } from '../application/financeiro/ComissoesService.js';
+import { SqlContaCorrenteRepository } from '../infra/repositories/SqlContaCorrenteRepository.js';
+import { ContasService } from '../application/financeiro/ContasService.js';
 import { SqlDashboardRepository } from '../infra/repositories/SqlDashboardRepository.js';
 import { DashboardService } from '../application/dashboard/DashboardService.js';
 import { SqlRelatorioRepository } from '../infra/repositories/SqlRelatorioRepository.js';
@@ -76,6 +80,8 @@ export function montarDependencias() {
     condicoesService: new CondicoesService(condicaoRepo),
     financeiroService: new FinanceiroService(tituloRepo),
     comprasService: new ComprasService(produtosRepo, tituloRepo, recebimentoRepo, estoqueRepo),
+    comissoesService: new ComissoesService(new SqlComissaoRepository(AppDataSource), tituloRepo),
+    contasService: new ContasService(new SqlContaCorrenteRepository(AppDataSource)),
     dashboardService: new DashboardService(new SqlDashboardRepository(AppDataSource)),
     relatoriosService: new RelatoriosService(new SqlRelatorioRepository(AppDataSource)),
     estoqueService: new EstoqueService(estoqueRepo),
