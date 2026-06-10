@@ -460,3 +460,20 @@ Object.assign(es, {
   'entrada.confirmar': 'Confirmar entrada', 'entrada.ok': 'Entrada registrada en el stock.',
   'estoque.qtd_invalida': 'Cantidad inválida.', 'estoque.custo_invalido': 'Costo inválido.',
 });
+
+// --- Fase 4B: Expedição + estoque insuficiente ---
+Object.assign(pt, {
+  'menu.expedicao': 'Pedidos (Kanban)',
+  'expedicao.titulo': 'Expedição', 'expedicao.sub': 'Arraste os cards para mover o status. Ao enviar para "Em separação", o estoque é baixado automaticamente.',
+  'estoque.insuficiente': 'Estoque insuficiente para separar o pedido.',
+});
+Object.assign(en, {
+  'menu.expedicao': 'Orders (Kanban)',
+  'expedicao.titulo': 'Shipping', 'expedicao.sub': 'Drag cards to change status. Moving to "Picking" deducts stock automatically.',
+  'estoque.insuficiente': 'Not enough stock to pick the order.',
+});
+Object.assign(es, {
+  'menu.expedicao': 'Pedidos (Kanban)',
+  'expedicao.titulo': 'Expedición', 'expedicao.sub': 'Arrastra las tarjetas para cambiar el estado. Al pasar a "En preparación", el stock se descuenta automáticamente.',
+  'estoque.insuficiente': 'Stock insuficiente para preparar el pedido.',
+});

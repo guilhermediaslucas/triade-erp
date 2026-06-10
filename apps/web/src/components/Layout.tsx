@@ -24,6 +24,7 @@ const GRUPOS: Grupo[] = [
   {
     rotulo: 'menu.estoque_exp',
     secoes: [{ itens: [
+      { rotulo: 'menu.expedicao', icone: '🚚', to: '/estoque/expedicao', cap: 'comercial.pedido.gerenciar' },
       { rotulo: 'menu.posicao', icone: '📦', to: '/estoque/posicao', cap: 'estoque.saldo.ver' },
       { rotulo: 'menu.entrada', icone: '📥', to: '/estoque/entrada', cap: 'estoque.entrada.criar' },
     ] }],

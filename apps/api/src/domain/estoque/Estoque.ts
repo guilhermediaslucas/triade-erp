@@ -12,4 +12,6 @@ export interface EstoqueRepository {
   posicao(schema: string): Promise<PosicaoProduto[]>;
   registrarEntrada(schema: string, e: EntradaEstoque): Promise<void>;
   produtoExiste(schema: string, produtoId: string): Promise<boolean>;
+  disponivel(schema: string, produtoId: string): Promise<number>;
+  baixarFifo(schema: string, produtoId: string, quantidade: number, ref: string): Promise<void>;
 }

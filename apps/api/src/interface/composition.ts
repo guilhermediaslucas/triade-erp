@@ -57,7 +57,7 @@ export function montarDependencias() {
     fornecedoresService: new FornecedoresService(fornecedoresRepo),
     vendedoresService: new VendedoresService(vendedoresRepo),
     precosService: new PrecosService(precoBaseRepo),
-    pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, clientesRepo),
+    pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, clientesRepo, estoqueRepo),
     estoqueService: new EstoqueService(estoqueRepo),
   };
 }

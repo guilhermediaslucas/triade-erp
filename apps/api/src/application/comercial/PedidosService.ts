@@ -2,6 +2,7 @@ import type { NovoPedido, Pedido, PedidoItem, PedidoRepository, PedidoResumo, St
 import type { PrecoBaseRepository } from '../../domain/comercial/PrecoBase.js';
 import type { ProdutoRepository } from '../../domain/cadastro/Produto.js';
 import type { ClienteRepository, EnderecoCliente } from '../../domain/pessoa/Cliente.js';
+import type { EstoqueRepository } from '../../domain/estoque/Estoque.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
 const TRANSICOES: Record<StatusPedido, StatusPedido[]> = {
@@ -26,6 +27,7 @@ export class PedidosService {
     private readonly produtos: ProdutoRepository,
     private readonly precos: PrecoBaseRepository,
     private readonly clientes: ClienteRepository,
+    private readonly estoque: EstoqueRepository,
   ) {}
 
   listar(schema: string): Promise<PedidoResumo[]> { return this.pedidos.listar(schema); }
@@ -89,6 +91,20 @@ export class PedidosService {
         if (usado + pedido.total > cliente.limiteCredito) throw new ErroAplicacao('pedido.limite_estourado', 409);
       }
     }
+    // Baixa de estoque ao enviar para separação (consome lotes por validade — FIFO).
+    if (novo === 'separacao') {
+      for (const it of pedido.itens) {
+        if (!it.produtoId) continue;
+        const disp = await this.estoque.disponivel(schema, it.produtoId);
+        if (disp < it.quantidade) throw new ErroAplicacao('estoque.insuficiente', 409);
+      }
+      const ref = 'Pedido PE-' + String(pedido.numero).padStart(6, '0');
+      for (const it of pedido.itens) {
+        if (!it.produtoId) continue;
+        await this.estoque.baixarFifo(schema, it.produtoId, it.quantidade, ref);
+      }
+    }
+
     await this.pedidos.mudarStatus(schema, id, novo);
   }
 }

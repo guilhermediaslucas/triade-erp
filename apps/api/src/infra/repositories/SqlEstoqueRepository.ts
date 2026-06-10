@@ -27,6 +27,33 @@ export class SqlEstoqueRepository implements EstoqueRepository {
     });
   }
 
+  async disponivel(schema: string, produtoId: string): Promise<number> {
+    const s = validarSchema(schema);
+    const r = (await this.ds.query(
+      `SELECT COALESCE(SUM(quantidade),0) AS q FROM "${s}".estoque_lote WHERE produto_id = $1`, [produtoId]))[0];
+    return Number(r.q);
+  }
+
+  async baixarFifo(schema: string, produtoId: string, quantidade: number, ref: string): Promise<void> {
+    const s = validarSchema(schema);
+    let restante = quantidade;
+    const lotes = await this.ds.query(
+      `SELECT id, quantidade FROM "${s}".estoque_lote
+        WHERE produto_id = $1 AND quantidade > 0
+        ORDER BY validade NULLS LAST, criado_em`, [produtoId]);
+    for (const l of lotes) {
+      if (restante <= 0) break;
+      const disp = Number(l.quantidade);
+      const usar = Math.min(disp, restante);
+      await this.ds.query(`UPDATE "${s}".estoque_lote SET quantidade = quantidade - $2 WHERE id = $1`, [l.id, usar]);
+      await this.ds.query(
+        `INSERT INTO "${s}".estoque_movimento (id, produto_id, lote_id, tipo, quantidade, observacao)
+         VALUES ($1, $2, $3, 'saida', $4, $5)`,
+        [randomUUID(), produtoId, l.id, usar, ref]);
+      restante -= usar;
+    }
+  }
+
   async produtoExiste(schema: string, produtoId: string): Promise<boolean> {
     const s = validarSchema(schema);
     const r = await this.ds.query(`SELECT 1 FROM "${s}".produto WHERE id = $1`, [produtoId]);

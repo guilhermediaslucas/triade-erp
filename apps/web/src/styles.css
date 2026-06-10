@@ -164,3 +164,8 @@ a { text-decoration: none; color: inherit; }
 /* estoque */
 .lote-row { background: #f8fafc; font-size: 13px; color: var(--muted); }
 .lote-row td { padding-top: 8px; padding-bottom: 8px; }
+
+/* kanban expedição (drag) */
+.kb-drag { cursor: grab; }
+.kb-drag:active { cursor: grabbing; }
+.kb-col-sobre { outline: 2px dashed var(--accent); outline-offset: -2px; }

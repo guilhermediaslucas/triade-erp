@@ -176,22 +176,30 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-10** — **Fase 4 — Entrega 4B (Baixa de estoque na separação + Kanban de Expedição).**
+  **Backend:** `EstoqueRepository` ganhou `disponivel` (soma saldo do produto) e `baixarFifo`
+  (consome lotes por validade NULLS LAST/criado_em, movimento 'saida' com ref `Pedido PE-xxxxxx`).
+  `PedidosService` recebe `EstoqueRepository` e, ao mover o pedido para **`separacao`**, **checa
+  disponibilidade** de todos os itens (insuficiente → 409 `estoque.insuficiente`) e depois **baixa**
+  FIFO. Cancelar só antes da separação (sem devolução de estoque). **Frontend:** **Estoque/Expedição ›
+  Pedidos (Kanban)** com **drag-and-drop**; soltar card numa coluna chama `PATCH status` (respeita
+  transições; arrastar p/ "Em separação" dispara a baixa); card abre detalhe. Cap do menu:
+  `comercial.pedido.gerenciar`. i18n pt/en/es. **Validação:** type-check 3 pacotes + build Vite +
+  **e2e Postgres real (5 PASS)**: separação baixa estoque (13→8), **FIFO** (lote val. mais cedo zera
+  primeiro), insuficiente bloqueia (409) e mantém saldo. **Próximo na Fase 4:** inventário e
+  baixa/perda; depois Fase 5 (Financeiro) habilita recebimento por nota + código de barras.
 - **2026-06-10** — **Fase 4 — Entrega 4A (Estoque: Posição + Entrada).**
   **Banco (migration tenant 009):** `estoque_lote` (produto_id, lote, validade date, quantidade,
   custo_unitario) + `estoque_movimento` (produto_id, lote_id, tipo, quantidade, observacao).
-  **Caps:** `estoque.saldo.ver`, `estoque.entrada.criar` (módulo Estoque). **Backend (hexagonal):**
-  domínio `Estoque`; `SqlEstoqueRepository` — `posicao` agrega saldo por produto + lotes (validade
-  ISO) e marca `abaixoMinimo` vs estoque_minimo; `registrarEntrada` **mescla** lote de mesmo
-  produto+lote+validade (senão cria) e grava movimento 'entrada'; `EstoqueService` valida
-  produto/qtd>0/custo≥0. Rotas `GET /estoque`, `POST /estoque/entrada`. **Frontend:** grupo de menu
-  **Estoque/Expedição** com **Posição de estoque** (saldo + situação baixo/ok; expandir mostra lotes
-  c/ validade) e **Entrada de estoque** (produto, lote, validade, qtd, custo); i18n pt/en/es.
-  **Reserva de estoque do pedido / recebimento por nota+código de barras:** próximas etapas (4B +
-  Financeiro). **Validação:** type-check 3 pacotes + build Vite + **e2e Postgres real (9 PASS)**:
-  posição inicial abaixo do mínimo, entrada e **merge** de lote (10+15=25), 2 lotes distintos,
-  validade correta, acima do mínimo, qtd 0→400, guard 403. **Nota:** ambiente de trabalho temporário
-  do Claude foi reiniciado nesta sessão e reconstruído a partir da pasta do projeto (fonte de verdade).
-  **Pendente:** Gui rodar `db-setup.bat` (migration 009) + testar + commit.
+  **Caps:** `estoque.saldo.ver`, `estoque.entrada.criar`. **Backend (hexagonal):** domínio `Estoque`;
+  `SqlEstoqueRepository` — `posicao` agrega saldo por produto + lotes (validade ISO), marca
+  `abaixoMinimo` vs estoque_minimo; `registrarEntrada` **mescla** lote de mesmo produto+lote+validade
+  (senão cria) + movimento 'entrada'; `EstoqueService` valida produto/qtd>0/custo≥0. Rotas
+  `GET /estoque`, `POST /estoque/entrada`. **Frontend:** menu **Estoque/Expedição** com **Posição de
+  estoque** (saldo + situação; expandir vê lotes/validade) e **Entrada de estoque**; i18n pt/en/es.
+  **Validação:** type-check + build + **e2e Postgres real (9 PASS)**: posição abaixo do mínimo,
+  entrada + **merge** (10+15=25), 2 lotes, validade, acima do mínimo, qtd 0→400, guard 403.
+  **Nota:** ambiente temporário do Claude foi reiniciado nesta sessão e reconstruído da pasta do projeto.
 - **2026-06-10** — **Fase 3 — Entrega 3B (Pedidos: novo, lista, detalhe, workflow, limite de crédito).**
   **Banco (migration tenant 008):** sequência `pedido_numero_seq`; tabela `pedido` (numero,
   cliente_id, vendedor_id, status, forma_pagamento, observacao, endereco_entrega, subtotal,
