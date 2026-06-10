@@ -4,7 +4,6 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 // Procura o .env subindo a partir deste arquivo ate a raiz do monorepo.
-// Assim funciona tanto em dev (tsx, rodando de apps/api) quanto no build.
 function acharEnv(): string | undefined {
   let dir = dirname(fileURLToPath(import.meta.url));
   for (let i = 0; i < 8; i++) {
@@ -19,8 +18,6 @@ function acharEnv(): string | undefined {
 
 dotenv.config({ path: acharEnv() });
 
-// Leitura centralizada de variaveis de ambiente.
-// Nenhuma string de conexao espalhada pela aplicacao (regra de arquitetura).
 function obrigatorio(nome: string): string {
   const valor = process.env[nome];
   if (!valor || valor.trim() === '') {
@@ -31,7 +28,10 @@ function obrigatorio(nome: string): string {
 
 export const env = {
   dbUrl: obrigatorio('DB_URL'),
+  // SSL ligado por padrao (Neon exige). Local sem SSL: DB_SSL=false.
+  dbSsl: (process.env.DB_SSL ?? 'true') !== 'false',
   apiPort: Number(process.env.API_PORT ?? 3333),
+  jwtSecret: obrigatorio('JWT_SECRET'),
   nodeEnv: process.env.NODE_ENV ?? 'development',
   get isProd(): boolean {
     return this.nodeEnv === 'production';

@@ -9,6 +9,10 @@ build/
 out/
 .next/
 coverage/
+*.tsbuildinfo
+
+# Arquivos temporários de teste do ambiente
+.__*
 
 # Variáveis de ambiente (nunca commitar segredos)
 .env

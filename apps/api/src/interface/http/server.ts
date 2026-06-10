@@ -1,11 +1,16 @@
 import express, { type Express, type Request, type Response } from 'express';
 import { AppDataSource } from '../../infra/db/data-source.js';
+import { montarDependencias } from '../composition.js';
+import { rotasAuth } from './rotas/auth.js';
+import { rotasMe } from './rotas/me.js';
 
 export function criarServidor(): Express {
   const app = express();
   app.use(express.json());
 
-  // Healthcheck: confirma que a API esta de pe e que o banco responde.
+  const deps = montarDependencias();
+
+  // Healthcheck: API de pe + banco respondendo.
   app.get('/health', async (_req: Request, res: Response) => {
     try {
       await AppDataSource.query('SELECT 1');
@@ -15,6 +20,9 @@ export function criarServidor(): Express {
       res.status(503).json({ status: 'erro', db: 'sem conexao', detalhe });
     }
   });
+
+  app.use(rotasAuth(deps));
+  app.use(rotasMe(deps.tokens));
 
   return app;
 }

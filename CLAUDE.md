@@ -5,11 +5,14 @@
 > release. Se divergir, este cabeçalho está desatualizado — corrigir antes
 > de qualquer outra tarefa da nova sessão.
 >
-> Status: **fase de planejamento** (arquitetura fechada). Nenhum código de
-> sistema foi escrito ainda. Mockup navegável em `Info/mockups/erp-mockup.html`
-> evoluindo como referência visual viva (Financeiro com KPIs clicáveis, ações
-> em massa, modal de filtros avançado, paleta white-label expandida). Próximo
-> passo: scaffold do monorepo (Fase 0 — ver `Info/PLANO-DESENVOLVIMENTO.md`).
+> Status: **Fase 0 em andamento — código de sistema iniciado.** Monorepo
+> scaffoldado (`apps/api` + `apps/web` + `packages/shared`), backend conectado
+> ao PostgreSQL (Neon, nuvem), runner de migrations por tenant, Clock UTC,
+> i18n base e **login funcional ponta a ponta** (testado contra Postgres real:
+> migrations, seed, login, rota protegida). Mockup em `Info/mockups/erp-mockup.html`
+> segue como referência visual viva. Orçamento das fases em `Info/ORCAMENTO-FASES.md`.
+> Próximo passo: Fase 1 (Acesso & Identidade) — ver `Info/PLANO-DESENVOLVIMENTO.md`.
+> Decidido: MVP sem fiscal (Fase 7 depois); banco = Postgres na nuvem (Neon).
 
 ---
 
@@ -155,6 +158,35 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-10** — **Fase 0 implementada — primeiro código de sistema.** Sai do
+  planejamento puro. **Decisões:** MVP = Fases 0–6 (sem fiscal/Fase 7 por ora,
+  operação interna); banco de dev/prod = **Postgres na nuvem (Neon**, região
+  sa-east-1). Repo git inicializado e no GitHub (`guilhermediaslucas/triade-erp`).
+  Demo do mockup planejada via Netlify (`_redirects` + `Info/DEPLOY-MOCKUP.md`).
+  Orçamento das fases em `Info/ORCAMENTO-FASES.md` (modelo "Claude + Gui").
+  **Monorepo** npm workspaces: `packages/shared` (tipos/i18n), `apps/api`
+  (Node+TS, Express, TypeORM/pg), `apps/web` (React+Vite+TS). TS estrito.
+  **Backend (hexagonal):** `domain/` puro (entidades Empresa/Usuario, portas
+  Clock/HashSenha/GeradorToken, repos como interfaces, `ErroAplicacao` com chave
+  i18n); `application/` (`AutenticarUsuario`); `infra/` (`env` centralizado com
+  busca do .env subindo à raiz, `AppDataSource` único e DB-agnóstico com SSL
+  configurável, `BcryptHashSenha` com **bcryptjs** — puro JS, sem build nativo
+  no Windows, `JwtGeradorToken`, repos SQL parametrizados, **runner de migrations
+  por tenant** com ledger `migracao` em public e em cada schema, `seedDemo`
+  idempotente); `interface/` (composition root com DI manual, middleware de auth
+  JWT, rotas `/auth/login` e `/me`, `/health`). **Multi-tenant schema-por-tenant:**
+  `public.empresa` (registro) + schema `t_<codigo>` por tenant com `usuario`;
+  login resolve empresa por código → schema → usuário. Nome de schema validado
+  (anti-injeção). **Frontend:** i18n próprio pt-BR/en-US/es (chaves, sem texto
+  fixo), `AuthContext` (token em localStorage), client com proxy `/api`→3333,
+  tela de Login (empresa+email+senha), layout sidebar/topbar, rota protegida,
+  dashboard placeholder. **Validação:** type-check verde nos 3 pacotes + build
+  Vite OK + **teste e2e contra Postgres real** (embedded-postgres): login certo
+  gera token, senha/empresa erradas → 401 com chave i18n, `/me` com/sem token,
+  seed idempotente — todos PASS. **Scripts Windows:** `db-setup.bat` (migrate+seed),
+  `dev.bat` (sobe API+Web). `.env` com `DB_URL`/`DB_SSL`/`JWT_SECRET` (gitignored).
+  Demo seed: empresa `belle` / `admin@belle.com.br` / `admin123`. **Pendente:**
+  Gui rodar na máquina dele e confirmar login no navegador + commit/push.
 - **2026-06-10** — **Remoção da tela "Formas de pagamento"** (mockup). A tela
   `s-formas-pgto` (menu Cadastros › Financeiro) era placeholder estático: tabela
   com 4 linhas hardcoded, chips (`Pix/TED/Boleto/Dinheiro/Cartão/Reembolso`) e
