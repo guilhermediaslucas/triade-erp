@@ -364,3 +364,99 @@ Object.assign(es, {
   'precos.titulo': 'Tabla de precios', 'precos.sub': 'Precio base de venta por producto (usado en los pedidos).',
   'precos.produto': 'Producto', 'precos.preco_base': 'Precio base (R$)', 'precos.sem_produtos': 'Crea productos primero.',
 });
+
+// --- Fase 3B: Pedidos ---
+Object.assign(pt, {
+  'menu.pedidos': 'Pedidos', 'menu.novo_pedido': 'Novo pedido',
+  'cap.comercial.pedido.listar': 'Listar pedidos', 'cap.comercial.pedido.criar': 'Criar pedidos', 'cap.comercial.pedido.gerenciar': 'Gerenciar status dos pedidos',
+  'pedidos.titulo': 'Pedidos', 'pedidos.novo': 'Novo pedido', 'pedidos.numero': 'Número', 'pedidos.data': 'Data',
+  'pedidos.cliente': 'Cliente', 'pedidos.vendedor': 'Vendedor', 'pedidos.status': 'Status', 'pedidos.total': 'Total',
+  'pedidos.forma_pgto': 'Forma de pagamento', 'pedidos.endereco': 'Endereço de entrega', 'pedidos.endereco_ph': 'Preenchido pelo favorito do cliente (editável)',
+  'pedidos.itens': 'Itens', 'pedidos.add_item': 'Adicionar item', 'pedidos.escolha_produto': 'Escolha o produto',
+  'pedidos.subtotal': 'Subtotal', 'pedidos.frete': 'Frete', 'pedidos.obs': 'Observação', 'pedidos.salvar': 'Criar pedido',
+  'pedidos.voltar': 'Voltar', 'pedidos.qtd': 'Qtd', 'pedidos.preco_unit': 'Preço unit.',
+  'status.orcamento': 'Orçamento', 'status.aguardando_pagamento': 'Aguardando pagamento', 'status.aprovado': 'Pagamento aprovado',
+  'status.separacao': 'Em separação', 'status.expedido': 'Expedido', 'status.entregue': 'Entregue', 'status.cancelado': 'Cancelado',
+  'pedidos.acao.aguardando_pagamento': 'Confirmar pedido', 'pedidos.acao.aprovado': 'Aprovar pagamento',
+  'pedidos.acao.separacao': 'Enviar p/ separação', 'pedidos.acao.expedido': 'Marcar expedido', 'pedidos.acao.entregue': 'Marcar entregue',
+  'pedidos.acao.cancelado': 'Cancelar pedido',
+  'pedido.nao_encontrado': 'Pedido não encontrado.', 'pedido.cliente_obrigatorio': 'Selecione um cliente.',
+  'pedido.sem_itens': 'Adicione ao menos um item.', 'pedido.produto_invalido': 'Produto inválido no pedido.',
+  'pedido.qtd_invalida': 'Quantidade inválida.', 'pedido.transicao_invalida': 'Mudança de status não permitida.',
+  'pedido.limite_estourado': 'Limite de crédito do cliente excedido.',
+});
+Object.assign(en, {
+  'menu.pedidos': 'Orders', 'menu.novo_pedido': 'New order',
+  'cap.comercial.pedido.listar': 'List orders', 'cap.comercial.pedido.criar': 'Create orders', 'cap.comercial.pedido.gerenciar': 'Manage order status',
+  'pedidos.titulo': 'Orders', 'pedidos.novo': 'New order', 'pedidos.numero': 'Number', 'pedidos.data': 'Date',
+  'pedidos.cliente': 'Customer', 'pedidos.vendedor': 'Sales rep', 'pedidos.status': 'Status', 'pedidos.total': 'Total',
+  'pedidos.forma_pgto': 'Payment method', 'pedidos.endereco': 'Delivery address', 'pedidos.endereco_ph': 'Filled from customer favorite (editable)',
+  'pedidos.itens': 'Items', 'pedidos.add_item': 'Add item', 'pedidos.escolha_produto': 'Choose product',
+  'pedidos.subtotal': 'Subtotal', 'pedidos.frete': 'Shipping', 'pedidos.obs': 'Notes', 'pedidos.salvar': 'Create order',
+  'pedidos.voltar': 'Back', 'pedidos.qtd': 'Qty', 'pedidos.preco_unit': 'Unit price',
+  'status.orcamento': 'Quote', 'status.aguardando_pagamento': 'Awaiting payment', 'status.aprovado': 'Payment approved',
+  'status.separacao': 'Picking', 'status.expedido': 'Shipped', 'status.entregue': 'Delivered', 'status.cancelado': 'Canceled',
+  'pedidos.acao.aguardando_pagamento': 'Confirm order', 'pedidos.acao.aprovado': 'Approve payment',
+  'pedidos.acao.separacao': 'Send to picking', 'pedidos.acao.expedido': 'Mark shipped', 'pedidos.acao.entregue': 'Mark delivered',
+  'pedidos.acao.cancelado': 'Cancel order',
+  'pedido.nao_encontrado': 'Order not found.', 'pedido.cliente_obrigatorio': 'Select a customer.',
+  'pedido.sem_itens': 'Add at least one item.', 'pedido.produto_invalido': 'Invalid product in order.',
+  'pedido.qtd_invalida': 'Invalid quantity.', 'pedido.transicao_invalida': 'Status change not allowed.',
+  'pedido.limite_estourado': "Customer's credit limit exceeded.",
+});
+Object.assign(es, {
+  'menu.pedidos': 'Pedidos', 'menu.novo_pedido': 'Nuevo pedido',
+  'cap.comercial.pedido.listar': 'Listar pedidos', 'cap.comercial.pedido.criar': 'Crear pedidos', 'cap.comercial.pedido.gerenciar': 'Gestionar estado de pedidos',
+  'pedidos.titulo': 'Pedidos', 'pedidos.novo': 'Nuevo pedido', 'pedidos.numero': 'Número', 'pedidos.data': 'Fecha',
+  'pedidos.cliente': 'Cliente', 'pedidos.vendedor': 'Vendedor', 'pedidos.status': 'Estado', 'pedidos.total': 'Total',
+  'pedidos.forma_pgto': 'Forma de pago', 'pedidos.endereco': 'Dirección de entrega', 'pedidos.endereco_ph': 'Rellenado por la favorita del cliente (editable)',
+  'pedidos.itens': 'Ítems', 'pedidos.add_item': 'Agregar ítem', 'pedidos.escolha_produto': 'Elige el producto',
+  'pedidos.subtotal': 'Subtotal', 'pedidos.frete': 'Flete', 'pedidos.obs': 'Observación', 'pedidos.salvar': 'Crear pedido',
+  'pedidos.voltar': 'Volver', 'pedidos.qtd': 'Cant.', 'pedidos.preco_unit': 'Precio unit.',
+  'status.orcamento': 'Presupuesto', 'status.aguardando_pagamento': 'Esperando pago', 'status.aprovado': 'Pago aprobado',
+  'status.separacao': 'En preparación', 'status.expedido': 'Expedido', 'status.entregue': 'Entregado', 'status.cancelado': 'Cancelado',
+  'pedidos.acao.aguardando_pagamento': 'Confirmar pedido', 'pedidos.acao.aprovado': 'Aprobar pago',
+  'pedidos.acao.separacao': 'Enviar a preparación', 'pedidos.acao.expedido': 'Marcar expedido', 'pedidos.acao.entregue': 'Marcar entregado',
+  'pedidos.acao.cancelado': 'Cancelar pedido',
+  'pedido.nao_encontrado': 'Pedido no encontrado.', 'pedido.cliente_obrigatorio': 'Selecciona un cliente.',
+  'pedido.sem_itens': 'Agrega al menos un ítem.', 'pedido.produto_invalido': 'Producto inválido en el pedido.',
+  'pedido.qtd_invalida': 'Cantidad inválida.', 'pedido.transicao_invalida': 'Cambio de estado no permitido.',
+  'pedido.limite_estourado': 'Límite de crédito del cliente excedido.',
+});
+
+// --- Kanban de pedidos ---
+Object.assign(pt, { 'pedidos.kanban_sub': 'Quadro por status — clique num card para ver e avançar o pedido', 'pedidos.cancelados_ocultos': 'pedido(s) cancelado(s) não exibidos no quadro.' });
+Object.assign(en, { 'pedidos.kanban_sub': 'Board by status — click a card to view and advance the order', 'pedidos.cancelados_ocultos': 'canceled order(s) not shown on the board.' });
+Object.assign(es, { 'pedidos.kanban_sub': 'Tablero por estado — haz clic en una tarjeta para ver y avanzar el pedido', 'pedidos.cancelados_ocultos': 'pedido(s) cancelado(s) no mostrados en el tablero.' });
+
+// --- Fase 4A: Estoque ---
+Object.assign(pt, {
+  'menu.estoque_exp': 'Estoque/Expedição', 'menu.posicao': 'Posição de estoque', 'menu.entrada': 'Entrada de estoque',
+  'cap.modulo.estoque': 'Estoque', 'cap.estoque.saldo.ver': 'Ver posição de estoque', 'cap.estoque.entrada.criar': 'Registrar entrada de estoque',
+  'estoque.titulo': 'Posição de estoque', 'estoque.saldo': 'Saldo', 'estoque.lote': 'Lote', 'estoque.validade': 'Validade',
+  'estoque.baixo': 'Estoque baixo', 'estoque.ok': 'Em dia',
+  'entrada.titulo': 'Entrada de estoque', 'entrada.sub': 'Recebimento direto com lote e validade. O recebimento por nota/código de barras vem com o Financeiro.',
+  'entrada.lote_ph': 'Ex.: L-2026-001', 'entrada.quantidade': 'Quantidade', 'entrada.custo': 'Custo unitário (R$)',
+  'entrada.confirmar': 'Confirmar entrada', 'entrada.ok': 'Entrada registrada no estoque.',
+  'estoque.qtd_invalida': 'Quantidade inválida.', 'estoque.custo_invalido': 'Custo inválido.',
+});
+Object.assign(en, {
+  'menu.estoque_exp': 'Inventory/Shipping', 'menu.posicao': 'Stock position', 'menu.entrada': 'Stock entry',
+  'cap.modulo.estoque': 'Inventory', 'cap.estoque.saldo.ver': 'View stock position', 'cap.estoque.entrada.criar': 'Register stock entry',
+  'estoque.titulo': 'Stock position', 'estoque.saldo': 'Balance', 'estoque.lote': 'Batch', 'estoque.validade': 'Expiry',
+  'estoque.baixo': 'Low stock', 'estoque.ok': 'OK',
+  'entrada.titulo': 'Stock entry', 'entrada.sub': 'Direct receipt with batch and expiry. Invoice/barcode receiving comes with Finance.',
+  'entrada.lote_ph': 'e.g., L-2026-001', 'entrada.quantidade': 'Quantity', 'entrada.custo': 'Unit cost (R$)',
+  'entrada.confirmar': 'Confirm entry', 'entrada.ok': 'Stock entry registered.',
+  'estoque.qtd_invalida': 'Invalid quantity.', 'estoque.custo_invalido': 'Invalid cost.',
+});
+Object.assign(es, {
+  'menu.estoque_exp': 'Inventario/Expedición', 'menu.posicao': 'Posición de stock', 'menu.entrada': 'Entrada de stock',
+  'cap.modulo.estoque': 'Inventario', 'cap.estoque.saldo.ver': 'Ver posición de stock', 'cap.estoque.entrada.criar': 'Registrar entrada de stock',
+  'estoque.titulo': 'Posición de stock', 'estoque.saldo': 'Saldo', 'estoque.lote': 'Lote', 'estoque.validade': 'Caducidad',
+  'estoque.baixo': 'Stock bajo', 'estoque.ok': 'Al día',
+  'entrada.titulo': 'Entrada de stock', 'entrada.sub': 'Recepción directa con lote y caducidad. La recepción por factura/código de barras llega con Finanzas.',
+  'entrada.lote_ph': 'Ej.: L-2026-001', 'entrada.quantidade': 'Cantidad', 'entrada.custo': 'Costo unitario (R$)',
+  'entrada.confirmar': 'Confirmar entrada', 'entrada.ok': 'Entrada registrada en el stock.',
+  'estoque.qtd_invalida': 'Cantidad inválida.', 'estoque.custo_invalido': 'Costo inválido.',
+});

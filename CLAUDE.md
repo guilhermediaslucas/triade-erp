@@ -24,7 +24,10 @@
 > Estoque/Expedição). **Fase 3 em andamento. Entrega 3A feita:** Comercial › Tabela de
 > preço (preço base por produto; migration 007 `preco_base`; menu grupo Comercial), e2e
 > Postgres real (6 PASS). Próximo na Fase 3: Novo pedido + lista + workflow + limite de
-> crédito + reserva de estoque (3B). Campanhas/preço por cliente: etapa posterior.
+> crédito + reserva de estoque (3B). **Entrega 3B feita:** Novo pedido + lista + detalhe +
+> workflow de status + limite de crédito (preço puxado da Tabela de preço; snapshot de item;
+> endereço do favorito do cliente), e2e Postgres real (13 PASS). Reserva de estoque: gancho
+> p/ Fase 4. Campanhas/preço por cliente: etapa posterior.
 > Mockup em `Info/mockups/erp-mockup.html` segue como referência visual.
 > Orçamento em `Info/ORCAMENTO-FASES.md`. Decidido: MVP sem fiscal (Fase 7 depois);
 > banco = Postgres na nuvem (Neon).
@@ -173,6 +176,47 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-10** — **Fase 4 — Entrega 4A (Estoque: Posição + Entrada).**
+  **Banco (migration tenant 009):** `estoque_lote` (produto_id, lote, validade date, quantidade,
+  custo_unitario) + `estoque_movimento` (produto_id, lote_id, tipo, quantidade, observacao).
+  **Caps:** `estoque.saldo.ver`, `estoque.entrada.criar` (módulo Estoque). **Backend (hexagonal):**
+  domínio `Estoque`; `SqlEstoqueRepository` — `posicao` agrega saldo por produto + lotes (validade
+  ISO) e marca `abaixoMinimo` vs estoque_minimo; `registrarEntrada` **mescla** lote de mesmo
+  produto+lote+validade (senão cria) e grava movimento 'entrada'; `EstoqueService` valida
+  produto/qtd>0/custo≥0. Rotas `GET /estoque`, `POST /estoque/entrada`. **Frontend:** grupo de menu
+  **Estoque/Expedição** com **Posição de estoque** (saldo + situação baixo/ok; expandir mostra lotes
+  c/ validade) e **Entrada de estoque** (produto, lote, validade, qtd, custo); i18n pt/en/es.
+  **Reserva de estoque do pedido / recebimento por nota+código de barras:** próximas etapas (4B +
+  Financeiro). **Validação:** type-check 3 pacotes + build Vite + **e2e Postgres real (9 PASS)**:
+  posição inicial abaixo do mínimo, entrada e **merge** de lote (10+15=25), 2 lotes distintos,
+  validade correta, acima do mínimo, qtd 0→400, guard 403. **Nota:** ambiente de trabalho temporário
+  do Claude foi reiniciado nesta sessão e reconstruído a partir da pasta do projeto (fonte de verdade).
+  **Pendente:** Gui rodar `db-setup.bat` (migration 009) + testar + commit.
+- **2026-06-10** — **Fase 3 — Entrega 3B (Pedidos: novo, lista, detalhe, workflow, limite de crédito).**
+  **Banco (migration tenant 008):** sequência `pedido_numero_seq`; tabela `pedido` (numero,
+  cliente_id, vendedor_id, status, forma_pagamento, observacao, endereco_entrega, subtotal,
+  frete, total) e `pedido_item` (produto_id, **snapshot** produto_nome/preco_unitario, qtd,
+  subtotal). **Caps:** `comercial.pedido.listar/criar/gerenciar`. **Backend (hexagonal):**
+  domínio `Pedido`/`PedidoItem`/`StatusPedido`; `SqlPedidoRepository` (proximoNumero via
+  nextval, criar+itens, listar, buscarPorId, mudarStatus, somaEmAberto p/ crédito);
+  `PedidosService` — preço **puxado da tabela de preço** (`precoDe`), snapshot de nome/preço,
+  subtotal/total c/ frete, endereço default do **favorito do cliente**; `mudarStatus` valida
+  transições (orçamento→aguard.pagto→aprovado→separação→expedido→entregue; +cancelado) e na
+  confirmação (→aguard.pagto) checa **limite de crédito** (soma dos pedidos em aberto do
+  cliente + total ≤ limite, se limite>0). Rotas `/pedidos` GET/POST, `/pedidos/:id` GET,
+  `PATCH /pedidos/:id/status`. **Frontend:** **Comercial › Pedidos** (lista c/ nº PE-000000,
+  status colorido), **Novo pedido** (cliente/vendedor/forma pgto, endereço do favorito,
+  itens c/ preço auto da tabela, subtotal/frete/total), **Detalhe** c/ itens e botões de
+  ação por status; i18n pt/en/es. **Reserva de estoque:** gancho — integra na Fase 4.
+  **Validação:** type-check 3 pacotes + build Vite + **e2e Postgres real (13 PASS)**: preço
+  da tabela, total c/ frete, snapshot de item, endereço do favorito, limite estourado→409,
+  confirma dentro do limite, transição inválida→400, fluxo completo de status, sem itens→400.
+  **Pendente:** Gui rodar `db-setup.bat` (migration 008) + testar + commit.
+  **Addendum:** tela **Pedidos** convertida de lista para **Kanban** (colunas por status,
+  cards clicáveis → detalhe), fiel ao mockup (Kanban Comercial é leitura; movimentação fina
+  vai no Kanban de Expedição da Fase 4). type-check + build OK. Decisão de fidelidade
+  reforçada: replicar componentes-assinatura do mockup (Kanban etc.); polimento puro
+  (Ctrl+K, sino) fica p/ passada futura.
 - **2026-06-10** — **Passada de fidelidade nos cadastros antigos (Produto/Fornecedor/Vendedor).**
   Migration tenant 006: **produto** perde `preco` (preço vai p/ Comercial › Tabela de preço, conforme
   mockup) e ganha `localizacao` + `registro_anvisa`; **fornecedor** ganha `cep`/`cidade`/`uf`;

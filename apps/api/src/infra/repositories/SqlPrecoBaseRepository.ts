@@ -28,6 +28,12 @@ export class SqlPrecoBaseRepository implements PrecoBaseRepository {
       [produtoId, preco]);
   }
 
+  async precoDe(schema: string, produtoId: string): Promise<number> {
+    const s = validarSchema(schema);
+    const r = (await this.ds.query(`SELECT preco FROM "${s}".preco_base WHERE produto_id = $1`, [produtoId]))[0];
+    return r ? Number(r.preco) : 0;
+  }
+
   async produtoExiste(schema: string, produtoId: string): Promise<boolean> {
     const s = validarSchema(schema);
     const r = await this.ds.query(`SELECT 1 FROM "${s}".produto WHERE id = $1`, [produtoId]);

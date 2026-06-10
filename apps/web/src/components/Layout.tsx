@@ -15,7 +15,18 @@ const GRUPOS: Grupo[] = [
   { secoes: [{ itens: [{ rotulo: 'menu.dashboard', icone: '▦', to: '/', cap: 'dashboard.ver' }] }] },
   {
     rotulo: 'menu.comercial',
-    secoes: [{ itens: [{ rotulo: 'menu.precos', icone: '🏷️', to: '/comercial/precos', cap: 'comercial.preco.listar' }] }],
+    secoes: [{ itens: [
+      { rotulo: 'menu.pedidos', icone: '🧾', to: '/comercial/pedidos', cap: 'comercial.pedido.listar' },
+      { rotulo: 'menu.novo_pedido', icone: '➕', to: '/comercial/pedidos/novo', cap: 'comercial.pedido.criar' },
+      { rotulo: 'menu.precos', icone: '🏷️', to: '/comercial/precos', cap: 'comercial.preco.listar' },
+    ] }],
+  },
+  {
+    rotulo: 'menu.estoque_exp',
+    secoes: [{ itens: [
+      { rotulo: 'menu.posicao', icone: '📦', to: '/estoque/posicao', cap: 'estoque.saldo.ver' },
+      { rotulo: 'menu.entrada', icone: '📥', to: '/estoque/entrada', cap: 'estoque.entrada.criar' },
+    ] }],
   },
   {
     rotulo: 'menu.cadastros',

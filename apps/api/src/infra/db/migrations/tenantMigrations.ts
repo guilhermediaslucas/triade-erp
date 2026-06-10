@@ -133,4 +133,57 @@ export const tenantMigrations: MigracaoTenant[] = [
       );
     `,
   },
+  {
+    nome: '008_pedido',
+    sql: (s) => `
+      CREATE SEQUENCE IF NOT EXISTS "${s}".pedido_numero_seq START 1;
+      CREATE TABLE IF NOT EXISTS "${s}".pedido (
+        id              uuid PRIMARY KEY,
+        numero          integer NOT NULL,
+        cliente_id      uuid REFERENCES "${s}".cliente(id),
+        vendedor_id     uuid REFERENCES "${s}".vendedor(id),
+        status          text NOT NULL DEFAULT 'orcamento',
+        forma_pagamento text,
+        observacao      text,
+        endereco_entrega text,
+        subtotal        numeric(14,2) NOT NULL DEFAULT 0,
+        frete           numeric(14,2) NOT NULL DEFAULT 0,
+        total           numeric(14,2) NOT NULL DEFAULT 0,
+        criado_em       timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE TABLE IF NOT EXISTS "${s}".pedido_item (
+        id             uuid PRIMARY KEY,
+        pedido_id      uuid NOT NULL REFERENCES "${s}".pedido(id) ON DELETE CASCADE,
+        produto_id     uuid REFERENCES "${s}".produto(id),
+        produto_nome   text NOT NULL,
+        quantidade     numeric(14,3) NOT NULL,
+        preco_unitario numeric(14,2) NOT NULL,
+        subtotal       numeric(14,2) NOT NULL
+      );
+    `,
+  },
+  {
+    nome: '009_estoque',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".estoque_lote (
+        id             uuid PRIMARY KEY,
+        produto_id     uuid NOT NULL REFERENCES "${s}".produto(id),
+        lote           text,
+        validade       date,
+        quantidade     numeric(14,3) NOT NULL DEFAULT 0,
+        custo_unitario numeric(14,2) NOT NULL DEFAULT 0,
+        criado_em      timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_${s}_estoque_lote_prod ON "${s}".estoque_lote(produto_id);
+      CREATE TABLE IF NOT EXISTS "${s}".estoque_movimento (
+        id         uuid PRIMARY KEY,
+        produto_id uuid NOT NULL REFERENCES "${s}".produto(id),
+        lote_id    uuid REFERENCES "${s}".estoque_lote(id),
+        tipo       text NOT NULL,
+        quantidade numeric(14,3) NOT NULL,
+        observacao text,
+        criado_em  timestamptz NOT NULL DEFAULT now()
+      );
+    `,
+  },
 ];
