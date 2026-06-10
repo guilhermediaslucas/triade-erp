@@ -24,4 +24,5 @@ export const api = {
   post: <T>(c: string, corpo: unknown, token?: string) => req<T>('POST', c, token, corpo),
   put: <T>(c: string, corpo: unknown, token?: string) => req<T>('PUT', c, token, corpo),
   patch: <T>(c: string, corpo: unknown, token?: string) => req<T>('PATCH', c, token, corpo),
+  del: <T>(c: string, token?: string) => req<T>('DELETE', c, token),
 };

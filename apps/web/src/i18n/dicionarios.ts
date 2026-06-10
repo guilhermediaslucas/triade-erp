@@ -656,3 +656,20 @@ Object.assign(es, {
   'precos.preco_cliente': 'Precio del cliente (R$)', 'precos.sub_cliente': 'Precio negociado por cliente — sustituye el base en el pedido. Vacío = usa el base.',
   'precos.escolha_cliente': 'Elige un cliente para definir los precios negociados.', 'precos.usa_base': 'usa el base',
 });
+
+// --- Refinamento: campanhas de preço ---
+Object.assign(pt, {
+  'camp.titulo': 'Campanhas', 'camp.gerenciar': 'Campanhas', 'camp.motivo': 'Motivo', 'camp.periodo': 'Período',
+  'camp.vigente': 'Vigente', 'camp.encerrada': 'Encerrada', 'camp.vazia': 'Nenhuma campanha.', 'camp.nova': 'Nova campanha',
+  'camp.add': 'Adicionar campanha', 'campanha.periodo_invalido': 'Período inválido (data final antes da inicial).',
+});
+Object.assign(en, {
+  'camp.titulo': 'Campaigns', 'camp.gerenciar': 'Campaigns', 'camp.motivo': 'Reason', 'camp.periodo': 'Period',
+  'camp.vigente': 'Active', 'camp.encerrada': 'Ended', 'camp.vazia': 'No campaigns.', 'camp.nova': 'New campaign',
+  'camp.add': 'Add campaign', 'campanha.periodo_invalido': 'Invalid period (end before start).',
+});
+Object.assign(es, {
+  'camp.titulo': 'Campañas', 'camp.gerenciar': 'Campañas', 'camp.motivo': 'Motivo', 'camp.periodo': 'Período',
+  'camp.vigente': 'Vigente', 'camp.encerrada': 'Finalizada', 'camp.vazia': 'Sin campañas.', 'camp.nova': 'Nueva campaña',
+  'camp.add': 'Agregar campaña', 'campanha.periodo_invalido': 'Período inválido (fin antes del inicio).',
+});

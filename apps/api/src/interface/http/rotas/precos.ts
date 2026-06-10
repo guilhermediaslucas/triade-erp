@@ -21,5 +21,14 @@ export function rotasPrecos(deps: Dependencias): Router {
   r.put('/precos/cliente/:clienteId/:produtoId', aut, az('comercial.preco.gerenciar'), async (req, res: Response) => {
     try { await deps.precosService.definirCliente(sch(req), req.params.clienteId!, req.params.produtoId!, (req.body ?? {}).preco); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });
+  r.get('/precos/campanhas/:produtoId', aut, az('comercial.preco.listar'), async (req, res: Response) => {
+    try { res.json(await deps.precosService.listarCampanhas(sch(req), req.params.produtoId!)); } catch (e) { tratarErro(res, e); }
+  });
+  r.post('/precos/campanhas/:produtoId', aut, az('comercial.preco.gerenciar'), async (req, res: Response) => {
+    try { await deps.precosService.criarCampanha(sch(req), req.params.produtoId!, req.body ?? {}); res.status(201).json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
+  r.delete('/precos/campanhas/item/:id', aut, az('comercial.preco.gerenciar'), async (req, res: Response) => {
+    try { await deps.precosService.removerCampanha(sch(req), req.params.id!); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
   return r;
 }

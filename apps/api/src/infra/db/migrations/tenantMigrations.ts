@@ -235,4 +235,19 @@ export const tenantMigrations: MigracaoTenant[] = [
       );
     `,
   },
+  {
+    nome: '013_preco_campanha',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".preco_campanha (
+        id         uuid PRIMARY KEY,
+        produto_id uuid NOT NULL REFERENCES "${s}".produto(id) ON DELETE CASCADE,
+        preco      numeric(14,2) NOT NULL,
+        motivo     text,
+        de         date NOT NULL,
+        ate        date NOT NULL,
+        criado_em  timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_${s}_campanha_prod ON "${s}".preco_campanha(produto_id);
+    `,
+  },
 ];

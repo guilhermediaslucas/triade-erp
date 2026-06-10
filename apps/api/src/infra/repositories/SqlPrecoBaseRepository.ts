@@ -1,5 +1,6 @@
 import type { DataSource } from 'typeorm';
-import type { PrecoBaseRepository, PrecoProduto } from '../../domain/comercial/PrecoBase.js';
+import { randomUUID } from 'node:crypto';
+import type { Campanha, PrecoBaseRepository, PrecoProduto } from '../../domain/comercial/PrecoBase.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 export class SqlPrecoBaseRepository implements PrecoBaseRepository {
@@ -30,8 +31,35 @@ export class SqlPrecoBaseRepository implements PrecoBaseRepository {
 
   async precoDe(schema: string, produtoId: string): Promise<number> {
     const s = validarSchema(schema);
+    const camp = (await this.ds.query(
+      `SELECT preco FROM "${s}".preco_campanha
+        WHERE produto_id = $1 AND CURRENT_DATE BETWEEN de AND ate
+        ORDER BY de DESC LIMIT 1`, [produtoId]))[0];
+    if (camp) return Number(camp.preco);
     const r = (await this.ds.query(`SELECT preco FROM "${s}".preco_base WHERE produto_id = $1`, [produtoId]))[0];
     return r ? Number(r.preco) : 0;
+  }
+
+  async listarCampanhas(schema: string, produtoId: string): Promise<Campanha[]> {
+    const s = validarSchema(schema);
+    const linhas = await this.ds.query(
+      `SELECT id, produto_id, preco, motivo, de, ate,
+              (CURRENT_DATE BETWEEN de AND ate) vigente
+         FROM "${s}".preco_campanha WHERE produto_id = $1 ORDER BY de DESC`, [produtoId]);
+    return linhas.map((r: any) => ({
+      id: r.id, produtoId: r.produto_id, preco: Number(r.preco), motivo: r.motivo ?? null,
+      de: new Date(r.de).toISOString().slice(0,10), ate: new Date(r.ate).toISOString().slice(0,10), vigente: r.vigente,
+    }));
+  }
+  async criarCampanha(schema: string, produtoId: string, preco: number, motivo: string | null, de: string, ate: string): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(
+      `INSERT INTO "${s}".preco_campanha (id, produto_id, preco, motivo, de, ate)
+       VALUES ($1,$2,$3,$4,$5,$6)`, [randomUUID(), produtoId, preco, motivo, de, ate]);
+  }
+  async removerCampanha(schema: string, id: string): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(`DELETE FROM "${s}".preco_campanha WHERE id = $1`, [id]);
   }
 
   async produtoExiste(schema: string, produtoId: string): Promise<boolean> {

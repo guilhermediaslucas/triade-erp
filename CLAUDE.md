@@ -176,6 +176,19 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-10** — **Refinamento — Campanhas de preço (preço por período sobre o base).**
+  Checklist mestre dos refinamentos do mockup criado em `Info/REFINAMENTOS.md`. Migration tenant 013
+  `preco_campanha` (produto_id, preco, motivo, de/ate date). **Backend:** `PrecoBaseRepository.precoDe`
+  agora resolve **campanha vigente hoje** (`CURRENT_DATE BETWEEN de AND ate`, mais recente) → senão
+  preço fixo do `preco_base`; +`listarCampanhas`/`criarCampanha`/`removerCampanha`. `PrecosService`
+  valida preço≥0, datas ISO, ate≥de. Rotas `GET/POST /precos/campanhas/:produtoId`, `DELETE
+  /precos/campanhas/item/:id`. **Frontend:** Tabela de preço (modo base) ganhou coluna **Campanhas** →
+  modal com histórico (preço, motivo, período, selo vigente/encerrada) + form nova campanha + remover;
+  `api.del` adicionado ao client; i18n pt/en/es. **Validação:** type-check 3 pacotes + build Vite +
+  **e2e Postgres real (8 PASS)**: campanha vigente sobrepõe fixo no pedido (700→1400), só 1 vigente,
+  remover volta ao fixo (1000), período invertido→400. **Cadeia de preço efetivo no pedido:** preço do
+  cliente → campanha vigente → preço fixo. **Pendente:** Gui rodar `db-setup.bat` (migration 013) +
+  testar + commit. Próximo refinamento: condições de pagamento + parcelamento do título no pedido.
 - **2026-06-10** — **Refinamento — Preço por cliente (Tabela de preço) + uso no pedido.**
   Migration tenant 012 `preco_cliente` (cliente_id+produto_id PK, preco). **Backend:** domínio
   `PrecoClienteRepository`; `SqlPrecoClienteRepository` (listarPorCliente c/ base de referência via
