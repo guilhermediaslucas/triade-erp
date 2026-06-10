@@ -3,6 +3,9 @@ import { AppDataSource } from '../../infra/db/data-source.js';
 import { montarDependencias } from '../composition.js';
 import { rotasAuth } from './rotas/auth.js';
 import { rotasMe } from './rotas/me.js';
+import { rotasCapabilities } from './rotas/capabilities.js';
+import { rotasPerfis } from './rotas/perfis.js';
+import { rotasUsuarios } from './rotas/usuarios.js';
 
 export function criarServidor(): Express {
   const app = express();
@@ -10,7 +13,6 @@ export function criarServidor(): Express {
 
   const deps = montarDependencias();
 
-  // Healthcheck: API de pe + banco respondendo.
   app.get('/health', async (_req: Request, res: Response) => {
     try {
       await AppDataSource.query('SELECT 1');
@@ -22,7 +24,10 @@ export function criarServidor(): Express {
   });
 
   app.use(rotasAuth(deps));
-  app.use(rotasMe(deps.tokens));
+  app.use(rotasMe(deps));
+  app.use(rotasCapabilities(deps.tokens));
+  app.use(rotasPerfis(deps));
+  app.use(rotasUsuarios(deps));
 
   return app;
 }

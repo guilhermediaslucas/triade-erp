@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { DataSource } from 'typeorm';
+import { CAPABILITY_IDS } from '@triade/shared';
 import { migrarPublic, migrarTenant } from './migrate.js';
 import { BcryptHashSenha } from '../security/BcryptHashSenha.js';
 
@@ -11,7 +12,7 @@ export interface ResultadoSeed {
   criado: boolean;
 }
 
-// Idempotente: se a empresa demo ja existir, nao recria.
+// Idempotente: nao recria o que ja existe.
 export async function seedDemo(ds: DataSource): Promise<ResultadoSeed> {
   await migrarPublic(ds);
 
@@ -29,16 +30,32 @@ export async function seedDemo(ds: DataSource): Promise<ResultadoSeed> {
 
   await migrarTenant(ds, schema);
 
+  // Perfil Administrador com TODAS as capabilities.
+  let perfilAdmin = (await ds.query(`SELECT id FROM "${schema}".perfil WHERE nome = $1`, ['Administrador']))[0];
+  if (!perfilAdmin) {
+    const pid = randomUUID();
+    await ds.query(`INSERT INTO "${schema}".perfil (id, nome) VALUES ($1, $2)`, [pid, 'Administrador']);
+    for (const cap of CAPABILITY_IDS) {
+      await ds.query(`INSERT INTO "${schema}".perfil_capability (perfil_id, capability) VALUES ($1, $2)`, [pid, cap]);
+    }
+    perfilAdmin = { id: pid };
+  }
+
   const email = 'admin@belle.com.br';
-  const usuarioExiste = await ds.query(`SELECT id FROM "${schema}".usuario WHERE email = $1`, [email]);
-  if (usuarioExiste.length === 0) {
+  const usuario = (await ds.query(`SELECT id, perfil_id FROM "${schema}".usuario WHERE email = $1`, [email]))[0];
+  if (!usuario) {
     const hash = await new BcryptHashSenha().gerar('admin123');
     await ds.query(
-      `INSERT INTO "${schema}".usuario (id, nome, email, senha_hash, ativo)
-       VALUES ($1, $2, $3, $4, true)`,
-      [randomUUID(), 'Administrador', email, hash],
+      `INSERT INTO "${schema}".usuario (id, nome, email, senha_hash, ativo, perfil_id)
+       VALUES ($1, $2, $3, $4, true, $5)`,
+      [randomUUID(), 'Administrador', email, hash, perfilAdmin.id],
     );
     return { empresa: codigo, schema, usuario: email, senhaPadrao: 'admin123', criado: true };
+  }
+
+  // Garante que o admin demo tenha o perfil (caso tenha sido criado antes da Fase 1).
+  if (!usuario.perfil_id) {
+    await ds.query(`UPDATE "${schema}".usuario SET perfil_id = $2 WHERE id = $1`, [usuario.id, perfilAdmin.id]);
   }
 
   return { empresa: codigo, schema, usuario: email, criado: false };

@@ -1,0 +1,165 @@
+import { useEffect, useState } from 'react';
+import { api, type ErroApi } from '../api/client.js';
+import { useAuth } from '../auth/AuthContext.js';
+import { useI18n } from '../i18n/I18nContext.js';
+
+interface UsuarioResumo { id: string; nome: string; email: string; ativo: boolean; perfilId: string | null; perfilNome: string | null; }
+interface Perfil { id: string; nome: string; }
+
+export function Usuarios() {
+  const { token, temCapability } = useAuth();
+  const { t } = useI18n();
+  const podeGerenciar = temCapability('acesso.usuario.gerenciar');
+  const [usuarios, setUsuarios] = useState<UsuarioResumo[]>([]);
+  const [perfis, setPerfis] = useState<Perfil[]>([]);
+  const [erro, setErro] = useState<string | null>(null);
+  const [form, setForm] = useState<{ aberto: boolean; editandoId: string | null } | null>(null);
+  const [senhaDe, setSenhaDe] = useState<UsuarioResumo | null>(null);
+
+  async function carregar() {
+    try {
+      setUsuarios(await api.get<UsuarioResumo[]>('/usuarios', token!));
+      if (temCapability('acesso.perfil.listar')) setPerfis(await api.get<Perfil[]>('/perfis', token!));
+    } catch (e) { setErro((e as ErroApi).chaveI18n); }
+  }
+  useEffect(() => { carregar(); /* eslint-disable-next-line */ }, []);
+
+  async function alternarAtivo(u: UsuarioResumo) {
+    try { await api.patch('/usuarios/' + u.id + '/ativo', { ativo: !u.ativo }, token!); carregar(); }
+    catch (e) { setErro((e as ErroApi).chaveI18n); }
+  }
+
+  return (
+    <div>
+      <div className="page-head">
+        <h1 className="page-titulo">{t('usuarios.titulo')}</h1>
+        {podeGerenciar && <button className="btn-primary" onClick={() => setForm({ aberto: true, editandoId: null })}>+ {t('usuarios.novo')}</button>}
+      </div>
+      {erro && <div className="alerta-erro">{t(erro)}</div>}
+      <div className="card pad0">
+        <table className="tabela">
+          <thead><tr>
+            <th>{t('usuarios.nome')}</th><th>{t('usuarios.email')}</th><th>{t('usuarios.perfil')}</th>
+            <th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th>
+          </tr></thead>
+          <tbody>
+            {usuarios.length === 0 && <tr><td colSpan={5} className="vazio">{t('common.nenhum')}</td></tr>}
+            {usuarios.map((u) => (
+              <tr key={u.id} className={u.ativo ? '' : 'linha-inativa'}>
+                <td>{u.nome}</td>
+                <td>{u.email}</td>
+                <td>{u.perfilNome ?? t('usuarios.sem_perfil')}</td>
+                <td><span className={u.ativo ? 'pill-ok' : 'pill-off'}>{u.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
+                <td className="acoes">
+                  {podeGerenciar && <>
+                    <button className="btn-link" onClick={() => setForm({ aberto: true, editandoId: u.id })}>{t('common.editar')}</button>
+                    <button className="btn-link" onClick={() => setSenhaDe(u)}>{t('usuarios.redefinir_senha')}</button>
+                    <button className="btn-link" onClick={() => alternarAtivo(u)}>{u.ativo ? t('usuarios.inativar') : t('usuarios.ativar')}</button>
+                  </>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {form?.aberto && (
+        <ModalUsuario
+          usuario={form.editandoId ? usuarios.find((x) => x.id === form.editandoId) ?? null : null}
+          perfis={perfis}
+          onFechar={() => setForm(null)}
+          onSalvo={() => { setForm(null); carregar(); }}
+        />
+      )}
+      {senhaDe && (
+        <ModalSenha usuario={senhaDe} onFechar={() => setSenhaDe(null)} onSalvo={() => setSenhaDe(null)} />
+      )}
+    </div>
+  );
+}
+
+function ModalUsuario({ usuario, perfis, onFechar, onSalvo }: {
+  usuario: { id: string; nome: string; perfilId: string | null } | null;
+  perfis: Perfil[]; onFechar: () => void; onSalvo: () => void;
+}) {
+  const { token } = useAuth();
+  const { t } = useI18n();
+  const editando = !!usuario;
+  const [nome, setNome] = useState(usuario?.nome ?? '');
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [perfilId, setPerfilId] = useState(usuario?.perfilId ?? '');
+  const [erro, setErro] = useState<string | null>(null);
+  const [salvando, setSalvando] = useState(false);
+
+  async function salvar() {
+    setErro(null); setSalvando(true);
+    try {
+      if (editando) await api.put('/usuarios/' + usuario!.id, { nome, perfilId: perfilId || null }, token!);
+      else await api.post('/usuarios', { nome, email, senha, perfilId: perfilId || null }, token!);
+      onSalvo();
+    } catch (e) { setErro((e as ErroApi).chaveI18n); setSalvando(false); }
+  }
+
+  return (
+    <div className="modal-fundo" onClick={onFechar}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <h2>{editando ? t('usuarios.editar_titulo') : t('usuarios.novo_titulo')}</h2>
+        <label className="campo">{t('usuarios.nome')}
+          <input value={nome} onChange={(e) => setNome(e.target.value)} autoFocus />
+        </label>
+        {!editando && <>
+          <label className="campo">{t('usuarios.email')}
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          </label>
+          <label className="campo">{t('usuarios.senha')}
+            <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} />
+            <small className="hint">{t('usuarios.senha_hint')}</small>
+          </label>
+        </>}
+        <label className="campo">{t('usuarios.perfil')}
+          <select value={perfilId} onChange={(e) => setPerfilId(e.target.value)}>
+            <option value="">{t('usuarios.sem_perfil')}</option>
+            {perfis.map((p) => <option key={p.id} value={p.id}>{p.nome}</option>)}
+          </select>
+        </label>
+        {erro && <div className="alerta-erro">{t(erro)}</div>}
+        <div className="modal-acoes">
+          <button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button>
+          <button className="btn-primary" disabled={salvando} onClick={salvar}>{t('common.salvar')}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ModalSenha({ usuario, onFechar, onSalvo }: { usuario: { id: string; nome: string }; onFechar: () => void; onSalvo: () => void; }) {
+  const { token } = useAuth();
+  const { t } = useI18n();
+  const [senha, setSenha] = useState('');
+  const [erro, setErro] = useState<string | null>(null);
+  const [salvando, setSalvando] = useState(false);
+
+  async function salvar() {
+    setErro(null); setSalvando(true);
+    try { await api.patch('/usuarios/' + usuario.id + '/senha', { senha }, token!); onSalvo(); }
+    catch (e) { setErro((e as ErroApi).chaveI18n); setSalvando(false); }
+  }
+
+  return (
+    <div className="modal-fundo" onClick={onFechar}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <h2>{t('usuarios.redefinir_senha')} — {usuario.nome}</h2>
+        <label className="campo">{t('usuarios.nova_senha')}
+          <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} autoFocus />
+          <small className="hint">{t('usuarios.senha_hint')}</small>
+        </label>
+        {erro && <div className="alerta-erro">{t(erro)}</div>}
+        <div className="modal-acoes">
+          <button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button>
+          <button className="btn-primary" disabled={salvando} onClick={salvar}>{t('common.salvar')}</button>
+        </div>
+      </div>
+    </div>
+  );
+}

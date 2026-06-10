@@ -5,14 +5,16 @@
 > release. Se divergir, este cabeçalho está desatualizado — corrigir antes
 > de qualquer outra tarefa da nova sessão.
 >
-> Status: **Fase 0 em andamento — código de sistema iniciado.** Monorepo
-> scaffoldado (`apps/api` + `apps/web` + `packages/shared`), backend conectado
-> ao PostgreSQL (Neon, nuvem), runner de migrations por tenant, Clock UTC,
-> i18n base e **login funcional ponta a ponta** (testado contra Postgres real:
-> migrations, seed, login, rota protegida). Mockup em `Info/mockups/erp-mockup.html`
-> segue como referência visual viva. Orçamento das fases em `Info/ORCAMENTO-FASES.md`.
-> Próximo passo: Fase 1 (Acesso & Identidade) — ver `Info/PLANO-DESENVOLVIMENTO.md`.
-> Decidido: MVP sem fiscal (Fase 7 depois); banco = Postgres na nuvem (Neon).
+> Status: **Fase 1 em andamento (Acesso & Identidade).** Fase 0 concluída
+> (monorepo, backend hexagonal, login ponta a ponta). **Fase 1 Entrega A feita:**
+> perfis, permissões auto-descobertas (CapabilityRegistry no `packages/shared`),
+> guard de autorização por capability, CRUD de Usuários e Perfis (backend + telas),
+> menu respeitando permissões — tudo testado e2e contra Postgres real (12 testes PASS).
+> **Falta na Fase 1 (Entrega B):** branding white-label (Dados da empresa),
+> provisionar empresas (super-admin), idioma/timezone por empresa/usuário.
+> Mockup em `Info/mockups/erp-mockup.html` segue como referência visual.
+> Orçamento em `Info/ORCAMENTO-FASES.md`. Decidido: MVP sem fiscal (Fase 7 depois);
+> banco = Postgres na nuvem (Neon).
 
 ---
 
@@ -158,6 +160,31 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-10** — **Fase 1 — Entrega A (Acesso: Perfis, Permissões, Usuários).**
+  **Permissões auto-descobertas:** `CAPABILITIES` em `packages/shared/src/capabilities.ts`
+  (id + chave i18n de módulo/label) — fonte única; backend valida contra ela, frontend
+  monta os checkboxes. Caps da Fase 1: `dashboard.ver`, `acesso.usuario.listar/gerenciar`,
+  `acesso.perfil.listar/gerenciar`, `acesso.empresa.editar`. **Banco (migration tenant
+  002):** tabelas `perfil`, `perfil_capability`, coluna `usuario.perfil_id`. Seed cria
+  perfil **Administrador** (todas as caps) e vincula ao admin demo (idempotente; também
+  conserta admin antigo sem perfil). **Backend (hexagonal):** domínio `Perfil` +
+  `PerfilRepository`, `Usuario` ganhou `perfilId` + `UsuarioResumo`, `UsuarioRepository`
+  expandido (listar/criar/editar/ativo/senha/`capabilities`); `application/` `PerfisService`
+  e `UsuariosService` (validações via `ErroAplicacao` com chave i18n); `infra/` `SqlPerfilRepository`,
+  `SqlUsuarioRepository` reescrito; `interface/` guard `criarAutorizar(cap)` (busca caps do
+  perfil do usuário no banco), rotas `/perfis` (GET/POST/PUT), `/usuarios` (GET/POST/PUT +
+  PATCH ativo/senha), `/capabilities` (GET), `/me` agora retorna `capabilities`. Helper
+  `tratarErro`. **Frontend:** `api` client (get/post/put/patch), `AuthContext` guarda
+  `capabilities` + `temCapability()` (busca `/me` no login e revalida no reload → logout se
+  401), `ProtectedRoute` aceita `capability`, `Layout` com menu agrupado que só mostra item
+  se o usuário tem a cap, telas **Usuários** (lista + modal criar/editar + ativar/inativar +
+  redefinir senha) e **Perfis** (lista + modal com checkboxes de permissões por módulo),
+  i18n completo pt-BR/en-US/es das novas telas. **Validação:** type-check verde nos 3
+  pacotes + build Vite + **e2e contra Postgres real** (embedded-postgres): admin loga e tem
+  todas as caps, cria perfil Vendedor (só dashboard) e usuário, e-mail duplicado→409,
+  vendedor loga e só tem dashboard.ver, guard bloqueia vendedor (403) em listar usuários e
+  criar perfil, editar perfil reflete na hora — **12/12 PASS**. **Pendente:** Gui rodar
+  `db-setup.bat` (aplica migration 002 + cria perfil admin) e testar telas no navegador + commit.
 - **2026-06-10** — **Fase 0 implementada — primeiro código de sistema.** Sai do
   planejamento puro. **Decisões:** MVP = Fases 0–6 (sem fiscal/Fase 7 por ora,
   operação interna); banco de dev/prod = **Postgres na nuvem (Neon**, região

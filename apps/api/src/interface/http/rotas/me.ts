@@ -1,20 +1,18 @@
 import { Router, type Request, type Response } from 'express';
-import type { GeradorToken } from '../../../domain/ports/GeradorToken.js';
+import type { Dependencias } from '../../composition.js';
 import { criarAutenticar } from '../middlewares/autenticar.js';
+import { tratarErro } from '../responder.js';
 
-export function rotasMe(tokens: GeradorToken): Router {
+export function rotasMe(deps: Dependencias): Router {
   const r = Router();
-  const autenticar = criarAutenticar(tokens);
+  const autenticar = criarAutenticar(deps.tokens);
 
-  // Rota protegida: devolve o usuario do token.
-  r.get('/me', autenticar, (req: Request, res: Response) => {
-    const u = req.usuario!;
-    res.json({
-      id: u.sub,
-      nome: u.nome,
-      email: u.email,
-      empresa: u.empresa,
-    });
+  r.get('/me', autenticar, async (req: Request, res: Response) => {
+    try {
+      const u = req.usuario!;
+      const capabilities = await deps.usuariosRepo.capabilities(u.schema, u.sub);
+      res.json({ id: u.sub, nome: u.nome, email: u.email, empresa: u.empresa, capabilities });
+    } catch (e) { tratarErro(res, e); }
   });
 
   return r;
