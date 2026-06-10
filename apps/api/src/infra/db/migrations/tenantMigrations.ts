@@ -123,4 +123,14 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".vendedor ADD COLUMN IF NOT EXISTS segue_regra_geral boolean NOT NULL DEFAULT false;
     `,
   },
+  {
+    nome: '007_preco_base',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".preco_base (
+        produto_id    uuid PRIMARY KEY REFERENCES "${s}".produto(id) ON DELETE CASCADE,
+        preco         numeric(14,2) NOT NULL DEFAULT 0,
+        atualizado_em timestamptz NOT NULL DEFAULT now()
+      );
+    `,
+  },
 ];

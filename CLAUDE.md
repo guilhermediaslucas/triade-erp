@@ -21,7 +21,10 @@
 > crédito), Fornecedores e Vendedores (CRUD + telas sob Cadastros › Pessoas), e2e
 > Postgres real (13 PASS). **Fase 2 concluída.** Menu alinhado ao mockup (Configurações
 > reúne Usuários/Perfis/Dados da empresa; Cadastros com sub-rótulos Pessoas e
-> Estoque/Expedição). Próximo: Fase 3 (Comercial — pedidos + workflow).
+> Estoque/Expedição). **Fase 3 em andamento. Entrega 3A feita:** Comercial › Tabela de
+> preço (preço base por produto; migration 007 `preco_base`; menu grupo Comercial), e2e
+> Postgres real (6 PASS). Próximo na Fase 3: Novo pedido + lista + workflow + limite de
+> crédito + reserva de estoque (3B). Campanhas/preço por cliente: etapa posterior.
 > Mockup em `Info/mockups/erp-mockup.html` segue como referência visual.
 > Orçamento em `Info/ORCAMENTO-FASES.md`. Decidido: MVP sem fiscal (Fase 7 depois);
 > banco = Postgres na nuvem (Neon).

@@ -19,6 +19,8 @@ import { SqlClienteRepository } from '../infra/repositories/SqlClienteRepository
 import { SqlFornecedorRepository } from '../infra/repositories/SqlFornecedorRepository.js';
 import { SqlVendedorRepository } from '../infra/repositories/SqlVendedorRepository.js';
 import { ClientesService, FornecedoresService, VendedoresService } from '../application/pessoa/PessoasServices.js';
+import { SqlPrecoBaseRepository } from '../infra/repositories/SqlPrecoBaseRepository.js';
+import { PrecosService } from '../application/comercial/PrecosService.js';
 
 export function montarDependencias() {
   const empresasRepo = new SqlEmpresaRepository(AppDataSource);
@@ -32,6 +34,7 @@ export function montarDependencias() {
   const clientesRepo = new SqlClienteRepository(AppDataSource);
   const fornecedoresRepo = new SqlFornecedorRepository(AppDataSource);
   const vendedoresRepo = new SqlVendedorRepository(AppDataSource);
+  const precoBaseRepo = new SqlPrecoBaseRepository(AppDataSource);
 
   return {
     tokens,
@@ -47,6 +50,7 @@ export function montarDependencias() {
     clientesService: new ClientesService(clientesRepo),
     fornecedoresService: new FornecedoresService(fornecedoresRepo),
     vendedoresService: new VendedoresService(vendedoresRepo),
+    precosService: new PrecosService(precoBaseRepo),
   };
 }
 

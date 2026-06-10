@@ -14,6 +14,10 @@ interface Grupo { rotulo?: string; secoes: Secao[]; }
 const GRUPOS: Grupo[] = [
   { secoes: [{ itens: [{ rotulo: 'menu.dashboard', icone: '▦', to: '/', cap: 'dashboard.ver' }] }] },
   {
+    rotulo: 'menu.comercial',
+    secoes: [{ itens: [{ rotulo: 'menu.precos', icone: '🏷️', to: '/comercial/precos', cap: 'comercial.preco.listar' }] }],
+  },
+  {
     rotulo: 'menu.cadastros',
     secoes: [
       {

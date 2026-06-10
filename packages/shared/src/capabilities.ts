@@ -17,6 +17,8 @@ export const CAPABILITIES: Capability[] = [
   { id: 'cadastros.fornecedor.gerenciar',moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.fornecedor.gerenciar' },
   { id: 'cadastros.vendedor.listar',     moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.vendedor.listar' },
   { id: 'cadastros.vendedor.gerenciar',  moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.vendedor.gerenciar' },
+  { id: 'comercial.preco.listar',    moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.preco.listar' },
+  { id: 'comercial.preco.gerenciar', moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.preco.gerenciar' },
   { id: 'superadmin.empresa.provisionar', moduloChave: 'cap.modulo.superadmin', labelChave: 'cap.superadmin.empresa.provisionar' },
 ];
 

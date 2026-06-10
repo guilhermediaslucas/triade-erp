@@ -341,3 +341,26 @@ Object.assign(es, {
   'vendedores.meta': 'Meta mensual (R$)', 'vendedores.regra_geral': 'Seguir regla general de comisión (ignora el % individual)',
   'vendedores.regra_geral_curta': 'Regla general', 'vendedor.meta_invalida': 'Meta mensual inválida.',
 });
+
+// --- Fase 3A: Comercial / Tabela de preço ---
+Object.assign(pt, {
+  'menu.comercial': 'Comercial', 'menu.precos': 'Tabela de preço',
+  'cap.modulo.comercial': 'Comercial',
+  'cap.comercial.preco.listar': 'Ver tabela de preço', 'cap.comercial.preco.gerenciar': 'Editar preços',
+  'precos.titulo': 'Tabela de preço', 'precos.sub': 'Preço base de venda por produto (usado nos pedidos).',
+  'precos.produto': 'Produto', 'precos.preco_base': 'Preço base (R$)', 'precos.sem_produtos': 'Cadastre produtos primeiro.',
+});
+Object.assign(en, {
+  'menu.comercial': 'Sales', 'menu.precos': 'Price table',
+  'cap.modulo.comercial': 'Sales',
+  'cap.comercial.preco.listar': 'View price table', 'cap.comercial.preco.gerenciar': 'Edit prices',
+  'precos.titulo': 'Price table', 'precos.sub': 'Base sale price per product (used in orders).',
+  'precos.produto': 'Product', 'precos.preco_base': 'Base price (R$)', 'precos.sem_produtos': 'Create products first.',
+});
+Object.assign(es, {
+  'menu.comercial': 'Comercial', 'menu.precos': 'Tabla de precios',
+  'cap.modulo.comercial': 'Comercial',
+  'cap.comercial.preco.listar': 'Ver tabla de precios', 'cap.comercial.preco.gerenciar': 'Editar precios',
+  'precos.titulo': 'Tabla de precios', 'precos.sub': 'Precio base de venta por producto (usado en los pedidos).',
+  'precos.produto': 'Producto', 'precos.preco_base': 'Precio base (R$)', 'precos.sem_produtos': 'Crea productos primero.',
+});

@@ -14,6 +14,7 @@ import { Produtos } from './pages/Produtos.js';
 import { Clientes } from './pages/Clientes.js';
 import { Fornecedores } from './pages/Fornecedores.js';
 import { Vendedores } from './pages/Vendedores.js';
+import { TabelaPreco } from './pages/TabelaPreco.js';
 import { Layout } from './components/Layout.js';
 import { ProtectedRoute } from './components/ProtectedRoute.js';
 
@@ -33,6 +34,7 @@ export function App() {
               <Route path="/acesso/usuarios" element={<Protegida cap="acesso.usuario.listar"><Usuarios /></Protegida>} />
               <Route path="/acesso/perfis" element={<Protegida cap="acesso.perfil.listar"><Perfis /></Protegida>} />
               <Route path="/config/empresa" element={<Protegida cap="acesso.empresa.editar"><DadosEmpresa /></Protegida>} />
+              <Route path="/comercial/precos" element={<Protegida cap="comercial.preco.listar"><TabelaPreco /></Protegida>} />
               <Route path="/cadastros/clientes" element={<Protegida cap="cadastros.cliente.listar"><Clientes /></Protegida>} />
               <Route path="/cadastros/fornecedores" element={<Protegida cap="cadastros.fornecedor.listar"><Fornecedores /></Protegida>} />
               <Route path="/cadastros/vendedores" element={<Protegida cap="cadastros.vendedor.listar"><Vendedores /></Protegida>} />

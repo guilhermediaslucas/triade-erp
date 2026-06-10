@@ -1,0 +1,19 @@
+import { Router, type Request, type Response } from 'express';
+import type { Dependencias } from '../../composition.js';
+import { criarAutenticar } from '../middlewares/autenticar.js';
+import { criarAutorizar } from '../middlewares/autorizar.js';
+import { tratarErro } from '../responder.js';
+
+export function rotasPrecos(deps: Dependencias): Router {
+  const r = Router();
+  const aut = criarAutenticar(deps.tokens);
+  const az = criarAutorizar(deps.usuariosRepo);
+  const sch = (req: Request) => req.usuario!.schema;
+  r.get('/precos', aut, az('comercial.preco.listar'), async (req, res: Response) => {
+    try { res.json(await deps.precosService.listar(sch(req))); } catch (e) { tratarErro(res, e); }
+  });
+  r.put('/precos/:produtoId', aut, az('comercial.preco.gerenciar'), async (req, res: Response) => {
+    try { await deps.precosService.definir(sch(req), req.params.produtoId!, (req.body ?? {}).preco); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
+  return r;
+}
