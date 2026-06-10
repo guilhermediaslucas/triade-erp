@@ -1,0 +1,12 @@
+{
+  "name": "triade-erp",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": ["packages/*", "apps/*"],
+  "scripts": {
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "dev:api": "npm run dev --workspace @triade/api",
+    "dev:web": "npm run dev --workspace @triade/web",
+    "build": "npm run build --workspaces --if-present"
+  }
+}

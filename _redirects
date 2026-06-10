@@ -1,0 +1,3 @@
+# Faz a raiz do site (/) servir o mockup, sem mudar a URL.
+# Funciona no Netlify e no Cloudflare Pages.
+/    /Info/mockups/erp-mockup.html    200
