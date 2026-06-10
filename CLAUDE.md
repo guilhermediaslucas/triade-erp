@@ -170,6 +170,20 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-10** — **Decisão: fidelidade ao mockup + passada de fidelidade no Clientes.**
+  Gui pediu para o sistema seguir fielmente o mockup (campos/fluxo/telas). **Regra nova:**
+  cada módulo replica os campos/comportamentos do `Info/mockups/erp-mockup.html`; o que for só
+  polimento de UI (busca global Ctrl+K, sino de notificações, ações em massa) pode ficar p/ depois,
+  mas campos de negócio devem bater. **Clientes enriquecido:** migration tenant 005 `cliente_endereco`
+  (cep, logradouro, numero, complemento, bairro, cidade, uf, favorito; FK→cliente ON DELETE CASCADE);
+  domínio `Cliente.enderecos: EnderecoCliente[]`; `SqlClienteRepository` grava/lê/substitui endereços;
+  `ClientesService` normaliza favorito (≤1; se houver endereço e nenhum favorito, marca o 1º). **Front:**
+  modal de Clientes com **máscara CPF/CNPJ**, **buscar CNPJ** (BrasilAPI preenche razão/fantasia),
+  seção de **endereços** (principal+adicionais, rádio favorito, add/remover) com **busca de CEP** (ViaCEP
+  preenche logradouro/bairro/cidade/uf). e2e Postgres real (7 PASS): cria com 2 endereços, normaliza
+  favorito, edita substituindo, PF sem endereço. type-check + build OK. **Pendente:** Gui rodar
+  `db-setup.bat` (migration 005) + testar + commit. Fornecedor/Vendedor/Produto: alinhar detalhes ao
+  mockup conforme formos tocando (ex.: máscara doc no fornecedor).
 - **2026-06-10** — **Fase 2 — Entrega 2B (Cadastros › Pessoas) + alinhamento de menu. Fase 2 concluída.**
   **Banco (migration tenant 004):** `cliente` (tipo_pessoa PJ/PF, nome, fantasia, documento,
   email, telefone, limite_credito numeric, ativo), `fornecedor` (nome, fantasia, documento,

@@ -295,3 +295,26 @@ Object.assign(es, {
   'pessoa.documento_invalido': 'Ingresa un CPF/CNPJ válido.', 'pessoa.limite_invalido': 'Límite de crédito inválido.',
   'vendedor.comissao_invalida': 'Comisión inválida (0 a 100).',
 });
+
+// --- Fidelidade Clientes (enderecos, busca CNPJ/CEP) ---
+Object.assign(pt, {
+  'clientes.cidade': 'Cidade', 'clientes.buscar': 'Buscar', 'clientes.enderecos': 'Endereços',
+  'clientes.add_endereco': 'Adicionar endereço', 'clientes.sem_endereco': 'Nenhum endereço. O favorito será usado como padrão no pedido.',
+  'clientes.favorito': 'Favorito', 'clientes.remover': 'Remover',
+  'clientes.logradouro': 'Logradouro', 'clientes.numero': 'Número', 'clientes.bairro': 'Bairro',
+  'clientes.cnpj_incompleto': 'Informe um CNPJ completo para buscar.', 'clientes.cnpj_nao_encontrado': 'CNPJ não encontrado.',
+});
+Object.assign(en, {
+  'clientes.cidade': 'City', 'clientes.buscar': 'Look up', 'clientes.enderecos': 'Addresses',
+  'clientes.add_endereco': 'Add address', 'clientes.sem_endereco': 'No address. The favorite is used as default in orders.',
+  'clientes.favorito': 'Favorite', 'clientes.remover': 'Remove',
+  'clientes.logradouro': 'Street', 'clientes.numero': 'Number', 'clientes.bairro': 'District',
+  'clientes.cnpj_incompleto': 'Enter a full tax ID to look up.', 'clientes.cnpj_nao_encontrado': 'Tax ID not found.',
+});
+Object.assign(es, {
+  'clientes.cidade': 'Ciudad', 'clientes.buscar': 'Buscar', 'clientes.enderecos': 'Direcciones',
+  'clientes.add_endereco': 'Agregar dirección', 'clientes.sem_endereco': 'Sin dirección. La favorita se usa por defecto en el pedido.',
+  'clientes.favorito': 'Favorita', 'clientes.remover': 'Quitar',
+  'clientes.logradouro': 'Calle', 'clientes.numero': 'Número', 'clientes.bairro': 'Barrio',
+  'clientes.cnpj_incompleto': 'Ingresa un CNPJ completo para buscar.', 'clientes.cnpj_nao_encontrado': 'CNPJ no encontrado.',
+});

@@ -91,4 +91,22 @@ export const tenantMigrations: MigracaoTenant[] = [
       );
     `,
   },
+  {
+    nome: '005_cliente_endereco',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".cliente_endereco (
+        id          uuid PRIMARY KEY,
+        cliente_id  uuid NOT NULL REFERENCES "${s}".cliente(id) ON DELETE CASCADE,
+        cep         text,
+        logradouro  text,
+        numero      text,
+        complemento text,
+        bairro      text,
+        cidade      text,
+        uf          text,
+        favorito    boolean NOT NULL DEFAULT false
+      );
+      CREATE INDEX IF NOT EXISTS idx_${s}_cliente_endereco ON "${s}".cliente_endereco(cliente_id);
+    `,
+  },
 ];

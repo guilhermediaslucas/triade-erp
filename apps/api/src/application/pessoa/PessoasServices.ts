@@ -1,5 +1,5 @@
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
-import type { Cliente, ClienteRepository, NovoCliente, TipoPessoa } from '../../domain/pessoa/Cliente.js';
+import type { Cliente, ClienteRepository, EnderecoCliente, NovoCliente, TipoPessoa } from '../../domain/pessoa/Cliente.js';
 import type { Fornecedor, FornecedorRepository, NovoFornecedor } from '../../domain/pessoa/Fornecedor.js';
 import type { Vendedor, VendedorRepository, NovoVendedor } from '../../domain/pessoa/Vendedor.js';
 
@@ -13,6 +13,20 @@ function exigeDoc(d: string): string {
 }
 const limpo = (v: any): string | null => (v && String(v).trim() !== '' ? String(v).trim() : null);
 
+function montarEnderecos(lista: any): EnderecoCliente[] {
+  if (!Array.isArray(lista)) return [];
+  const ends: EnderecoCliente[] = lista.map((e: any) => ({
+    cep: limpo(e?.cep), logradouro: limpo(e?.logradouro), numero: limpo(e?.numero),
+    complemento: limpo(e?.complemento), bairro: limpo(e?.bairro), cidade: limpo(e?.cidade),
+    uf: limpo(e?.uf), favorito: !!e?.favorito,
+  }));
+  // garante no maximo um favorito; se houver endereco e nenhum favorito, marca o primeiro
+  const favs = ends.filter((e) => e.favorito);
+  if (favs.length > 1) { ends.forEach((e, i) => { e.favorito = i === ends.findIndex((x) => x.favorito); }); }
+  if (ends.length > 0 && !ends.some((e) => e.favorito)) ends[0]!.favorito = true;
+  return ends;
+}
+
 export class ClientesService {
   constructor(private readonly repo: ClienteRepository) {}
   listar(s: string): Promise<Cliente[]> { return this.repo.listar(s); }
@@ -20,9 +34,11 @@ export class ClientesService {
     const tipoPessoa: TipoPessoa = e?.tipoPessoa === 'PF' ? 'PF' : 'PJ';
     const limite = Number(e?.limiteCredito ?? 0);
     if (!Number.isFinite(limite) || limite < 0) throw new ErroAplicacao('pessoa.limite_invalido', 400);
+    const enderecos = montarEnderecos(e?.enderecos);
     return {
       tipoPessoa, nome: exigeNome(e?.nome), fantasia: tipoPessoa === 'PJ' ? limpo(e?.fantasia) : null,
       documento: exigeDoc(e?.documento), email: limpo(e?.email), telefone: limpo(e?.telefone), limiteCredito: limite,
+      enderecos,
     };
   }
   criar(s: string, e: any): Promise<string> { return this.repo.criar(s, this.montar(e)); }

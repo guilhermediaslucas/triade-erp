@@ -103,3 +103,15 @@ a { text-decoration: none; color: inherit; }
 /* sub-rotulos do menu (dentro de um grupo, ex.: Cadastros) */
 .nav-sublabel { padding: 8px 22px 4px; font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: #94a3b8; opacity: .8; }
 .nav-secao { margin-bottom: 2px; }
+
+/* fidelidade clientes */
+.modal-lg { max-width: 640px; }
+.campo-com-botao { display: flex; gap: 8px; }
+.campo-com-botao input { flex: 1; }
+.btn-mini { padding: 6px 10px; font-size: 12px; }
+.end-bloco { border: 1px solid var(--borda); border-radius: 10px; padding: 12px; margin-bottom: 10px; background: #fafbfc; }
+.end-topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.end-fav { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.end-grid { display: flex; gap: 8px; margin-bottom: 8px; }
+.end-grid input { flex: 1; padding: 9px 10px; border: 1px solid var(--borda); border-radius: 8px; font-size: 13px; }
+.end-grid input:focus { border-color: var(--accent); outline: none; }
