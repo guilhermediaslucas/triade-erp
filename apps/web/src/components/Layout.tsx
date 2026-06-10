@@ -5,32 +5,39 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { useBranding } from '../branding/BrandingContext.js';
 import { SeletorIdioma } from './SeletorIdioma.js';
 
-interface ItemNav { rotulo: string; icone: string; to: string; cap?: string; }
-interface GrupoNav { rotulo?: string; itens: ItemNav[]; }
+interface Item { rotulo: string; icone: string; to: string; cap?: string; }
+interface Secao { sublabel?: string; itens: Item[]; }
+interface Grupo { rotulo?: string; secoes: Secao[]; }
 
-const GRUPOS: GrupoNav[] = [
-  { itens: [{ rotulo: 'menu.dashboard', icone: '▦', to: '/', cap: 'dashboard.ver' }] },
+// Estrutura espelhando o mockup (erp-mockup.html). Os grupos/itens só aparecem
+// se o usuário tiver a capability — o menu cresce conforme as fases avançam.
+const GRUPOS: Grupo[] = [
+  { secoes: [{ itens: [{ rotulo: 'menu.dashboard', icone: '▦', to: '/', cap: 'dashboard.ver' }] }] },
   {
     rotulo: 'menu.cadastros',
-    itens: [
-      { rotulo: 'menu.categorias', icone: '🏷️', to: '/cadastros/categorias', cap: 'cadastros.categoria.listar' },
-      { rotulo: 'menu.produtos', icone: '📦', to: '/cadastros/produtos', cap: 'cadastros.produto.listar' },
-    ],
-  },
-  {
-    rotulo: 'menu.acesso',
-    itens: [
-      { rotulo: 'menu.usuarios', icone: '👤', to: '/acesso/usuarios', cap: 'acesso.usuario.listar' },
-      { rotulo: 'menu.perfis', icone: '🔑', to: '/acesso/perfis', cap: 'acesso.perfil.listar' },
+    secoes: [
+      {
+        sublabel: 'menu.sub.estoque',
+        itens: [
+          { rotulo: 'menu.produtos', icone: '📦', to: '/cadastros/produtos', cap: 'cadastros.produto.listar' },
+          { rotulo: 'menu.categorias', icone: '🏷️', to: '/cadastros/categorias', cap: 'cadastros.categoria.listar' },
+        ],
+      },
     ],
   },
   {
     rotulo: 'menu.config',
-    itens: [{ rotulo: 'menu.empresa', icone: '🏢', to: '/config/empresa', cap: 'acesso.empresa.editar' }],
+    secoes: [{
+      itens: [
+        { rotulo: 'menu.usuarios', icone: '👤', to: '/acesso/usuarios', cap: 'acesso.usuario.listar' },
+        { rotulo: 'menu.perfis', icone: '🔑', to: '/acesso/perfis', cap: 'acesso.perfil.listar' },
+        { rotulo: 'menu.empresa', icone: '🏢', to: '/config/empresa', cap: 'acesso.empresa.editar' },
+      ],
+    }],
   },
   {
     rotulo: 'menu.superadmin',
-    itens: [{ rotulo: 'menu.empresas', icone: '🏬', to: '/superadmin/empresas', cap: 'superadmin.empresa.provisionar' }],
+    secoes: [{ itens: [{ rotulo: 'menu.empresas', icone: '🏬', to: '/superadmin/empresas', cap: 'superadmin.empresa.provisionar' }] }],
   },
 ];
 
@@ -39,6 +46,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const { branding } = useBranding();
   const { t } = useI18n();
   const fantasia = branding?.fantasia ?? empresaFantasia;
+  const visivel = (it: Item) => !it.cap || temCapability(it.cap);
 
   return (
     <div className="app-shell">
@@ -50,17 +58,26 @@ export function Layout({ children }: { children: ReactNode }) {
         </div>
         <nav>
           {GRUPOS.map((g, gi) => {
-            const visiveis = g.itens.filter((it) => !it.cap || temCapability(it.cap));
-            if (visiveis.length === 0) return null;
+            const totalVisiveis = g.secoes.reduce((n, s) => n + s.itens.filter(visivel).length, 0);
+            if (totalVisiveis === 0) return null;
             return (
               <div key={gi} className="nav-grupo">
                 {g.rotulo && <div className="nav-grupo-rotulo">{t(g.rotulo)}</div>}
-                {visiveis.map((it) => (
-                  <NavLink key={it.to} to={it.to} end={it.to === '/'}
-                    className={({ isActive }) => (isActive ? 'nav-item ativo' : 'nav-item')}>
-                    <span className="nav-ic">{it.icone}</span>{t(it.rotulo)}
-                  </NavLink>
-                ))}
+                {g.secoes.map((s, si) => {
+                  const itens = s.itens.filter(visivel);
+                  if (itens.length === 0) return null;
+                  return (
+                    <div key={si} className="nav-secao">
+                      {s.sublabel && <div className="nav-sublabel">{t(s.sublabel)}</div>}
+                      {itens.map((it) => (
+                        <NavLink key={it.to} to={it.to} end={it.to === '/'}
+                          className={({ isActive }) => (isActive ? 'nav-item ativo' : 'nav-item')}>
+                          <span className="nav-ic">{it.icone}</span>{t(it.rotulo)}
+                        </NavLink>
+                      ))}
+                    </div>
+                  );
+                })}
               </div>
             );
           })}

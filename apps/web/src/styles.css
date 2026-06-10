@@ -99,3 +99,7 @@ a { text-decoration: none; color: inherit; }
 .logo-btns { display: flex; align-items: center; gap: 10px; }
 .cores-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
 .cores-grid input[type=color] { height: 40px; padding: 2px; cursor: pointer; }
+
+/* sub-rotulos do menu (dentro de um grupo, ex.: Cadastros) */
+.nav-sublabel { padding: 8px 22px 4px; font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: #94a3b8; opacity: .8; }
+.nav-secao { margin-bottom: 2px; }

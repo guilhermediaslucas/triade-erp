@@ -243,3 +243,8 @@ Object.assign(es, {
   'produto.preco_invalido': 'Precio inválido.', 'produto.minimo_invalido': 'Stock mínimo inválido.',
   'produto.categoria_invalida': 'Categoría inválida.',
 });
+
+// --- Alinhamento de menu ao mockup (sub-rotulos do Cadastros) ---
+Object.assign(pt, { 'menu.sub.comercial': 'Comercial', 'menu.sub.pessoas': 'Pessoas', 'menu.sub.estoque': 'Estoque/Expedição', 'menu.sub.financeiro': 'Financeiro' });
+Object.assign(en, { 'menu.sub.comercial': 'Sales', 'menu.sub.pessoas': 'People', 'menu.sub.estoque': 'Inventory/Shipping', 'menu.sub.financeiro': 'Finance' });
+Object.assign(es, { 'menu.sub.comercial': 'Comercial', 'menu.sub.pessoas': 'Personas', 'menu.sub.estoque': 'Inventario/Expedición', 'menu.sub.financeiro': 'Finanzas' });
