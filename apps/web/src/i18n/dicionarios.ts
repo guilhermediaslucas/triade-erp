@@ -593,3 +593,23 @@ Object.assign(es, {
   'receb.vazio': 'Sin pendencias de recepción.', 'receb.receber': 'Recibir', 'receb.confirmar': 'Confirmar recepción', 'receb.un': 'un',
   'recebimento.nao_encontrado': 'Pendencia no encontrada.',
 });
+
+// --- Fase 6: Dashboard ---
+Object.assign(pt, {
+  'dash.vendas_mes': 'Vendas no mês', 'dash.saldo_caixa': 'Saldo de caixa', 'dash.a_receber': 'A receber (aberto)',
+  'dash.a_pagar': 'A pagar (aberto)', 'dash.estoque_baixo': 'Estoque baixo', 'dash.produtos': 'produto(s)',
+  'dash.vencido': 'vencido', 'dash.em_dia': 'Em dia', 'dash.pedidos_status': 'Pedidos por status',
+  'dash.top_produtos': 'Produtos mais vendidos', 'dash.sem_vendas': 'Ainda sem vendas registradas.',
+});
+Object.assign(en, {
+  'dash.vendas_mes': 'Sales this month', 'dash.saldo_caixa': 'Cash balance', 'dash.a_receber': 'Receivable (open)',
+  'dash.a_pagar': 'Payable (open)', 'dash.estoque_baixo': 'Low stock', 'dash.produtos': 'product(s)',
+  'dash.vencido': 'overdue', 'dash.em_dia': 'On track', 'dash.pedidos_status': 'Orders by status',
+  'dash.top_produtos': 'Best-selling products', 'dash.sem_vendas': 'No sales recorded yet.',
+});
+Object.assign(es, {
+  'dash.vendas_mes': 'Ventas del mes', 'dash.saldo_caixa': 'Saldo de caja', 'dash.a_receber': 'A cobrar (abierto)',
+  'dash.a_pagar': 'A pagar (abierto)', 'dash.estoque_baixo': 'Stock bajo', 'dash.produtos': 'producto(s)',
+  'dash.vencido': 'vencido', 'dash.em_dia': 'Al día', 'dash.pedidos_status': 'Pedidos por estado',
+  'dash.top_produtos': 'Productos más vendidos', 'dash.sem_vendas': 'Aún sin ventas registradas.',
+});
