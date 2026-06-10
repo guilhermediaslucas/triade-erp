@@ -10,6 +10,7 @@ import { rotasEmpresa } from './rotas/empresa.js';
 import { rotasEmpresas } from './rotas/empresas.js';
 import { rotasCategorias } from './rotas/categorias.js';
 import { rotasProdutos } from './rotas/produtos.js';
+import { rotasPessoas } from './rotas/pessoas.js';
 
 export function criarServidor(): Express {
   const app = express();
@@ -36,6 +37,7 @@ export function criarServidor(): Express {
   app.use(rotasEmpresas(deps));
   app.use(rotasCategorias(deps));
   app.use(rotasProdutos(deps));
+  app.use(rotasPessoas(deps));
 
   return app;
 }

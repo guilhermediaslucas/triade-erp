@@ -17,8 +17,11 @@
 > isolamento entre tenants e idioma padrão da empresa aplicado no login —
 > testado e2e (10 PASS). **Fase 1 concluída** (resta só, opcional, idioma/timezone
 > por usuário — pode ir junto com Fase 2). **Fase 2 em andamento. Entrega 2A feita:**
-> Categorias + Produtos (CRUD backend hexagonal + telas + menu Cadastros por permissão),
-> testado e2e Postgres real (11 PASS). Falta 2B: Clientes, Fornecedores, Vendedores.
+> Categorias + Produtos. **Entrega 2B feita:** Clientes (PF/PJ, CPF/CNPJ, limite de
+> crédito), Fornecedores e Vendedores (CRUD + telas sob Cadastros › Pessoas), e2e
+> Postgres real (13 PASS). **Fase 2 concluída.** Menu alinhado ao mockup (Configurações
+> reúne Usuários/Perfis/Dados da empresa; Cadastros com sub-rótulos Pessoas e
+> Estoque/Expedição). Próximo: Fase 3 (Comercial — pedidos + workflow).
 > Mockup em `Info/mockups/erp-mockup.html` segue como referência visual.
 > Orçamento em `Info/ORCAMENTO-FASES.md`. Decidido: MVP sem fiscal (Fase 7 depois);
 > banco = Postgres na nuvem (Neon).
@@ -167,6 +170,24 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-10** — **Fase 2 — Entrega 2B (Cadastros › Pessoas) + alinhamento de menu. Fase 2 concluída.**
+  **Banco (migration tenant 004):** `cliente` (tipo_pessoa PJ/PF, nome, fantasia, documento,
+  email, telefone, limite_credito numeric, ativo), `fornecedor` (nome, fantasia, documento,
+  email, telefone, ativo), `vendedor` (nome, email, telefone, comissao_percentual numeric, ativo).
+  **Caps:** `cadastros.cliente/fornecedor/vendedor` listar/gerenciar. **Backend (hexagonal):**
+  domínio + repos SQL (`SqlCliente/Fornecedor/VendedorRepository`) + `PessoasServices.ts`
+  (ClientesService valida PF/PJ, documento, limite ≥ 0; FornecedoresService; VendedoresService
+  valida comissão 0–100); rota única `pessoas.ts` com helper CRUD genérico (GET/POST/PUT/PATCH
+  ativo) registrando `/clientes`, `/fornecedores`, `/vendedores`, guard por capability.
+  **Frontend:** telas Clientes (toggle PF/PJ muda labels/campos; limite de crédito; CPF/CNPJ),
+  Fornecedores e Vendedores (lista + modal + ativar/inativar), sob **Cadastros › Pessoas**,
+  i18n pt/en/es. **Menu alinhado ao mockup:** grupo único **Configurações** (Usuários, Perfis,
+  Dados da empresa) no lugar do antigo "Acesso"+"Configurações"; **Cadastros** com sub-rótulos
+  (`nav-sublabel`) Pessoas e Estoque/Expedição; Super-admin mantido à parte (adição do multi-tenant,
+  fora do mockup). **Validação:** type-check 3 pacotes + build Vite + **e2e Postgres real (13 PASS)**:
+  cria cliente PF e PJ (com limite), valida nome curto/documento vazio (400), CRUD de fornecedor e
+  vendedor, comissão > 100 → 400, edita/inativa, guard 403 sem cap. **Pendente:** Gui rodar
+  `db-setup.bat` (migration 004) + testar + commit.
 - **2026-06-10** — **Fase 2 — Entrega 2A (Cadastros: Categorias e Produtos).**
   **Banco (migration tenant 003):** tabelas `categoria` (id, nome) e `produto` (id, nome,
   categoria_id→categoria, unidade, preco numeric(14,2), estoque_minimo, ativo). **Caps novas:**

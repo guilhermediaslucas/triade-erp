@@ -55,4 +55,40 @@ export const tenantMigrations: MigracaoTenant[] = [
       );
     `,
   },
+  {
+    nome: '004_pessoas',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".cliente (
+        id             uuid PRIMARY KEY,
+        tipo_pessoa    text NOT NULL DEFAULT 'PJ',
+        nome           text NOT NULL,
+        fantasia       text,
+        documento      text NOT NULL,
+        email          text,
+        telefone       text,
+        limite_credito numeric(14,2) NOT NULL DEFAULT 0,
+        ativo          boolean NOT NULL DEFAULT true,
+        criado_em      timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE TABLE IF NOT EXISTS "${s}".fornecedor (
+        id        uuid PRIMARY KEY,
+        nome      text NOT NULL,
+        fantasia  text,
+        documento text NOT NULL,
+        email     text,
+        telefone  text,
+        ativo     boolean NOT NULL DEFAULT true,
+        criado_em timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE TABLE IF NOT EXISTS "${s}".vendedor (
+        id                  uuid PRIMARY KEY,
+        nome                text NOT NULL,
+        email               text,
+        telefone            text,
+        comissao_percentual numeric(5,2) NOT NULL DEFAULT 0,
+        ativo               boolean NOT NULL DEFAULT true,
+        criado_em           timestamptz NOT NULL DEFAULT now()
+      );
+    `,
+  },
 ];

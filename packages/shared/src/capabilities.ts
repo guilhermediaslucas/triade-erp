@@ -11,6 +11,12 @@ export const CAPABILITIES: Capability[] = [
   { id: 'cadastros.categoria.gerenciar', moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.categoria.gerenciar' },
   { id: 'cadastros.produto.listar',      moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.produto.listar' },
   { id: 'cadastros.produto.gerenciar',   moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.produto.gerenciar' },
+  { id: 'cadastros.cliente.listar',      moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.cliente.listar' },
+  { id: 'cadastros.cliente.gerenciar',   moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.cliente.gerenciar' },
+  { id: 'cadastros.fornecedor.listar',   moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.fornecedor.listar' },
+  { id: 'cadastros.fornecedor.gerenciar',moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.fornecedor.gerenciar' },
+  { id: 'cadastros.vendedor.listar',     moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.vendedor.listar' },
+  { id: 'cadastros.vendedor.gerenciar',  moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.vendedor.gerenciar' },
   { id: 'superadmin.empresa.provisionar', moduloChave: 'cap.modulo.superadmin', labelChave: 'cap.superadmin.empresa.provisionar' },
 ];
 

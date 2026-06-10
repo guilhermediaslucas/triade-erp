@@ -17,6 +17,14 @@ const GRUPOS: Grupo[] = [
     rotulo: 'menu.cadastros',
     secoes: [
       {
+        sublabel: 'menu.sub.pessoas',
+        itens: [
+          { rotulo: 'menu.clientes', icone: '🧑‍⚕️', to: '/cadastros/clientes', cap: 'cadastros.cliente.listar' },
+          { rotulo: 'menu.fornecedores', icone: '🏭', to: '/cadastros/fornecedores', cap: 'cadastros.fornecedor.listar' },
+          { rotulo: 'menu.vendedores', icone: '💼', to: '/cadastros/vendedores', cap: 'cadastros.vendedor.listar' },
+        ],
+      },
+      {
         sublabel: 'menu.sub.estoque',
         itens: [
           { rotulo: 'menu.produtos', icone: '📦', to: '/cadastros/produtos', cap: 'cadastros.produto.listar' },

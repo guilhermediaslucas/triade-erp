@@ -15,6 +15,10 @@ import { SqlCategoriaRepository } from '../infra/repositories/SqlCategoriaReposi
 import { SqlProdutoRepository } from '../infra/repositories/SqlProdutoRepository.js';
 import { CategoriasService } from '../application/cadastro/CategoriasService.js';
 import { ProdutosService } from '../application/cadastro/ProdutosService.js';
+import { SqlClienteRepository } from '../infra/repositories/SqlClienteRepository.js';
+import { SqlFornecedorRepository } from '../infra/repositories/SqlFornecedorRepository.js';
+import { SqlVendedorRepository } from '../infra/repositories/SqlVendedorRepository.js';
+import { ClientesService, FornecedoresService, VendedoresService } from '../application/pessoa/PessoasServices.js';
 
 export function montarDependencias() {
   const empresasRepo = new SqlEmpresaRepository(AppDataSource);
@@ -25,6 +29,9 @@ export function montarDependencias() {
   const migrador = new TypeOrmMigrador(AppDataSource);
   const categoriasRepo = new SqlCategoriaRepository(AppDataSource);
   const produtosRepo = new SqlProdutoRepository(AppDataSource);
+  const clientesRepo = new SqlClienteRepository(AppDataSource);
+  const fornecedoresRepo = new SqlFornecedorRepository(AppDataSource);
+  const vendedoresRepo = new SqlVendedorRepository(AppDataSource);
 
   return {
     tokens,
@@ -37,6 +44,9 @@ export function montarDependencias() {
     provisionarEmpresa: new ProvisionarEmpresa(empresasRepo, migrador, perfisRepo, usuariosRepo, hash),
     categoriasService: new CategoriasService(categoriasRepo),
     produtosService: new ProdutosService(produtosRepo, categoriasRepo),
+    clientesService: new ClientesService(clientesRepo),
+    fornecedoresService: new FornecedoresService(fornecedoresRepo),
+    vendedoresService: new VendedoresService(vendedoresRepo),
   };
 }
 

@@ -248,3 +248,50 @@ Object.assign(es, {
 Object.assign(pt, { 'menu.sub.comercial': 'Comercial', 'menu.sub.pessoas': 'Pessoas', 'menu.sub.estoque': 'Estoque/Expedição', 'menu.sub.financeiro': 'Financeiro' });
 Object.assign(en, { 'menu.sub.comercial': 'Sales', 'menu.sub.pessoas': 'People', 'menu.sub.estoque': 'Inventory/Shipping', 'menu.sub.financeiro': 'Finance' });
 Object.assign(es, { 'menu.sub.comercial': 'Comercial', 'menu.sub.pessoas': 'Personas', 'menu.sub.estoque': 'Inventario/Expedición', 'menu.sub.financeiro': 'Finanzas' });
+
+// --- Fase 2B: Pessoas (Clientes, Fornecedores, Vendedores) ---
+Object.assign(pt, {
+  'menu.clientes': 'Clientes', 'menu.fornecedores': 'Fornecedores', 'menu.vendedores': 'Vendedores',
+  'cap.cadastros.cliente.listar': 'Listar clientes', 'cap.cadastros.cliente.gerenciar': 'Criar e editar clientes',
+  'cap.cadastros.fornecedor.listar': 'Listar fornecedores', 'cap.cadastros.fornecedor.gerenciar': 'Criar e editar fornecedores',
+  'cap.cadastros.vendedor.listar': 'Listar vendedores', 'cap.cadastros.vendedor.gerenciar': 'Criar e editar vendedores',
+  'pessoa.nome': 'Nome', 'pessoa.razao': 'Razão social', 'pessoa.fantasia': 'Nome fantasia',
+  'pessoa.documento': 'CPF/CNPJ', 'pessoa.email': 'E-mail', 'pessoa.telefone': 'Telefone',
+  'clientes.titulo': 'Clientes', 'clientes.novo': 'Novo cliente', 'clientes.nome': 'Nome',
+  'clientes.tipo': 'Tipo de pessoa', 'clientes.pj': 'Pessoa jurídica (PJ)', 'clientes.pf': 'Pessoa física (PF)',
+  'clientes.nome_completo': 'Nome completo', 'clientes.limite': 'Limite de crédito',
+  'fornecedores.titulo': 'Fornecedores', 'fornecedores.novo': 'Novo fornecedor',
+  'vendedores.titulo': 'Vendedores', 'vendedores.novo': 'Novo vendedor', 'vendedores.comissao': 'Comissão (%)',
+  'pessoa.documento_invalido': 'Informe um CPF/CNPJ válido.', 'pessoa.limite_invalido': 'Limite de crédito inválido.',
+  'vendedor.comissao_invalida': 'Comissão inválida (0 a 100).',
+});
+Object.assign(en, {
+  'menu.clientes': 'Customers', 'menu.fornecedores': 'Suppliers', 'menu.vendedores': 'Sales reps',
+  'cap.cadastros.cliente.listar': 'List customers', 'cap.cadastros.cliente.gerenciar': 'Create and edit customers',
+  'cap.cadastros.fornecedor.listar': 'List suppliers', 'cap.cadastros.fornecedor.gerenciar': 'Create and edit suppliers',
+  'cap.cadastros.vendedor.listar': 'List sales reps', 'cap.cadastros.vendedor.gerenciar': 'Create and edit sales reps',
+  'pessoa.nome': 'Name', 'pessoa.razao': 'Legal name', 'pessoa.fantasia': 'Trade name',
+  'pessoa.documento': 'Tax ID', 'pessoa.email': 'E-mail', 'pessoa.telefone': 'Phone',
+  'clientes.titulo': 'Customers', 'clientes.novo': 'New customer', 'clientes.nome': 'Name',
+  'clientes.tipo': 'Entity type', 'clientes.pj': 'Company', 'clientes.pf': 'Individual',
+  'clientes.nome_completo': 'Full name', 'clientes.limite': 'Credit limit',
+  'fornecedores.titulo': 'Suppliers', 'fornecedores.novo': 'New supplier',
+  'vendedores.titulo': 'Sales reps', 'vendedores.novo': 'New sales rep', 'vendedores.comissao': 'Commission (%)',
+  'pessoa.documento_invalido': 'Enter a valid tax ID.', 'pessoa.limite_invalido': 'Invalid credit limit.',
+  'vendedor.comissao_invalida': 'Invalid commission (0 to 100).',
+});
+Object.assign(es, {
+  'menu.clientes': 'Clientes', 'menu.fornecedores': 'Proveedores', 'menu.vendedores': 'Vendedores',
+  'cap.cadastros.cliente.listar': 'Listar clientes', 'cap.cadastros.cliente.gerenciar': 'Crear y editar clientes',
+  'cap.cadastros.fornecedor.listar': 'Listar proveedores', 'cap.cadastros.fornecedor.gerenciar': 'Crear y editar proveedores',
+  'cap.cadastros.vendedor.listar': 'Listar vendedores', 'cap.cadastros.vendedor.gerenciar': 'Crear y editar vendedores',
+  'pessoa.nome': 'Nombre', 'pessoa.razao': 'Razón social', 'pessoa.fantasia': 'Nombre comercial',
+  'pessoa.documento': 'CPF/CNPJ', 'pessoa.email': 'Correo', 'pessoa.telefone': 'Teléfono',
+  'clientes.titulo': 'Clientes', 'clientes.novo': 'Nuevo cliente', 'clientes.nome': 'Nombre',
+  'clientes.tipo': 'Tipo de persona', 'clientes.pj': 'Persona jurídica', 'clientes.pf': 'Persona física',
+  'clientes.nome_completo': 'Nombre completo', 'clientes.limite': 'Límite de crédito',
+  'fornecedores.titulo': 'Proveedores', 'fornecedores.novo': 'Nuevo proveedor',
+  'vendedores.titulo': 'Vendedores', 'vendedores.novo': 'Nuevo vendedor', 'vendedores.comissao': 'Comisión (%)',
+  'pessoa.documento_invalido': 'Ingresa un CPF/CNPJ válido.', 'pessoa.limite_invalido': 'Límite de crédito inválido.',
+  'vendedor.comissao_invalida': 'Comisión inválida (0 a 100).',
+});
