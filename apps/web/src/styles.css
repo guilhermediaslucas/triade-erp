@@ -252,3 +252,18 @@ a { text-decoration: none; color: inherit; }
 .toast-item.erro { background: #b91c1c; }
 .toast-ic { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: rgba(255,255,255,.2); font-size: 12px; font-weight: 700; }
 @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- Sino de notificações --- */
+.sino-wrap { position: relative; }
+.sino-btn { position: relative; background: transparent; border: none; cursor: pointer; font-size: 18px; padding: 4px 6px; border-radius: 8px; line-height: 1; }
+.sino-btn:hover { background: #00000010; }
+.sino-badge { position: absolute; top: -2px; right: -2px; background: #dc2626; color: #fff; font-size: 10px; font-weight: 700; min-width: 16px; height: 16px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; padding: 0 4px; }
+.sino-overlay { position: fixed; inset: 0; z-index: 1090; }
+.sino-painel { position: absolute; right: 0; top: 38px; width: 300px; background: var(--card, #fff); border: 1px solid var(--borda, #e2e8f0); border-radius: 12px; box-shadow: 0 16px 48px rgba(0,0,0,.2); z-index: 1095; overflow: hidden; }
+.sino-cab { padding: 12px 14px; font-weight: 700; border-bottom: 1px solid var(--borda, #e2e8f0); font-size: 14px; }
+.sino-vazio { padding: 20px 14px; color: var(--muted, #64748b); text-align: center; font-size: 14px; }
+.sino-item { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: transparent; border: none; padding: 11px 14px; cursor: pointer; font-size: 14px; color: var(--texto, #1e293b); border-bottom: 1px solid var(--borda, #f1f5f9); }
+.sino-item:hover { background: #00000008; }
+.sino-ic { width: 22px; text-align: center; }
+.sino-lbl { flex: 1; }
+.sino-qtd { background: #dc2626; color: #fff; font-size: 12px; font-weight: 700; min-width: 22px; text-align: center; border-radius: 999px; padding: 1px 7px; }
