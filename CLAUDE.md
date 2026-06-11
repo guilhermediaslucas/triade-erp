@@ -176,6 +176,16 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Refinamento — Histórico de inventários (Relatórios).** **Sem migration nem
+  backend novo**; reusa `estoque.inventario.ver` e os endpoints `GET /inventario` + `GET
+  /inventario/:id/faltantes` (já testados no e2e de Inventário). **Frontend:** tela **Relatórios ›
+  Inventários** (`RelInventarios.tsx`) — filtro de período (filtra o histórico por `criadoEm`), KPIs
+  (nº de inventários, **acuracidade média** = encontradas/esperadas, itens faltantes, baixados como
+  perda), tabela com pill de acuracidade colorida (verde ≥95%, amarelo ≥80%, vermelho abaixo) e
+  **drill** por inventário (expande e busca os faltantes do `/:id/faltantes`), export CSV; menu +
+  rota + i18n pt/en/es. **Validação:** **type-check web verde (exit 0)**; sem e2e (reusa endpoints
+  já cobertos). **Pendente:** Gui `git push` + testar. **Próximo (opcional):** cadastros de
+  credores/favorecidos p/ reembolso, conciliação bancária, ou CRM (em revisão pelo Gui).
 - **2026-06-11** — **Sistema PUBLICADO na nuvem (Cloudflare Pages + Render + Neon).** Site real no ar
   em `https://triade-erp.pages.dev` (Cloudflare Pages, deploy via Git), API no Render
   (`https://triade-api.onrender.com`, `/health` ok), banco na branch **production** do Neon

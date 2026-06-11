@@ -1186,3 +1186,26 @@ Object.assign(es, {
   'perdas.motivo': 'Motivo', 'perdas.todos': 'Todos los motivos', 'perdas.vazio': 'Sin pérdidas en el período.',
   'perdas.kpi_valor': 'Valor perdido', 'perdas.kpi_itens': 'Ítems perdidos', 'perdas.kpi_lancamentos': 'Registros',
 });
+
+// --- Refinamento: Relatório de Inventários (histórico) ---
+Object.assign(pt, {
+  'menu.rel_inventarios': 'Inventários',
+  'relinv.titulo': 'Histórico de inventários', 'relinv.sub': 'Contagens realizadas no período, acuracidade e faltantes.',
+  'relinv.acuracidade': 'Acuracidade', 'relinv.vazio': 'Nenhum inventário no período.',
+  'relinv.kpi_total': 'Inventários', 'relinv.kpi_acur': 'Acuracidade média', 'relinv.kpi_falt': 'Itens faltantes', 'relinv.kpi_baixados': 'Baixados como perda',
+  'relinv.ver_falt': 'Ver faltantes', 'relinv.ocultar': 'Ocultar',
+});
+Object.assign(en, {
+  'menu.rel_inventarios': 'Inventories',
+  'relinv.titulo': 'Inventory history', 'relinv.sub': 'Counts performed in the period, accuracy and missing items.',
+  'relinv.acuracidade': 'Accuracy', 'relinv.vazio': 'No inventories in the period.',
+  'relinv.kpi_total': 'Inventories', 'relinv.kpi_acur': 'Avg. accuracy', 'relinv.kpi_falt': 'Missing items', 'relinv.kpi_baixados': 'Written off as loss',
+  'relinv.ver_falt': 'View missing', 'relinv.ocultar': 'Hide',
+});
+Object.assign(es, {
+  'menu.rel_inventarios': 'Inventarios',
+  'relinv.titulo': 'Historial de inventarios', 'relinv.sub': 'Conteos realizados en el período, exactitud y faltantes.',
+  'relinv.acuracidade': 'Exactitud', 'relinv.vazio': 'Sin inventarios en el período.',
+  'relinv.kpi_total': 'Inventarios', 'relinv.kpi_acur': 'Exactitud media', 'relinv.kpi_falt': 'Ítems faltantes', 'relinv.kpi_baixados': 'Dados de baja',
+  'relinv.ver_falt': 'Ver faltantes', 'relinv.ocultar': 'Ocultar',
+});

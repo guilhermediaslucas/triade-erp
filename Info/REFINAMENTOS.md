@@ -44,4 +44,20 @@
 - [x] Validade de lotes (vencidos / a vencer, KPIs, export CSV)
 - [x] Estoque parado (produtos com saldo sem saída há X dias, valor parado, export CSV)
 - [x] Vendas por categoria (período, ranking, export CSV) — "por vendedor" já no relatório de Vendas
-- [x] Perdas de estoque (baixas por 
+- [x] Perdas de estoque (baixas por perda no período, motivo, valor, KPIs, CSV)
+- [x] Histórico de inventários (contagens no período, acuracidade média, faltantes, drill por inventário, CSV)
+
+## Polimento visual / UX (passada dedicada, ao final)
+- [ ] Formulários em página inteira onde o mockup usa (ex.: Produto)
+- [x] Busca global (Ctrl+K) — paleta de navegação por todas as telas (respeita permissões)
+- [x] Toasts de confirmação (sucesso/erro flutuantes; ligados em Contas e ações do pedido)
+- [x] Sino de notificações (topbar: títulos vencidos, lotes vencendo, estoque baixo; respeita permissões)
+- [x] Ações em massa (Contas: selecionar títulos → baixar/excluir em lote)
+- [ ] Esconder/mostrar e redimensionar colunas das listas
+- [ ] Ajuste fino de espaçamentos/cores para casar com o mockup
+
+---
+
+**Ordem recomendada de execução:** campanhas de preço → condições de pagamento/parcelas →
+comissões → contas correntes/bancos → código de barras + inventário → fretes/motoboys/romaneio →
+CRM → relatórios extras → polimento visual.

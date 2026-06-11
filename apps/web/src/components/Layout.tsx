@@ -62,6 +62,7 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'menu.rel_validade', icone: '⏳', to: '/relatorios/validade', cap: 'relatorios.ver' },
       { rotulo: 'menu.rel_parado', icone: '🐢', to: '/relatorios/estoque-parado', cap: 'relatorios.ver' },
       { rotulo: 'menu.rel_perdas', icone: '🗑️', to: '/relatorios/perdas', cap: 'relatorios.ver' },
+      { rotulo: 'menu.rel_inventarios', icone: '🔢', to: '/relatorios/inventarios', cap: 'estoque.inventario.ver' },
     ] }],
   },
   {
