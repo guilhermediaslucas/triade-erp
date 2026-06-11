@@ -35,6 +35,7 @@ export const env = {
   // Origem permitida no CORS. '*' libera geral (ok para comecar — tudo exige JWT).
   // Em producao, pode-se restringir para a URL do site (ex.: https://erp.suaclinica.com.br).
   corsOrigin: process.env.CORS_ORIGIN ?? '*',
+  autoMigrate: (process.env.AUTO_MIGRATE ?? 'true') !== 'false',
   jwtSecret: obrigatorio('JWT_SECRET'),
   nodeEnv: process.env.NODE_ENV ?? 'development',
   get isProd(): boolean {

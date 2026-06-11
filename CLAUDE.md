@@ -176,6 +176,18 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Auto-migração no boot da API (deploy sem passo manual).** Nova rotina
+  `infra/db/prepararBanco.ts`: no start a API roda `migrarTudo` (public + todos os tenants ativos) e
+  **sincroniza as `CAPABILITY_IDS` no perfil Administrador de cada tenant** (idempotente,
+  `ON CONFLICT DO NOTHING`). `main.ts` chama no boot, gated por `env.autoMigrate` (`AUTO_MIGRATE`,
+  default `true`; `false` desliga p/ migrar só via CLI). Assim, todo deploy no Render passa a aplicar
+  migrations e permissões novas automaticamente no Neon — não precisa mais rodar `db-setup` à mão p/
+  produção (o `scripts/db-setup-prod.bat` fica como alternativa manual). **Importante:** o usuário
+  precisa **relogar** após o deploy p/ o front recarregar as capabilities (o menu lê no login).
+  **Validação:** **type-check api verde** + **e2e Postgres real (5 PASS)** via pglite: boot migra o
+  tenant (tabela `favorecido` + coluna `titulo.favorecido_id`), sincroniza as caps de favorecido no
+  Administrador, sincroniza todas (49) e é idempotente. **Pendente:** Gui `git push` (Render redeploia
+  e migra sozinho) + relogar no site.
 - **2026-06-11** — **Refinamento — Vínculo do favorecido no título a pagar.** Migration tenant **022**
   (`titulo.favorecido_id` → `favorecido`). **Backend:** `NovoTitulo.favorecidoId?` (opcional — não
   quebra os geradores automáticos pedido/compra/comissão/frete); `Titulo` += `favorecidoId/Nome`;
