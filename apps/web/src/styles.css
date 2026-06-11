@@ -267,3 +267,9 @@ a { text-decoration: none; color: inherit; }
 .sino-ic { width: 22px; text-align: center; }
 .sino-lbl { flex: 1; }
 .sino-qtd { background: #dc2626; color: #fff; font-size: 12px; font-weight: 700; min-width: 22px; text-align: center; border-radius: 999px; padding: 1px 7px; }
+
+/* --- Ações em massa --- */
+.bulk-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--accent, #6d28d9); color: var(--accent-fg, #fff); padding: 8px 14px; border-radius: 10px; margin-bottom: 12px; font-size: 14px; }
+.bulk-acoes { display: flex; align-items: center; gap: 8px; }
+.bulk-acoes .btn-link { color: var(--accent-fg, #fff); text-decoration: underline; }
+.linha-sel { background: var(--accent-soft, #f3effe); }

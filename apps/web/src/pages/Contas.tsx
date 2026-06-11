@@ -24,8 +24,10 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   const [erro, setErro] = useState<string | null>(null);
   const [novo, setNovo] = useState(false);
   const [baixar, setBaixar] = useState<Titulo | null>(null);
+  const [sel, setSel] = useState<Set<string>>(new Set());
+  const [baixaMassa, setBaixaMassa] = useState(false);
 
-  async function carregar() { try { setItens(await api.get('/financeiro/' + tipo, token!)); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
+  async function carregar() { try { setItens(await api.get('/financeiro/' + tipo, token!)); setSel(new Set()); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
   useEffect(() => { carregar(); /* eslint-disable-next-line */ }, [tipo]);
 
   const kpis = useMemo(() => {
@@ -36,9 +38,22 @@ export function Contas({ tipo }: { tipo: Tipo }) {
     return { total, qtd: abertos.length, totalVenc, qtdVenc: vencidos.length };
   }, [itens]);
 
+  function toggle(id: string) { setSel((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; }); }
+  function toggleTodos() { setSel((s) => (s.size === itens.length ? new Set() : new Set(itens.map((x) => x.id)))); }
+  const selecionados = itens.filter((x) => sel.has(x.id));
+  const abertosSel = selecionados.filter((x) => x.status === 'aberto');
+
   async function cancelar(tt: Titulo) {
     try { await api.patch('/financeiro/' + tipo + '/' + tt.id + '/cancelar', {}, token!); carregar(); toast(t('fin.toast_cancelado')); }
-    catch (e) { setErro((e as ErroApi).chaveI18n); toast(t((e as ErroApi).chaveI18n), 'erro'); }
+    catch (e) { const k = (e as ErroApi).chaveI18n; setErro(k); toast(t(k), 'erro'); }
+  }
+
+  async function excluirMassa() {
+    if (selecionados.length === 0) return;
+    if (!window.confirm(t('bulk.confirma_excluir').replace('{n}', String(selecionados.length)))) return;
+    let ok = 0;
+    for (const tt of selecionados) { try { await api.del('/financeiro/' + tipo + '/' + tt.id, token!); ok++; } catch { /* segue */ } }
+    await carregar(); toast(t('bulk.excluidos').replace('{n}', String(ok)));
   }
 
   return (
@@ -50,12 +65,28 @@ export function Contas({ tipo }: { tipo: Tipo }) {
         <div className="kpi-card"><div className="kpi-l">{t(tipo === 'receber' ? 'fin.aberto_receber' : 'fin.aberto_pagar')}</div><div className="kpi-v">{moeda(kpis.total)}</div><div className="kpi-s">{kpis.qtd} {t('fin.titulos')}</div></div>
         <div className="kpi-card kpi-vermelho"><div className="kpi-l">{t('fin.vencidos')}</div><div className="kpi-v">{moeda(kpis.totalVenc)}</div><div className="kpi-s">{kpis.qtdVenc} {t('fin.titulos')}</div></div>
       </div>
+
+      {pode && sel.size > 0 && (
+        <div className="bulk-bar">
+          <span>{t('bulk.selecionados').replace('{n}', String(sel.size))}</span>
+          <div className="bulk-acoes">
+            {abertosSel.length > 0 && <button className="btn-primary btn-mini" onClick={() => setBaixaMassa(true)}>{t('bulk.baixar')} ({abertosSel.length})</button>}
+            <button className="btn-ghost btn-mini" onClick={excluirMassa}>{t('bulk.excluir')}</button>
+            <button className="btn-link" onClick={() => setSel(new Set())}>{t('bulk.limpar')}</button>
+          </div>
+        </div>
+      )}
+
       <div className="card pad0"><table className="tabela">
-        <thead><tr><th>{t('fin.descricao')}</th><th>{tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor')}</th><th>{t('fin.vencimento')}</th><th>{t('fin.valor')}</th><th>{t('fin.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
+        <thead><tr>
+          {pode && <th style={{ width: 34 }}><input type="checkbox" checked={itens.length > 0 && sel.size === itens.length} onChange={toggleTodos} /></th>}
+          <th>{t('fin.descricao')}</th><th>{tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor')}</th><th>{t('fin.vencimento')}</th><th>{t('fin.valor')}</th><th>{t('fin.situacao')}</th><th>{t('usuarios.acoes')}</th>
+        </tr></thead>
         <tbody>
-          {itens.length === 0 && <tr><td colSpan={6} className="vazio">{t('common.nenhum')}</td></tr>}
+          {itens.length === 0 && <tr><td colSpan={pode ? 7 : 6} className="vazio">{t('common.nenhum')}</td></tr>}
           {itens.map((tt) => { const sit = situacao(tt); return (
-            <tr key={tt.id}>
+            <tr key={tt.id} className={sel.has(tt.id) ? 'linha-sel' : ''}>
+              {pode && <td><input type="checkbox" checked={sel.has(tt.id)} onChange={() => toggle(tt.id)} /></td>}
               <td>{tt.descricao}{tt.origem === 'pedido' && <span className="tag-origem">{t('fin.do_pedido')}</span>}</td>
               <td>{tt.pessoaNome ?? '—'}</td>
               <td>{new Date(tt.vencimento + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
@@ -69,7 +100,8 @@ export function Contas({ tipo }: { tipo: Tipo }) {
         </tbody>
       </table></div>
       {novo && <ModalNovo tipo={tipo} onFechar={() => setNovo(false)} onSalvo={() => { setNovo(false); carregar(); toast(t('fin.toast_criado')); }} />}
-      {baixar && <ModalBaixa tipo={tipo} titulo={baixar} onFechar={() => setBaixar(null)} onSalvo={() => { setBaixar(null); carregar(); toast(t('fin.toast_baixado')); }} />}
+      {baixar && <ModalBaixa tipo={tipo} titulos={[baixar]} onFechar={() => setBaixar(null)} onSalvo={(n) => { setBaixar(null); carregar(); toast(t('fin.toast_baixado')); void n; }} />}
+      {baixaMassa && <ModalBaixa tipo={tipo} titulos={abertosSel} onFechar={() => setBaixaMassa(false)} onSalvo={(n) => { setBaixaMassa(false); carregar(); toast(t('bulk.baixados').replace('{n}', String(n))); }} />}
     </div>
   );
 }
@@ -99,20 +131,27 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
   );
 }
 
-function ModalBaixa({ tipo, titulo, onFechar, onSalvo }: { tipo: Tipo; titulo: Titulo; onFechar: () => void; onSalvo: () => void; }) {
+// Baixa um ou vários títulos com a mesma forma/conta. Retorna quantos baixou.
+function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos: Titulo[]; onFechar: () => void; onSalvo: (n: number) => void; }) {
   const { token, temCapability } = useAuth(); const { t } = useI18n();
   const [forma, setForma] = useState('Pix'); const [contaId, setContaId] = useState('');
   const [contas, setContas] = useState<{ id: string; nome: string }[]>([]);
   const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
+  const totalSel = titulos.reduce((a, x) => a + x.valor, 0);
+  const massa = titulos.length > 1;
   useEffect(() => { if (temCapability('cadastros.conta.listar')) api.get<{ id: string; nome: string }[]>('/contas-correntes', token!).then(setContas).catch(() => {}); /* eslint-disable-next-line */ }, []);
   async function salvar() {
     setErro(null); setSalv(true);
-    try { await api.patch('/financeiro/' + tipo + '/' + titulo.id + '/baixar', { formaPagamento: forma, contaCorrenteId: contaId || null }, token!); onSalvo(); }
-    catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
+    let ok = 0;
+    for (const tt of titulos) {
+      try { await api.patch('/financeiro/' + tipo + '/' + tt.id + '/baixar', { formaPagamento: forma, contaCorrenteId: contaId || null }, token!); ok++; }
+      catch (e) { if (!massa) { setErro((e as ErroApi).chaveI18n); setSalv(false); return; } }
+    }
+    onSalvo(ok);
   }
   return (
     <div className="modal-fundo" onClick={onFechar}><div className="modal" onClick={(e) => e.stopPropagation()}>
-      <h2>{t('fin.baixar')} — {moeda(titulo.valor)}</h2>
+      <h2>{t('fin.baixar')} — {massa ? `${titulos.length} ${t('fin.titulos')} · ` : ''}{moeda(totalSel)}</h2>
       <label className="campo">{t('pedidos.forma_pgto')}
         <select value={forma} onChange={(e) => setForma(e.target.value)}><option>Pix</option><option>Boleto</option><option>Cartão</option><option>Dinheiro</option><option>Transferência</option></select>
       </label>

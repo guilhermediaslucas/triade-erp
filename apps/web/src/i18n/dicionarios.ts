@@ -1101,3 +1101,17 @@ Object.assign(es, {
 Object.assign(pt, { 'sino.titulo': 'Notificações', 'sino.vazio': 'Nada pendente. Tudo em dia! 🎉', 'sino.titulos_vencidos': 'Títulos a receber vencidos', 'sino.lotes_vencendo': 'Lotes vencendo (30 d)', 'sino.estoque_baixo': 'Produtos com estoque baixo' });
 Object.assign(en, { 'sino.titulo': 'Notifications', 'sino.vazio': 'Nothing pending. All caught up! 🎉', 'sino.titulos_vencidos': 'Overdue receivables', 'sino.lotes_vencendo': 'Lots expiring (30 d)', 'sino.estoque_baixo': 'Low-stock products' });
 Object.assign(es, { 'sino.titulo': 'Notificaciones', 'sino.vazio': 'Nada pendiente. ¡Todo al día! 🎉', 'sino.titulos_vencidos': 'Cobranzas vencidas', 'sino.lotes_vencendo': 'Lotes por vencer (30 d)', 'sino.estoque_baixo': 'Productos con stock bajo' });
+
+// --- Refinamento: Ações em massa ---
+Object.assign(pt, {
+  'bulk.selecionados': '{n} selecionado(s)', 'bulk.baixar': 'Baixar', 'bulk.excluir': 'Excluir', 'bulk.limpar': 'Limpar seleção',
+  'bulk.baixados': '{n} título(s) baixado(s).', 'bulk.excluidos': '{n} título(s) excluído(s).', 'bulk.confirma_excluir': 'Excluir {n} título(s) selecionado(s)?',
+});
+Object.assign(en, {
+  'bulk.selecionados': '{n} selected', 'bulk.baixar': 'Settle', 'bulk.excluir': 'Delete', 'bulk.limpar': 'Clear selection',
+  'bulk.baixados': '{n} title(s) settled.', 'bulk.excluidos': '{n} title(s) deleted.', 'bulk.confirma_excluir': 'Delete {n} selected title(s)?',
+});
+Object.assign(es, {
+  'bulk.selecionados': '{n} seleccionado(s)', 'bulk.baixar': 'Pagar', 'bulk.excluir': 'Eliminar', 'bulk.limpar': 'Limpiar selección',
+  'bulk.baixados': '{n} título(s) pagado(s).', 'bulk.excluidos': '{n} título(s) eliminado(s).', 'bulk.confirma_excluir': '¿Eliminar {n} título(s) seleccionado(s)?',
+});
