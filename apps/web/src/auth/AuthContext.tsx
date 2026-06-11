@@ -11,7 +11,7 @@ interface AuthCtx {
   empresaFantasia: string | null;
   capabilities: string[];
   temCapability: (id: string) => boolean;
-  login: (codigoEmpresa: string, email: string, senha: string) => Promise<void>;
+  login: (email: string, senha: string, lembrar?: boolean) => Promise<void>;
   logout: () => void;
 }
 
@@ -20,22 +20,25 @@ const CHAVE = 'triade_sessao';
 
 interface Sessao { token: string; usuario: UsuarioLogado; empresaFantasia: string; capabilities: string[]; }
 
+// "Lembrar-me": sessão persiste em localStorage; senão, só em sessionStorage (cai ao fechar o navegador).
 function carregar(): Sessao | null {
-  try { const raw = localStorage.getItem(CHAVE); return raw ? (JSON.parse(raw) as Sessao) : null; }
-  catch { return null; }
+  try {
+    const raw = localStorage.getItem(CHAVE) ?? sessionStorage.getItem(CHAVE);
+    return raw ? (JSON.parse(raw) as Sessao) : null;
+  } catch { return null; }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [sessao, setSessao] = useState<Sessao | null>(carregar);
 
-  function salvar(s: Sessao | null) {
-    if (s) localStorage.setItem(CHAVE, JSON.stringify(s));
-    else localStorage.removeItem(CHAVE);
+  function salvar(s: Sessao | null, lembrar = true) {
+    localStorage.removeItem(CHAVE); sessionStorage.removeItem(CHAVE);
+    if (s) (lembrar ? localStorage : sessionStorage).setItem(CHAVE, JSON.stringify(s));
     setSessao(s);
   }
 
-  async function login(codigoEmpresa: string, email: string, senha: string): Promise<void> {
-    const r = await api.post<LoginResp>('/auth/login', { codigoEmpresa, email, senha });
+  async function login(email: string, senha: string, lembrar = true): Promise<void> {
+    const r = await api.post<LoginResp>('/auth/login', { email, senha });
     let capabilities: string[] = [];
     try { capabilities = (await api.get<MeResp>('/me', r.token)).capabilities; } catch { /* ignora */ }
     salvar({
@@ -43,14 +46,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       usuario: { ...r.usuario, empresa: r.empresa.codigo },
       empresaFantasia: r.empresa.fantasia,
       capabilities,
-    });
+    }, lembrar);
   }
 
   // Ao recarregar com sessao salva, revalida e atualiza capabilities (token expirado -> logout).
   useEffect(() => {
     if (!sessao?.token) return;
+    const persistido = localStorage.getItem(CHAVE) != null;
     api.get<MeResp>('/me', sessao.token)
-      .then((me) => { if (JSON.stringify(me.capabilities) !== JSON.stringify(sessao.capabilities)) salvar({ ...sessao, capabilities: me.capabilities }); })
+      .then((me) => { if (JSON.stringify(me.capabilities) !== JSON.stringify(sessao.capabilities)) salvar({ ...sessao, capabilities: me.capabilities }, persistido); })
       .catch(() => salvar(null));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

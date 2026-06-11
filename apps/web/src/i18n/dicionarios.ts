@@ -1368,3 +1368,47 @@ Object.assign(es, { 'common.voltar': 'Volver' });
 Object.assign(pt, { 'fin.colunas': 'Colunas' });
 Object.assign(en, { 'fin.colunas': 'Columns' });
 Object.assign(es, { 'fin.colunas': 'Columnas' });
+
+// --- Login no padrão do mockup (hero + e-mail/senha + recuperar) ---
+Object.assign(pt, {
+  'login.acesse': 'Acesse sua conta', 'login.ver_senha': 'Mostrar/ocultar senha',
+  'login.lembrar': 'Lembrar-me', 'login.esqueci': 'Esqueci minha senha', 'login.dev': 'Desenvolvido por',
+  'login.hero_titulo': 'Transforme a gestão da sua distribuidora em decisões inteligentes',
+  'login.hero_sub': 'O TRÍADE ERP centraliza a gestão comercial, financeira e de estoque de forma integrada e ágil. Tudo em um só lugar.',
+  'login.f1_t': 'Dashboards por área', 'login.f1_d': 'Consolidam informações vitais para decisões ágeis — visão 360° do negócio.',
+  'login.f2_t': 'Comercial', 'login.f2_d': 'Pedidos, acompanhamento de vendas e controle de metas.',
+  'login.f3_t': 'Financeiro', 'login.f3_d': 'Contas a pagar e receber, fluxo de caixa e controle de comissões.',
+  'login.f4_t': 'Estoque', 'login.f4_d': 'Separação em Kanban, com rastreabilidade por lote e validade.',
+  'login.f5_t': 'Relatórios por área', 'login.f5_d': 'Relatórios gerenciais e exportáveis — apoio à conformidade.',
+  'login.f6_t': 'Acesso por perfil & usuário', 'login.f6_d': 'Total controle do que cada usuário acessa — permissões por tela.',
+  'login.rec_titulo': 'Recuperar senha', 'login.rec_sub': 'Informe seu e-mail cadastrado. Enviaremos um link para você criar uma nova senha.',
+  'login.rec_enviar': 'Enviar link', 'login.rec_ok': 'Se o e-mail existir, enviamos um link de redefinição válido por 30 minutos. Verifique sua caixa de entrada e o spam.',
+});
+Object.assign(en, {
+  'login.acesse': 'Access your account', 'login.ver_senha': 'Show/hide password',
+  'login.lembrar': 'Remember me', 'login.esqueci': 'Forgot my password', 'login.dev': 'Developed by',
+  'login.hero_titulo': 'Turn your distributor management into smart decisions',
+  'login.hero_sub': 'TRÍADE ERP centralizes sales, finance and inventory management in an integrated, agile way. All in one place.',
+  'login.f1_t': 'Dashboards by area', 'login.f1_d': 'Consolidate vital information for agile decisions — a 360° view of the business.',
+  'login.f2_t': 'Sales', 'login.f2_d': 'Orders, sales tracking and target control.',
+  'login.f3_t': 'Finance', 'login.f3_d': 'Payables and receivables, cash flow and commission control.',
+  'login.f4_t': 'Inventory', 'login.f4_d': 'Kanban picking with batch and expiry traceability.',
+  'login.f5_t': 'Reports by area', 'login.f5_d': 'Managerial, exportable reports — compliance support.',
+  'login.f6_t': 'Role & user access', 'login.f6_d': 'Full control over what each user accesses — per-screen permissions.',
+  'login.rec_titulo': 'Recover password', 'login.rec_sub': 'Enter your registered e-mail. We will send a link to create a new password.',
+  'login.rec_enviar': 'Send link', 'login.rec_ok': 'If the e-mail exists, we sent a reset link valid for 30 minutes. Check your inbox and spam.',
+});
+Object.assign(es, {
+  'login.acesse': 'Accede a tu cuenta', 'login.ver_senha': 'Mostrar/ocultar contraseña',
+  'login.lembrar': 'Recordarme', 'login.esqueci': 'Olvidé mi contraseña', 'login.dev': 'Desarrollado por',
+  'login.hero_titulo': 'Transforma la gestión de tu distribuidora en decisiones inteligentes',
+  'login.hero_sub': 'TRÍADE ERP centraliza la gestión comercial, financiera y de stock de forma integrada y ágil. Todo en un solo lugar.',
+  'login.f1_t': 'Paneles por área', 'login.f1_d': 'Consolidan información vital para decisiones ágiles — visión 360° del negocio.',
+  'login.f2_t': 'Comercial', 'login.f2_d': 'Pedidos, seguimiento de ventas y control de metas.',
+  'login.f3_t': 'Financiero', 'login.f3_d': 'Cuentas por pagar y cobrar, flujo de caja y comisiones.',
+  'login.f4_t': 'Stock', 'login.f4_d': 'Preparación en Kanban, con trazabilidad por lote y vencimiento.',
+  'login.f5_t': 'Informes por área', 'login.f5_d': 'Informes gerenciales y exportables — apoyo al cumplimiento.',
+  'login.f6_t': 'Acceso por perfil y usuario', 'login.f6_d': 'Control total de lo que accede cada usuario — permisos por pantalla.',
+  'login.rec_titulo': 'Recuperar contraseña', 'login.rec_sub': 'Ingresa tu correo registrado. Enviaremos un enlace para crear una nueva contraseña.',
+  'login.rec_enviar': 'Enviar enlace', 'login.rec_ok': 'Si el correo existe, enviamos un enlace de restablecimiento válido por 30 minutos. Revisa tu bandeja y el spam.',
+});

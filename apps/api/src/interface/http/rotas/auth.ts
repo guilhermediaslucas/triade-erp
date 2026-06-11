@@ -7,7 +7,7 @@ export function rotasAuth(deps: Dependencias): Router {
 
   r.post('/auth/login', async (req: Request, res: Response) => {
     const { codigoEmpresa, email, senha } = req.body ?? {};
-    if (!codigoEmpresa || !email || !senha) {
+    if (!email || !senha) {
       res.status(400).json({ erro: 'auth.campos_obrigatorios' });
       return;
     }

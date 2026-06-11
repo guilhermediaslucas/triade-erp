@@ -5,7 +5,7 @@ import type { GeradorToken } from '../../domain/ports/GeradorToken.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
 export interface AutenticarEntrada {
-  codigoEmpresa: string;
+  codigoEmpresa?: string;
   email: string;
   senha: string;
 }
@@ -26,13 +26,26 @@ export class AutenticarUsuario {
   ) {}
 
   async executar(entrada: AutenticarEntrada): Promise<AutenticarSaida> {
-    const empresa = await this.empresas.buscarPorCodigo(entrada.codigoEmpresa.trim().toLowerCase());
-    if (!empresa || !empresa.ativo) {
-      throw new ErroAplicacao('auth.empresa_invalida', 401);
+    const email = entrada.email.trim().toLowerCase();
+    let empresa = null as Awaited<ReturnType<EmpresaRepository['buscarPorCodigo']>>;
+    let usuario = null as Awaited<ReturnType<UsuarioRepository['buscarPorEmail']>>;
+
+    if (entrada.codigoEmpresa && entrada.codigoEmpresa.trim()) {
+      // Compatibilidade: login informando o código da empresa.
+      empresa = await this.empresas.buscarPorCodigo(entrada.codigoEmpresa.trim().toLowerCase());
+      if (!empresa || !empresa.ativo) throw new ErroAplicacao('auth.empresa_invalida', 401);
+      usuario = await this.usuarios.buscarPorEmail(empresa.schemaName, email);
+    } else {
+      // Login só por e-mail: descobre a empresa procurando o usuário em cada tenant ativo.
+      const todas = await this.empresas.listarTodas();
+      for (const e of todas) {
+        if (!e.ativo) continue;
+        const u = await this.usuarios.buscarPorEmail(e.schemaName, email);
+        if (u && u.ativo) { empresa = e; usuario = u; break; }
+      }
     }
 
-    const usuario = await this.usuarios.buscarPorEmail(empresa.schemaName, entrada.email.trim().toLowerCase());
-    if (!usuario || !usuario.ativo) {
+    if (!empresa || !empresa.ativo || !usuario || !usuario.ativo) {
       throw new ErroAplicacao('auth.credenciais_invalidas', 401);
     }
 

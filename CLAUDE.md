@@ -176,6 +176,21 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Tela de login refeita no padrão do mockup.** **Backend:** login passa a aceitar
+  **só e-mail + senha** — `AutenticarUsuario` com `codigoEmpresa` opcional: sem ele, descobre a empresa
+  procurando o usuário em cada tenant ativo (`empresas.listarTodas` × `usuarios.buscarPorEmail`);
+  rota `/auth/login` exige só email+senha; mantém compat com `codigoEmpresa`. **Frontend:** `AuthContext.login(email, senha, lembrar)`
+  — **Lembrar-me** persiste em `localStorage`, senão `sessionStorage` (cai ao fechar). **Login.tsx** reescrito:
+  layout 2 colunas — **hero vermelho** (marca TRÍADE, headline, subtítulo, 6 features) + **card branco**
+  (logo TRÍADE com Í vermelho, "Entrar"/"Acesse sua conta", e-mail, senha com **olho** mostrar/ocultar,
+  **Lembrar-me** + **Esqueci minha senha**, botão vermelho, rodapé "Desenvolvido por Guilherme Dias");
+  modal **Recuperar senha** (stub com mensagem de confirmação, igual ao mockup — sem envio real de e-mail).
+  Login usa identidade TRÍADE em **vermelho** (independente do branding white-label da empresa). CSS de
+  login substituído (`.login-hero/.login-pane/.login-card/...`, responsivo ≤920px esconde o hero); i18n
+  pt/en/es (hero, features, recuperar). **Validação:** **type-check api+web verde** + **teste do caso de
+  uso (5 PASS)**: e-mail resolve a empresa, e-mail maiúsculo, inexistente→401, senha errada→401, compat
+  com codigoEmpresa. **Pendente:** Gui `git push` + Ctrl+Shift+R. **Nota:** "Esqueci a senha" é visual
+  (sem reset real — exige infra de e-mail; fica p/ depois).
 - **2026-06-11** — **Polimento funcional — filtros avançados, colunas e form em página inteira.** Três
   entregas de UI (sem backend): (1) **Filtros avançados nas Contas** — barra com busca (descrição/pessoa),
   situação, categoria, faixa de vencimento e faixa de valor; KPIs e seleção refletem o filtro (frontend
