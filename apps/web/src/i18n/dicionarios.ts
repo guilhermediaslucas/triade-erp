@@ -1447,3 +1447,16 @@ Object.assign(es, {
   'dash.av_estoque': 'Productos con stock bajo', 'dash.av_receber_venc': 'Por cobrar vencido',
   'dash.qa_novo_pedido': 'Nuevo pedido', 'dash.qa_novo_cliente': 'Nuevo cliente', 'dash.qa_entrada': 'Entrada de stock',
 });
+
+// --- Padrão de tela (crumb/chips) + Clientes ---
+Object.assign(pt, { 'common.todos': 'Todos', 'common.ativos': 'Ativos', 'common.inativos': 'Inativos',
+  'clientes.crumb': 'Cadastros / Clientes', 'clientes.sub': 'Clínicas e institutos compradores', 'clientes.buscar': 'Buscar cliente' });
+Object.assign(en, { 'common.todos': 'All', 'common.ativos': 'Active', 'common.inativos': 'Inactive',
+  'clientes.crumb': 'Records / Customers', 'clientes.sub': 'Buying clinics and institutes', 'clientes.buscar': 'Search customer' });
+Object.assign(es, { 'common.todos': 'Todos', 'common.ativos': 'Activos', 'common.inativos': 'Inactivos',
+  'clientes.crumb': 'Registros / Clientes', 'clientes.sub': 'Clínicas e institutos compradores', 'clientes.buscar': 'Buscar cliente' });
+
+// --- Pedidos (crumb + filtro de data) ---
+Object.assign(pt, { 'pedidos.crumb': 'Comercial / Pedidos', 'pedidos.data_de': 'Data início', 'pedidos.data_ate': 'Data fim', 'pedidos.filtro_dica': 'Filtra os pedidos pela data de criação.' });
+Object.assign(en, { 'pedidos.crumb': 'Sales / Orders', 'pedidos.data_de': 'Start date', 'pedidos.data_ate': 'End date', 'pedidos.filtro_dica': 'Filters orders by creation date.' });
+Object.assign(es, { 'pedidos.crumb': 'Comercial / Pedidos', 'pedidos.data_de': 'Fecha inicio', 'pedidos.data_ate': 'Fecha fin', 'pedidos.filtro_dica': 'Filtra los pedidos por fecha de creación.' });

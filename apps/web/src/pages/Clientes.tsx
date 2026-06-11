@@ -24,21 +24,40 @@ export function Clientes() {
   const [itens, setItens] = useState<Cliente[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [edit, setEdit] = useState<Cliente | null>(null);
+  const [busca, setBusca] = useState('');
+  const [statusF, setStatusF] = useState<'todos' | 'ativos' | 'inativos'>('todos');
 
   async function carregar() { try { setItens(await api.get('/clientes', token!)); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
   useEffect(() => { carregar(); /* eslint-disable-next-line */ }, []);
   async function alternar(c: Cliente) { try { await api.patch('/clientes/' + c.id + '/ativo', { ativo: !c.ativo }, token!); carregar(); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
 
+  const filtrados = itens.filter((c) => {
+    if (statusF === 'ativos' && !c.ativo) return false;
+    if (statusF === 'inativos' && c.ativo) return false;
+    if (busca) {
+      const q = busca.toLowerCase();
+      const cid = c.enderecos.find((e) => e.favorito) ?? c.enderecos[0];
+      const txt = (c.nome + ' ' + (c.fantasia ?? '') + ' ' + c.documento + ' ' + (cid?.cidade ?? '')).toLowerCase();
+      if (!txt.includes(q)) return false;
+    }
+    return true;
+  });
+
   return (
     <div>
-      <div className="page-head"><h1 className="page-titulo">{t('clientes.titulo')}</h1>
+      <div className="crumb">{t('clientes.crumb')}</div>
+      <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('clientes.titulo')}</h1><div className="muted page-sub">{t('clientes.sub')}</div></div>
         {pode && <button className="btn-primary" onClick={() => setEdit(vazio())}>+ {t('clientes.novo')}</button>}</div>
+      <div className="toolbar">
+        <div className="busca-box-tb">🔎<input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('clientes.buscar')} /></div>
+        {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
+      </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="card pad0"><table className="tabela">
         <thead><tr><th>{t('clientes.nome')}</th><th>{t('clientes.tipo')}</th><th>{t('pessoa.documento')}</th><th>{t('clientes.limite')}</th><th>{t('clientes.cidade')}</th><th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
         <tbody>
-          {itens.length === 0 && <tr><td colSpan={7} className="vazio">{t('common.nenhum')}</td></tr>}
-          {itens.map((c) => {
+          {filtrados.length === 0 && <tr><td colSpan={7} className="vazio">{t('common.nenhum')}</td></tr>}
+          {filtrados.map((c) => {
             const fav = c.enderecos.find((e) => e.favorito) ?? c.enderecos[0];
             return (
               <tr key={c.id} className={c.ativo ? '' : 'linha-inativa'}>
