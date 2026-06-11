@@ -12,25 +12,36 @@ export function Categorias() {
   const [itens, setItens] = useState<Categoria[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [edit, setEdit] = useState<Categoria | null>(null);
+  const [busca, setBusca] = useState('');
 
   async function carregar() {
     try { setItens(await api.get<Categoria[]>('/categorias', token!)); } catch (e) { setErro((e as ErroApi).chaveI18n); }
   }
   useEffect(() => { carregar(); /* eslint-disable-next-line */ }, []);
 
+  const filtrados = itens.filter((x: any) => {
+    if (busca) { const q = busca.toLowerCase(); const txt = [x.nome, x.fantasia, x.documento, x.email, x.telefone].filter(Boolean).join(' ').toLowerCase(); if (!txt.includes(q)) return false; }
+    return true;
+  });
+
   return (
     <div>
+      <div className="crumb">{t('categorias.crumb')}</div>
       <div className="page-head">
-        <h1 className="page-titulo">{t('categorias.titulo')}</h1>
+        <div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('categorias.titulo')}</h1><div className="muted page-sub">{t('categorias.sub')}</div></div>
         {pode && <button className="btn-primary" onClick={() => setEdit({ id: '', nome: '' })}>+ {t('categorias.nova')}</button>}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
+      <div className="toolbar">
+        <div className="busca-box-tb">🔎<input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('categorias.buscar')} /></div>
+        
+      </div>
       <div className="card pad0">
         <table className="tabela">
           <thead><tr><th>{t('categorias.nome')}</th><th></th></tr></thead>
           <tbody>
-            {itens.length === 0 && <tr><td colSpan={2} className="vazio">{t('common.nenhum')}</td></tr>}
-            {itens.map((c) => (
+            {filtrados.length === 0 && <tr><td colSpan={2} className="vazio">{t('common.nenhum')}</td></tr>}
+            {filtrados.map((c) => (
               <tr key={c.id}><td>{c.nome}</td>
                 <td className="acoes">{pode && <button className="btn-link" onClick={() => setEdit({ ...c })}>{t('common.editar')}</button>}</td>
               </tr>

@@ -1474,3 +1474,23 @@ Object.assign(es, {
   'fornecedores.crumb': 'Registros / Proveedores', 'fornecedores.sub': 'Empresas que proveen los productos', 'fornecedores.buscar': 'Buscar proveedor',
   'vendedores.crumb': 'Registros / Vendedores', 'vendedores.sub': 'Equipo comercial y metas', 'vendedores.buscar': 'Buscar vendedor',
 });
+
+// --- Cadastros (crumb+sub+busca): Marcas/Categorias/Favorecidos/Motoboys ---
+Object.assign(pt, {
+  'marcas.crumb': 'Cadastros / Marcas', 'marcas.sub': 'Marcas usadas no recebimento dos produtos', 'marcas.buscar': 'Buscar marca',
+  'categorias.crumb': 'Cadastros / Categorias', 'categorias.sub': 'Categorias dos produtos', 'categorias.buscar': 'Buscar categoria',
+  'favorecidos.buscar': 'Buscar favorecido', 'favorecidos.crumb': 'Cadastros / Favorecidos',
+  'motoboys.crumb': 'Cadastros / Motoboys', 'motoboys.sub': 'Entregadores usados no frete', 'motoboys.buscar': 'Buscar motoboy',
+});
+Object.assign(en, {
+  'marcas.crumb': 'Records / Brands', 'marcas.sub': 'Brands used when receiving products', 'marcas.buscar': 'Search brand',
+  'categorias.crumb': 'Records / Categories', 'categorias.sub': 'Product categories', 'categorias.buscar': 'Search category',
+  'favorecidos.buscar': 'Search payee', 'favorecidos.crumb': 'Records / Payees',
+  'motoboys.crumb': 'Records / Couriers', 'motoboys.sub': 'Couriers used for delivery', 'motoboys.buscar': 'Search courier',
+});
+Object.assign(es, {
+  'marcas.crumb': 'Registros / Marcas', 'marcas.sub': 'Marcas usadas en la recepción de productos', 'marcas.buscar': 'Buscar marca',
+  'categorias.crumb': 'Registros / Categorías', 'categorias.sub': 'Categorías de los productos', 'categorias.buscar': 'Buscar categoría',
+  'favorecidos.buscar': 'Buscar beneficiario', 'favorecidos.crumb': 'Registros / Beneficiarios',
+  'motoboys.crumb': 'Registros / Mensajeros', 'motoboys.sub': 'Mensajeros usados en el envío', 'motoboys.buscar': 'Buscar mensajero',
+});

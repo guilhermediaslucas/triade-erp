@@ -13,6 +13,7 @@ export function Motoboys() {
   const [itens, setItens] = useState<Motoboy[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [edit, setEdit] = useState<Motoboy | null>(null);
+  const [busca, setBusca] = useState(''); const [statusF, setStatusF] = useState<'todos' | 'ativos' | 'inativos'>('todos');
 
   async function carregar() {
     try { setItens(await api.get<Motoboy[]>('/motoboys', token!)); } catch (e) { setErro((e as ErroApi).chaveI18n); }
@@ -24,22 +25,34 @@ export function Motoboys() {
     catch (e) { setErro((e as ErroApi).chaveI18n); }
   }
 
+  const filtrados = itens.filter((x: any) => {
+    if (statusF === 'ativos' && !x.ativo) return false;
+    if (statusF === 'inativos' && x.ativo) return false;
+    if (busca) { const q = busca.toLowerCase(); const txt = [x.nome, x.fantasia, x.documento, x.email, x.telefone].filter(Boolean).join(' ').toLowerCase(); if (!txt.includes(q)) return false; }
+    return true;
+  });
+
   return (
     <div>
+      <div className="crumb">{t('motoboys.crumb')}</div>
       <div className="page-head">
-        <h1 className="page-titulo">{t('motoboys.titulo')}</h1>
+        <div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('motoboys.titulo')}</h1><div className="muted page-sub">{t('motoboys.sub')}</div></div>
         {pode && <button className="btn-primary" onClick={() => setEdit({ id: '', nome: '', telefone: '', ativo: true })}>+ {t('motoboys.novo')}</button>}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
 
       <ConfigFrete pode={pode} />
 
+      <div className="toolbar">
+        <div className="busca-box-tb">🔎<input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('motoboys.buscar')} /></div>
+        {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
+      </div>
       <div className="card pad0">
         <table className="tabela">
           <thead><tr><th>{t('motoboys.nome')}</th><th>{t('motoboys.telefone')}</th><th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
           <tbody>
-            {itens.length === 0 && <tr><td colSpan={4} className="vazio">{t('common.nenhum')}</td></tr>}
-            {itens.map((m) => (
+            {filtrados.length === 0 && <tr><td colSpan={4} className="vazio">{t('common.nenhum')}</td></tr>}
+            {filtrados.map((m) => (
               <tr key={m.id} className={m.ativo ? '' : 'linha-inativa'}>
                 <td>{m.nome}</td>
                 <td>{m.telefone ?? '—'}</td>

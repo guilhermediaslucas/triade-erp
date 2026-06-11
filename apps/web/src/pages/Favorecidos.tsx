@@ -18,6 +18,7 @@ export function Favorecidos() {
   const [itens, setItens] = useState<Favorecido[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [edit, setEdit] = useState<Favorecido | null>(null);
+  const [busca, setBusca] = useState(''); const [statusF, setStatusF] = useState<'todos' | 'ativos' | 'inativos'>('todos');
 
   async function carregar() {
     try { setItens(await api.get<Favorecido[]>('/favorecidos', token!)); } catch (e) { setErro((e as ErroApi).chaveI18n); }
@@ -29,20 +30,31 @@ export function Favorecidos() {
     catch (e) { setErro((e as ErroApi).chaveI18n); }
   }
 
+  const filtrados = itens.filter((x: any) => {
+    if (statusF === 'ativos' && !x.ativo) return false;
+    if (statusF === 'inativos' && x.ativo) return false;
+    if (busca) { const q = busca.toLowerCase(); const txt = [x.nome, x.fantasia, x.documento, x.email, x.telefone].filter(Boolean).join(' ').toLowerCase(); if (!txt.includes(q)) return false; }
+    return true;
+  });
+
   return (
     <div>
+      <div className="crumb">{t('favorecidos.crumb')}</div>
       <div className="page-head">
-        <h1 className="page-titulo">{t('favorecidos.titulo')}</h1>
+        <div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('favorecidos.titulo')}</h1><div className="muted page-sub">{t('favorecidos.sub')}</div></div>
         {pode && <button className="btn-primary" onClick={() => setEdit({ ...vazio })}>+ {t('favorecidos.novo')}</button>}
       </div>
-      <p className="muted" style={{ marginTop: -8 }}>{t('favorecidos.sub')}</p>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
+      <div className="toolbar">
+        <div className="busca-box-tb">🔎<input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('favorecidos.buscar')} /></div>
+        {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
+      </div>
       <div className="card pad0">
         <table className="tabela">
           <thead><tr><th>{t('favorecidos.nome')}</th><th>{t('favorecidos.tipo')}</th><th>{t('favorecidos.documento')}</th><th>{t('favorecidos.pix')}</th><th>{t('favorecidos.banco')}</th><th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
           <tbody>
-            {itens.length === 0 && <tr><td colSpan={7} className="vazio">{t('common.nenhum')}</td></tr>}
-            {itens.map((f) => (
+            {filtrados.length === 0 && <tr><td colSpan={7} className="vazio">{t('common.nenhum')}</td></tr>}
+            {filtrados.map((f) => (
               <tr key={f.id} className={f.ativo ? '' : 'linha-inativa'}>
                 <td>{f.nome}</td>
                 <td>{f.tipoPessoa}</td>
