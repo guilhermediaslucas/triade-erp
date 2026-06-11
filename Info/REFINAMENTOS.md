@@ -16,11 +16,11 @@
 - [x] Código de barras na **entrada** (bipagem dos códigos já afixados nos produtos; quantidade = nº de códigos lidos; recusa código já no estoque; consulta por código → produto/lote/validade)
 - [x] Código de barras na **separação** (bipar o item → traz produto/lote/validade → baixa do lote certo, casando com o pedido)
 - [x] Inventário por leitor (bipa a contagem, compara com o esperado, baixa faltantes como perda + histórico)
-- [ ] Transferência entre locais/depósitos
+- [~] Transferência entre locais/depósitos — **fora de escopo** (decisão do Gui: não faz sentido p/ esta operação)
 - [x] Marcas de produtos (cadastro) usado no recebimento
 - [x] Formas de entrega + frete (retirada/motoboy/correios/transportadora; motoboy = km simulado por CEP × valor/km com mínimo; correios/transp = manual)
-- [ ] Gestão de fretes (Logística) + geração de títulos por motoboy
-- [ ] Romaneio imprimível (logo + vendedor + itens/lotes/endereço)
+- [x] Gestão de fretes (Logística) + geração de títulos por motoboy
+- [x] Romaneio imprimível (logo + vendedor + itens/endereço; lotes por item: evolução futura)
 - [x] Recebimento multi-lote com bipagem (N lotes por nota, cada um com marca + bipagem; soma = qtd da nota)
 
 ## Financeiro
@@ -28,7 +28,7 @@
 - [x] Contas correntes / Bancos (cadastro + saldos + vínculo na baixa)
 - [ ] Conciliação bancária
 - [ ] Parcelar / Multiplicar títulos
-- [ ] Tipos de documento, Categorias financeiras, Credores/Reembolso (cadastros)
+- [x] Categorias financeiras (cadastro receita/despesa + vínculo no título) — Tipos de documento / Credores: futuro
 - [ ] KPIs clicáveis + filtros avançados nas contas (mockup tem modal de 14 filtros)
 - [ ] Exportar Excel formatado (hoje os relatórios exportam CSV)
 
@@ -37,16 +37,20 @@
 - [ ] Favorecidos (para reembolso)
 
 ## Relatórios (além de Vendas e Produtos mais vendidos, já prontos)
-- [ ] DRE simplificada (resultado do período)
-- [ ] Curva ABC (clientes / produtos)
-- [ ] Aging de recebíveis / Fluxo projetado
-- [ ] Vendas por vendedor/categoria, Estoque parado, Validade de lotes, etc.
+- [x] DRE simplificada (resultado do período — caixa realizado por origem; receitas/despesas/resultado, export CSV)
+- [x] DRE por categoria financeira (seletor origem/categoria no relatório)
+- [x] Curva ABC de produtos (classe A/B/C por receita, % acumulado, resumo, export CSV) — por cliente: futuro
+- [x] Aging de recebíveis (faixas de atraso, KPIs por faixa, export CSV) — Fluxo projetado: futuro
+- [x] Validade de lotes (vencidos / a vencer, KPIs, export CSV)
+- [x] Estoque parado (produtos com saldo sem saída há X dias, valor parado, export CSV)
+- [x] Vendas por categoria (período, ranking, export CSV) — "por vendedor" já no relatório de Vendas
 
 ## Polimento visual / UX (passada dedicada, ao final)
 - [ ] Formulários em página inteira onde o mockup usa (ex.: Produto)
-- [ ] Busca global (Ctrl+K)
-- [ ] Sino de notificações + toasts de pendência
-- [ ] Ações em massa (excluir/baixar selecionados)
+- [x] Busca global (Ctrl+K) — paleta de navegação por todas as telas (respeita permissões)
+- [x] Toasts de confirmação (sucesso/erro flutuantes; ligados em Contas e ações do pedido)
+- [x] Sino de notificações (topbar: títulos vencidos, lotes vencendo, estoque baixo; respeita permissões)
+- [x] Ações em massa (Contas: selecionar títulos → baixar/excluir em lote)
 - [ ] Esconder/mostrar e redimensionar colunas das listas
 - [ ] Ajuste fino de espaçamentos/cores para casar com o mockup
 

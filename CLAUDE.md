@@ -176,6 +176,192 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Deploy na nuvem (preparação) — Netlify + Render + Neon.** Ajustes p/ produção:
+  **API** (`env.ts`) passa a usar `process.env.PORT` (Render injeta) com fallback `API_PORT`/3333;
+  novo `corsOrigin` (`CORS_ORIGIN`, padrão `*`). **`server.ts`** ganhou middleware **CORS** (headers +
+  preflight OPTIONS→204). **`apps/api/package.json`:** `tsx` movido p/ `dependencies` + script
+  **`start:prod`** = `tsx src/main.ts` (roda o TS direto, sem precisar buildar; evita o problema do
+  `@triade/shared` apontar p/ `src`). **Site:** `apps/web/public/_redirects` (Netlify) encaminha
+  `/api/*` → API do Render (com placeholder a trocar) + fallback SPA `/* → index.html`. `.env.example`
+  += `CORS_ORIGIN`/`NODE_ENV=production`. **Guia completo em `Info/DEPLOY-NUVEM.md`** (Neon → Render →
+  preparar banco com `db-setup.bat` apontando p/ prod → Netlify → provisionar empresa real via
+  super-admin). **Build verificado:** `tsc -b` do web exit 0; type-check api+web verde. **Decisões:**
+  API roda via **tsx em produção** (Render: build `npm install`, start `npm run start:prod -w @triade/api`,
+  health `/health`); web no Netlify (build `npm install && npm run build -w @triade/web`, publish
+  `apps/web/dist`); proxy do Netlify evita CORS (mesma origem) mas o CORS na API fica como rede de
+  segurança. **Pendente (Gui):** seguir o guia — criar serviços, setar envs (DB_URL/JWT_SECRET/etc.),
+  editar o `_redirects` com a URL real da API, `git push`. **Fora do MVP:** fiscal/NF-e (Fase 7).
+- **2026-06-11** — **Refinamento — Curva ABC de produtos.** **Sem migration**; reusa `relatorios.ver`.
+  **Backend:** `RelatorioRepository.curvaAbcProdutos` (pedido_item × pedido não orçamento/cancelado no
+  período, soma receita por produto, `ORDER BY total DESC`); `RelatoriosService.curvaAbc` calcula
+  `pct`, `acumuladoPct` e a **classe** (A ≤80% acumulado, B ≤95%, C resto) + `resumo` por classe
+  (itens/total). Tipos `LinhaAbc/RelatorioAbc/ClasseAbc`. Rota `GET /relatorios/curva-abc`.
+  **Frontend:** tela **Relatórios › Curva ABC** — 3 KPIs por classe (A verde, B amarelo, C vermelho)
+  com total e nº de itens; tabela produto/qtd/receita/% /% acumulado/classe (pill colorida); export
+  CSV; menu + rota + i18n pt/en/es. **Validação:** **type-check api+web verde (exit 0)** + **e2e
+  Postgres real (8 PASS)** via pglite: total 1000, Top 800→A (80% acum.), Médio 150→B (95%), Cauda
+  50→C (100%), ordenação e resumo por classe. **Pendente:** Gui `git push` + testar. **Curva ABC por
+  cliente** fica como evolução. **Próximo (opcional):** credores/tipos de documento, conciliação
+  bancária, ou esconder/redimensionar colunas — o MVP + refinamentos está bem completo.
+- **2026-06-11** — **Refinamento — DRE por categoria financeira.** **Sem migration**; reusa
+  `financeiro.fluxo.ver` + a categoria nos títulos (migration 020). **Backend:**
+  `TituloRepository.pagosPorCategoria` (LEFT JOIN `categoria_financeira`, soma por tipo+categoria,
+  sem categoria cai em `'—'`); `PagoOrigem`→**`PagoAgrupado`** (`{tipo, chave, total}`) reusado por
+  origem e categoria; `FinanceiroService.dre(schema, de, ate, por)` escolhe o agrupamento
+  (`origem|categoria`) e devolve `RelatorioDre` += `por`. Rota `GET /financeiro/dre?por=categoria`.
+  **Frontend:** na tela **DRE** um seletor **Agrupar por: Origem | Categoria financeira**; quando por
+  categoria, mostra o nome da categoria (sem traduzir); export CSV usa o rótulo certo; i18n pt/en/es.
+  **Validação:** **type-check api+web verde (exit 0)** + **e2e Postgres real (7 PASS)** via pglite:
+  receita "Vendas" 1500, despesas Aluguel 800/Salários 300, sem categoria→"—" (50), resultado 350,
+  e o agrupamento por origem segue funcionando. **Pendente:** Gui `git push` + testar. **Próximo:**
+  Curva ABC (clientes/produtos), cadastros de credores/tipos de documento, ou conciliação bancária.
+- **2026-06-11** — **Refinamento — Categorias financeiras (cadastro) + vínculo no título.**
+  Migration tenant **020** (`categoria_financeira` nome/tipo `receita|despesa`/ativo +
+  `titulo.categoria_financeira_id`). Caps `cadastros.catfin.listar/gerenciar`. **Backend:** domínio
+  `CategoriaFinanceira` (`TIPOS_CATFIN`) + repo + `SqlCategoriaFinanceiraRepository`;
+  `CategoriasFinanceirasService` (CRUD + ativo, valida nome e tipo); rota `/categorias-financeiras`.
+  **Título:** `NovoTitulo.categoriaFinanceiraId?` (opcional — não quebra os geradores automáticos
+  pedido/compra/comissão/frete); `Titulo` += `categoriaFinanceiraId/Nome`; `SqlTituloRepository.criar`
+  grava a coluna e `listar` faz **LEFT JOIN** p/ trazer o nome; `FinanceiroService.criar` repassa a
+  categoria (títulos manuais). **Frontend:** cadastro **Cadastros › Financeiro › Categorias
+  financeiras** (nome + tipo receita/despesa + ativo); no **Novo título** das Contas, select de
+  categoria filtrado pelo tipo (receita p/ receber, despesa p/ pagar); coluna **Categoria** na lista;
+  i18n pt/en/es. **Validação:** **type-check api+web verde (exit 0)** + **e2e Postgres real (8 PASS)**
+  via pglite: CRUD/validação (nome curto→400, tipo inválido→400), inativar, título grava a categoria,
+  `listar` traz o nome (JOIN), categoria **opcional** no título. **Pendente:** Gui rodar `db-setup.bat`
+  (migration 020) + `git push` + testar. **Próximo:** **DRE por categoria** (já temos a categoria nos
+  títulos — falta agrupar a DRE por `categoria_financeira` além de por origem), ou Curva ABC.
+- **2026-06-11** — **Polimento UX — Ações em massa (Contas a receber/pagar).** **Frontend puro** (sem
+  backend/migration). Na tela **Contas** (`Contas.tsx`): coluna de checkbox por linha + "selecionar
+  todos" no cabeçalho (só quando o usuário tem a cap `gerenciar`); ao marcar ≥1, aparece a **barra de
+  ações em massa** (roxa) com a contagem e os botões **Baixar** (só os títulos em aberto selecionados)
+  e **Excluir** (com `confirm`), além de "Limpar seleção". O `ModalBaixa` foi generalizado para
+  receber **N títulos** e aplicar a mesma forma/conta a todos num loop (retorna quantos baixou).
+  Toasts ao concluir (`bulk.baixados/excluidos`). CSS `.bulk-bar`/`.linha-sel` no `styles.css`; i18n
+  pt/en/es (`bulk.*`). **Validação:** **type-check api+web verde (exit 0)**; sem e2e (UI; baixa/baixa
+  já cobertas pelos testes do financeiro). **Pendente:** Gui `git push` + testar (marcar 2 títulos →
+  Baixar). **Polimento UX concluído** (Ctrl+K, toasts, sino, ações em massa). **Próximo:** cadastros
+  financeiros (categorias) p/ DRE por categoria, ou Curva ABC, conforme o Gui priorizar.
+- **2026-06-11** — **Polimento UX — Sino de notificações.** **Frontend puro** (sem backend/migration).
+  Componente **`Sino.tsx`** (na topbar, ao lado da busca): ao logar, agrega pendências reaproveitando
+  endpoints existentes, **só os que o usuário pode ver** — títulos a receber **vencidos**
+  (`/financeiro/aging-receber`, `diasAtraso>0`), **lotes vencendo em 30 d** (`/relatorios/validade-lotes`)
+  e **produtos com estoque baixo** (`/estoque`, `abaixoMinimo`). Badge vermelho com a soma; clicar abre
+  painel com cada grupo (ícone, rótulo, contagem) que **navega para a tela** correspondente; overlay p/
+  fechar ao clicar fora. CSS `.sino-*` no `styles.css`; i18n pt/en/es (`sino.*`). **Validação:**
+  **type-check api+web verde (exit 0)**; sem e2e (UI, dados já cobertos pelos relatórios). **Pendente:**
+  Gui `git push` + testar (criar um título vencido / lote vencendo → badge no sino). **Próximo
+  (polimento):** ações em massa nas listas; ou cadastros financeiros (categorias) p/ DRE por categoria.
+- **2026-06-11** — **Polimento UX — Toasts de confirmação.** **Frontend puro** (sem backend/migration).
+  **`Toast.tsx`** (`ToastProvider` + `useToast` + container fixo embaixo à direita, auto-some em 3,5s,
+  tipos `ok`/`erro`; também ouve `window 'toast'` p/ disparo sem hook). Montado no `App` (envolve o
+  `BrowserRouter`). Ligado em **Contas a receber/pagar** (criar/baixar/cancelar baixa) e no **detalhe
+  do pedido** (mudança de status e separação por bipagem). CSS `.toast-*` (slide-in) no `styles.css`;
+  i18n pt/en/es (`fin.toast_*`, `pedido.toast_status`, `sep.toast_ok`). **Validação:** **type-check
+  api+web verde (exit 0)**; sem e2e (UI). **Pendente:** Gui `git push` + testar (lançar/baixar um
+  título → toast). **Próximo (polimento):** sino de notificações na topbar (títulos vencidos, lotes
+  vencendo, estoque baixo), ou ações em massa nas listas; ou cadastros financeiros (categorias).
+- **2026-06-11** — **Polimento UX — Busca global (Ctrl+K).** **Frontend puro** (sem backend/migration).
+  Componente **`BuscaGlobal.tsx`** (montado no `Layout`): paleta de navegação que abre com **Ctrl/⌘+K**
+  ou pelo botão **🔎 Buscar** na topbar (via evento `window 'abrir-busca'`); lista todas as telas
+  (espelha o menu) **filtradas por capability**, com busca acento-insensível (`normalize NFD`),
+  navegação por **↑/↓**, **Enter** abre, **Esc** fecha; overlay `.busca-*` no `styles.css`; i18n
+  pt/en/es (`busca.*`). Também decidido com o Gui: **Transferência entre locais = fora de escopo**
+  (não faz sentido p/ esta operação) — marcado no `REFINAMENTOS.md`. **Validação:** **type-check
+  api+web verde (exit 0)**; sem e2e (navegação pura de UI). **Pendente:** Gui `git push` + testar
+  (apertar Ctrl+K em qualquer tela). **Próximo (polimento):** sino de notificações + toasts de
+  confirmação, ações em massa nas listas; ou cadastros financeiros (categorias) p/ DRE por categoria.
+- **2026-06-11** — **Refinamento — DRE simplificada (resultado do período).** **Sem migration**; reusa
+  `financeiro.fluxo.ver`. **Backend:** `TituloRepository.pagosPorOrigem` (SELECT soma dos títulos
+  pagos por `tipo`+`origem`, filtro `pago_em::date` no período — sem tocar criar/listar) +
+  `SqlTituloRepository`; `FinanceiroService.dre` monta **receitas** (receber) e **despesas** (pagar)
+  por origem + `totalReceitas/totalDespesas/resultado`. Tipos `DreLinha/RelatorioDre`. Rota
+  `GET /financeiro/dre`. **Frontend:** tela **Financeiro › DRE (resultado)** — filtro de período,
+  3 KPIs (receitas verde, despesas vermelho, resultado verde/vermelho), duas tabelas (receitas e
+  despesas por origem) e export CSV; rótulos de origem (pedido/compra/comissão/frete/manual) i18n
+  pt/en/es; menu + rota. **DRE de caixa** (regime de caixa, pelos pagamentos) — DRE por categoria
+  financeira fica para quando criarmos o cadastro de categorias. **Validação:** **type-check api+web
+  verde (exit 0)** + **e2e Postgres real (6 PASS)** via pglite: receita de pedidos 1500 (em aberto e
+  fora do período ignorados), total receitas 1700, despesas 460, resultado 1240, ordenação por valor.
+  **Pendente:** Gui `git push` + testar. **Próximo (REFINAMENTOS):** cadastros financeiros (categorias
+  + credores) p/ DRE por categoria, ou Transferência entre locais, ou polimento visual (Ctrl+K, sino).
+- **2026-06-11** — **Refinamento — Aging de recebíveis.** **Sem migration**; reusa
+  `financeiro.receber.listar`. **Backend:** `FinanceiroService.aging(schema, tipo)` (sem mudar repo)
+  filtra títulos em aberto, calcula `diasAtraso = hoje − vencimento` e classifica em faixas
+  (**a_vencer** ≤0, **d1_30**, **d31_60**, **d61_90**, **d90_mais**); soma por faixa + total em aberto;
+  ordena do mais atrasado primeiro. Tipos `AgingFaixa/AgingLinha/RelatorioAging`. Rota
+  `GET /financeiro/aging-receber`. **Frontend:** tela **Financeiro › Aging de recebíveis** (5 KPIs por
+  faixa + total em aberto; tabela com dias de atraso e pill colorida por faixa; export CSV); menu +
+  rota + i18n pt/en/es. **Validação:** **type-check api+web verde (exit 0)** + **e2e Postgres real
+  (8 PASS)** via pglite: 5 títulos em aberto (pago e a-pagar fora), totais por faixa (100/200/300/
+  400/500), total 1500, ordena por mais atrasado. **Pendente:** Gui `git push` + testar. **Próximo
+  (REFINAMENTOS):** extras de Financeiro (conciliação, categorias financeiras, credores) ou DRE/Curva
+  ABC; ou Transferência entre locais (decisão de modelo pendente).
+- **2026-06-11** — **Refinamento — Relatório de Vendas por categoria.** **Sem migration**; reusa
+  `relatorios.ver`. **Backend:** `RelatorioRepository.vendasPorCategoria` + `SqlRelatorioRepository`
+  (`pedido_item` → `produto` → `categoria`, pedidos não orçamento/cancelado, filtro `criado_em::date`
+  no período; soma qtd/total por categoria, item sem produto/categoria cai em `'—'`); rota
+  `GET /relatorios/vendas-categoria`. **Frontend:** tela **Relatórios › Vendas por categoria** (filtro
+  de período, KPI total, barras por categoria, export CSV); menu + rota + i18n pt/en/es. **Validação:**
+  **type-check api+web verde (exit 0)** + **e2e Postgres real (4 PASS)** via pglite: 3 grupos (2
+  categorias + "—"), Injetáveis 1500 (ordena por total, orçamento ignorado), Skincare 300/qtd 3,
+  produto sem categoria em "—". **Pendente:** Gui `git push` + testar. **Próximo (REFINAMENTOS):**
+  Transferência entre locais/depósitos (entrega maior — cadastro de locais + `estoque_lote.local_id`
+  com migration). **Nota:** trio de saúde de estoque (Validade, Estoque parado) + ranking de produtos/
+  categorias cobre os relatórios essenciais; faltam DRE/Curva ABC/Aging como extras.
+- **2026-06-11** — **Refinamento — Relatório de Estoque parado.** **Sem migration**; reusa
+  `relatorios.ver`. **Backend:** `RelatorioRepository.estoqueParado` + `SqlRelatorioRepository`
+  (produtos ativos com `SUM(saldo) > 0`; subquery `MAX(criado_em)` dos movimentos `tipo='saida'` =
+  última saída; `valor = Σ saldo×custo`; `ORDER BY ultima_saida ASC NULLS FIRST, nome` — nunca
+  vendidos e mais antigos primeiro); rota `GET /relatorios/estoque-parado`. **Frontend:** tela
+  **Relatórios › Estoque parado** — seletor "sem vender há" (todos/30/60/90 d), calcula **dias
+  parado** no front (nunca vendido = selo vermelho), KPIs (produtos parados, valor parado), export
+  CSV. Menu + rota + i18n pt/en/es. **Validação:** **type-check api+web verde (exit 0)** + **e2e
+  Postgres real (7 PASS)** via pglite: exclui saldo 0, nunca vendido em 1º (NULLS FIRST), soma
+  saldo/valor de múltiplos lotes (15/60), ordena por última saída (antigo→recente). **Pendente:**
+  Gui `git push` + testar. **Próximo (REFINAMENTOS):** Transferência entre locais/depósitos (precisa
+  de decisão de produto — modelar local/depósito no estoque), ou vendas por categoria.
+- **2026-06-11** — **Refinamento — Relatório de Validade de lotes.** **Sem migration**; reusa a cap
+  `relatorios.ver`. **Backend:** `RelatorioRepository.validadeLotes` + `SqlRelatorioRepository`
+  (lotes com `quantidade > 0`, JOIN produto, `ORDER BY validade NULLS LAST, nome`; devolve produto,
+  lote, validade ISO, saldo, custo e **valor = saldo×custo**); `RelatoriosService.validadeLotes`;
+  rota `GET /relatorios/validade-lotes`. **Frontend:** tela **Relatórios › Validade de lotes** —
+  calcula dias p/ vencer e a situação no front (**vencido** <0, **crítico** ≤30, **atenção** ≤90,
+  **OK** >90, **sem validade**), pills coloridas, KPIs (lotes vencidos + valor, vencem em 30 dias),
+  filtro "só vencidos/a vencer (90 d)" e **export CSV** (`lib/csv`); menu + rota + i18n pt/en/es;
+  classe `.kpi-sub` no CSS. **Validação:** **type-check api+web verde (exit 0)** + **e2e Postgres
+  real (6 PASS)** via pglite: exclui lote saldo 0, ordena por validade (sem validade ao fim), valor =
+  saldo×custo, nome do produto. **Pendente:** Gui `git push` + testar. **Próximo (REFINAMENTOS):**
+  Transferência entre locais/depósitos (exige modelar local/depósito no estoque), ou mais relatórios
+  (estoque parado, vendas por categoria) / extras de Financeiro.
+- **2026-06-11** — **Refinamento — Romaneio imprimível.** **Frontend puro** (sem backend/migration).
+  Página **`Romaneio.tsx`** (rota `/comercial/pedidos/:id/romaneio`, **fora do Layout** — folha limpa):
+  cabeçalho com **logo/fantasia da empresa** (à esquerda) + título "Romaneio" + marca **TRIADE** (à
+  direita); dados do pedido (nº, data, cliente, vendedor, forma de entrega/motoboy/distância, forma
+  de pagamento, endereço); tabela de itens (produto/qtd/preço/subtotal); totais (subtotal, frete,
+  total) e linha de assinatura "Recebido por". Botões **Imprimir** (`window.print()`) e **Voltar**
+  na barra `.no-print`. Botão **🖨️ Romaneio** adicionado no detalhe do pedido. CSS `@media print`
+  (esconde `.no-print`, fundo branco, full width) + classes `.romaneio-*`/`.rom-*` no `styles.css`;
+  i18n pt/en/es (`romaneio.*`). **Lotes por item** ficam de fora por ora (as etiquetas consumidas na
+  separação não estão ligadas diretamente ao item do pedido — evolução futura). **Validação:**
+  **type-check api+web verde (exit 0)**; sem e2e (view de impressão, dados já cobertos). **Pendente:**
+  Gui `git push` + testar (abrir um pedido → Romaneio → Imprimir). **Próximo (REFINAMENTOS):**
+  Transferência entre locais/depósitos, ou itens de Financeiro/Relatórios extras.
+- **2026-06-11** — **Refinamento — Gestão de fretes (Logística) + títulos por motoboy.**
+  **Sem migration** (usa `pedido.frete/motoboy_id/forma_entrega` da 019). Novo módulo **Logística**;
+  caps `logistica.frete.ver/gerenciar`. **Backend:** domínio `GestaoFrete`/`GestaoFreteRepository`;
+  `SqlGestaoFreteRepository.apurar` (JOIN motoboy×pedido, `forma_entrega='motoboy'`, status não
+  orçamento/cancelado, filtro `criado_em::date` no período; por motoboy: nº de pedidos + Σ frete);
+  `GestaoFretesService.fechar` gera **um título a pagar por motoboy** (origem 'frete', descricao
+  "Fretes {de a ate} - {motoboy}", pessoa = motoboy) — espelha o "fechar competência" das comissões.
+  Rotas `GET /logistica/fretes` e `POST /logistica/fretes/fechar`. **Frontend:** grupo de menu
+  **Logística › Gestão de fretes** (filtro de período → tabela motoboy/pedidos/frete + KPIs total e
+  pedidos; bloco Fechar competência c/ vencimento → gera os títulos); i18n pt/en/es; rota.
+  **Validação:** **type-check api+web verde (exit 0)** + **e2e Postgres real (9 PASS)** via pglite
+  (repos/serviços reais): apura 2 motoboys (Ana 2 pedidos/frete 40 com orçamento e retirada
+  ignorados, Bruno 1/20), fechar gera 2 títulos a pagar (40 e 20, origem=frete, total 60),
+  vencimento obrigatório→400, período sem frete→400. **Pendente:** Gui testar no navegador + commit
+  (sem migration nova). **Próximo (REFINAMENTOS):** Romaneio imprimível ou Transferência entre locais.
 - **2026-06-11** — **Refinamento — Motoboys + Formas de entrega + frete no pedido.**
   Migration tenant **019** (`motoboy` nome/telefone/ativo; `frete_config` linha única
   `km_rate`/`min_motoboy` defaults 2/20; `pedido` += `forma_entrega` default 'retirada',

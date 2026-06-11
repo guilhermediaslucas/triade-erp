@@ -1,8 +1,6 @@
 # --- Netlify: configuração de produção do site TRIADE ERP ---
-# 1) Encaminha as chamadas /api/* para a sua API no Render.
-#    IMPORTANTE: troque "SUA-API.onrender.com" pela URL REAL da sua API
-#    (você só vai saber depois de criar o serviço no Render — veja Info/DEPLOY-NUVEM.md).
-/api/*  https://SUA-API.onrender.com/:splat  200
+# 1) Encaminha as chamadas /api/* para a API no Render.
+/api/*  https://triade-api.onrender.com/:splat  200
 
 # 2) SPA: qualquer outra rota volta para o index.html (o React Router cuida da navegação).
 /*      /index.html  200
