@@ -63,7 +63,10 @@ export function PedidoDetalhe() {
     <div>
       <div className="page-head">
         <h1 className="page-titulo">{numeroPedido(p.numero)} <span className={'pill ' + corStatus(p.status)}>{t('status.' + p.status)}</span></h1>
-        <button className="btn-ghost" onClick={() => nav('/comercial/pedidos')}>← {t('pedidos.voltar')}</button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button className="btn-ghost" onClick={() => nav('/comercial/pedidos/' + p.id + '/romaneio')}>🖨️ {t('romaneio.titulo')}</button>
+          <button className="btn-ghost" onClick={() => nav('/comercial/pedidos')}>← {t('pedidos.voltar')}</button>
+        </div>
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
 

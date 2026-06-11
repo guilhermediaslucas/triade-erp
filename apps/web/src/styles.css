@@ -207,3 +207,23 @@ a { text-decoration: none; color: inherit; }
 .chip { display: inline-flex; align-items: center; gap: 6px; background: var(--surface-2, #f1f5f9); border: 1px solid var(--border, #e2e8f0); border-radius: 14px; padding: 3px 6px 3px 10px; font-size: 12px; }
 .chip-x { border: none; background: transparent; cursor: pointer; font-size: 15px; line-height: 1; color: var(--muted, #64748b); padding: 0 2px; }
 .chip-x:hover { color: #dc2626; }
+
+/* --- Romaneio imprimível --- */
+.romaneio-toolbar { max-width: 820px; margin: 14px auto 0; display: flex; gap: 8px; justify-content: flex-end; }
+.romaneio-wrap { max-width: 820px; margin: 12px auto; padding: 24px; color: #111; background: #fff; }
+.rom-head { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #111; padding-bottom: 12px; margin-bottom: 16px; }
+.rom-logo { max-height: 56px; max-width: 220px; object-fit: contain; }
+.rom-marca { font-weight: 800; letter-spacing: 1px; font-size: 20px; }
+.rom-titulo { font-size: 22px; font-weight: 700; margin: 0; }
+.rom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; margin-bottom: 18px; }
+.rom-grid .l { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #555; }
+.rom-tabela { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+.rom-tabela th, .rom-tabela td { border: 1px solid #999; padding: 6px 8px; text-align: left; font-size: 13px; }
+.rom-tabela th { background: #f0f0f0; }
+.rom-tot { text-align: right; font-size: 14px; }
+.rom-assinatura { margin-top: 52px; border-top: 1px solid #111; width: 320px; padding-top: 6px; font-size: 12px; color: #333; }
+@media print {
+  .no-print { display: none !important; }
+  body { background: #fff !important; }
+  .romaneio-wrap { max-width: none; margin: 0; padding: 0; }
+}

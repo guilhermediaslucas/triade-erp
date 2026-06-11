@@ -966,3 +966,17 @@ Object.assign(es, {
   'gfrete.gerar_titulos': 'Generar cuentas', 'gfrete.fechado': '{n} cuenta(s) a pagar generada(s).',
   'frete.nada_apurar': 'Sin flete a liquidar en el período.',
 });
+
+// --- Refinamento: Romaneio imprimível ---
+Object.assign(pt, {
+  'romaneio.titulo': 'Romaneio', 'romaneio.imprimir': 'Imprimir', 'romaneio.pedido': 'Pedido',
+  'romaneio.recebido_por': 'Recebido por (nome / assinatura)',
+});
+Object.assign(en, {
+  'romaneio.titulo': 'Packing slip', 'romaneio.imprimir': 'Print', 'romaneio.pedido': 'Order',
+  'romaneio.recebido_por': 'Received by (name / signature)',
+});
+Object.assign(es, {
+  'romaneio.titulo': 'Remito', 'romaneio.imprimir': 'Imprimir', 'romaneio.pedido': 'Pedido',
+  'romaneio.recebido_por': 'Recibido por (nombre / firma)',
+});

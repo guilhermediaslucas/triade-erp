@@ -20,6 +20,7 @@ import { TabelaPreco } from './pages/TabelaPreco.js';
 import { Pedidos } from './pages/Pedidos.js';
 import { NovoPedido } from './pages/NovoPedido.js';
 import { PedidoDetalhe } from './pages/PedidoDetalhe.js';
+import { Romaneio } from './pages/Romaneio.js';
 import { PosicaoEstoque } from './pages/PosicaoEstoque.js';
 import { EntradaEstoque } from './pages/EntradaEstoque.js';
 import { Inventario } from './pages/Inventario.js';
@@ -56,6 +57,7 @@ export function App() {
               <Route path="/config/empresa" element={<Protegida cap="acesso.empresa.editar"><DadosEmpresa /></Protegida>} />
               <Route path="/comercial/pedidos" element={<Protegida cap="comercial.pedido.listar"><Pedidos /></Protegida>} />
               <Route path="/comercial/pedidos/novo" element={<Protegida cap="comercial.pedido.criar"><NovoPedido /></Protegida>} />
+              <Route path="/comercial/pedidos/:id/romaneio" element={<ProtectedRoute capability="comercial.pedido.listar"><Romaneio /></ProtectedRoute>} />
               <Route path="/comercial/pedidos/:id" element={<Protegida cap="comercial.pedido.listar"><PedidoDetalhe /></Protegida>} />
               <Route path="/comercial/precos" element={<Protegida cap="comercial.preco.listar"><TabelaPreco /></Protegida>} />
               <Route path="/estoque/expedicao" element={<Protegida cap="comercial.pedido.gerenciar"><KanbanExpedicao /></Protegida>} />
