@@ -1,5 +1,5 @@
 import type { DataSource } from 'typeorm';
-import type { LinhaEstoqueParado, LinhaProduto, LinhaValidadeLote, RelatorioRepository, RelatorioVendas } from '../../domain/relatorio/Relatorio.js';
+import type { LinhaCategoria, LinhaEstoqueParado, LinhaProduto, LinhaValidadeLote, RelatorioRepository, RelatorioVendas } from '../../domain/relatorio/Relatorio.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 const ATIVO = "status NOT IN ('orcamento','cancelado')";
@@ -41,6 +41,22 @@ export class SqlRelatorioRepository implements RelatorioRepository {
     return linhas.map((r: any) => ({ nome: r.nome, quantidade: Number(r.q), total: Number(r.total) }));
   }
 
+  // Vendas agrupadas pela categoria do produto (item sem produto/categoria cai em "—").
+  async vendasPorCategoria(schema: string, de: string | null, ate: string | null): Promise<LinhaCategoria[]> {
+    const s = validarSchema(schema);
+    const linhas = await this.ds.query(
+      `SELECT COALESCE(c.nome, '—') categoria, SUM(pi.quantidade)::numeric q, SUM(pi.subtotal)::numeric total
+         FROM "${s}".pedido_item pi
+         JOIN "${s}".pedido p ON p.id = pi.pedido_id
+         LEFT JOIN "${s}".produto pr ON pr.id = pi.produto_id
+         LEFT JOIN "${s}".categoria c ON c.id = pr.categoria_id
+        WHERE p.${ATIVO}
+          AND ($1::date IS NULL OR p.criado_em::date >= $1)
+          AND ($2::date IS NULL OR p.criado_em::date <= $2)
+        GROUP BY COALESCE(c.nome, '—') ORDER BY total DESC`, [de, ate]);
+    return linhas.map((r: any) => ({ categoria: r.categoria, quantidade: Number(r.q), total: Number(r.total) }));
+  }
+
   // Lotes com saldo, ordenados pela validade (mais cedo primeiro; sem validade ao final).
   async validadeLotes(schema: string): Promise<LinhaValidadeLote[]> {
     const s = validarSchema(schema);
@@ -60,8 +76,7 @@ export class SqlRelatorioRepository implements RelatorioRepository {
     });
   }
 
-  // Produtos com saldo em estoque + data da última saída (venda/separação). Ordena dos mais
-  // "parados" primeiro (nunca vendidos antes, depois saída mais antiga). Dias parados ficam no front.
+  // Produtos com saldo em estoque + data da última saída (venda/separação).
   async estoqueParado(schema: string): Promise<LinhaEstoqueParado[]> {
     const s = validarSchema(schema);
     const linhas = await this.ds.query(

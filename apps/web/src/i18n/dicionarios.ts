@@ -1032,3 +1032,8 @@ Object.assign(es, {
   'parado.ultima_saida': 'Última salida', 'parado.dias_parado': 'Días parado', 'parado.nunca': 'Nunca vendido',
   'parado.kpi_itens': 'Productos parados', 'parado.kpi_valor': 'Valor parado',
 });
+
+// --- Refinamento: Relatório de vendas por categoria ---
+Object.assign(pt, { 'menu.rel_categorias': 'Vendas por categoria', 'rel.categorias': 'Vendas por categoria' });
+Object.assign(en, { 'menu.rel_categorias': 'Sales by category', 'rel.categorias': 'Sales by category' });
+Object.assign(es, { 'menu.rel_categorias': 'Ventas por categoría', 'rel.categorias': 'Ventas por categoría' });
