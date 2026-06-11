@@ -383,3 +383,26 @@ body.theme-dark .nota-info { background: #14233a; color: #93c5fd; border-color: 
 .busca-box-tb input { border: 0; outline: none; background: transparent; width: 100%; font-size: 14px; color: var(--ink); }
 .chip-f { background: var(--card); border: 1px solid var(--borda); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--muted); user-select: none; }
 .chip-f.on { background: var(--accent, #7b61ff); color: #fff; border-color: transparent; }
+
+/* ===== Formulário em cards (padrão do mockup: Novo pedido / Detalhe) ===== */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-grid .campo.full, .form-grid .full { grid-column: 1 / -1; }
+.form-grid .campo { margin: 0; }
+.form-grid textarea { padding: 10px 12px; border: 1px solid var(--borda); border-radius: 8px; font-size: 14px; font-family: inherit; resize: vertical; }
+.form-actions { display: flex; gap: 10px; margin-top: 4px; flex-wrap: wrap; }
+.totais-mock { display: flex; flex-direction: column; gap: 8px; }
+.tl-row { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+.tl-row b { min-width: 130px; text-align: right; }
+.tl-total { border-top: 1px solid var(--borda); padding-top: 8px; margin-top: 2px; }
+
+/* ===== Workflow do pedido (stepper) ===== */
+.wf { display: flex; align-items: flex-start; flex-wrap: wrap; }
+.wf-step { text-align: center; flex: 1; min-width: 76px; }
+.wf-step .kpi-ic { margin: 0 auto; }
+.wf-atual { outline: 3px solid var(--accent-soft, #efeaff); }
+.wf-futuro { opacity: .4; }
+.wf-lbl { font-size: 12px; margin-top: 6px; font-weight: 600; }
+.wf-lbl.on { color: var(--accent, #7b61ff); }
+.wf-lbl.off { color: var(--muted); font-weight: 400; }
+.wf-line { flex: .5; height: 2px; background: var(--borda); min-width: 18px; margin-top: 22px; }
+.wf-line.on { background: var(--accent, #7b61ff); }

@@ -1593,3 +1593,27 @@ Object.assign(es, { 'usuarios.buscar': 'Buscar usuario', 'cond.buscar': 'Buscar 
 Object.assign(pt, { 'motoboys.cep_origem': 'CEP de origem (saída das entregas)', 'motoboys.cep_origem_ph': 'Ex.: 01001-000', 'motoboys.google_dica': 'Com a chave do Google Maps configurada no servidor (GOOGLE_MAPS_API_KEY) e este CEP preenchido, a distância do motoboy é calculada por rota real. Sem isso, usa estimativa pelo CEP.' });
 Object.assign(en, { 'motoboys.cep_origem': 'Origin ZIP (deliveries start)', 'motoboys.cep_origem_ph': 'e.g. 01001-000', 'motoboys.google_dica': 'With the Google Maps key set on the server (GOOGLE_MAPS_API_KEY) and this ZIP filled, courier distance uses real routing. Otherwise it estimates from the ZIP.' });
 Object.assign(es, { 'motoboys.cep_origem': 'CP de origen (salida de entregas)', 'motoboys.cep_origem_ph': 'Ej.: 01001-000', 'motoboys.google_dica': 'Con la clave de Google Maps en el servidor (GOOGLE_MAPS_API_KEY) y este CP, la distancia usa ruta real. Sin eso, estima por el CP.' });
+
+// --- Novo pedido (cards do mockup) ---
+Object.assign(pt, {
+  'pedidos.crumb_novo': 'Comercial / Pedidos / Novo', 'pedidos.sub_novo': 'Cliente, itens e forma de pagamento',
+  'pedidos.card_dados': 'Dados do pedido', 'pedidos.card_endereco': 'Endereço de entrega',
+  'pedidos.escolha_cliente': 'Digite ou selecione um cliente', 'pedidos.obs_ph': 'Notas internas do pedido',
+  'pedidos.preco_un': 'Preço un.', 'pedidos.sem_itens': 'Nenhum item adicionado. Clique em Adicionar item.', 'pedidos.criar': 'Criar pedido',
+});
+Object.assign(en, {
+  'pedidos.crumb_novo': 'Sales / Orders / New', 'pedidos.sub_novo': 'Customer, items and payment',
+  'pedidos.card_dados': 'Order details', 'pedidos.card_endereco': 'Delivery address',
+  'pedidos.escolha_cliente': 'Type or select a customer', 'pedidos.obs_ph': 'Internal order notes',
+  'pedidos.preco_un': 'Unit price', 'pedidos.sem_itens': 'No items added. Click Add item.', 'pedidos.criar': 'Create order',
+});
+Object.assign(es, {
+  'pedidos.crumb_novo': 'Comercial / Pedidos / Nuevo', 'pedidos.sub_novo': 'Cliente, ítems y forma de pago',
+  'pedidos.card_dados': 'Datos del pedido', 'pedidos.card_endereco': 'Dirección de entrega',
+  'pedidos.escolha_cliente': 'Escribe o selecciona un cliente', 'pedidos.obs_ph': 'Notas internas del pedido',
+  'pedidos.preco_un': 'Precio un.', 'pedidos.sem_itens': 'Ningún ítem agregado. Clic en Agregar ítem.', 'pedidos.criar': 'Crear pedido',
+});
+
+Object.assign(pt, { 'pedido.workflow': 'Workflow', 'pedido.titulo': 'Pedido' });
+Object.assign(en, { 'pedido.workflow': 'Workflow', 'pedido.titulo': 'Order' });
+Object.assign(es, { 'pedido.workflow': 'Flujo', 'pedido.titulo': 'Pedido' });

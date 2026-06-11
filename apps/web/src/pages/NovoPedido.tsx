@@ -116,13 +116,16 @@ export function NovoPedido() {
 
   return (
     <div>
-      <h1 className="page-titulo">{t('pedidos.novo')}</h1>
+      <div className="crumb">{t('pedidos.crumb_novo')}</div>
+      <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('pedidos.novo')}</h1><div className="muted page-sub">{t('pedidos.sub_novo')}</div></div></div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
-      <div className="card" style={{ maxWidth: 820 }}>
-        <div className="cores-grid">
-          <label className="campo">{t('pedidos.cliente')}
+
+      <div className="card" style={{ maxWidth: 'none' }}>
+        <div className="card-head"><h3>{t('pedidos.card_dados')}</h3></div>
+        <div className="form-grid">
+          <label className="campo full">{t('pedidos.cliente')}
             <select value={clienteId} onChange={(e) => escolherCliente(e.target.value)}>
-              <option value="">—</option>{clientes.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
+              <option value="">{t('pedidos.escolha_cliente')}</option>{clientes.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
             </select>
           </label>
           <label className="campo">{t('pedidos.vendedor')}
@@ -140,53 +143,68 @@ export function NovoPedido() {
               <option value="">{t('cond.avista_pad')}</option>{condicoes.map((c) => <option key={c.id} value={c.id}>{c.nome} ({c.parcelas}x)</option>)}
             </select>
           </label>
+          <label className="campo full">{t('pedidos.obs')}<textarea rows={2} value={obs} onChange={(e) => setObs(e.target.value)} placeholder={t('pedidos.obs_ph')} /></label>
         </div>
-        <label className="campo">{t('pedidos.endereco')}<input value={endereco} onChange={(e) => setEndereco(e.target.value)} placeholder={t('pedidos.endereco_ph')} /></label>
+      </div>
 
-        <div className="cores-grid">
-          <label className="campo">{t('entrega.forma')}
-            <select value={formaEntrega} onChange={(e) => setFormaEntrega(e.target.value as Forma)}>
+      <div className="card" style={{ maxWidth: 'none' }}>
+        <div className="card-head"><h3>{t('pedidos.card_endereco')}</h3></div>
+        <label className="campo">{t('pedidos.endereco')}<input value={endereco} onChange={(e) => setEndereco(e.target.value)} placeholder={t('pedidos.endereco_ph')} /></label>
+      </div>
+
+      <div className="card pad0" style={{ maxWidth: 'none' }}>
+        <div className="card-head" style={{ padding: '18px 20px 4px' }}>
+          <h3>{t('pedidos.itens')}</h3>
+          <button type="button" className="btn-primary btn-mini" onClick={addItem}>+ {t('pedidos.add_item')}</button>
+        </div>
+        <table className="tabela" style={{ marginTop: 6 }}>
+          <thead><tr><th>{t('precos.produto')}</th><th style={{ width: 110 }}>{t('rel.qtd')}</th><th style={{ width: 130 }}>{t('pedidos.preco_un')}</th><th style={{ width: 130 }}>{t('pedidos.subtotal')}</th><th style={{ width: 60 }}></th></tr></thead>
+          <tbody>
+            {itens.length === 0 && <tr><td colSpan={5} className="vazio">{t('pedidos.sem_itens')}</td></tr>}
+            {itens.map((it, i) => (
+              <tr key={i}>
+                <td>
+                  <select value={it.produtoId} onChange={(e) => setItem(i, 'produtoId', e.target.value)} style={{ width: '100%' }}>
+                    <option value="">{t('pedidos.escolha_produto')}</option>
+                    {produtos.map((pp) => <option key={pp.produtoId} value={pp.produtoId}>{pp.produtoNome}</option>)}
+                  </select>
+                </td>
+                <td><input type="number" min="0" step="1" value={it.quantidade} onChange={(e) => setItem(i, 'quantidade', e.target.value)} style={{ width: 90 }} /></td>
+                <td>{moeda(precoDe(it.produtoId))}</td>
+                <td><b>{moeda(precoDe(it.produtoId) * (Number(it.quantidade) || 0))}</b></td>
+                <td><button type="button" className="btn-link" onClick={() => delItem(i)}>✕</button></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="card" style={{ maxWidth: 'none' }}>
+        <div className="totais-mock">
+          <div className="tl-row"><span className="muted">{t('pedidos.subtotal')}</span><b>{moeda(subtotal)}</b></div>
+          <div className="tl-row">
+            <span className="muted">{t('entrega.forma')}</span>
+            <select value={formaEntrega} onChange={(e) => setFormaEntrega(e.target.value as Forma)} style={{ maxWidth: 180 }}>
               {FORMAS.map((f) => <option key={f} value={f}>{t('entrega.' + f)}</option>)}
             </select>
-          </label>
-          {formaEntrega === 'motoboy' && (
-            <label className="campo">{t('entrega.motoboy')}
-              <select value={motoboyId} onChange={(e) => setMotoboyId(e.target.value)}>
-                <option value="">—</option>{motoboys.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
+            {formaEntrega === 'motoboy' && (
+              <select value={motoboyId} onChange={(e) => setMotoboyId(e.target.value)} style={{ maxWidth: 180 }}>
+                <option value="">{t('entrega.motoboy')}…</option>{motoboys.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
               </select>
-            </label>
-          )}
-        </div>
-
-        <div className="perm-titulo" style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span>{t('pedidos.itens')}</span>
-          <button type="button" className="btn-ghost btn-mini" onClick={addItem}>+ {t('pedidos.add_item')}</button>
-        </div>
-        {itens.map((it, i) => (
-          <div key={i} className="item-linha">
-            <select value={it.produtoId} onChange={(e) => setItem(i, 'produtoId', e.target.value)}>
-              <option value="">{t('pedidos.escolha_produto')}</option>
-              {produtos.map((p) => <option key={p.produtoId} value={p.produtoId}>{p.produtoNome}</option>)}
-            </select>
-            <input type="number" min="0" step="1" value={it.quantidade} onChange={(e) => setItem(i, 'quantidade', e.target.value)} style={{ maxWidth: 90 }} />
-            <span className="item-preco">{moeda(precoDe(it.produtoId))}</span>
-            <span className="item-sub">{moeda(precoDe(it.produtoId) * (Number(it.quantidade) || 0))}</span>
-            <button type="button" className="btn-link" onClick={() => delItem(i)}>✕</button>
+            )}
           </div>
-        ))}
-
-        <div className="totais">
-          <div><span>{t('pedidos.subtotal')}</span><b>{moeda(subtotal)}</b></div>
-          <div><span>{t('pedidos.frete')}</span><input type="number" min="0" step="0.01" value={frete} readOnly={freteAuto} onChange={(e) => setFrete(e.target.value)} style={{ maxWidth: 120 }} /></div>
-          <div className="total-grande"><span>{t('pedidos.total')}</span><b>{moeda(total)}</b></div>
+          <div className="tl-row">
+            {freteMemo && <span className="muted" style={{ fontSize: 12, marginRight: 'auto' }}>{freteMemo}</span>}
+            <span className="muted">{t('pedidos.frete')}</span>
+            <input type="number" min="0" step="0.01" value={frete} readOnly={freteAuto} onChange={(e) => setFrete(e.target.value)} style={{ width: 130, textAlign: 'right' }} />
+          </div>
+          <div className="tl-row tl-total"><span className="muted">{t('pedidos.total')}</span><b style={{ fontSize: 20 }}>{moeda(total)}</b></div>
         </div>
-        {freteMemo && <p className="muted" style={{ fontSize: 12, marginTop: -4 }}>{t('entrega.memo')}: {freteMemo}{distanciaKm != null ? ` · ${distanciaKm} km` : ''}</p>}
+      </div>
 
-        <label className="campo">{t('pedidos.obs')}<input value={obs} onChange={(e) => setObs(e.target.value)} /></label>
-        <div className="modal-acoes">
-          <button className="btn-ghost" onClick={() => nav('/comercial/pedidos')}>{t('common.cancelar')}</button>
-          <button className="btn-primary" disabled={salv || motoboyFaltando} onClick={salvar}>{t('pedidos.salvar')}</button>
-        </div>
+      <div className="form-actions">
+        <button className="btn-primary" disabled={salv || motoboyFaltando} onClick={salvar}>{t('pedidos.criar')}</button>
+        <button className="btn-ghost" onClick={() => nav('/comercial/pedidos')}>{t('common.cancelar')}</button>
       </div>
     </div>
   );

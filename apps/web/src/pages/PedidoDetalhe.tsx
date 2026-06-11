@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
@@ -57,20 +57,45 @@ export function PedidoDetalhe() {
 
   if (!p) return <div className="muted">{erro ? t(erro) : t('common.carregando')}</div>;
   const proximos = PROXIMOS[p.status];
+  const WF = ['orcamento', 'aguardando_pagamento', 'aprovado', 'separacao', 'expedido', 'entregue'];
+  const WF_IC = ['📝', '⏳', '✅', '📦', '🚚', '🏁'];
+  const wfAtual = WF.indexOf(p.status);
   const entregaTexto = t('entrega.' + p.formaEntrega)
     + (p.formaEntrega === 'motoboy' && p.motoboyNome ? ' · ' + p.motoboyNome : '')
     + (p.distanciaKm != null ? ' · ' + p.distanciaKm + ' km' : '');
 
   return (
     <div>
+      <div className="crumb">{t('pedidos.crumb')} / {numeroPedido(p.numero)}</div>
       <div className="page-head">
-        <h1 className="page-titulo">{numeroPedido(p.numero)} <span className={'pill ' + corStatus(p.status)}>{t('status.' + p.status)}</span></h1>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div>
+          <h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('pedido.titulo')} {numeroPedido(p.numero)}</h1>
+          <div className="muted page-sub">{[p.clienteNome, p.vendedorNome, new Date(p.criadoEm).toLocaleString('pt-BR')].filter(Boolean).join(' · ')}</div>
+        </div>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <span className={'pill ' + corStatus(p.status)} style={{ fontSize: 13 }}>{t('status.' + p.status)}</span>
           <button className="btn-ghost" onClick={() => nav('/comercial/pedidos/' + p.id + '/romaneio')}>🖨️ {t('romaneio.titulo')}</button>
           <button className="btn-ghost" onClick={() => nav('/comercial/pedidos')}>← {t('pedidos.voltar')}</button>
         </div>
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
+
+      {p.status !== 'cancelado' && (
+        <div className="card" style={{ maxWidth: 820, marginBottom: 16 }}>
+          <div className="card-head"><h3>{t('pedido.workflow')}</h3></div>
+          <div className="wf">
+            {WF.map((st, i) => (
+              <Fragment key={st}>
+                {i > 0 && <div className={'wf-line' + (i <= wfAtual ? ' on' : '')} />}
+                <div className="wf-step">
+                  <div className={'kpi-ic ' + (i < wfAtual ? 'tint-gr' : i === wfAtual ? 'tint-pp wf-atual' : 'tint-bl wf-futuro')}>{WF_IC[i]}</div>
+                  <div className={'wf-lbl' + (i === wfAtual ? ' on' : i > wfAtual ? ' off' : '')}>{t('status.' + st)}</div>
+                </div>
+              </Fragment>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="card" style={{ maxWidth: 820, marginBottom: 16 }}>
         <div className="det-grid">
