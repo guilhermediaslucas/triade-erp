@@ -1009,3 +1009,26 @@ Object.assign(es, {
   'validade.kpi_vencidos': 'Lotes vencidos', 'validade.kpi_criticos': 'Vencen en 30 días',
   'validade.vencido': 'Vencido', 'validade.critico': 'Vence ≤ 30 d', 'validade.atencao': 'Vence ≤ 90 d', 'validade.ok': 'OK', 'validade.sem': 'Sin vencimiento',
 });
+
+// --- Refinamento: Relatório de estoque parado ---
+Object.assign(pt, {
+  'menu.rel_parado': 'Estoque parado',
+  'rel.parado': 'Estoque parado', 'rel.parado_sub': 'Produtos com saldo que não têm saída há um tempo (capital parado).',
+  'parado.limite': 'Sem vender há', 'parado.dias': 'dias', 'parado.todos': 'Todos com saldo',
+  'parado.ultima_saida': 'Última saída', 'parado.dias_parado': 'Dias parado', 'parado.nunca': 'Nunca vendido',
+  'parado.kpi_itens': 'Produtos parados', 'parado.kpi_valor': 'Valor parado',
+});
+Object.assign(en, {
+  'menu.rel_parado': 'Dead stock',
+  'rel.parado': 'Dead stock', 'rel.parado_sub': 'Products with stock and no sales for a while (tied-up capital).',
+  'parado.limite': 'Not sold for', 'parado.dias': 'days', 'parado.todos': 'All with stock',
+  'parado.ultima_saida': 'Last sale', 'parado.dias_parado': 'Days idle', 'parado.nunca': 'Never sold',
+  'parado.kpi_itens': 'Idle products', 'parado.kpi_valor': 'Idle value',
+});
+Object.assign(es, {
+  'menu.rel_parado': 'Stock parado',
+  'rel.parado': 'Stock parado', 'rel.parado_sub': 'Productos con saldo sin salida hace un tiempo (capital parado).',
+  'parado.limite': 'Sin vender hace', 'parado.dias': 'días', 'parado.todos': 'Todos con saldo',
+  'parado.ultima_saida': 'Última salida', 'parado.dias_parado': 'Días parado', 'parado.nunca': 'Nunca vendido',
+  'parado.kpi_itens': 'Productos parados', 'parado.kpi_valor': 'Valor parado',
+});

@@ -34,6 +34,7 @@ import { Recebimento } from './pages/Recebimento.js';
 import { RelVendas } from './pages/RelVendas.js';
 import { RelProdutos } from './pages/RelProdutos.js';
 import { RelValidade } from './pages/RelValidade.js';
+import { RelEstoqueParado } from './pages/RelEstoqueParado.js';
 import { Condicoes } from './pages/Condicoes.js';
 import { Comissoes } from './pages/Comissoes.js';
 import { ContasCorrentes } from './pages/ContasCorrentes.js';
@@ -76,6 +77,7 @@ export function App() {
               <Route path="/relatorios/vendas" element={<Protegida cap="relatorios.ver"><RelVendas /></Protegida>} />
               <Route path="/relatorios/produtos" element={<Protegida cap="relatorios.ver"><RelProdutos /></Protegida>} />
               <Route path="/relatorios/validade" element={<Protegida cap="relatorios.ver"><RelValidade /></Protegida>} />
+              <Route path="/relatorios/estoque-parado" element={<Protegida cap="relatorios.ver"><RelEstoqueParado /></Protegida>} />
               <Route path="/cadastros/contas-correntes" element={<Protegida cap="cadastros.conta.listar"><ContasCorrentes /></Protegida>} />
               <Route path="/cadastros/condicoes" element={<Protegida cap="cadastros.condicao.listar"><Condicoes /></Protegida>} />
               <Route path="/cadastros/clientes" element={<Protegida cap="cadastros.cliente.listar"><Clientes /></Protegida>} />

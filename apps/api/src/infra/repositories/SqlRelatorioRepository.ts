@@ -1,5 +1,5 @@
 import type { DataSource } from 'typeorm';
-import type { LinhaProduto, LinhaValidadeLote, RelatorioRepository, RelatorioVendas } from '../../domain/relatorio/Relatorio.js';
+import type { LinhaEstoqueParado, LinhaProduto, LinhaValidadeLote, RelatorioRepository, RelatorioVendas } from '../../domain/relatorio/Relatorio.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 const ATIVO = "status NOT IN ('orcamento','cancelado')";
@@ -58,5 +58,28 @@ export class SqlRelatorioRepository implements RelatorioRepository {
         saldo, custoUnitario: custo, valor: Math.round(saldo * custo * 100) / 100,
       };
     });
+  }
+
+  // Produtos com saldo em estoque + data da última saída (venda/separação). Ordena dos mais
+  // "parados" primeiro (nunca vendidos antes, depois saída mais antiga). Dias parados ficam no front.
+  async estoqueParado(schema: string): Promise<LinhaEstoqueParado[]> {
+    const s = validarSchema(schema);
+    const linhas = await this.ds.query(
+      `SELECT pr.id, pr.nome,
+              COALESCE(SUM(el.quantidade),0) saldo,
+              COALESCE(SUM(el.quantidade * el.custo_unitario),0) valor,
+              (SELECT MAX(m.criado_em) FROM "${s}".estoque_movimento m
+                WHERE m.produto_id = pr.id AND m.tipo = 'saida') ultima_saida
+         FROM "${s}".produto pr
+         JOIN "${s}".estoque_lote el ON el.produto_id = pr.id
+        WHERE pr.ativo = true
+        GROUP BY pr.id, pr.nome
+        HAVING SUM(el.quantidade) > 0
+        ORDER BY ultima_saida ASC NULLS FIRST, pr.nome`);
+    return linhas.map((r: any) => ({
+      produtoId: r.id, produto: r.nome, saldo: Number(r.saldo),
+      valor: Math.round(Number(r.valor) * 100) / 100,
+      ultimaSaida: r.ultima_saida ? new Date(r.ultima_saida).toISOString() : null,
+    }));
   }
 }

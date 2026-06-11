@@ -54,6 +54,7 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'menu.rel_vendas', icone: '📈', to: '/relatorios/vendas', cap: 'relatorios.ver' },
       { rotulo: 'menu.rel_produtos', icone: '🏆', to: '/relatorios/produtos', cap: 'relatorios.ver' },
       { rotulo: 'menu.rel_validade', icone: '⏳', to: '/relatorios/validade', cap: 'relatorios.ver' },
+      { rotulo: 'menu.rel_parado', icone: '🐢', to: '/relatorios/estoque-parado', cap: 'relatorios.ver' },
     ] }],
   },
   {
