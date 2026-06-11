@@ -4,12 +4,15 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 
 interface PrecoProduto { produtoId: string; produtoNome: string; ativo: boolean; }
+interface Marca { id: string; nome: string; ativo: boolean; }
 
 export function EntradaEstoque() {
   const { token } = useAuth();
   const { t } = useI18n();
   const [produtos, setProdutos] = useState<PrecoProduto[]>([]);
+  const [marcas, setMarcas] = useState<Marca[]>([]);
   const [produtoId, setProdutoId] = useState('');
+  const [marcaId, setMarcaId] = useState('');
   const [lote, setLote] = useState('');
   const [validade, setValidade] = useState('');
   const [custo, setCusto] = useState('');
@@ -20,7 +23,11 @@ export function EntradaEstoque() {
   const [salv, setSalv] = useState(false);
   const scanRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => { api.get<PrecoProduto[]>('/precos', token!).then((l) => setProdutos(l.filter((p) => p.ativo))).catch(() => {}); /* eslint-disable-next-line */ }, []);
+  useEffect(() => {
+    api.get<PrecoProduto[]>('/precos', token!).then((l) => setProdutos(l.filter((p) => p.ativo))).catch(() => {});
+    api.get<Marca[]>('/marcas', token!).then((l) => setMarcas(l.filter((m) => m.ativo))).catch(() => {});
+    /* eslint-disable-next-line */
+  }, []);
 
   function bipar(valor: string) {
     const cod = valor.trim().toUpperCase();
@@ -36,7 +43,7 @@ export function EntradaEstoque() {
   async function salvar() {
     setErro(null); setOk(false); setSalv(true);
     try {
-      await api.post('/estoque/entrada', { produtoId, lote, validade, custoUnitario: Number(custo) || 0, codigos }, token!);
+      await api.post('/estoque/entrada', { produtoId, marcaId: marcaId || null, lote, validade, custoUnitario: Number(custo) || 0, codigos }, token!);
       setOk(true); setLote(''); setValidade(''); setCusto(''); setCodigos([]); setScan('');
     } catch (e) { setErro((e as ErroApi).chaveI18n); }
     finally { setSalv(false); }
@@ -52,6 +59,11 @@ export function EntradaEstoque() {
         <label className="campo">{t('precos.produto')}
           <select value={produtoId} onChange={(e) => setProdutoId(e.target.value)}>
             <option value="">—</option>{produtos.map((p) => <option key={p.produtoId} value={p.produtoId}>{p.produtoNome}</option>)}
+          </select>
+        </label>
+        <label className="campo">{t('marcas.titulo_sing')} <span className="muted">({t('common.opcional')})</span>
+          <select value={marcaId} onChange={(e) => setMarcaId(e.target.value)}>
+            <option value="">—</option>{marcas.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
           </select>
         </label>
         <div className="cores-grid">

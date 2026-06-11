@@ -1,5 +1,6 @@
 export interface LotePosicao {
   id: string; lote: string | null; validade: string | null; quantidade: number; custoUnitario: number;
+  marca: string | null;
 }
 export interface PosicaoProduto {
   produtoId: string; produtoNome: string; unidade: string; estoqueMinimo: number;
@@ -7,6 +8,8 @@ export interface PosicaoProduto {
 }
 export interface EntradaEstoque {
   produtoId: string; lote: string | null; validade: string | null; quantidade: number; custoUnitario: number;
+  // Marca do lote (opcional na entrada manual; obrigatória no recebimento de nota).
+  marcaId?: string | null;
   // Códigos das etiquetas (já afixadas nos produtos) bipados nesta entrada.
   // O sistema NÃO gera etiquetas — apenas registra os códigos lidos. quantidade = codigos.length.
   codigos?: string[];

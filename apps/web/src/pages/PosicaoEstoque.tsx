@@ -3,7 +3,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 
-interface Lote { id: string; lote: string | null; validade: string | null; quantidade: number; custoUnitario: number; }
+interface Lote { id: string; lote: string | null; validade: string | null; quantidade: number; custoUnitario: number; marca: string | null; }
 interface Posicao { produtoId: string; produtoNome: string; unidade: string; estoqueMinimo: number; saldo: number; abaixoMinimo: boolean; lotes: Lote[]; }
 interface Etiqueta { id: string; codigo: string; status: 'estoque' | 'saida' | 'perda'; criadoEm: string; }
 interface CtxLote { produtoNome: string; lote: string | null; validade: string | null; }
@@ -48,7 +48,7 @@ export function PosicaoEstoque() {
               {aberto[p.produtoId] && p.lotes.map((l) => (
                 <tr key={l.id} className="lote-row">
                   <td></td>
-                  <td colSpan={2} style={{ paddingLeft: 24 }}>{t('estoque.lote')}: <b>{l.lote ?? '—'}</b></td>
+                  <td colSpan={2} style={{ paddingLeft: 24 }}>{t('estoque.lote')}: <b>{l.lote ?? '—'}</b>{l.marca ? ' · ' + l.marca : ''}</td>
                   <td>{l.quantidade}</td>
                   <td>{t('estoque.validade')}: {fmtData(l.validade)}</td>
                   <td><button className="btn-link" onClick={() => abrirEtiquetas(p, l)}>{t('etq.ver')}</button></td>

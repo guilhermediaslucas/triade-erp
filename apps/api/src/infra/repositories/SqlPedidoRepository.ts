@@ -19,9 +19,11 @@ export class SqlPedidoRepository implements PedidoRepository {
     const s = validarSchema(schema);
     const id = randomUUID();
     await this.ds.query(
-      `INSERT INTO "${s}".pedido (id, numero, cliente_id, vendedor_id, status, forma_pagamento, observacao, endereco_entrega, subtotal, frete, total, condicao_parcelas, condicao_intervalo)
-       VALUES ($1,$2,$3,$4,'orcamento',$5,$6,$7,$8,$9,$10,$11,$12)`,
-      [id, numero, p.clienteId, p.vendedorId, p.formaPagamento, p.observacao, p.enderecoEntrega, p.subtotal, p.frete, p.total, p.condicaoParcelas, p.condicaoIntervalo]);
+      `INSERT INTO "${s}".pedido (id, numero, cliente_id, vendedor_id, status, forma_pagamento, observacao, endereco_entrega,
+                                  forma_entrega, motoboy_id, distancia_km, subtotal, frete, total, condicao_parcelas, condicao_intervalo)
+       VALUES ($1,$2,$3,$4,'orcamento',$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
+      [id, numero, p.clienteId, p.vendedorId, p.formaPagamento, p.observacao, p.enderecoEntrega,
+       p.formaEntrega, p.motoboyId, p.distanciaKm, p.subtotal, p.frete, p.total, p.condicaoParcelas, p.condicaoIntervalo]);
     for (const it of p.itens) {
       await this.ds.query(
         `INSERT INTO "${s}".pedido_item (id, pedido_id, produto_id, produto_nome, quantidade, preco_unitario, subtotal)
@@ -49,10 +51,11 @@ export class SqlPedidoRepository implements PedidoRepository {
   async buscarPorId(schema: string, id: string): Promise<Pedido | null> {
     const s = validarSchema(schema);
     const r = (await this.ds.query(
-      `SELECT p.*, c.nome AS cliente_nome, v.nome AS vendedor_nome
+      `SELECT p.*, c.nome AS cliente_nome, v.nome AS vendedor_nome, mb.nome AS motoboy_nome
          FROM "${s}".pedido p
          LEFT JOIN "${s}".cliente c ON c.id = p.cliente_id
          LEFT JOIN "${s}".vendedor v ON v.id = p.vendedor_id
+         LEFT JOIN "${s}".motoboy mb ON mb.id = p.motoboy_id
         WHERE p.id = $1`, [id]))[0];
     if (!r) return null;
     const itens = await this.ds.query(`SELECT * FROM "${s}".pedido_item WHERE pedido_id = $1`, [id]);
@@ -60,6 +63,8 @@ export class SqlPedidoRepository implements PedidoRepository {
       id: r.id, numero: r.numero, clienteId: r.cliente_id ?? null, clienteNome: r.cliente_nome ?? null,
       vendedorId: r.vendedor_id ?? null, vendedorNome: r.vendedor_nome ?? null, status: r.status,
       formaPagamento: r.forma_pagamento ?? null, observacao: r.observacao ?? null, enderecoEntrega: r.endereco_entrega ?? null,
+      formaEntrega: r.forma_entrega ?? 'retirada', motoboyId: r.motoboy_id ?? null, motoboyNome: r.motoboy_nome ?? null,
+      distanciaKm: r.distancia_km != null ? Number(r.distancia_km) : null,
       subtotal: Number(r.subtotal), frete: Number(r.frete), total: Number(r.total),
       condicaoParcelas: r.condicao_parcelas ?? 1, condicaoIntervalo: r.condicao_intervalo ?? 30, criadoEm: new Date(r.criado_em),
       itens: itens.map((i: any) => ({

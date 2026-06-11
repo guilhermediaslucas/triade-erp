@@ -21,6 +21,10 @@ export interface Pedido {
   formaPagamento: string | null;
   observacao: string | null;
   enderecoEntrega: string | null;
+  formaEntrega: string;
+  motoboyId: string | null;
+  motoboyNome: string | null;
+  distanciaKm: number | null;
   subtotal: number;
   frete: number;
   total: number;
@@ -41,6 +45,9 @@ export interface NovoPedido {
   formaPagamento: string | null;
   observacao: string | null;
   enderecoEntrega: string | null;
+  formaEntrega: string;
+  motoboyId: string | null;
+  distanciaKm: number | null;
   frete: number;
   itens: PedidoItem[];
   subtotal: number;

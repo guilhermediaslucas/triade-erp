@@ -17,11 +17,11 @@
 - [x] Código de barras na **separação** (bipar o item → traz produto/lote/validade → baixa do lote certo, casando com o pedido)
 - [x] Inventário por leitor (bipa a contagem, compara com o esperado, baixa faltantes como perda + histórico)
 - [ ] Transferência entre locais/depósitos
-- [ ] Marcas de produtos (cadastro) usado no recebimento
-- [ ] Formas de entrega + frete (motoboy por CEP×km, correios/transportadora manual)
+- [x] Marcas de produtos (cadastro) usado no recebimento
+- [x] Formas de entrega + frete (retirada/motoboy/correios/transportadora; motoboy = km simulado por CEP × valor/km com mínimo; correios/transp = manual)
 - [ ] Gestão de fretes (Logística) + geração de títulos por motoboy
 - [ ] Romaneio imprimível (logo + vendedor + itens/lotes/endereço)
-- [ ] Recebimento multi-lote com bipagem (hoje é 1 lote simples)
+- [x] Recebimento multi-lote com bipagem (N lotes por nota, cada um com marca + bipagem; soma = qtd da nota)
 
 ## Financeiro
 - [x] Controle de comissões (fechar competência → título a pagar)
@@ -33,7 +33,7 @@
 - [ ] Exportar Excel formatado (hoje os relatórios exportam CSV)
 
 ## Cadastros (Pessoas)
-- [ ] Motoboys
+- [x] Motoboys (cadastro + configuração de frete km/mín)
 - [ ] Favorecidos (para reembolso)
 
 ## Relatórios (além de Vendas e Produtos mais vendidos, já prontos)

@@ -21,6 +21,10 @@ export const CAPABILITIES: Capability[] = [
   { id: 'cadastros.fornecedor.gerenciar',moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.fornecedor.gerenciar' },
   { id: 'cadastros.vendedor.listar',     moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.vendedor.listar' },
   { id: 'cadastros.vendedor.gerenciar',  moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.vendedor.gerenciar' },
+  { id: 'cadastros.marca.listar',        moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.marca.listar' },
+  { id: 'cadastros.marca.gerenciar',     moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.marca.gerenciar' },
+  { id: 'cadastros.motoboy.listar',      moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.motoboy.listar' },
+  { id: 'cadastros.motoboy.gerenciar',   moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.motoboy.gerenciar' },
   { id: 'comercial.preco.listar',    moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.preco.listar' },
   { id: 'comercial.preco.gerenciar', moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.preco.gerenciar' },
   { id: 'comercial.pedido.listar',    moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.pedido.listar' },
@@ -39,7 +43,6 @@ export const CAPABILITIES: Capability[] = [
   { id: 'financeiro.compra.criar',      moduloChave: 'cap.modulo.financeiro', labelChave: 'cap.financeiro.compra.criar' },
   { id: 'financeiro.comissao.ver',      moduloChave: 'cap.modulo.financeiro', labelChave: 'cap.financeiro.comissao.ver' },
   { id: 'financeiro.comissao.gerenciar',moduloChave: 'cap.modulo.financeiro', labelChave: 'cap.financeiro.comissao.gerenciar' },
-  { id: 'relatorios.ver',                moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.ver' },
   { id: 'superadmin.empresa.provisionar', moduloChave: 'cap.modulo.superadmin', labelChave: 'cap.superadmin.empresa.provisionar' },
 ];
 

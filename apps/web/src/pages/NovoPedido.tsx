@@ -5,12 +5,17 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
 
-interface Endereco { logradouro: string | null; numero: string | null; bairro: string | null; cidade: string | null; uf: string | null; favorito: boolean; }
+interface Endereco { cep: string | null; logradouro: string | null; numero: string | null; bairro: string | null; cidade: string | null; uf: string | null; favorito: boolean; }
 interface Cliente { id: string; nome: string; enderecos: Endereco[]; }
 interface Vendedor { id: string; nome: string; }
+interface Motoboy { id: string; nome: string; ativo: boolean; }
 interface Condicao { id: string; nome: string; parcelas: number; }
 interface PrecoProduto { produtoId: string; produtoNome: string; preco: number; ativo: boolean; }
 interface ItemForm { produtoId: string; quantidade: string; }
+interface FreteCalculo { frete: number; distanciaKm: number | null; memo: string | null; }
+
+const FORMAS = ['retirada', 'motoboy', 'correios', 'transportadora'] as const;
+type Forma = typeof FORMAS[number];
 
 function endTexto(e: Endereco): string {
   const p1 = [e.logradouro, e.numero].filter(Boolean).join(', ');
@@ -24,6 +29,7 @@ export function NovoPedido() {
   const nav = useNavigate();
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [vendedores, setVendedores] = useState<Vendedor[]>([]);
+  const [motoboys, setMotoboys] = useState<Motoboy[]>([]);
   const [condicoes, setCondicoes] = useState<Condicao[]>([]);
   const [condicaoId, setCondicaoId] = useState('');
   const [produtos, setProdutos] = useState<PrecoProduto[]>([]);
@@ -31,6 +37,11 @@ export function NovoPedido() {
   const [vendedorId, setVendedorId] = useState('');
   const [formaPagamento, setFormaPagamento] = useState('Pix');
   const [endereco, setEndereco] = useState('');
+  const [cep, setCep] = useState<string | null>(null);
+  const [formaEntrega, setFormaEntrega] = useState<Forma>('retirada');
+  const [motoboyId, setMotoboyId] = useState('');
+  const [distanciaKm, setDistanciaKm] = useState<number | null>(null);
+  const [freteMemo, setFreteMemo] = useState<string | null>(null);
   const [frete, setFrete] = useState('0');
   const [obs, setObs] = useState('');
   const [itens, setItens] = useState<ItemForm[]>([{ produtoId: '', quantidade: '1' }]);
@@ -43,7 +54,12 @@ export function NovoPedido() {
       api.get<Vendedor[]>('/vendedores', token!).catch(() => []),
       api.get<PrecoProduto[]>('/precos', token!).catch(() => []),
       api.get<Condicao[]>('/condicoes', token!).catch(() => []),
-    ]).then(([c, v, p, cond]) => { setClientes(c); setVendedores(v); setProdutos(p.filter((x) => x.ativo)); setCondicoes((cond as Condicao[]).filter((x: any) => x.ativo !== false)); });
+      api.get<Motoboy[]>('/motoboys', token!).catch(() => []),
+    ]).then(([c, v, p, cond, mb]) => {
+      setClientes(c); setVendedores(v); setProdutos(p.filter((x) => x.ativo));
+      setCondicoes((cond as Condicao[]).filter((x: any) => x.ativo !== false));
+      setMotoboys((mb as Motoboy[]).filter((x) => x.ativo));
+    });
     /* eslint-disable-next-line */
   }, []);
 
@@ -52,10 +68,34 @@ export function NovoPedido() {
     const c = clientes.find((x) => x.id === id);
     const fav = c?.enderecos.find((e) => e.favorito) ?? c?.enderecos[0];
     setEndereco(fav ? endTexto(fav) : '');
+    setCep(fav?.cep ?? null);
   }
+
+  // Recalcula o frete quando a forma de entrega ou o CEP mudam (retirada/motoboy são automáticos).
+  useEffect(() => {
+    let vivo = true;
+    async function calc() {
+      if (formaEntrega === 'retirada') { setFrete('0'); setDistanciaKm(null); setFreteMemo(null); setMotoboyId(''); return; }
+      if (formaEntrega === 'motoboy') {
+        try {
+          const r = await api.post<FreteCalculo>('/frete/calcular', { formaEntrega: 'motoboy', cep }, token!);
+          if (!vivo) return;
+          setFrete(String(r.frete)); setDistanciaKm(r.distanciaKm); setFreteMemo(r.memo);
+        } catch { /* mantém valor */ }
+        return;
+      }
+      // correios/transportadora: valor manual
+      setDistanciaKm(null); setFreteMemo(null);
+    }
+    calc();
+    return () => { vivo = false; };
+    /* eslint-disable-next-line */
+  }, [formaEntrega, cep]);
+
   const precoDe = (pid: string) => produtos.find((p) => p.produtoId === pid)?.preco ?? 0;
   const subtotal = useMemo(() => itens.reduce((acc, it) => acc + precoDe(it.produtoId) * (Number(it.quantidade) || 0), 0), [itens, produtos]);
   const total = subtotal + (Number(frete) || 0);
+  const freteAuto = formaEntrega === 'retirada' || formaEntrega === 'motoboy';
 
   function setItem(i: number, campo: keyof ItemForm, val: string) { setItens(itens.map((it, idx) => idx === i ? { ...it, [campo]: val } : it)); }
   function addItem() { setItens([...itens, { produtoId: '', quantidade: '1' }]); }
@@ -66,11 +106,13 @@ export function NovoPedido() {
     const corpo = {
       clienteId, vendedorId: vendedorId || null, condicaoId: condicaoId || null, formaPagamento, enderecoEntrega: endereco,
       observacao: obs, frete: Number(frete) || 0,
+      formaEntrega, motoboyId: formaEntrega === 'motoboy' ? (motoboyId || null) : null, distanciaKm,
       itens: itens.filter((it) => it.produtoId).map((it) => ({ produtoId: it.produtoId, quantidade: Number(it.quantidade) })),
     };
     try { const r = await api.post<{ id: string }>('/pedidos', corpo, token!); nav('/comercial/pedidos/' + r.id); }
     catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
+  const motoboyFaltando = formaEntrega === 'motoboy' && !motoboyId;
 
   return (
     <div>
@@ -101,6 +143,21 @@ export function NovoPedido() {
         </div>
         <label className="campo">{t('pedidos.endereco')}<input value={endereco} onChange={(e) => setEndereco(e.target.value)} placeholder={t('pedidos.endereco_ph')} /></label>
 
+        <div className="cores-grid">
+          <label className="campo">{t('entrega.forma')}
+            <select value={formaEntrega} onChange={(e) => setFormaEntrega(e.target.value as Forma)}>
+              {FORMAS.map((f) => <option key={f} value={f}>{t('entrega.' + f)}</option>)}
+            </select>
+          </label>
+          {formaEntrega === 'motoboy' && (
+            <label className="campo">{t('entrega.motoboy')}
+              <select value={motoboyId} onChange={(e) => setMotoboyId(e.target.value)}>
+                <option value="">—</option>{motoboys.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
+              </select>
+            </label>
+          )}
+        </div>
+
         <div className="perm-titulo" style={{ display: 'flex', justifyContent: 'space-between' }}>
           <span>{t('pedidos.itens')}</span>
           <button type="button" className="btn-ghost btn-mini" onClick={addItem}>+ {t('pedidos.add_item')}</button>
@@ -120,14 +177,15 @@ export function NovoPedido() {
 
         <div className="totais">
           <div><span>{t('pedidos.subtotal')}</span><b>{moeda(subtotal)}</b></div>
-          <div><span>{t('pedidos.frete')}</span><input type="number" min="0" step="0.01" value={frete} onChange={(e) => setFrete(e.target.value)} style={{ maxWidth: 120 }} /></div>
+          <div><span>{t('pedidos.frete')}</span><input type="number" min="0" step="0.01" value={frete} readOnly={freteAuto} onChange={(e) => setFrete(e.target.value)} style={{ maxWidth: 120 }} /></div>
           <div className="total-grande"><span>{t('pedidos.total')}</span><b>{moeda(total)}</b></div>
         </div>
+        {freteMemo && <p className="muted" style={{ fontSize: 12, marginTop: -4 }}>{t('entrega.memo')}: {freteMemo}{distanciaKm != null ? ` · ${distanciaKm} km` : ''}</p>}
 
         <label className="campo">{t('pedidos.obs')}<input value={obs} onChange={(e) => setObs(e.target.value)} /></label>
         <div className="modal-acoes">
           <button className="btn-ghost" onClick={() => nav('/comercial/pedidos')}>{t('common.cancelar')}</button>
-          <button className="btn-primary" disabled={salv} onClick={salvar}>{t('pedidos.salvar')}</button>
+          <button className="btn-primary" disabled={salv || motoboyFaltando} onClick={salvar}>{t('pedidos.salvar')}</button>
         </div>
       </div>
     </div>

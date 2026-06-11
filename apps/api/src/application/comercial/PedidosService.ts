@@ -3,10 +3,12 @@ import type { PrecoBaseRepository } from '../../domain/comercial/PrecoBase.js';
 import type { PrecoClienteRepository } from '../../domain/comercial/PrecoCliente.js';
 import type { ProdutoRepository } from '../../domain/cadastro/Produto.js';
 import type { ClienteRepository, EnderecoCliente } from '../../domain/pessoa/Cliente.js';
+import type { MotoboyRepository } from '../../domain/pessoa/Motoboy.js';
 import type { EstoqueRepository } from '../../domain/estoque/Estoque.js';
 import type { EtiquetaRepository } from '../../domain/estoque/Etiqueta.js';
 import type { TituloRepository } from '../../domain/financeiro/Titulo.js';
 import type { CondicaoRepository } from '../../domain/comercial/Condicao.js';
+import { FORMAS_ENTREGA } from '../../domain/comercial/FreteConfig.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
 const TRANSICOES: Record<StatusPedido, StatusPedido[]> = {
@@ -36,6 +38,7 @@ export class PedidosService {
     private readonly etiquetas: EtiquetaRepository,
     private readonly titulos: TituloRepository,
     private readonly condicoes: CondicaoRepository,
+    private readonly motoboys: MotoboyRepository,
   ) {}
 
   listar(schema: string): Promise<PedidoResumo[]> { return this.pedidos.listar(schema); }
@@ -70,7 +73,22 @@ export class PedidosService {
       if (c) { condParcelas = c.parcelas; condIntervalo = c.intervaloDias; }
     }
     const subtotal = Math.round(itens.reduce((acc, i) => acc + i.subtotal, 0) * 100) / 100;
-    const frete = Number(e?.frete ?? 0) || 0;
+
+    // Forma de entrega + frete. O cálculo do frete é feito no front (via /frete/calcular);
+    // aqui validamos a forma, o motoboy e normalizamos (retirada sempre zera o frete).
+    const formaEntrega = String(e?.formaEntrega ?? 'retirada');
+    if (!FORMAS_ENTREGA.includes(formaEntrega as any)) throw new ErroAplicacao('frete.forma_invalida', 400);
+    let motoboyId: string | null = null;
+    let distanciaKm: number | null = null;
+    if (formaEntrega === 'motoboy') {
+      motoboyId = (e?.motoboyId && String(e.motoboyId).trim()) || null;
+      if (!motoboyId) throw new ErroAplicacao('pedido.motoboy_obrigatorio', 400);
+      const mb = await this.motoboys.buscarPorId(schema, motoboyId);
+      if (!mb) throw new ErroAplicacao('pedido.motoboy_invalido', 400);
+      distanciaKm = e?.distanciaKm != null && Number.isFinite(Number(e.distanciaKm)) ? Number(e.distanciaKm) : null;
+    }
+    const freteInformado = Number(e?.frete ?? 0) || 0;
+    const frete = formaEntrega === 'retirada' ? 0 : (freteInformado >= 0 ? freteInformado : 0);
     const total = Math.round((subtotal + frete) * 100) / 100;
 
     let endereco: string | null = (e?.enderecoEntrega && String(e.enderecoEntrega).trim()) || null;
@@ -83,7 +101,8 @@ export class PedidosService {
       clienteId: cliente.id, vendedorId: e?.vendedorId || null,
       formaPagamento: (e?.formaPagamento && String(e.formaPagamento).trim()) || null,
       observacao: (e?.observacao && String(e.observacao).trim()) || null,
-      enderecoEntrega: endereco, frete, itens, subtotal, total, condicaoParcelas: condParcelas, condicaoIntervalo: condIntervalo,
+      enderecoEntrega: endereco, formaEntrega, motoboyId, distanciaKm,
+      frete, itens, subtotal, total, condicaoParcelas: condParcelas, condicaoIntervalo: condIntervalo,
     };
     const numero = await this.pedidos.proximoNumero(schema);
     const id = await this.pedidos.criar(schema, numero, novo);

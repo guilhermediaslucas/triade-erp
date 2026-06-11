@@ -15,15 +15,21 @@ import { SqlCategoriaRepository } from '../infra/repositories/SqlCategoriaReposi
 import { SqlProdutoRepository } from '../infra/repositories/SqlProdutoRepository.js';
 import { CategoriasService } from '../application/cadastro/CategoriasService.js';
 import { ProdutosService } from '../application/cadastro/ProdutosService.js';
+import { SqlMarcaRepository } from '../infra/repositories/SqlMarcaRepository.js';
+import { MarcasService } from '../application/cadastro/MarcasService.js';
 import { SqlClienteRepository } from '../infra/repositories/SqlClienteRepository.js';
 import { SqlFornecedorRepository } from '../infra/repositories/SqlFornecedorRepository.js';
 import { SqlVendedorRepository } from '../infra/repositories/SqlVendedorRepository.js';
+import { SqlMotoboyRepository } from '../infra/repositories/SqlMotoboyRepository.js';
 import { ClientesService, FornecedoresService, VendedoresService } from '../application/pessoa/PessoasServices.js';
+import { MotoboysService } from '../application/pessoa/MotoboysService.js';
 import { SqlPrecoBaseRepository } from '../infra/repositories/SqlPrecoBaseRepository.js';
 import { PrecosService } from '../application/comercial/PrecosService.js';
 import { SqlPrecoClienteRepository } from '../infra/repositories/SqlPrecoClienteRepository.js';
 import { SqlCondicaoRepository } from '../infra/repositories/SqlCondicaoRepository.js';
 import { CondicoesService } from '../application/comercial/CondicoesService.js';
+import { SqlFreteConfigRepository } from '../infra/repositories/SqlFreteConfigRepository.js';
+import { FreteService } from '../application/comercial/FreteService.js';
 import { SqlPedidoRepository } from '../infra/repositories/SqlPedidoRepository.js';
 import { PedidosService } from '../application/comercial/PedidosService.js';
 import { SqlEstoqueRepository } from '../infra/repositories/SqlEstoqueRepository.js';
@@ -53,12 +59,15 @@ export function montarDependencias() {
   const migrador = new TypeOrmMigrador(AppDataSource);
   const categoriasRepo = new SqlCategoriaRepository(AppDataSource);
   const produtosRepo = new SqlProdutoRepository(AppDataSource);
+  const marcasRepo = new SqlMarcaRepository(AppDataSource);
   const clientesRepo = new SqlClienteRepository(AppDataSource);
   const fornecedoresRepo = new SqlFornecedorRepository(AppDataSource);
   const vendedoresRepo = new SqlVendedorRepository(AppDataSource);
+  const motoboysRepo = new SqlMotoboyRepository(AppDataSource);
   const precoBaseRepo = new SqlPrecoBaseRepository(AppDataSource);
   const precoClienteRepo = new SqlPrecoClienteRepository(AppDataSource);
   const condicaoRepo = new SqlCondicaoRepository(AppDataSource);
+  const freteConfigRepo = new SqlFreteConfigRepository(AppDataSource);
   const pedidoRepo = new SqlPedidoRepository(AppDataSource);
   const estoqueRepo = new SqlEstoqueRepository(AppDataSource);
   const etiquetaRepo = new SqlEtiquetaRepository(AppDataSource);
@@ -76,15 +85,18 @@ export function montarDependencias() {
     empresaService: new EmpresaService(empresasRepo),
     provisionarEmpresa: new ProvisionarEmpresa(empresasRepo, migrador, perfisRepo, usuariosRepo, hash),
     categoriasService: new CategoriasService(categoriasRepo),
+    marcasService: new MarcasService(marcasRepo),
     produtosService: new ProdutosService(produtosRepo, categoriasRepo),
     clientesService: new ClientesService(clientesRepo),
     fornecedoresService: new FornecedoresService(fornecedoresRepo),
     vendedoresService: new VendedoresService(vendedoresRepo),
+    motoboysService: new MotoboysService(motoboysRepo),
     precosService: new PrecosService(precoBaseRepo, precoClienteRepo),
-    pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, precoClienteRepo, clientesRepo, estoqueRepo, etiquetaRepo, tituloRepo, condicaoRepo),
+    freteService: new FreteService(freteConfigRepo),
+    pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, precoClienteRepo, clientesRepo, estoqueRepo, etiquetaRepo, tituloRepo, condicaoRepo, motoboysRepo),
     condicoesService: new CondicoesService(condicaoRepo),
     financeiroService: new FinanceiroService(tituloRepo),
-    comprasService: new ComprasService(produtosRepo, tituloRepo, recebimentoRepo, estoqueRepo),
+    comprasService: new ComprasService(produtosRepo, tituloRepo, recebimentoRepo, estoqueRepo, marcasRepo, etiquetaRepo),
     comissoesService: new ComissoesService(new SqlComissaoRepository(AppDataSource), tituloRepo),
     contasService: new ContasService(new SqlContaCorrenteRepository(AppDataSource)),
     dashboardService: new DashboardService(new SqlDashboardRepository(AppDataSource)),

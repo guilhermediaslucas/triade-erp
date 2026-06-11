@@ -176,6 +176,71 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Refinamento — Motoboys + Formas de entrega + frete no pedido.**
+  Migration tenant **019** (`motoboy` nome/telefone/ativo; `frete_config` linha única
+  `km_rate`/`min_motoboy` defaults 2/20; `pedido` += `forma_entrega` default 'retirada',
+  `motoboy_id`, `distancia_km`). Caps `cadastros.motoboy.listar/gerenciar`. **Backend:**
+  domínio `Motoboy`/repo + `SqlMotoboyRepository` + `MotoboysService` (CRUD+ativo); rota `/motoboys`.
+  `FreteConfig` (domínio + `FORMAS_ENTREGA` = retirada/motoboy/correios/transportadora) +
+  `SqlFreteConfigRepository`; **`FreteService`** com `simularKm(cep)` (placeholder determinístico:
+  3 + soma_dígitos%18 km, até integrar mapa real) e `calcular()` — retirada→0; motoboy→`km×km_rate`
+  com mínimo + memo; correios/transportadora→valor manual (≥0); `obterConfig/salvarConfig`
+  (valida ≥0). Rotas `/frete/config` (GET/PUT, cap motoboy) e `/frete/calcular` (POST, cap
+  `comercial.pedido.criar`). **Pedido:** `Pedido`/`NovoPedido` += `formaEntrega/motoboyId/distanciaKm`
+  (+`motoboyNome` no detalhe via LEFT JOIN); `SqlPedidoRepository` grava/lê os campos; `PedidosService`
+  recebe `MotoboyRepository`, valida forma de entrega, exige motoboy quando forma=motoboy (existe),
+  **retirada zera o frete**, e o total soma o frete. O **cálculo** do frete é feito no front (via
+  `/frete/calcular`); o backend valida/normaliza e armazena. **Frontend:** cadastro **Cadastros ›
+  Pessoas › Motoboys** (CRUD + card **Configuração de frete** km/mín, editável com a cap gerenciar);
+  **Novo pedido** ganhou seletor de **forma de entrega** + **motoboy** (quando motoboy), frete
+  **automático** para retirada/motoboy (chama `/frete/calcular` com o CEP do endereço do cliente) com
+  memória de cálculo, e frete **manual** para correios/transportadora; total recalcula; o **detalhe do
+  pedido** exibe a forma de entrega/motoboy/distância; i18n pt/en/es; menu + rota.
+  **Validação:** **type-check api+web verde (exit 0)** + **e2e Postgres real (20 PASS)**
+  via **pglite** (repos/serviços reais): motoboy CRUD/validação, config default 2/20, retirada→0,
+  motoboy cep 01001000 → 5 km / frete 20 (mínimo) com memo, correios manual 33,5, forma inválida→400,
+  manual negativo→400, nova config 5×5=25, km_rate negativo→400, pedido motoboy grava frete 20/total
+  220/distância 5/nome do motoboy, retirada zera frete (total 100), motoboy sem seleção→400, motoboy
+  inexistente→400, forma inválida no pedido→400. **Pendente:** Gui rodar `db-setup.bat` (migration 019)
+  + testar no navegador + commit. **Obs.:** a distância por CEP é **simulada** (determinística) —
+  trocar por um serviço de mapas real é evolução futura. **Nota de ambiente:** mesmo problema das
+  sessões recentes — o mount serve versão truncada de arquivo editado pelo file-tool; workaround:
+  deletar via shell (exclusão habilitada) e recriar pelo file-tool, ou anexar ao prefixo íntegro via
+  shell. e2e com pglite (embedded-postgres em cache sem libs ICU 60). O symlink
+  `node_modules/@triade/shared` precisa ser absoluto p/ o tsc no sandbox; no Windows `npm install`
+  recria os links do workspace (node_modules é gitignored). **Próximo (REFINAMENTOS):** Gestão de
+  fretes (Logística) + títulos por motoboy, ou Romaneio imprimível.
+- **2026-06-11** — **Refinamento — Marcas de produtos + Recebimento multi-lote com bipagem.**
+  Migration tenant **018** (`marca` nome/fabricante/ativo + `estoque_lote.marca_id`). Caps
+  `cadastros.marca.listar/gerenciar`. **Backend:** domínio `Marca`/`MarcaRepository`;
+  `SqlMarcaRepository`; `MarcasService` (CRUD + ativar/inativar, valida nome); rota `/marcas`
+  (GET/POST/PUT/PATCH ativo). `EntradaEstoque` ganhou `marcaId?` e `LotePosicao` ganhou `marca`
+  (nome); `SqlEstoqueRepository.registrarEntrada` grava `marca_id` e a **mescla de lote** agora
+  considera produto+lote+validade+**marca**; `posicao` faz LEFT JOIN em `marca`. **Recebimento
+  reescrito (`ComprasService.receber`):** recebe `lotes[]`, cada bloco com `{lote, validade,
+  marcaId(obrigatório), codigos[]}`; valida marca de cada lote (existe), **soma das etiquetas
+  bipadas = quantidade da nota**, recusa código repetido entre lotes (400) e código já no estoque
+  (409); registra N lotes (entrada + etiquetas) e marca a pendência como recebida. `ComprasService`
+  passou a receber `MarcaRepository` + `EtiquetaRepository`. **Frontend:** cadastro **Cadastros ›
+  Estoque › Marcas** (lista + modal nome/fabricante + ativar/inativar); **Recebimento** virou
+  multi-lote — modal com N blocos (marca select + lote/validade + caixa de bipagem própria c/ chips
+  e contador), botão "Adicionar lote", contador global bipados/qtd, confirma só quando soma = qtd e
+  todo bloco tem marca; **Entrada de estoque** ganhou seletor de marca opcional; **Posição de
+  estoque** mostra a marca no lote; i18n pt/en/es. **Validação:** **type-check api+web verde (exit 0
+  nos dois)** + **e2e Postgres real (20 PASS)** rodado via **pglite** (Postgres em WASM) injetando
+  um shim `ds.query` nos repositórios SQL reais — exercita as migrations + repos + serviços de
+  verdade: marca CRUD/validação, nota gera título a pagar (30, origem=compra) + pendência, receber
+  2 lotes soma=3 (saldo 3, 2 lotes, marca nos lotes, 3 etiquetas, pendência fechada), soma
+  divergente→400, marca obrigatória→400, marca inexistente→400, código repetido→400, lista vazia→400,
+  código já no estoque→409, falhas não tocam saldo/pendência, 2ª nota mescla no mesmo lote (saldo 6).
+  **Pendente:** Gui rodar `db-setup.bat` (migration 018) + testar no navegador + commit.
+  **Nota de ambiente:** o mount do sandbox voltou a servir versão truncada de **todo** arquivo
+  editado pelo file-tool (o `stat` reporta o tamanho cortado); arquivos novos sincronizam normais.
+  Workaround usado: deletar via shell (após habilitar exclusão) e recriar pelo file-tool, ou
+  reconstruir o prefixo íntegro via shell — assim o `tsc`/e2e enxergam o código real. O
+  `embedded-postgres` em cache está incompleto (faltam libs ICU 60) e não roda; por isso o e2e foi
+  feito com **pglite** (npm acessível nesta sessão). **Próximo (REFINAMENTOS):** Formas de entrega +
+  frete (motoboy CEP×km) / Romaneio imprimível, ou Transferência entre locais.
 - **2026-06-11** — **Refinamento — Inventário por leitor (contagem + baixa de faltantes).**
   Migration tenant 017 (`inventario` + `inventario_faltante`). Caps `estoque.inventario.ver/gerenciar`.
   **Backend:** domínio `Inventario`/`InventarioRepository`; `SqlInventarioRepository` (criar c/ faltantes,

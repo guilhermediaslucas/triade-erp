@@ -11,13 +11,16 @@ export class SqlEstoqueRepository implements EstoqueRepository {
     const produtos = await this.ds.query(
       `SELECT id, nome, unidade, estoque_minimo FROM "${s}".produto WHERE ativo = true ORDER BY nome`);
     const lotes = await this.ds.query(
-      `SELECT id, produto_id, lote, validade, quantidade, custo_unitario
-         FROM "${s}".estoque_lote WHERE quantidade > 0 ORDER BY validade NULLS LAST`);
+      `SELECT el.id, el.produto_id, el.lote, el.validade, el.quantidade, el.custo_unitario, m.nome AS marca
+         FROM "${s}".estoque_lote el
+         LEFT JOIN "${s}".marca m ON m.id = el.marca_id
+        WHERE el.quantidade > 0 ORDER BY el.validade NULLS LAST`);
     return produtos.map((p: any) => {
       const ls: LotePosicao[] = lotes.filter((l: any) => l.produto_id === p.id).map((l: any) => ({
         id: l.id, lote: l.lote ?? null,
         validade: l.validade ? new Date(l.validade).toISOString().slice(0, 10) : null,
         quantidade: Number(l.quantidade), custoUnitario: Number(l.custo_unitario),
+        marca: l.marca ?? null,
       }));
       const saldo = ls.reduce((a, l) => a + l.quantidade, 0);
       return {
@@ -77,12 +80,14 @@ export class SqlEstoqueRepository implements EstoqueRepository {
 
   async registrarEntrada(schema: string, e: EntradaEstoque): Promise<void> {
     const s = validarSchema(schema);
-    // mescla com lote existente de mesmo produto+lote+validade; senão cria
+    const marcaId = e.marcaId ?? null;
+    // mescla com lote existente de mesmo produto+lote+validade+marca; senão cria
     const existente = (await this.ds.query(
       `SELECT id FROM "${s}".estoque_lote
         WHERE produto_id = $1 AND COALESCE(lote,'') = COALESCE($2,'')
-          AND validade IS NOT DISTINCT FROM $3::date LIMIT 1`,
-      [e.produtoId, e.lote, e.validade]))[0];
+          AND validade IS NOT DISTINCT FROM $3::date
+          AND marca_id IS NOT DISTINCT FROM $4::uuid LIMIT 1`,
+      [e.produtoId, e.lote, e.validade, marcaId]))[0];
     let loteId: string;
     if (existente) {
       loteId = existente.id;
@@ -92,9 +97,9 @@ export class SqlEstoqueRepository implements EstoqueRepository {
     } else {
       loteId = randomUUID();
       await this.ds.query(
-        `INSERT INTO "${s}".estoque_lote (id, produto_id, lote, validade, quantidade, custo_unitario)
-         VALUES ($1,$2,$3,$4,$5,$6)`,
-        [loteId, e.produtoId, e.lote, e.validade, e.quantidade, e.custoUnitario]);
+        `INSERT INTO "${s}".estoque_lote (id, produto_id, lote, validade, quantidade, custo_unitario, marca_id)
+         VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+        [loteId, e.produtoId, e.lote, e.validade, e.quantidade, e.custoUnitario, marcaId]);
     }
     await this.ds.query(
       `INSERT INTO "${s}".estoque_movimento (id, produto_id, lote_id, tipo, quantidade, observacao)

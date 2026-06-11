@@ -64,6 +64,7 @@ const GRUPOS: Grupo[] = [
           { rotulo: 'menu.clientes', icone: '🧑‍⚕️', to: '/cadastros/clientes', cap: 'cadastros.cliente.listar' },
           { rotulo: 'menu.fornecedores', icone: '🏭', to: '/cadastros/fornecedores', cap: 'cadastros.fornecedor.listar' },
           { rotulo: 'menu.vendedores', icone: '💼', to: '/cadastros/vendedores', cap: 'cadastros.vendedor.listar' },
+          { rotulo: 'menu.motoboys', icone: '🛵', to: '/cadastros/motoboys', cap: 'cadastros.motoboy.listar' },
         ],
       },
       {
@@ -71,6 +72,7 @@ const GRUPOS: Grupo[] = [
         itens: [
           { rotulo: 'menu.produtos', icone: '📦', to: '/cadastros/produtos', cap: 'cadastros.produto.listar' },
           { rotulo: 'menu.categorias', icone: '🏷️', to: '/cadastros/categorias', cap: 'cadastros.categoria.listar' },
+          { rotulo: 'menu.marcas', icone: '™️', to: '/cadastros/marcas', cap: 'cadastros.marca.listar' },
         ],
       },
       {

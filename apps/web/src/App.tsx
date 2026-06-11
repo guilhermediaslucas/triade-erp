@@ -10,10 +10,12 @@ import { Perfis } from './pages/Perfis.js';
 import { DadosEmpresa } from './pages/DadosEmpresa.js';
 import { Empresas } from './pages/Empresas.js';
 import { Categorias } from './pages/Categorias.js';
+import { Marcas } from './pages/Marcas.js';
 import { Produtos } from './pages/Produtos.js';
 import { Clientes } from './pages/Clientes.js';
 import { Fornecedores } from './pages/Fornecedores.js';
 import { Vendedores } from './pages/Vendedores.js';
+import { Motoboys } from './pages/Motoboys.js';
 import { TabelaPreco } from './pages/TabelaPreco.js';
 import { Pedidos } from './pages/Pedidos.js';
 import { NovoPedido } from './pages/NovoPedido.js';
@@ -73,7 +75,9 @@ export function App() {
               <Route path="/cadastros/clientes" element={<Protegida cap="cadastros.cliente.listar"><Clientes /></Protegida>} />
               <Route path="/cadastros/fornecedores" element={<Protegida cap="cadastros.fornecedor.listar"><Fornecedores /></Protegida>} />
               <Route path="/cadastros/vendedores" element={<Protegida cap="cadastros.vendedor.listar"><Vendedores /></Protegida>} />
+              <Route path="/cadastros/motoboys" element={<Protegida cap="cadastros.motoboy.listar"><Motoboys /></Protegida>} />
               <Route path="/cadastros/categorias" element={<Protegida cap="cadastros.categoria.listar"><Categorias /></Protegida>} />
+              <Route path="/cadastros/marcas" element={<Protegida cap="cadastros.marca.listar"><Marcas /></Protegida>} />
               <Route path="/cadastros/produtos" element={<Protegida cap="cadastros.produto.listar"><Produtos /></Protegida>} />
               <Route path="/superadmin/empresas" element={<Protegida cap="superadmin.empresa.provisionar"><Empresas /></Protegida>} />
               <Route path="*" element={<Navigate to="/" replace />} />

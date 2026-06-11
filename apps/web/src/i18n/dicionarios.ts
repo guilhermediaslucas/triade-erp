@@ -852,3 +852,82 @@ Object.assign(es, {
   'inv.historico': 'Historial de inventarios', 'inv.data': 'Fecha', 'inv.baixa': 'Baja',
   'inv.baixados': 'dados de baja', 'inv.vazio': 'Ningún inventario registrado.',
 });
+
+// --- Refinamento: Marcas de produtos + recebimento multi-lote com bipagem ---
+Object.assign(pt, {
+  'common.opcional': 'opcional',
+  'menu.marcas': 'Marcas',
+  'cap.cadastros.marca.listar': 'Listar marcas', 'cap.cadastros.marca.gerenciar': 'Criar e editar marcas',
+  'marcas.titulo': 'Marcas', 'marcas.titulo_sing': 'Marca', 'marcas.nova': 'Nova marca',
+  'marcas.sub': 'Marcas usadas no recebimento dos lotes.', 'marcas.nome': 'Nome', 'marcas.fabricante': 'Fabricante',
+  'receb.bipados': 'bipados', 'receb.add_lote': 'Adicionar lote', 'receb.lote_n': 'Lote',
+  'recebimento.lotes_obrigatorio': 'Informe ao menos um lote.',
+  'recebimento.marca_obrigatoria': 'Selecione a marca de cada lote.',
+  'recebimento.soma_invalida': 'A soma das etiquetas bipadas deve bater com a quantidade da nota.',
+  'marca.invalida': 'Marca inválida.',
+});
+Object.assign(en, {
+  'common.opcional': 'optional',
+  'menu.marcas': 'Brands',
+  'cap.cadastros.marca.listar': 'List brands', 'cap.cadastros.marca.gerenciar': 'Create and edit brands',
+  'marcas.titulo': 'Brands', 'marcas.titulo_sing': 'Brand', 'marcas.nova': 'New brand',
+  'marcas.sub': 'Brands used when receiving lots.', 'marcas.nome': 'Name', 'marcas.fabricante': 'Manufacturer',
+  'receb.bipados': 'scanned', 'receb.add_lote': 'Add lot', 'receb.lote_n': 'Lot',
+  'recebimento.lotes_obrigatorio': 'Provide at least one lot.',
+  'recebimento.marca_obrigatoria': 'Select a brand for each lot.',
+  'recebimento.soma_invalida': 'The scanned labels must match the note quantity.',
+  'marca.invalida': 'Invalid brand.',
+});
+Object.assign(es, {
+  'common.opcional': 'opcional',
+  'menu.marcas': 'Marcas',
+  'cap.cadastros.marca.listar': 'Listar marcas', 'cap.cadastros.marca.gerenciar': 'Crear y editar marcas',
+  'marcas.titulo': 'Marcas', 'marcas.titulo_sing': 'Marca', 'marcas.nova': 'Nueva marca',
+  'marcas.sub': 'Marcas usadas en la recepción de los lotes.', 'marcas.nome': 'Nombre', 'marcas.fabricante': 'Fabricante',
+  'receb.bipados': 'escaneados', 'receb.add_lote': 'Agregar lote', 'receb.lote_n': 'Lote',
+  'recebimento.lotes_obrigatorio': 'Informe al menos un lote.',
+  'recebimento.marca_obrigatoria': 'Selecciona la marca de cada lote.',
+  'recebimento.soma_invalida': 'La suma de las etiquetas escaneadas debe coincidir con la cantidad de la nota.',
+  'marca.invalida': 'Marca inválida.',
+});
+
+// --- Refinamento: Motoboys + formas de entrega + frete ---
+Object.assign(pt, {
+  'menu.motoboys': 'Motoboys',
+  'cap.cadastros.motoboy.listar': 'Listar motoboys', 'cap.cadastros.motoboy.gerenciar': 'Criar e editar motoboys / config. de frete',
+  'motoboys.titulo': 'Motoboys', 'motoboys.novo': 'Novo motoboy', 'motoboys.nome': 'Nome', 'motoboys.telefone': 'Telefone',
+  'motoboys.cfg_titulo': 'Configuração de frete (motoboy)',
+  'motoboys.cfg_sub': 'A distância é simulada pelo CEP de entrega. Frete = km × valor por km, respeitando o mínimo.',
+  'motoboys.km_rate': 'Valor por km (R$)', 'motoboys.min_motoboy': 'Frete mínimo (R$)', 'motoboys.cfg_ok': 'Configuração de frete salva.',
+  'entrega.forma': 'Forma de entrega', 'entrega.retirada': 'Retirada', 'entrega.motoboy': 'Motoboy',
+  'entrega.correios': 'Correios', 'entrega.transportadora': 'Transportadora', 'entrega.memo': 'Cálculo',
+  'frete.forma_invalida': 'Forma de entrega inválida.', 'frete.km_rate_invalido': 'Valor por km inválido.',
+  'frete.min_invalido': 'Frete mínimo inválido.', 'frete.manual_invalido': 'Informe um valor de frete válido.',
+  'pedido.motoboy_obrigatorio': 'Selecione o motoboy.', 'pedido.motoboy_invalido': 'Motoboy inválido.',
+});
+Object.assign(en, {
+  'menu.motoboys': 'Couriers',
+  'cap.cadastros.motoboy.listar': 'List couriers', 'cap.cadastros.motoboy.gerenciar': 'Create/edit couriers & freight config',
+  'motoboys.titulo': 'Couriers', 'motoboys.novo': 'New courier', 'motoboys.nome': 'Name', 'motoboys.telefone': 'Phone',
+  'motoboys.cfg_titulo': 'Freight settings (courier)',
+  'motoboys.cfg_sub': 'Distance is simulated from the delivery ZIP. Freight = km × per-km rate, respecting the minimum.',
+  'motoboys.km_rate': 'Per-km rate ($)', 'motoboys.min_motoboy': 'Minimum freight ($)', 'motoboys.cfg_ok': 'Freight settings saved.',
+  'entrega.forma': 'Delivery method', 'entrega.retirada': 'Pickup', 'entrega.motoboy': 'Courier',
+  'entrega.correios': 'Postal', 'entrega.transportadora': 'Carrier', 'entrega.memo': 'Calc',
+  'frete.forma_invalida': 'Invalid delivery method.', 'frete.km_rate_invalido': 'Invalid per-km rate.',
+  'frete.min_invalido': 'Invalid minimum freight.', 'frete.manual_invalido': 'Enter a valid freight value.',
+  'pedido.motoboy_obrigatorio': 'Select the courier.', 'pedido.motoboy_invalido': 'Invalid courier.',
+});
+Object.assign(es, {
+  'menu.motoboys': 'Motoboys',
+  'cap.cadastros.motoboy.listar': 'Listar motoboys', 'cap.cadastros.motoboy.gerenciar': 'Crear/editar motoboys y config. de flete',
+  'motoboys.titulo': 'Motoboys', 'motoboys.novo': 'Nuevo motoboy', 'motoboys.nome': 'Nombre', 'motoboys.telefone': 'Teléfono',
+  'motoboys.cfg_titulo': 'Configuración de flete (motoboy)',
+  'motoboys.cfg_sub': 'La distancia se simula por el CP de entrega. Flete = km × valor por km, respetando el mínimo.',
+  'motoboys.km_rate': 'Valor por km ($)', 'motoboys.min_motoboy': 'Flete mínimo ($)', 'motoboys.cfg_ok': 'Configuración de flete guardada.',
+  'entrega.forma': 'Forma de entrega', 'entrega.retirada': 'Retiro', 'entrega.motoboy': 'Motoboy',
+  'entrega.correios': 'Correos', 'entrega.transportadora': 'Transportista', 'entrega.memo': 'Cálculo',
+  'frete.forma_invalida': 'Forma de entrega inválida.', 'frete.km_rate_invalido': 'Valor por km inválido.',
+  'frete.min_invalido': 'Flete mínimo inválido.', 'frete.manual_invalido': 'Ingresa un valor de flete válido.',
+  'pedido.motoboy_obrigatorio': 'Selecciona el motoboy.', 'pedido.motoboy_invalido': 'Motoboy inválido.',
+});

@@ -317,4 +317,38 @@ export const tenantMigrations: MigracaoTenant[] = [
       CREATE INDEX IF NOT EXISTS idx_${s}_invfalt_inv ON "${s}".inventario_faltante(inventario_id);
     `,
   },
+  {
+    nome: '018_marca',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".marca (
+        id         uuid PRIMARY KEY,
+        nome       text NOT NULL,
+        fabricante text,
+        ativo      boolean NOT NULL DEFAULT true,
+        criado_em  timestamptz NOT NULL DEFAULT now()
+      );
+      ALTER TABLE "${s}".estoque_lote ADD COLUMN IF NOT EXISTS marca_id uuid REFERENCES "${s}".marca(id);
+    `,
+  },
+  {
+    nome: '019_frete_entrega',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".motoboy (
+        id        uuid PRIMARY KEY,
+        nome      text NOT NULL,
+        telefone  text,
+        ativo     boolean NOT NULL DEFAULT true,
+        criado_em timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE TABLE IF NOT EXISTS "${s}".frete_config (
+        id          text PRIMARY KEY DEFAULT 'unico',
+        km_rate     numeric(14,2) NOT NULL DEFAULT 2,
+        min_motoboy numeric(14,2) NOT NULL DEFAULT 20
+      );
+      INSERT INTO "${s}".frete_config (id) VALUES ('unico') ON CONFLICT DO NOTHING;
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS forma_entrega text NOT NULL DEFAULT 'retirada';
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS motoboy_id uuid REFERENCES "${s}".motoboy(id);
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS distancia_km numeric(14,2);
+    `,
+  },
 ];

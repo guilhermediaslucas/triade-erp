@@ -9,6 +9,7 @@ interface Item { produtoNome: string; quantidade: number; precoUnitario: number;
 interface Pedido {
   id: string; numero: number; clienteNome: string | null; vendedorNome: string | null; status: StatusPedido;
   formaPagamento: string | null; observacao: string | null; enderecoEntrega: string | null;
+  formaEntrega: string; motoboyNome: string | null; distanciaKm: number | null;
   subtotal: number; frete: number; total: number; criadoEm: string; itens: Item[];
 }
 
@@ -54,6 +55,9 @@ export function PedidoDetalhe() {
 
   if (!p) return <div className="muted">{erro ? t(erro) : t('common.carregando')}</div>;
   const proximos = PROXIMOS[p.status];
+  const entregaTexto = t('entrega.' + p.formaEntrega)
+    + (p.formaEntrega === 'motoboy' && p.motoboyNome ? ' · ' + p.motoboyNome : '')
+    + (p.distanciaKm != null ? ' · ' + p.distanciaKm + ' km' : '');
 
   return (
     <div>
@@ -69,6 +73,7 @@ export function PedidoDetalhe() {
           <div><span className="det-l">{t('pedidos.vendedor')}</span><div>{p.vendedorNome ?? '—'}</div></div>
           <div><span className="det-l">{t('pedidos.forma_pgto')}</span><div>{p.formaPagamento ?? '—'}</div></div>
           <div><span className="det-l">{t('pedidos.data')}</span><div>{new Date(p.criadoEm).toLocaleString('pt-BR')}</div></div>
+          <div><span className="det-l">{t('entrega.forma')}</span><div>{entregaTexto}</div></div>
           <div style={{ gridColumn: '1 / -1' }}><span className="det-l">{t('pedidos.endereco')}</span><div>{p.enderecoEntrega ?? '—'}</div></div>
           {p.observacao && <div style={{ gridColumn: '1 / -1' }}><span className="det-l">{t('pedidos.obs')}</span><div>{p.observacao}</div></div>}
         </div>
