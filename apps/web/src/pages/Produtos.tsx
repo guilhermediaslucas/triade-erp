@@ -29,6 +29,9 @@ export function Produtos() {
   useEffect(() => { carregar(); /* eslint-disable-next-line */ }, []);
   async function alternar(p: Produto) { try { await api.patch('/produtos/' + p.id + '/ativo', { ativo: !p.ativo }, token!); carregar(); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
 
+  // Formulário em página inteira (espelha o mockup) — substitui a lista enquanto edita.
+  if (edit) return <FormProduto prod={edit} cats={cats} onFechar={() => setEdit(null)} onSalvo={() => { setEdit(null); carregar(); }} />;
+
   return (
     <div>
       <div className="page-head"><h1 className="page-titulo">{t('produtos.titulo')}</h1>
@@ -50,12 +53,11 @@ export function Produtos() {
           ))}
         </tbody>
       </table></div>
-      {edit && <ModalProduto prod={edit} cats={cats} onFechar={() => setEdit(null)} onSalvo={() => { setEdit(null); carregar(); }} />}
     </div>
   );
 }
 
-function ModalProduto({ prod, cats, onFechar, onSalvo }: { prod: Produto; cats: Categoria[]; onFechar: () => void; onSalvo: () => void; }) {
+function FormProduto({ prod, cats, onFechar, onSalvo }: { prod: Produto; cats: Categoria[]; onFechar: () => void; onSalvo: () => void; }) {
   const { token } = useAuth(); const { t } = useI18n();
   const novo = !prod.id; const [f, setF] = useState(prod);
   const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
@@ -67,28 +69,36 @@ function ModalProduto({ prod, cats, onFechar, onSalvo }: { prod: Produto; cats: 
     catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
   return (
-    <div className="modal-fundo" onClick={onFechar}><div className="modal" onClick={(e) => e.stopPropagation()}>
-      <h2>{novo ? t('produtos.novo') : t('common.editar')}</h2>
-      <label className="campo">{t('produtos.nome')}<input value={f.nome} onChange={(e) => set('nome', e.target.value)} autoFocus /></label>
-      <div className="cores-grid">
-        <label className="campo">{t('produtos.categoria')}
-          <select value={f.categoriaId ?? ''} onChange={(e) => set('categoriaId', e.target.value)}>
-            <option value="">{t('produtos.sem_categoria')}</option>
-            {cats.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
-          </select>
-        </label>
-        <label className="campo">{t('produtos.unidade')}
-          <select value={f.unidade} onChange={(e) => set('unidade', e.target.value)}>{UNIDADES.map((u) => <option key={u} value={u}>{u}</option>)}</select>
-        </label>
-        <label className="campo">{t('produtos.minimo')}<input type="number" step="1" min="0" value={f.estoqueMinimo} onChange={(e) => set('estoqueMinimo', e.target.value)} /></label>
+    <div>
+      <div className="page-head">
+        <h1 className="page-titulo">{novo ? t('produtos.novo') : t('common.editar')}</h1>
+        <button className="btn-ghost" onClick={onFechar}>← {t('common.voltar')}</button>
       </div>
-      <div className="cores-grid">
-        <label className="campo">{t('produtos.local')}<input value={f.localizacao ?? ''} onChange={(e) => set('localizacao', e.target.value)} placeholder={t('produtos.local_ph')} /></label>
-        <label className="campo">{t('produtos.anvisa')}<input value={f.registroAnvisa ?? ''} onChange={(e) => set('registroAnvisa', e.target.value)} /></label>
-      </div>
-      <div className="nota-info">{t('produtos.nota_preco')}</div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
-      <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv} onClick={salvar}>{t('common.salvar')}</button></div>
-    </div></div>
+      <div className="card form-pagina">
+        <label className="campo">{t('produtos.nome')}<input value={f.nome} onChange={(e) => set('nome', e.target.value)} autoFocus /></label>
+        <div className="cores-grid">
+          <label className="campo">{t('produtos.categoria')}
+            <select value={f.categoriaId ?? ''} onChange={(e) => set('categoriaId', e.target.value)}>
+              <option value="">{t('produtos.sem_categoria')}</option>
+              {cats.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
+            </select>
+          </label>
+          <label className="campo">{t('produtos.unidade')}
+            <select value={f.unidade} onChange={(e) => set('unidade', e.target.value)}>{UNIDADES.map((u) => <option key={u} value={u}>{u}</option>)}</select>
+          </label>
+          <label className="campo">{t('produtos.minimo')}<input type="number" step="1" min="0" value={f.estoqueMinimo} onChange={(e) => set('estoqueMinimo', e.target.value)} /></label>
+        </div>
+        <div className="cores-grid">
+          <label className="campo">{t('produtos.local')}<input value={f.localizacao ?? ''} onChange={(e) => set('localizacao', e.target.value)} placeholder={t('produtos.local_ph')} /></label>
+          <label className="campo">{t('produtos.anvisa')}<input value={f.registroAnvisa ?? ''} onChange={(e) => set('registroAnvisa', e.target.value)} /></label>
+        </div>
+        <div className="nota-info">{t('produtos.nota_preco')}</div>
+        <div className="form-acoes">
+          <button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button>
+          <button className="btn-primary" disabled={salv} onClick={salvar}>{t('common.salvar')}</button>
+        </div>
+      </div>
+    </div>
   );
 }

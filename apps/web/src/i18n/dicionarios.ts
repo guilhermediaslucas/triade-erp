@@ -1358,3 +1358,8 @@ Object.assign(es, {
   'fin.f_situacao': 'Situación', 'fin.f_todos': 'Todos', 'fin.f_venc_de': 'Vence desde', 'fin.f_venc_ate': 'Vence hasta',
   'fin.f_min': 'Valor mín.', 'fin.f_max': 'Valor máx.', 'fin.f_limpar': 'Limpiar filtros',
 });
+
+// --- common.voltar ---
+Object.assign(pt, { 'common.voltar': 'Voltar' });
+Object.assign(en, { 'common.voltar': 'Back' });
+Object.assign(es, { 'common.voltar': 'Volver' });

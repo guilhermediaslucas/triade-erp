@@ -48,7 +48,7 @@
 - [x] Histórico de inventários (contagens no período, acuracidade média, faltantes, drill por inventário, CSV)
 
 ## Polimento visual / UX (passada dedicada, ao final)
-- [ ] Formulários em página inteira onde o mockup usa (ex.: Produto)
+- [~] Formulários em página inteira — feito no **Produto** (padrão); demais cadastros podem migrar aos poucos
 - [x] Busca global (Ctrl+K) — paleta de navegação por todas as telas (respeita permissões)
 - [x] Toasts de confirmação (sucesso/erro flutuantes; ligados em Contas e ações do pedido)
 - [x] Sino de notificações (topbar: títulos vencidos, lotes vencendo, estoque baixo; respeita permissões)
