@@ -351,4 +351,17 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS distancia_km numeric(14,2);
     `,
   },
+  {
+    nome: '020_categoria_financeira',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".categoria_financeira (
+        id        uuid PRIMARY KEY,
+        nome      text NOT NULL,
+        tipo      text NOT NULL DEFAULT 'despesa',
+        ativo     boolean NOT NULL DEFAULT true,
+        criado_em timestamptz NOT NULL DEFAULT now()
+      );
+      ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS categoria_financeira_id uuid REFERENCES "${s}".categoria_financeira(id);
+    `,
+  },
 ];

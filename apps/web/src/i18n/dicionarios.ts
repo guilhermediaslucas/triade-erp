@@ -1115,3 +1115,32 @@ Object.assign(es, {
   'bulk.selecionados': '{n} seleccionado(s)', 'bulk.baixar': 'Pagar', 'bulk.excluir': 'Eliminar', 'bulk.limpar': 'Limpiar selección',
   'bulk.baixados': '{n} título(s) pagado(s).', 'bulk.excluidos': '{n} título(s) eliminado(s).', 'bulk.confirma_excluir': '¿Eliminar {n} título(s) seleccionado(s)?',
 });
+
+// --- Refinamento: Categorias financeiras ---
+Object.assign(pt, {
+  'common.salvo': 'Salvo.',
+  'menu.catfin': 'Categorias financeiras',
+  'cap.cadastros.catfin.listar': 'Listar categorias financeiras', 'cap.cadastros.catfin.gerenciar': 'Criar e editar categorias financeiras',
+  'catfin.titulo': 'Categorias financeiras', 'catfin.titulo_s': 'Categoria', 'catfin.nova': 'Nova categoria',
+  'catfin.sub': 'Classifique receitas e despesas (organiza o financeiro e a DRE por categoria).',
+  'catfin.nome': 'Nome', 'catfin.tipo': 'Tipo', 'catfin.receita': 'Receita', 'catfin.despesa': 'Despesa', 'catfin.sem': '(sem categoria)',
+  'catfin.tipo_invalido': 'Tipo de categoria inválido.',
+});
+Object.assign(en, {
+  'common.salvo': 'Saved.',
+  'menu.catfin': 'Financial categories',
+  'cap.cadastros.catfin.listar': 'List financial categories', 'cap.cadastros.catfin.gerenciar': 'Create and edit financial categories',
+  'catfin.titulo': 'Financial categories', 'catfin.titulo_s': 'Category', 'catfin.nova': 'New category',
+  'catfin.sub': 'Classify income and expenses (organizes finance and P&L by category).',
+  'catfin.nome': 'Name', 'catfin.tipo': 'Type', 'catfin.receita': 'Income', 'catfin.despesa': 'Expense', 'catfin.sem': '(no category)',
+  'catfin.tipo_invalido': 'Invalid category type.',
+});
+Object.assign(es, {
+  'common.salvo': 'Guardado.',
+  'menu.catfin': 'Categorías financieras',
+  'cap.cadastros.catfin.listar': 'Listar categorías financieras', 'cap.cadastros.catfin.gerenciar': 'Crear y editar categorías financieras',
+  'catfin.titulo': 'Categorías financieras', 'catfin.titulo_s': 'Categoría', 'catfin.nova': 'Nueva categoría',
+  'catfin.sub': 'Clasifica ingresos y gastos (organiza las finanzas y el resultado por categoría).',
+  'catfin.nome': 'Nombre', 'catfin.tipo': 'Tipo', 'catfin.receita': 'Ingreso', 'catfin.despesa': 'Gasto', 'catfin.sem': '(sin categoría)',
+  'catfin.tipo_invalido': 'Tipo de categoría inválido.',
+});

@@ -64,7 +64,7 @@ export class FinanceiroService {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(vencimento)) throw new ErroAplicacao('financeiro.vencimento_invalido', 400);
     return this.repo.criar(schema, {
       tipo, descricao: String(e.descricao).trim(), pessoaNome: (e?.pessoaNome && String(e.pessoaNome).trim()) || null,
-      valor, vencimento,
+      valor, vencimento, categoriaFinanceiraId: (e?.categoriaFinanceiraId && String(e.categoriaFinanceiraId).trim()) || null,
     }, 'manual', null);
   }
 

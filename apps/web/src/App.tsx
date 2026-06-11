@@ -42,6 +42,7 @@ import { RelEstoqueParado } from './pages/RelEstoqueParado.js';
 import { Condicoes } from './pages/Condicoes.js';
 import { Comissoes } from './pages/Comissoes.js';
 import { ContasCorrentes } from './pages/ContasCorrentes.js';
+import { CategoriasFinanceiras } from './pages/CategoriasFinanceiras.js';
 import { Layout } from './components/Layout.js';
 import { ProtectedRoute } from './components/ProtectedRoute.js';
 
@@ -87,6 +88,7 @@ export function App() {
                 <Route path="/relatorios/validade" element={<Protegida cap="relatorios.ver"><RelValidade /></Protegida>} />
                 <Route path="/relatorios/estoque-parado" element={<Protegida cap="relatorios.ver"><RelEstoqueParado /></Protegida>} />
                 <Route path="/cadastros/contas-correntes" element={<Protegida cap="cadastros.conta.listar"><ContasCorrentes /></Protegida>} />
+                <Route path="/cadastros/categorias-financeiras" element={<Protegida cap="cadastros.catfin.listar"><CategoriasFinanceiras /></Protegida>} />
                 <Route path="/cadastros/condicoes" element={<Protegida cap="cadastros.condicao.listar"><Condicoes /></Protegida>} />
                 <Route path="/cadastros/clientes" element={<Protegida cap="cadastros.cliente.listar"><Clientes /></Protegida>} />
                 <Route path="/cadastros/fornecedores" element={<Protegida cap="cadastros.fornecedor.listar"><Fornecedores /></Protegida>} />

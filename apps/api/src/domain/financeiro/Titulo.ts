@@ -4,10 +4,13 @@ export type StatusTitulo = 'aberto' | 'pago';
 export interface Titulo {
   id: string; tipo: TipoTitulo; descricao: string; pessoaNome: string | null;
   valor: number; vencimento: string; status: StatusTitulo; formaPagamento: string | null;
-  pagoEm: string | null; origem: string; pedidoId: string | null; criadoEm: string;
+  pagoEm: string | null; origem: string; pedidoId: string | null;
+  categoriaFinanceiraId: string | null; categoriaFinanceiraNome: string | null;
+  criadoEm: string;
 }
 export interface NovoTitulo {
   tipo: TipoTitulo; descricao: string; pessoaNome: string | null; valor: number; vencimento: string;
+  categoriaFinanceiraId?: string | null;
 }
 export interface MovimentoFluxo {
   data: string; tipo: 'entrada' | 'saida'; descricao: string; pessoaNome: string | null; valor: number; formaPagamento: string | null;

@@ -6,7 +6,8 @@ import { useToast } from '../components/Toast.js';
 import { moeda } from '../lib/pedido.js';
 
 type Tipo = 'receber' | 'pagar';
-interface Titulo { id: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; origem: string; }
+interface Titulo { id: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; }
+interface CatFin { id: string; nome: string; tipo: 'receita' | 'despesa'; ativo: boolean; }
 
 const hojeISO = () => new Date().toISOString().slice(0, 10);
 function situacao(t: Titulo): 'pago' | 'vencido' | 'aberto' {
@@ -42,6 +43,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   function toggleTodos() { setSel((s) => (s.size === itens.length ? new Set() : new Set(itens.map((x) => x.id)))); }
   const selecionados = itens.filter((x) => sel.has(x.id));
   const abertosSel = selecionados.filter((x) => x.status === 'aberto');
+  const nCols = pode ? 8 : 7;
 
   async function cancelar(tt: Titulo) {
     try { await api.patch('/financeiro/' + tipo + '/' + tt.id + '/cancelar', {}, token!); carregar(); toast(t('fin.toast_cancelado')); }
@@ -80,15 +82,16 @@ export function Contas({ tipo }: { tipo: Tipo }) {
       <div className="card pad0"><table className="tabela">
         <thead><tr>
           {pode && <th style={{ width: 34 }}><input type="checkbox" checked={itens.length > 0 && sel.size === itens.length} onChange={toggleTodos} /></th>}
-          <th>{t('fin.descricao')}</th><th>{tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor')}</th><th>{t('fin.vencimento')}</th><th>{t('fin.valor')}</th><th>{t('fin.situacao')}</th><th>{t('usuarios.acoes')}</th>
+          <th>{t('fin.descricao')}</th><th>{tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor')}</th><th>{t('catfin.titulo_s')}</th><th>{t('fin.vencimento')}</th><th>{t('fin.valor')}</th><th>{t('fin.situacao')}</th><th>{t('usuarios.acoes')}</th>
         </tr></thead>
         <tbody>
-          {itens.length === 0 && <tr><td colSpan={pode ? 7 : 6} className="vazio">{t('common.nenhum')}</td></tr>}
+          {itens.length === 0 && <tr><td colSpan={nCols} className="vazio">{t('common.nenhum')}</td></tr>}
           {itens.map((tt) => { const sit = situacao(tt); return (
             <tr key={tt.id} className={sel.has(tt.id) ? 'linha-sel' : ''}>
               {pode && <td><input type="checkbox" checked={sel.has(tt.id)} onChange={() => toggle(tt.id)} /></td>}
               <td>{tt.descricao}{tt.origem === 'pedido' && <span className="tag-origem">{t('fin.do_pedido')}</span>}</td>
               <td>{tt.pessoaNome ?? '—'}</td>
+              <td>{tt.categoriaFinanceiraNome ?? '—'}</td>
               <td>{new Date(tt.vencimento + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
               <td>{moeda(tt.valor)}</td>
               <td><span className={'pill ' + (sit === 'pago' ? 'st-verde' : sit === 'vencido' ? 'st-vermelho' : 'st-laranja')}>{t('fin.' + sit)}</span></td>
@@ -100,20 +103,27 @@ export function Contas({ tipo }: { tipo: Tipo }) {
         </tbody>
       </table></div>
       {novo && <ModalNovo tipo={tipo} onFechar={() => setNovo(false)} onSalvo={() => { setNovo(false); carregar(); toast(t('fin.toast_criado')); }} />}
-      {baixar && <ModalBaixa tipo={tipo} titulos={[baixar]} onFechar={() => setBaixar(null)} onSalvo={(n) => { setBaixar(null); carregar(); toast(t('fin.toast_baixado')); void n; }} />}
+      {baixar && <ModalBaixa tipo={tipo} titulos={[baixar]} onFechar={() => setBaixar(null)} onSalvo={() => { setBaixar(null); carregar(); toast(t('fin.toast_baixado')); }} />}
       {baixaMassa && <ModalBaixa tipo={tipo} titulos={abertosSel} onFechar={() => setBaixaMassa(false)} onSalvo={(n) => { setBaixaMassa(false); carregar(); toast(t('bulk.baixados').replace('{n}', String(n))); }} />}
     </div>
   );
 }
 
 function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => void; onSalvo: () => void; }) {
-  const { token } = useAuth(); const { t } = useI18n();
+  const { token, temCapability } = useAuth(); const { t } = useI18n();
   const [descricao, setDescricao] = useState(''); const [pessoaNome, setPessoa] = useState('');
   const [valor, setValor] = useState(''); const [vencimento, setVenc] = useState('');
+  const [categoriaFinanceiraId, setCatId] = useState('');
+  const [cats, setCats] = useState<CatFin[]>([]);
   const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
+  const tipoCat = tipo === 'receber' ? 'receita' : 'despesa';
+  useEffect(() => {
+    if (temCapability('cadastros.catfin.listar')) api.get<CatFin[]>('/categorias-financeiras', token!).then((l) => setCats(l.filter((c) => c.ativo && c.tipo === tipoCat))).catch(() => {});
+    /* eslint-disable-next-line */
+  }, []);
   async function salvar() {
     setErro(null); setSalv(true);
-    try { await api.post('/financeiro/' + tipo, { descricao, pessoaNome, valor: Number(valor), vencimento }, token!); onSalvo(); }
+    try { await api.post('/financeiro/' + tipo, { descricao, pessoaNome, valor: Number(valor), vencimento, categoriaFinanceiraId: categoriaFinanceiraId || null }, token!); onSalvo(); }
     catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
   return (
@@ -121,6 +131,11 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
       <h2>{t('fin.novo')}</h2>
       <label className="campo">{t('fin.descricao')}<input value={descricao} onChange={(e) => setDescricao(e.target.value)} autoFocus /></label>
       <label className="campo">{tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor')}<input value={pessoaNome} onChange={(e) => setPessoa(e.target.value)} /></label>
+      {cats.length > 0 && <label className="campo">{t('catfin.titulo_s')}
+        <select value={categoriaFinanceiraId} onChange={(e) => setCatId(e.target.value)}>
+          <option value="">{t('catfin.sem')}</option>{cats.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
+        </select>
+      </label>}
       <div className="cores-grid">
         <label className="campo">{t('fin.valor')}<input type="number" min="0" step="0.01" value={valor} onChange={(e) => setValor(e.target.value)} /></label>
         <label className="campo">{t('fin.vencimento')}<input type="date" value={vencimento} onChange={(e) => setVenc(e.target.value)} /></label>

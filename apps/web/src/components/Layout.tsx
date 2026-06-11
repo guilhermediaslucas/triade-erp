@@ -92,6 +92,7 @@ const GRUPOS: Grupo[] = [
         sublabel: 'menu.sub.financeiro',
         itens: [
           { rotulo: 'menu.contas_correntes', icone: '🏦', to: '/cadastros/contas-correntes', cap: 'cadastros.conta.listar' },
+          { rotulo: 'menu.catfin', icone: '🗂️', to: '/cadastros/categorias-financeiras', cap: 'cadastros.catfin.listar' },
         ],
       },
     ],

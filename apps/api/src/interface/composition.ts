@@ -41,6 +41,8 @@ import { SqlInventarioRepository } from '../infra/repositories/SqlInventarioRepo
 import { InventarioService } from '../application/estoque/InventarioService.js';
 import { SqlTituloRepository } from '../infra/repositories/SqlTituloRepository.js';
 import { FinanceiroService } from '../application/financeiro/FinanceiroService.js';
+import { SqlCategoriaFinanceiraRepository } from '../infra/repositories/SqlCategoriaFinanceiraRepository.js';
+import { CategoriasFinanceirasService } from '../application/financeiro/CategoriasFinanceirasService.js';
 import { SqlRecebimentoRepository } from '../infra/repositories/SqlRecebimentoRepository.js';
 import { ComprasService } from '../application/financeiro/ComprasService.js';
 import { SqlComissaoRepository } from '../infra/repositories/SqlComissaoRepository.js';
@@ -75,6 +77,7 @@ export function montarDependencias() {
   const etiquetaRepo = new SqlEtiquetaRepository(AppDataSource);
   const inventarioRepo = new SqlInventarioRepository(AppDataSource);
   const tituloRepo = new SqlTituloRepository(AppDataSource);
+  const catFinRepo = new SqlCategoriaFinanceiraRepository(AppDataSource);
   const recebimentoRepo = new SqlRecebimentoRepository(AppDataSource);
 
   return {
@@ -99,6 +102,7 @@ export function montarDependencias() {
     pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, precoClienteRepo, clientesRepo, estoqueRepo, etiquetaRepo, tituloRepo, condicaoRepo, motoboysRepo),
     condicoesService: new CondicoesService(condicaoRepo),
     financeiroService: new FinanceiroService(tituloRepo),
+    categoriasFinanceirasService: new CategoriasFinanceirasService(catFinRepo),
     comprasService: new ComprasService(produtosRepo, tituloRepo, recebimentoRepo, estoqueRepo, marcasRepo, etiquetaRepo),
     comissoesService: new ComissoesService(new SqlComissaoRepository(AppDataSource), tituloRepo),
     contasService: new ContasService(new SqlContaCorrenteRepository(AppDataSource)),
