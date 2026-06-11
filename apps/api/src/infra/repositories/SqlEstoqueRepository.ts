@@ -100,5 +100,31 @@ export class SqlEstoqueRepository implements EstoqueRepository {
       `INSERT INTO "${s}".estoque_movimento (id, produto_id, lote_id, tipo, quantidade, observacao)
        VALUES ($1,$2,$3,'entrada',$4,$5)`,
       [randomUUID(), e.produtoId, loteId, e.quantidade, 'Entrada de estoque']);
+    // Registra as etiquetas (codigos ja afixados nos produtos) bipadas nesta entrada.
+    // O sistema NAO gera codigos: insere os que vieram da leitura, vinculando ao lote.
+    for (const codigo of e.codigos ?? []) {
+      await this.ds.query(
+        `INSERT INTO "${s}".etiqueta (id, codigo, produto_id, lote_id, status)
+         VALUES ($1,$2,$3,$4,'estoque') ON CONFLICT (codigo) DO NOTHING`,
+        [randomUUID(), codigo, e.produtoId, loteId]);
+    }
+  }
+
+  async baixarUnidadeLote(schema: string, loteId: string, produtoId: string, ref: string): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(`UPDATE "${s}".estoque_lote SET quantidade = quantidade - 1 WHERE id = $1`, [loteId]);
+    await this.ds.query(
+      `INSERT INTO "${s}".estoque_movimento (id, produto_id, lote_id, tipo, quantidade, observacao)
+       VALUES ($1, $2, $3, 'saida', 1, $4)`,
+      [randomUUID(), produtoId, loteId, ref]);
+  }
+
+  async baixarUnidadeLotePerda(schema: string, loteId: string, produtoId: string, motivo: string): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(`UPDATE "${s}".estoque_lote SET quantidade = quantidade - 1 WHERE id = $1`, [loteId]);
+    await this.ds.query(
+      `INSERT INTO "${s}".estoque_movimento (id, produto_id, lote_id, tipo, quantidade, observacao)
+       VALUES ($1, $2, $3, 'perda', 1, $4)`,
+      [randomUUID(), produtoId, loteId, motivo]);
   }
 }

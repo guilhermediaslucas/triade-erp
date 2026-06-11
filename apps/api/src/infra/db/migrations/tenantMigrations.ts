@@ -279,4 +279,42 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS conta_corrente_id uuid REFERENCES "${s}".conta_corrente(id);
     `,
   },
+  {
+    nome: '016_etiqueta',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".etiqueta (
+        id         uuid PRIMARY KEY,
+        codigo     text NOT NULL,
+        produto_id uuid NOT NULL REFERENCES "${s}".produto(id) ON DELETE CASCADE,
+        lote_id    uuid NOT NULL REFERENCES "${s}".estoque_lote(id) ON DELETE CASCADE,
+        status     text NOT NULL DEFAULT 'estoque',
+        criado_em  timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_${s}_etiqueta_codigo ON "${s}".etiqueta(codigo);
+      CREATE INDEX IF NOT EXISTS idx_${s}_etiqueta_lote ON "${s}".etiqueta(lote_id);
+    `,
+  },
+  {
+    nome: '017_inventario',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".inventario (
+        id          uuid PRIMARY KEY,
+        responsavel text,
+        esperadas   integer NOT NULL DEFAULT 0,
+        encontradas integer NOT NULL DEFAULT 0,
+        faltantes   integer NOT NULL DEFAULT 0,
+        baixou_perda boolean NOT NULL DEFAULT false,
+        criado_em   timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE TABLE IF NOT EXISTS "${s}".inventario_faltante (
+        id            uuid PRIMARY KEY,
+        inventario_id uuid NOT NULL REFERENCES "${s}".inventario(id) ON DELETE CASCADE,
+        codigo        text NOT NULL,
+        produto_nome  text,
+        lote          text,
+        validade      date
+      );
+      CREATE INDEX IF NOT EXISTS idx_${s}_invfalt_inv ON "${s}".inventario_faltante(inventario_id);
+    `,
+  },
 ];

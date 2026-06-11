@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
@@ -21,6 +21,13 @@ export function PedidoDetalhe() {
   const [erro, setErro] = useState<string | null>(null);
   const podeGerenciar = temCapability('comercial.pedido.gerenciar');
 
+  // Separação por bipagem
+  const [sepOpen, setSepOpen] = useState(false);
+  const [scan, setScan] = useState('');
+  const [codigos, setCodigos] = useState<string[]>([]);
+  const [sepErro, setSepErro] = useState<string | null>(null);
+  const scanRef = useRef<HTMLInputElement>(null);
+
   async function carregar() { try { setP(await api.get('/pedidos/' + id, token!)); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
   useEffect(() => { carregar(); /* eslint-disable-next-line */ }, [id]);
 
@@ -28,6 +35,21 @@ export function PedidoDetalhe() {
     setErro(null);
     try { await api.patch('/pedidos/' + id + '/status', { status }, token!); carregar(); }
     catch (e) { setErro((e as ErroApi).chaveI18n); }
+  }
+
+  function abrirSeparacao() { setCodigos([]); setScan(''); setSepErro(null); setSepOpen(true); setTimeout(() => scanRef.current?.focus(), 50); }
+  function bipar(valor: string) {
+    const cod = valor.trim().toUpperCase();
+    if (!cod) return;
+    setSepErro(null);
+    if (codigos.includes(cod)) { setSepErro('etiqueta.duplicada_leitura'); setScan(''); return; }
+    setCodigos((cs) => [...cs, cod]); setScan(''); scanRef.current?.focus();
+  }
+  const totalItens = p ? p.itens.reduce((a, i) => a + i.quantidade, 0) : 0;
+  async function confirmarSeparacao() {
+    setSepErro(null);
+    try { await api.post('/pedidos/' + id + '/separar', { codigos }, token!); setSepOpen(false); carregar(); }
+    catch (e) { setSepErro((e as ErroApi).chaveI18n); }
   }
 
   if (!p) return <div className="muted">{erro ? t(erro) : t('common.carregando')}</div>;
@@ -70,13 +92,46 @@ export function PedidoDetalhe() {
         {podeGerenciar && proximos.length > 0 && (
           <div className="acoes-status">
             {proximos.map((s) => (
-              <button key={s} className={s === 'cancelado' ? 'btn-ghost' : 'btn-primary'} onClick={() => mudar(s)}>
-                {t('pedidos.acao.' + s)}
-              </button>
+              s === 'separacao'
+                ? <button key={s} className="btn-primary" onClick={abrirSeparacao}>🏷️ {t('sep.acao')}</button>
+                : <button key={s} className={s === 'cancelado' ? 'btn-ghost' : 'btn-primary'} onClick={() => mudar(s)}>{t('pedidos.acao.' + s)}</button>
             ))}
           </div>
         )}
       </div>
+
+      {sepOpen && (
+        <div className="modal-fundo" onClick={() => setSepOpen(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h2>{t('sep.titulo')} · {numeroPedido(p.numero)}</h2>
+            <div className="dash-s" style={{ marginBottom: 10 }}>{t('sep.sub')}</div>
+            <div className="card pad0" style={{ marginBottom: 10 }}><table className="tabela">
+              <thead><tr><th>{t('precos.produto')}</th><th>{t('pedidos.qtd')}</th></tr></thead>
+              <tbody>{p.itens.map((it, i) => <tr key={i}><td>{it.produtoNome}</td><td>{it.quantidade}</td></tr>)}</tbody>
+            </table></div>
+            {sepErro && <div className="alerta-erro">{t(sepErro)}</div>}
+            <label className="campo">
+              {t('etq.bipe')} <span className="muted">· {codigos.length} / {totalItens} {t('etq.bipados')}</span>
+              <input ref={scanRef} value={scan} autoComplete="off" placeholder={t('etq.bipe_ph')}
+                onChange={(e) => setScan(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); bipar(scan); } }} />
+            </label>
+            {codigos.length > 0 && (
+              <div className="chips">
+                {codigos.map((c) => (
+                  <span key={c} className="chip" style={{ fontFamily: 'monospace' }}>
+                    {c}<button type="button" className="chip-x" onClick={() => setCodigos((cs) => cs.filter((x) => x !== c))}>×</button>
+                  </span>
+                ))}
+              </div>
+            )}
+            <div className="modal-acoes">
+              <button className="btn-ghost" onClick={() => setSepOpen(false)}>{t('common.cancelar')}</button>
+              <button className="btn-primary" disabled={codigos.length === 0} onClick={confirmarSeparacao}>{t('sep.confirmar')}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -20,6 +20,7 @@ import { NovoPedido } from './pages/NovoPedido.js';
 import { PedidoDetalhe } from './pages/PedidoDetalhe.js';
 import { PosicaoEstoque } from './pages/PosicaoEstoque.js';
 import { EntradaEstoque } from './pages/EntradaEstoque.js';
+import { Inventario } from './pages/Inventario.js';
 import { KanbanExpedicao } from './pages/KanbanExpedicao.js';
 import { BaixaPerda } from './pages/BaixaPerda.js';
 import { Contas } from './pages/Contas.js';
@@ -58,6 +59,7 @@ export function App() {
               <Route path="/estoque/baixa" element={<Protegida cap="estoque.baixa.criar"><BaixaPerda /></Protegida>} />
               <Route path="/estoque/posicao" element={<Protegida cap="estoque.saldo.ver"><PosicaoEstoque /></Protegida>} />
               <Route path="/estoque/entrada" element={<Protegida cap="estoque.entrada.criar"><EntradaEstoque /></Protegida>} />
+              <Route path="/estoque/inventario" element={<Protegida cap="estoque.inventario.ver"><Inventario /></Protegida>} />
               <Route path="/financeiro/receber" element={<Protegida cap="financeiro.receber.listar"><Contas tipo="receber" /></Protegida>} />
               <Route path="/financeiro/nota" element={<Protegida cap="financeiro.compra.criar"><NotaEntrada /></Protegida>} />
               <Route path="/estoque/recebimento" element={<Protegida cap="estoque.entrada.criar"><Recebimento /></Protegida>} />

@@ -176,6 +176,62 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Refinamento — Inventário por leitor (contagem + baixa de faltantes).**
+  Migration tenant 017 (`inventario` + `inventario_faltante`). Caps `estoque.inventario.ver/gerenciar`.
+  **Backend:** domínio `Inventario`/`InventarioRepository`; `SqlInventarioRepository` (criar c/ faltantes,
+  listar histórico, faltantesDe); `EtiquetaRepository.listarEmEstoque` (esperadas = etiquetas status
+  'estoque'); `EstoqueRepository.baixarUnidadeLotePerda` (−1 no lote + movimento 'perda'). `InventarioService.finalizar`
+  recebe `{responsavel, codigos[], baixarPerda}`: compara lidos × esperadas → encontradas/faltantes/desconhecidas;
+  se `baixarPerda`, zera cada faltante (status perda + baixa do lote, motivo "Ajuste de inventário"); grava o
+  inventário + faltantes. Rotas `POST /inventario`, `GET /inventario`, `GET /inventario/:id/faltantes`.
+  **Frontend:** tela **Estoque/Expedição › Inventário** (responsável + caixa de bipagem c/ chips/contador;
+  botões "Finalizar contagem" e "Finalizar e baixar faltantes"; painel de resultado c/ KPIs esperadas/
+  encontradas/faltantes/desconhecidas + lista de faltantes; histórico); menu + rota + i18n pt/en/es.
+  **Validação:** type-check api+web verde (3 pacotes). **e2e NÃO rodou nesta sessão:** o sandbox reiniciou no
+  meio e o `embedded-postgres` (binário ~59MB) não reinstalou — download trava nesta rede. O harness de e2e
+  já está escrito (`/tmp/pgtool/e2einv.mjs`, mas /tmp é volátil) cobrindo: 3 esperadas/2 encontradas/1 faltante,
+  desconhecida ignorada, baixar faltante vira perda (saldo cai, etiqueta 'perda'), histórico, guard 403 —
+  **recomendado rodar ao aplicar a migration 017.** **Pendente:** Gui rodar `db-setup.bat` (migration 017) +
+  testar + commit. **Próximo (REFINAMENTOS):** Marcas de produtos / Recebimento multi-lote com bipagem.
+- **2026-06-10** — **Refinamento — Código de barras na SEPARAÇÃO (bipagem p/ baixa).**
+  Fecha o item "código de barras" do `REFINAMENTOS.md`. **Backend:** `PedidosService.separarBipando`
+  (recebe `codigos[]`, casa cada etiqueta com um item do pedido pelo produto, exige TODOS os itens
+  bipados na quantidade exata, dá baixa **do lote específico da etiqueta** — não FIFO genérico — e
+  marca a etiqueta como `saida`); novo `EstoqueRepository.baixarUnidadeLote` (−1 no lote + movimento
+  'saida' com ref do pedido); só permite quando o pedido está em status que transita p/ `separacao`
+  (aprovado→separacao). Rota `POST /pedidos/:id/separar` (cap `comercial.pedido.gerenciar`). O caminho
+  antigo (PATCH status → FIFO automático) segue existindo como fallback. **Frontend:** no **detalhe do
+  pedido**, pedidos aprovados ganham o botão **"Separar por leitura"** → modal lista os itens/qtd +
+  caixa de bipagem (chips, contador bipados/total) → confirma chamando `/separar`; i18n pt/en/es.
+  **Validação:** type-check api+web + **e2e Postgres real (12 PASS)**: incompleto→400, produto fora do
+  pedido→400, código inexistente→404, sem baixa parcial nas falhas, separação OK baixa saldo p/ 0 +
+  etiqueta vira `saida`, pedido vai p/ separacao, separar de novo→400 (transição), etiqueta já
+  consumida→409, guard 403. **Pendente:** Gui rodar/testar + commit (sem migration nova). **Nota de
+  ambiente:** o mount do sandbox corrompeu o `node_modules` no meio da sessão; rodei type-check e e2e
+  numa cópia limpa do projeto em disco local (`/tmp`), com Postgres real — o código-fonte no Desktop é
+  o de verdade. **Próximo (REFINAMENTOS, ordem):** Inventário (contagem + ajuste por leitor).
+- **2026-06-10** — **Refinamento — Código de barras na ENTRADA (bipagem das etiquetas).**
+  Correção de premissa: o sistema **não gera** etiquetas — elas já vêm afixadas nos produtos; o
+  sistema apenas **bipa** os códigos (modelo do mockup, `triade_etiquetas_<emp>`). Migration tenant
+  016 `etiqueta` (codigo único, produto_id, lote_id, status estoque/saida/perda). **Backend:** domínio
+  `Etiqueta`/`EtiquetaRepository` (`listarPorLote`, `buscarPorCodigo`, `jaExistem`, `consumir`);
+  `SqlEtiquetaRepository`. `EstoqueService.entrada` virou **bipagem**: recebe `codigos[]` (os lidos),
+  **quantidade = nº de códigos**, recusa código repetido na leitura (400) e código já existente no
+  estoque (409); `registrarEntrada` insere as etiquetas lidas vinculadas ao lote (não gera nada).
+  Nova rota `GET /estoque/etiquetas/:codigo` (a bipagem **traz produto/lote/validade**, normaliza
+  maiúsculo) e `GET /estoque/lotes/:loteId/etiquetas` (rastreabilidade). **Frontend:** **Entrada de
+  estoque** trocou o campo Quantidade por uma **caixa de bipagem** (lê/digita + Enter → chips de
+  códigos; quantidade derivada); **Posição de estoque** mostra as etiquetas bipadas de cada lote
+  (código + situação, somente leitura); i18n pt/en/es. **Validação:** type-check 3 pacotes + **e2e
+  Postgres real (15 PASS)**: entrada com 2 códigos → saldo 2 + 2 etiquetas estoque; consulta traz
+  produto/lote/validade (e normaliza minúsculo); código inexistente→404; reusar código no estoque→409;
+  repetido na leitura→400; sem códigos→400; merge no mesmo lote (+1) → saldo 3 e 3 etiquetas; guard 403.
+  **Pendente:** Gui rodar `db-setup.bat` (migration 016) + testar + commit; **remover do working tree**
+  os arquivos órfãos `e2ebar.mjs` (vazio) e `apps/web/src/lib/barcode.ts` (não consegui apagar no
+  ambiente — `git rm`/clean). **Build Vite** não rodou no ambiente (node_modules veio do Windows, sem
+  binários nativos Linux do rollup/esbuild) — só afeta o build local, não o código (tsc verde). **Próximo:
+  Código de barras na SEPARAÇÃO** (bipar p/ baixa, casando com o pedido). **Nota técnica do ambiente:**
+  o mount do sandbox truncou várias escritas do file-tool; o caminho confiável foi escrever via shell.
 - **2026-06-10** — **Refinamento — Contas correntes (bancos) + saldo + vínculo na baixa.**
   Migration tenant 015 `conta_corrente` (nome, banco, saldo_inicial, ativo) + `titulo.conta_corrente_id`.
   Caps `cadastros.conta.listar/gerenciar`. **Backend:** domínio `ContaCorrente`/repo + `ContasService`
@@ -741,208 +797,4 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   `data-col="rascunho"` preservada, sem migração de dados). Sequencial do
   pedido agora **persiste por empresa** (`triade_pedseq_<emp>`, sem reiniciar
   a cada reload; padding corrigido p/ 6 dígitos) e o código é exibido como
-  **"DD/MM/AAAA · PE-000490"** (atributo `data-numero` continua sendo a chave
-  interna; `data-data` guarda a data; helper `window._pedNumDisplay`). Telas
-  renomeadas: **"Pedidos - Comercial"** e **"Pedidos - Estoque/Expedição"**.
-  Observação do pedido agora aparece na visualização (`pvObs`). Quem tem a
-  capacidade `novo-pedido` pode editar um orçamento (botão "Editar orçamento"
-  no modal de visualização) e confirmá-lo → "Aguardando pagamento"; no Kanban
-  de Estoque/Expedição a transição orçamento→pagamento é **bloqueada para o
-  perfil Estoque** (só Comercial). A transição **"Aguardando pagamento" →
-  "Pagamento aprovado"** por **arraste no Kanban de Estoque/Expedição
-  (`kbExpedicao`) é bloqueada para qualquer usuário** (e também para o perfil
-  Estoque em qualquer Kanban) — a aprovação acontece **automaticamente** quando
-  o Financeiro baixa o título no Contas a receber (o card avança sozinho);
-  guarda no `drop` + `_isPerfilEstoque`. Helpers novos: `_currentUserNome`,
-  `_currentUserPerfilNome`, `_currentUserHasScreen`, `_isPerfilComercial`,
-  `_isPerfilEstoque`, `_podeConfirmarOrcamento`, `_podeEditarPrecoVenda`. **Vendedor:** perfil
-  Comercial só usa a si mesmo como vendedor (select `npVendedor` travado via
-  `_aplicarVendedorPorPerfil`). **Endereços:** cadastro de cliente agora
-  suporta **múltiplos endereços + favorito** (JSON em `data-enderecos` na
-  linha e na option do datalist); no pedido um `<select id="npEndSelect">`
-  lista os endereços do cliente (favorito pré-selecionado); ao usar endereço
-  diferente há checkbox **"Salvar este endereço no cadastro do cliente"**
-  (`_salvarEnderecoNoCliente`). **Permissões:** novo item de catálogo
-  `produto:preco-venda` ("Editar preço de venda (produto)") — sem ele o campo
-  `pfPreco` fica somente-leitura. **Produto:** removido o campo **Fornecedor**
-  (`pfForn`/`data-forn`) do cadastro. **Estoque mínimo:** a situação
-  "Estoque baixo" agora compara o **saldo** com o **mínimo do cadastro do
-  produto** (`tblProdutos data-min` via `_minimoCadastro`), não mais o mínimo
-  dos lotes; `_renderRow` reavalia e `window._reavaliarEstoque` é chamado ao
-  salvar produto. **Dashboard:** card "Vendas do dia" abre o detalhe com
-  **filtro de intervalo data início/fim** (`_genDaysRange`, `_renderKpi`,
-  `_aplicarFiltroVendaDia`); gráfico **"Vendas por categoria"** agora usa
-  dados reais dos pedidos (`window._refreshChartCat`, agrega
-  itens × categoria do produto; gráfico + total + legenda dinâmicos).
-  **Notificações:** pedido Pix/Boleto gera **pendência de baixa** —
-  notificação persistente (`triade_notif_<emp>`, conta no sininho via
-  `_countNotifPendencias`) + **toast fixo** no canto inferior direito que só
-  fecha no botão **Fechar**; **Abrir** leva ao título no Contas a receber
-  (`window._notificarBaixaPendente`, `#toastWrap`). **CRM (novo módulo no menu
-  Comercial):** 1º corte com tela `s-crm` (permissão `crm`) — painel de KPIs
-  (clientes ativos/atendidos, ticket médio, interações), **histórico por
-  cliente** (timeline de pedidos/orçamentos + interações manuais em
-  `triade_crm_<emp>`, `window._refreshCRM`), **previsão de recompra** (ciclo
-  médio por cliente, situação Atrasada/Esta semana/Em dia, sugestão de itens —
-  `_statsPorCliente`), e **alerta de cliente inativo** (sem comprar há > N dias,
-  N configurável). Novo módulo **Tabela de preços por cliente** (tela
-  `s-precos-cliente`, permissão `precos-cliente`, store `triade_precos_<emp>`):
-  preço negociado por cliente/produto que **sobrepõe o preço do cadastro ao
-  adicionar item no pedido** (`window._precoCliente`, hint `#itPrecoHint`).
-  **CRM — Funil de oportunidades:** Kanban isolado (classes `fnl-*`, board
-  `#kbFunil`) dentro da tela CRM, estágios Lead·Contato·Proposta·Negociação·
-  Ganho; "Perdido" tira do funil. Store `triade_crm_oport_<emp>`; perfil
-  Comercial vê só as próprias oportunidades. Drag-and-drop próprio (não usa o
-  Kanban de pedidos). Modal `modalOportunidade` (cliente/prospect, título,
-  valor estimado, vendedor, estágio, previsão). Na coluna **Ganho**, botão
-  **Gerar orçamento** abre o Novo pedido com o cliente preenchido e, ao salvar
-  o orçamento, vincula o número à oportunidade (`window._crmOportPendente`,
-  heurística pelo maior PE do cliente — sem alterar o fluxo de pedido). **Dashboard — ranking de clientes:** dois cards Top 5 (lista
-  numerada 1-5) — por **valor comprado** (`#lstTopCliVal`) e por **nº de
-  pedidos** (`#lstTopCliQtd`), via `window._refreshTopClientes` sobre
-  `_pedidoData`; permissão `dash:top-clientes`. **Financeiro — Parcelar
-  título:** botão **Parcelar** na barra de ações do Contas a receber e a pagar
-  (`.btn-parcelar`) + modal `modalParcelar` (nº de parcelas, 1º vencimento,
-  periodicidade — padrão mensal, juros % a.m. opcional) com pré-visualização;
-  ao confirmar, o **título original é substituído** por N parcelas ("Parcela
-  i/N", vencimentos espaçados, juros simples por parcela quando > 0),
-  reaproveitando o padrão de criação de linhas do Multiplicar. **Financeiro —
-  botão "Colunas":** implementado (antes não fazia nada) — `modalColunas` agora
-  é populado com as colunas da tabela (Contas a receber/a pagar), permite
-  esconder/mostrar via `<style>` `nth-child` e persiste por empresa
-  (`triade_cols_<emp>_<tabela>`, `window._applyColPrefs`). **Export Excel
-  formatado:** todos os "Exportar Excel" passam por `window._exportarRelatorioXLS`
-  (helper único) que gera um `.xls` HTML com **linhas de grade desligadas**
-  (`x:DoNotDisplayGridlines`), cabeçalho preenchido, título + data + empresa,
-  linhas zebradas e números à direita — substitui o CSV antigo nos relatórios
-  (Contas a receber/pagar, fluxo, contas correntes, relatório de pedidos,
-  relatórios financeiros, comissões e conciliação). O cabeçalho do relatório
-  traz o **nome fantasia da empresa** (na cor da paleta) à esquerda e a **marca
-  TRIADE** (com o "Í" em **vermelho** `#dc2626`) à direita, e o esquema de cores é
-  derivado da **paleta white-label da empresa** (`--accent` via `getComputedStyle`):
-  preenchimento do cabeçalho, borda, zebra e cor do título são calculados a
-  partir dela (`_palette`/`_mix`/`_lum`, com texto do cabeçalho claro/escuro por
-  luminância). **Imagem da logo NÃO é embutida** — data URI em `.xls` HTML gera
-  "imagem vinculada não pode ser exibida" no Excel; usamos texto. Logo real
-  (imagem) só com `.xlsx` nativo quando sair do mockup.
-  **Financeiro — Fechar competência de comissões:** no Controle de comissões,
-  novo bloco com seletor de mês (`cmComp`) + vencimento (`cmVencTit`) e botão
-  **Gerar título de comissões** (`cmGerarTitulo`): soma as comissões cujos
-  títulos foram **baixados** dentro do mês civil (`_comissoesDoMes` pela data da
-  baixa) e cria **um único título** "Comissões MM/AAAA" (categoria Comissões,
-  fornecedor "Comissões (vendedores)") no Contas a pagar como **Previsto**
-  (`data-previsao='1'`). Vencimento padrão = **5º dia útil do mês seguinte**
-  (`_quintoDiaUtil`, editável); detalhamento por vendedor no `title`/`data-
-  comissao-comp` da linha. Sem bloqueio de duplicidade (decisão do Gui).
-  **Financeiro — títulos com origem em outro módulo:** títulos gerados por
-  outros módulos (pedido de venda do Comercial → `data-origem-pedido`/`data-pedido`;
-  comissões → `data-comissao-comp`; marcador genérico `data-origem` p/ módulos
-  futuros) **só permitem editar o vencimento** no Financeiro — ao abrir
-  o `modalLanc` os demais campos ficam desabilitados (`_lockLancFields` +
-  `_tituloOrigem`, com aviso no topo `#lncOrigemHint`). Antes o botão Editar era
-  bloqueado de vez para `data-origem-pedido`; agora abre só p/ ajustar o
-  vencimento. As receitas criadas a partir do pedido (`_addKanbanCard`) passam a
-  marcar `data-origem-pedido`/`data-pedido`. **Rodada de UX/cadastros:** cliente
-  do pedido em **ordem alfabética** (`_sortClientesDatalist`); **endereço do
-  pedido unificado** num único select (endereços do cliente + opção "➕ Informar
-  um novo endereço" que abre o form; `npEntDif` virou flag oculta sincronizada
-  via `_aplicarEndSelecao`); botões **Fechar/Abrir** do toast do mesmo tamanho;
-  **CEP do pedido** com busca ViaCEP (`cep-lookup`+`data-target-*`). **Tabela de
-  preço por cliente:** preço **Fixo** ou por **Período** (vigência de/até),
-  respeitada na data via `_precoCliente(cli,prod,dataISO)`. **Contas a receber:**
-  descrição do título de venda agora é só "Pedido PE-xxxx". **Lançamentos**
-  (receber/pagar/fluxo) com **linhas mais compactas** (CSS). **Fluxo de caixa:**
-  botão **Colunas** (MAP do helper de colunas ganhou `fluxo`) + **resize de
-  largura** das colunas (`_boot` inclui `tblFluxoLista`). **Cadastros — ações
-  padronizadas:** `_normalizeCadActions` garante editar · **inativar/ativar** ·
-  excluir em todas as linhas de Clientes/Fornecedores/Produtos (corrige linhas
-  sem botões); clientes alternam o badge Ativo/Inativo, fornecedores/produtos
-  (sem coluna status) recebem selo "Inativo" + linha esmaecida; **produtos
-  ganham excluir + inativar**. **Removido** o menu/permite/registro de
-  **Cadastros > Comissões** (fica só em Financeiro › Controle de comissões).
-  **Pedido — condição de pagamento:** novo select `npCondPgto` (condições
-  ativas do cadastro) — ao gerar o título no Contas a receber, `_addKanbanCard`
-  cria **N parcelas** com vencimentos espaçados pelo prazo da condição. **Card
-  do pedido mais clean:** número (PE) em destaque e **data discreta** ao lado;
-  barra de filtro dos pedidos alinhada (helper à direita). **Excel — correções:**
-  `_exportarRelatorioXLS` agora usa o **nome real da empresa** (de
-  `triade_empresa_<emp>`.fantasia, não da lista fixa EMPRESAS); exporta os
-  valores como **moeda/número** (`mso-number-format` por célula nas colunas de
-  valor, somáveis) e adiciona **linha de Total** nas colunas de valor
-  (`_parseMoney`, detecção de coluna por cabeçalho/conteúdo R$). **Resize de
-  colunas** habilitado em **todas as listagens** (`table.tbl[id]` no `_boot` +
-  CSS genérico). **Pedido entregue:** ao arrastar para "Entregue" no Kanban,
-  abre `modalEntrega` para informar a **data de entrega** (`data-entregue-em`).
-  **Seleção por busca:** `lncFornecedor` (Contas a receber/pagar), `pcCliente`
-  (tabela de preços) e `crmCliente` viraram **input + datalist** (digita parte
-  do nome → filtra). **Comissões:** polimento visual (CSS `#s-comissoes`) e
-  **reorganização em abas** (`data-cmtab` na section + `data-cmpanel` nos cards):
-  **Relatório** (filtros+KPIs+detalhes), **Regras de comissão** e **Fechar
-  competência**; troca via `.cm-tab` (CSS esconde os painéis das outras abas).
-  **Financeiro — barra de ações à esquerda:** `.fin-tb-acoes` mudou de
-  `flex-end` para `flex-start`. **Relatórios dinâmicos:** os relatórios que eram
-  estáticos (dados fixos no HTML) viraram **dinâmicos** — Vendas por vendedor,
-  Curva ABC de clientes, Funil & conversão (do CRM), ABC de produtos, Estoque
-  parado, Validade de lotes, Aging de recebíveis e Fluxo projetado — via
-  `window._refreshRelatorios(go)` no clique de navegação (lê `_pedidoData`,
-  `tblEstoque`/lotes, `tblReceber`/`tblPagar`, `triade_crm_oport_<emp>`; atualiza
-  tabelas + charts `window._dashCharts[id]`). **Avisos do Dashboard** agora com
-  **contadores reais** (`_refreshAvisos`: orçamentos, aguardando pagamento,
-  estoque baixo, boletos vencidos) — números fictícios zerados no HTML.
-  **Relatórios novos:** **Resultado do período (DRE simplificada)** — tela
-  `s-rel-dre` (hub Financeiro, permissão `rel:financeiro`): receitas recebidas −
-  despesas pagas por categoria, base data da baixa, com filtro de data, KPIs e
-  export Excel (`tblRelDre`). **Produtos mais vendidos** — tela
-  `s-rel-produtos-vendidos` (hub Comercial, `rel:comercial`): ranking por
-  quantidade e valor a partir de `_pedidoData.itens`, filtro de data, total e
-  export Excel (`tblRelProdVend`). Ambos gerados ao abrir/clicar em Gerar.
-  Análise geral do sistema em `Info/ANALISE-SISTEMA.md`.
-  **Sem código de sistema ainda** (segue fase de planejamento; tudo acima é mockup).
-- **2026-05-28** — Rebranding completo e evolução do mockup. **Rebranding:**
-  removida toda referência a "iSKINS" (nome do cliente anterior) — produto
-  agora se chama **TRIADE / ERP TRIADE**, arquivo `iskins-mockup.html` →
-  `erp-mockup.html`, empresa-exemplo no mockup virou "Belle Distribuidora",
-  chave de localStorage `iskins_empresa` → `triade_empresa`, identidade
-  default da brand-mark/fallback = "TRIADE", taglines neutras ("E R P"). A
-  iSKINS passa a ser tratada como cliente potencial do TRIADE, não como
-  identidade do produto. **Mockup — paleta white-label expandida:** 4 grupos
-  de chips (Primária, Secundária, Menu fundo, Menu fonte) com 44 cores cada
-  (13 matizes × 3 tons + 5 neutros incluindo branco e preto). Suporte a
-  **tema claro automático** no menu lateral (classe `.sidebar.is-light`,
-  variáveis `--side-fg`/`--accent-fg` recalculadas por luminância) — se a
-  empresa pintar o menu de branco o sistema escurece textos sozinho. A cor
-  da fonte do menu é **independente** do fundo (paleta própria), com
-  fallback automático quando contraste fica ruim. **Mockup — módulo
-  Financeiro (Contas a pagar e Contas a receber):** ações por linha viraram
-  ícones com tooltip (Editar/Baixar/Excluir/Cancelar baixa) usando classe
-  `.iact` e CSS tooltip via `data-tip`. Adicionado **botão Excluir** com
-  modal de confirmação (`modalExcluir`, suporta excluir individual e em
-  lote). **Filtros avançados** num modal centralizado (`modalFiltrosReceber`
-  / `modalFiltrosPagar`) com 14 campos organizados em grid 2-colunas:
-  Categoria · Conta bancária · Fornecedor/Cliente (input + datalist) ·
-  Fantasia (input + datalist sobre `data-fantasia`) · Documento (select com
-  NF-e/NFS-e/Boleto/Recibo/Duplicata/Fatura/Cupom Fiscal) · Título ·
-  Descrição (full) · Valor R$ (de/até na mesma linha) · Emissão (de/até) ·
-  Vencimento (de/até) · Baixa (de/até). Botão Filtros tem **badge contador**
-  de filtros ativos. **Pesquisa funcional** no input "Buscar" (substring
-  match em todas as colunas). **Ações em massa:** botões Excluir
-  selecionados / Baixar selecionados habilitados quando há checkboxes
-  marcados (reusa modais de confirmação/baixa em modo batch). Botão "Novo
-  título"/"Novo lançamento" movido pra toolbar junto com os demais.
-  **Dashboards KPI clicáveis em ambas as telas** — 4 cards (A receber/pagar
-  no mês · Vence em 7 dias · Vencidos · Boletos abertos); clicar filtra a
-  tabela mostrando os títulos que compõem o valor, sincronizado com chips de
-  status (mexer manualmente em chip desativa o KPI). Linhas estáticas
-  enriquecidas com `data-razao` e `data-fantasia` pra suportar busca por
-  razão social separada do nome fantasia. CSS novo: `.btn-danger`, `.btn-ok`,
-  `.btn:disabled`, `.flt-btn`, `.flt-badge`, `.kpi-card`, `.iact` com tooltip.
-- **2026-05-27** — Levantamento e planejamento. Definido: ERP B2B estético,
-  multi-tenant schema-por-tenant, backend DB-agnóstico, hexagonal + repository,
-  ORM TypeORM, Docker local, fiscal na fase 2. Adicionado: módulo de Acesso
-  (empresa, usuário, perfil, funcionalidade), datetime UTC, i18n,
-  branding white-label e permissões auto-descobertas. Documentos: este
-  CLAUDE.md + `Info/ARQUITETURA.md` + `Info/PLANO-DESENVOLVIMENTO.md` +
-  `Info/mockups/erp-mockup.html` (mockup navegável). **Sem código de
-  sistema ainda.** **Decisões fechadas:** schema-por-tenant; *Empresa* =
-  tenant / *Cliente* = comprador; branding white-label por empresa. Próximo
-  passo: scaffold do monorepo (Fase 0).
+  **"DD/MM/AAAA

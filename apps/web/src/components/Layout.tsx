@@ -29,6 +29,7 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'menu.entrada', icone: '📥', to: '/estoque/entrada', cap: 'estoque.entrada.criar' },
       { rotulo: 'menu.recebimento', icone: '📦', to: '/estoque/recebimento', cap: 'estoque.entrada.criar' },
       { rotulo: 'menu.baixa', icone: '📉', to: '/estoque/baixa', cap: 'estoque.baixa.criar' },
+      { rotulo: 'menu.inventario', icone: '🔎', to: '/estoque/inventario', cap: 'estoque.inventario.ver' },
     ] }],
   },
   {

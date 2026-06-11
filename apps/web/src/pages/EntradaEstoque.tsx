@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
@@ -12,19 +12,32 @@ export function EntradaEstoque() {
   const [produtoId, setProdutoId] = useState('');
   const [lote, setLote] = useState('');
   const [validade, setValidade] = useState('');
-  const [quantidade, setQuantidade] = useState('');
   const [custo, setCusto] = useState('');
+  const [codigos, setCodigos] = useState<string[]>([]);
+  const [scan, setScan] = useState('');
   const [erro, setErro] = useState<string | null>(null);
   const [ok, setOk] = useState(false);
   const [salv, setSalv] = useState(false);
+  const scanRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { api.get<PrecoProduto[]>('/precos', token!).then((l) => setProdutos(l.filter((p) => p.ativo))).catch(() => {}); /* eslint-disable-next-line */ }, []);
+
+  function bipar(valor: string) {
+    const cod = valor.trim().toUpperCase();
+    if (!cod) return;
+    setErro(null);
+    if (codigos.includes(cod)) { setErro('etiqueta.duplicada_leitura'); setScan(''); return; }
+    setCodigos((cs) => [...cs, cod]);
+    setScan('');
+    scanRef.current?.focus();
+  }
+  const remover = (cod: string) => setCodigos((cs) => cs.filter((c) => c !== cod));
 
   async function salvar() {
     setErro(null); setOk(false); setSalv(true);
     try {
-      await api.post('/estoque/entrada', { produtoId, lote, validade, quantidade: Number(quantidade), custoUnitario: Number(custo) || 0 }, token!);
-      setOk(true); setLote(''); setValidade(''); setQuantidade(''); setCusto('');
+      await api.post('/estoque/entrada', { produtoId, lote, validade, custoUnitario: Number(custo) || 0, codigos }, token!);
+      setOk(true); setLote(''); setValidade(''); setCusto(''); setCodigos([]); setScan('');
     } catch (e) { setErro((e as ErroApi).chaveI18n); }
     finally { setSalv(false); }
   }
@@ -45,11 +58,26 @@ export function EntradaEstoque() {
           <label className="campo">{t('estoque.lote')}<input value={lote} onChange={(e) => setLote(e.target.value)} placeholder={t('entrada.lote_ph')} /></label>
           <label className="campo">{t('estoque.validade')}<input type="date" value={validade} onChange={(e) => setValidade(e.target.value)} /></label>
         </div>
-        <div className="cores-grid">
-          <label className="campo">{t('entrada.quantidade')}<input type="number" min="0" step="1" value={quantidade} onChange={(e) => setQuantidade(e.target.value)} /></label>
-          <label className="campo">{t('entrada.custo')}<input type="number" min="0" step="0.01" value={custo} onChange={(e) => setCusto(e.target.value)} /></label>
-        </div>
-        <div className="modal-acoes"><button className="btn-primary" disabled={salv || !produtoId} onClick={salvar}>{t('entrada.confirmar')}</button></div>
+        <label className="campo">{t('entrada.custo')}<input type="number" min="0" step="0.01" value={custo} onChange={(e) => setCusto(e.target.value)} /></label>
+
+        <label className="campo">
+          {t('etq.bipe')} <span className="muted">· {codigos.length} {t('etq.bipados')}</span>
+          <input ref={scanRef} value={scan} autoComplete="off" placeholder={t('etq.bipe_ph')}
+            onChange={(e) => setScan(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); bipar(scan); } }} />
+        </label>
+        {codigos.length > 0 && (
+          <div className="chips">
+            {codigos.map((c) => (
+              <span key={c} className="chip" style={{ fontFamily: 'monospace' }}>
+                {c}<button type="button" className="chip-x" onClick={() => remover(c)} title={t('common.remover')}>×</button>
+              </span>
+            ))}
+          </div>
+        )}
+        <p className="muted" style={{ fontSize: 12 }}>{t('etq.bipe_ajuda')}</p>
+
+        <div className="modal-acoes"><button className="btn-primary" disabled={salv || !produtoId || codigos.length === 0} onClick={salvar}>{t('entrada.confirmar')}</button></div>
       </div>
     </div>
   );

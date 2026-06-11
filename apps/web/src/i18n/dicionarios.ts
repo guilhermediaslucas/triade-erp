@@ -435,7 +435,7 @@ Object.assign(pt, {
   'cap.modulo.estoque': 'Estoque', 'cap.estoque.saldo.ver': 'Ver posição de estoque', 'cap.estoque.entrada.criar': 'Registrar entrada de estoque',
   'estoque.titulo': 'Posição de estoque', 'estoque.saldo': 'Saldo', 'estoque.lote': 'Lote', 'estoque.validade': 'Validade',
   'estoque.baixo': 'Estoque baixo', 'estoque.ok': 'Em dia',
-  'entrada.titulo': 'Entrada de estoque', 'entrada.sub': 'Recebimento direto com lote e validade. O recebimento por nota/código de barras vem com o Financeiro.',
+  'entrada.titulo': 'Entrada de estoque', 'entrada.sub': 'Informe lote e validade e bipe as etiquetas já afixadas nos produtos. A quantidade é o número de códigos lidos.',
   'entrada.lote_ph': 'Ex.: L-2026-001', 'entrada.quantidade': 'Quantidade', 'entrada.custo': 'Custo unitário (R$)',
   'entrada.confirmar': 'Confirmar entrada', 'entrada.ok': 'Entrada registrada no estoque.',
   'estoque.qtd_invalida': 'Quantidade inválida.', 'estoque.custo_invalido': 'Custo inválido.',
@@ -445,7 +445,7 @@ Object.assign(en, {
   'cap.modulo.estoque': 'Inventory', 'cap.estoque.saldo.ver': 'View stock position', 'cap.estoque.entrada.criar': 'Register stock entry',
   'estoque.titulo': 'Stock position', 'estoque.saldo': 'Balance', 'estoque.lote': 'Batch', 'estoque.validade': 'Expiry',
   'estoque.baixo': 'Low stock', 'estoque.ok': 'OK',
-  'entrada.titulo': 'Stock entry', 'entrada.sub': 'Direct receipt with batch and expiry. Invoice/barcode receiving comes with Finance.',
+  'entrada.titulo': 'Stock entry', 'entrada.sub': 'Set batch and expiry and scan the labels already on the products. Quantity equals the number of codes read.',
   'entrada.lote_ph': 'e.g., L-2026-001', 'entrada.quantidade': 'Quantity', 'entrada.custo': 'Unit cost (R$)',
   'entrada.confirmar': 'Confirm entry', 'entrada.ok': 'Stock entry registered.',
   'estoque.qtd_invalida': 'Invalid quantity.', 'estoque.custo_invalido': 'Invalid cost.',
@@ -455,7 +455,7 @@ Object.assign(es, {
   'cap.modulo.estoque': 'Inventario', 'cap.estoque.saldo.ver': 'Ver posición de stock', 'cap.estoque.entrada.criar': 'Registrar entrada de stock',
   'estoque.titulo': 'Posición de stock', 'estoque.saldo': 'Saldo', 'estoque.lote': 'Lote', 'estoque.validade': 'Caducidad',
   'estoque.baixo': 'Stock bajo', 'estoque.ok': 'Al día',
-  'entrada.titulo': 'Entrada de stock', 'entrada.sub': 'Recepción directa con lote y caducidad. La recepción por factura/código de barras llega con Finanzas.',
+  'entrada.titulo': 'Entrada de stock', 'entrada.sub': 'Indica lote y caducidad y escanea las etiquetas ya pegadas en los productos. La cantidad es el número de códigos leídos.',
   'entrada.lote_ph': 'Ej.: L-2026-001', 'entrada.quantidade': 'Cantidad', 'entrada.custo': 'Costo unitario (R$)',
   'entrada.confirmar': 'Confirmar entrada', 'entrada.ok': 'Entrada registrada en el stock.',
   'estoque.qtd_invalida': 'Cantidad inválida.', 'estoque.custo_invalido': 'Costo inválido.',
@@ -738,4 +738,117 @@ Object.assign(es, {
   'menu.contas_correntes': 'Cuentas bancarias', 'cap.cadastros.conta.listar': 'Ver cuentas bancarias', 'cap.cadastros.conta.gerenciar': 'Gestionar cuentas bancarias',
   'cc.titulo': 'Cuentas bancarias', 'cc.nova': 'Nueva cuenta', 'cc.banco': 'Banco', 'cc.saldo_inicial': 'Saldo inicial',
   'cc.vazio': 'Sin cuentas.', 'cc.conta': 'Cuenta bancaria', 'cc.nenhuma': '(ninguna)',
+});
+
+// --- Refinamento: codigo de barras / etiquetas por item (bipagem) ---
+// O sistema NAO gera etiquetas: elas ja vem afixadas nos produtos. Aqui o usuario
+// BIPA os codigos na entrada e na separacao; o codigo traz produto/lote/validade.
+Object.assign(pt, {
+  'etq.titulo': 'Etiquetas do lote', 'etq.ver': 'Etiquetas',
+  'etq.codigo': 'Código', 'etq.situacao': 'Situação',
+  'etq.vazio': 'Nenhuma etiqueta bipada neste lote.',
+  'etq.subtitulo': 'Códigos de barras bipados na entrada deste lote (rastreabilidade item a item).',
+  'etq.st.estoque': 'Em estoque', 'etq.st.saida': 'Saída', 'etq.st.perda': 'Perda',
+  'etq.bipe': 'Bipe as etiquetas dos itens', 'etq.bipe_ph': 'Bipe ou digite o código e tecle Enter…',
+  'etq.bipados': 'bipados',
+  'etq.bipe_ajuda': 'As etiquetas já vêm nos produtos. A quantidade da entrada é o número de códigos bipados.',
+  'common.remover': 'Remover',
+  'etiqueta.codigo_invalido': 'Código de etiqueta inválido.', 'etiqueta.nao_encontrada': 'Etiqueta não encontrada.',
+  'etiqueta.bipe_obrigatorio': 'Bipe ao menos uma etiqueta para dar entrada.',
+  'etiqueta.duplicada': 'Etiqueta já existe no estoque (item já cadastrado).',
+  'etiqueta.duplicada_leitura': 'Esta etiqueta já foi bipada nesta entrada.',
+});
+Object.assign(en, {
+  'etq.titulo': 'Batch labels', 'etq.ver': 'Labels',
+  'etq.codigo': 'Code', 'etq.situacao': 'Status',
+  'etq.vazio': 'No labels scanned for this batch.',
+  'etq.subtitulo': 'Barcodes scanned at entry for this batch (item-level traceability).',
+  'etq.st.estoque': 'In stock', 'etq.st.saida': 'Out', 'etq.st.perda': 'Loss',
+  'etq.bipe': 'Scan the item labels', 'etq.bipe_ph': 'Scan or type the code and press Enter…',
+  'etq.bipados': 'scanned',
+  'etq.bipe_ajuda': 'Labels already come on the products. The entry quantity is the number of scanned codes.',
+  'common.remover': 'Remove',
+  'etiqueta.codigo_invalido': 'Invalid label code.', 'etiqueta.nao_encontrada': 'Label not found.',
+  'etiqueta.bipe_obrigatorio': 'Scan at least one label to register the entry.',
+  'etiqueta.duplicada': 'Label already exists in stock (item already registered).',
+  'etiqueta.duplicada_leitura': 'This label was already scanned in this entry.',
+});
+Object.assign(es, {
+  'etq.titulo': 'Etiquetas del lote', 'etq.ver': 'Etiquetas',
+  'etq.codigo': 'Código', 'etq.situacao': 'Situación',
+  'etq.vazio': 'Ninguna etiqueta escaneada en este lote.',
+  'etq.subtitulo': 'Códigos de barras escaneados en la entrada de este lote (trazabilidad ítem a ítem).',
+  'etq.st.estoque': 'En stock', 'etq.st.saida': 'Salida', 'etq.st.perda': 'Pérdida',
+  'etq.bipe': 'Escanea las etiquetas de los ítems', 'etq.bipe_ph': 'Escanea o escribe el código y pulsa Enter…',
+  'etq.bipados': 'escaneados',
+  'etq.bipe_ajuda': 'Las etiquetas ya vienen en los productos. La cantidad de la entrada es el número de códigos escaneados.',
+  'common.remover': 'Quitar',
+  'etiqueta.codigo_invalido': 'Código de etiqueta inválido.', 'etiqueta.nao_encontrada': 'Etiqueta no encontrada.',
+  'etiqueta.bipe_obrigatorio': 'Escanea al menos una etiqueta para registrar la entrada.',
+  'etiqueta.duplicada': 'La etiqueta ya existe en el stock (ítem ya registrado).',
+  'etiqueta.duplicada_leitura': 'Esta etiqueta ya fue escaneada en esta entrada.',
+});
+
+// --- Refinamento: bipagem na SEPARAÇÃO (baixa por código de barras) ---
+Object.assign(pt, {
+  'sep.acao': 'Separar por leitura', 'sep.titulo': 'Separação por leitura',
+  'sep.sub': 'Bipe a etiqueta de cada item a separar. O código casa com o pedido pelo produto e dá baixa do lote/validade certos. Todos os itens precisam ser bipados.',
+  'sep.confirmar': 'Confirmar separação',
+  'separacao.incompleta': 'Bipe exatamente a quantidade de cada item do pedido.',
+  'etiqueta.fora_pedido': 'Esta etiqueta é de um produto que não está no pedido.',
+  'etiqueta.fora_estoque': 'Esta etiqueta não está mais no estoque (já saiu ou foi baixada).',
+});
+Object.assign(en, {
+  'sep.acao': 'Pick by scanning', 'sep.titulo': 'Pick by scanning',
+  'sep.sub': 'Scan each item label to pick. The code matches the order by product and deducts the right batch/expiry. All items must be scanned.',
+  'sep.confirmar': 'Confirm picking',
+  'separacao.incompleta': 'Scan exactly the quantity of each order item.',
+  'etiqueta.fora_pedido': 'This label belongs to a product not in the order.',
+  'etiqueta.fora_estoque': 'This label is no longer in stock (already shipped or written off).',
+});
+Object.assign(es, {
+  'sep.acao': 'Preparar por lectura', 'sep.titulo': 'Preparación por lectura',
+  'sep.sub': 'Escanea la etiqueta de cada ítem a preparar. El código casa con el pedido por producto y descuenta el lote/caducidad correctos. Hay que escanear todos los ítems.',
+  'sep.confirmar': 'Confirmar preparación',
+  'separacao.incompleta': 'Escanea exactamente la cantidad de cada ítem del pedido.',
+  'etiqueta.fora_pedido': 'Esta etiqueta es de un producto que no está en el pedido.',
+  'etiqueta.fora_estoque': 'Esta etiqueta ya no está en el stock (ya salió o fue dada de baja).',
+});
+
+// --- Refinamento: Inventário por leitor ---
+Object.assign(pt, {
+  'menu.inventario': 'Inventário',
+  'cap.estoque.inventario.ver': 'Ver inventários', 'cap.estoque.inventario.gerenciar': 'Fazer inventário',
+  'inv.titulo': 'Inventário por leitor', 'inv.sub': 'Bipe as etiquetas presentes no estoque. O sistema compara com o esperado e aponta os faltantes.',
+  'inv.responsavel': 'Responsável', 'inv.bipe': 'Bipe as etiquetas contadas',
+  'inv.finalizar': 'Finalizar contagem', 'inv.finalizar_baixar': 'Finalizar e baixar faltantes',
+  'inv.resultado': 'Resultado da contagem', 'inv.esperadas': 'Esperadas', 'inv.encontradas': 'Encontradas',
+  'inv.faltantes': 'Faltantes', 'inv.desconhecidas': 'Desconhecidas',
+  'inv.baixou_ok': 'Faltantes baixados como perda (ajuste de inventário).',
+  'inv.historico': 'Histórico de inventários', 'inv.data': 'Data', 'inv.baixa': 'Baixa',
+  'inv.baixados': 'baixados como perda', 'inv.vazio': 'Nenhum inventário registrado.',
+});
+Object.assign(en, {
+  'menu.inventario': 'Inventory count',
+  'cap.estoque.inventario.ver': 'View counts', 'cap.estoque.inventario.gerenciar': 'Run inventory count',
+  'inv.titulo': 'Inventory count by scanner', 'inv.sub': 'Scan the labels present in stock. The system compares with expected and flags the missing ones.',
+  'inv.responsavel': 'Responsible', 'inv.bipe': 'Scan the counted labels',
+  'inv.finalizar': 'Finish count', 'inv.finalizar_baixar': 'Finish and write off missing',
+  'inv.resultado': 'Count result', 'inv.esperadas': 'Expected', 'inv.encontradas': 'Found',
+  'inv.faltantes': 'Missing', 'inv.desconhecidas': 'Unknown',
+  'inv.baixou_ok': 'Missing items written off as loss (inventory adjustment).',
+  'inv.historico': 'Count history', 'inv.data': 'Date', 'inv.baixa': 'Write-off',
+  'inv.baixados': 'written off as loss', 'inv.vazio': 'No inventory recorded.',
+});
+Object.assign(es, {
+  'menu.inventario': 'Inventario',
+  'cap.estoque.inventario.ver': 'Ver inventarios', 'cap.estoque.inventario.gerenciar': 'Hacer inventario',
+  'inv.titulo': 'Inventario por lector', 'inv.sub': 'Escanea las etiquetas presentes en el stock. El sistema compara con lo esperado e indica los faltantes.',
+  'inv.responsavel': 'Responsable', 'inv.bipe': 'Escanea las etiquetas contadas',
+  'inv.finalizar': 'Finalizar conteo', 'inv.finalizar_baixar': 'Finalizar y dar de baja faltantes',
+  'inv.resultado': 'Resultado del conteo', 'inv.esperadas': 'Esperadas', 'inv.encontradas': 'Encontradas',
+  'inv.faltantes': 'Faltantes', 'inv.desconhecidas': 'Desconocidas',
+  'inv.baixou_ok': 'Faltantes dados de baja como pérdida (ajuste de inventario).',
+  'inv.historico': 'Historial de inventarios', 'inv.data': 'Fecha', 'inv.baixa': 'Baja',
+  'inv.baixados': 'dados de baja', 'inv.vazio': 'Ningún inventario registrado.',
 });

@@ -29,6 +29,8 @@ export const CAPABILITIES: Capability[] = [
   { id: 'estoque.saldo.ver',     moduloChave: 'cap.modulo.estoque', labelChave: 'cap.estoque.saldo.ver' },
   { id: 'estoque.entrada.criar', moduloChave: 'cap.modulo.estoque', labelChave: 'cap.estoque.entrada.criar' },
   { id: 'estoque.baixa.criar',   moduloChave: 'cap.modulo.estoque', labelChave: 'cap.estoque.baixa.criar' },
+  { id: 'estoque.inventario.ver',       moduloChave: 'cap.modulo.estoque', labelChave: 'cap.estoque.inventario.ver' },
+  { id: 'estoque.inventario.gerenciar', moduloChave: 'cap.modulo.estoque', labelChave: 'cap.estoque.inventario.gerenciar' },
   { id: 'financeiro.receber.listar',    moduloChave: 'cap.modulo.financeiro', labelChave: 'cap.financeiro.receber.listar' },
   { id: 'financeiro.receber.gerenciar', moduloChave: 'cap.modulo.financeiro', labelChave: 'cap.financeiro.receber.gerenciar' },
   { id: 'financeiro.pagar.listar',      moduloChave: 'cap.modulo.financeiro', labelChave: 'cap.financeiro.pagar.listar' },

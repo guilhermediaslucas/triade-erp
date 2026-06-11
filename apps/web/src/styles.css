@@ -201,3 +201,9 @@ a { text-decoration: none; color: inherit; }
 .rel-filtro { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 16px; flex-wrap: wrap; }
 .rel-filtro .campo { margin-bottom: 0; }
 .rel-filtro input { padding: 9px 10px; border: 1px solid var(--borda); border-radius: 8px; }
+
+/* Chips de etiquetas bipadas (entrada de estoque) */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 2px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; background: var(--surface-2, #f1f5f9); border: 1px solid var(--border, #e2e8f0); border-radius: 14px; padding: 3px 6px 3px 10px; font-size: 12px; }
+.chip-x { border: none; background: transparent; cursor: pointer; font-size: 15px; line-height: 1; color: var(--muted, #64748b); padding: 0 2px; }
+.chip-x:hover { color: #dc2626; }

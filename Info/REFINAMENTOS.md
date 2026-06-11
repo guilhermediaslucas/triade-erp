@@ -13,8 +13,9 @@
 - [x] Comissões por vendedor (apuração + fechar competência → título a pagar)
 
 ## Estoque / Logística
-- [ ] Código de barras / etiquetas por item (bipagem na entrada e na separação)
-- [ ] Inventário (contagem + ajuste; por leitor no mockup)
+- [x] Código de barras na **entrada** (bipagem dos códigos já afixados nos produtos; quantidade = nº de códigos lidos; recusa código já no estoque; consulta por código → produto/lote/validade)
+- [x] Código de barras na **separação** (bipar o item → traz produto/lote/validade → baixa do lote certo, casando com o pedido)
+- [x] Inventário por leitor (bipa a contagem, compara com o esperado, baixa faltantes como perda + histórico)
 - [ ] Transferência entre locais/depósitos
 - [ ] Marcas de produtos (cadastro) usado no recebimento
 - [ ] Formas de entrega + frete (motoboy por CEP×km, correios/transportadora manual)

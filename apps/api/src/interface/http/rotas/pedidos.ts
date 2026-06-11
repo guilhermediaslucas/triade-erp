@@ -22,5 +22,8 @@ export function rotasPedidos(deps: Dependencias): Router {
   r.patch('/pedidos/:id/status', aut, az('comercial.pedido.gerenciar'), async (req, res: Response) => {
     try { await deps.pedidosService.mudarStatus(sch(req), req.params.id!, (req.body ?? {}).status); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });
+  r.post('/pedidos/:id/separar', aut, az('comercial.pedido.gerenciar'), async (req, res: Response) => {
+    try { await deps.pedidosService.separarBipando(sch(req), req.params.id!, (req.body ?? {}).codigos); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
   return r;
 }

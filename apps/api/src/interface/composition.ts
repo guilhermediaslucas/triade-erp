@@ -27,7 +27,10 @@ import { CondicoesService } from '../application/comercial/CondicoesService.js';
 import { SqlPedidoRepository } from '../infra/repositories/SqlPedidoRepository.js';
 import { PedidosService } from '../application/comercial/PedidosService.js';
 import { SqlEstoqueRepository } from '../infra/repositories/SqlEstoqueRepository.js';
+import { SqlEtiquetaRepository } from '../infra/repositories/SqlEtiquetaRepository.js';
 import { EstoqueService } from '../application/estoque/EstoqueService.js';
+import { SqlInventarioRepository } from '../infra/repositories/SqlInventarioRepository.js';
+import { InventarioService } from '../application/estoque/InventarioService.js';
 import { SqlTituloRepository } from '../infra/repositories/SqlTituloRepository.js';
 import { FinanceiroService } from '../application/financeiro/FinanceiroService.js';
 import { SqlRecebimentoRepository } from '../infra/repositories/SqlRecebimentoRepository.js';
@@ -58,6 +61,8 @@ export function montarDependencias() {
   const condicaoRepo = new SqlCondicaoRepository(AppDataSource);
   const pedidoRepo = new SqlPedidoRepository(AppDataSource);
   const estoqueRepo = new SqlEstoqueRepository(AppDataSource);
+  const etiquetaRepo = new SqlEtiquetaRepository(AppDataSource);
+  const inventarioRepo = new SqlInventarioRepository(AppDataSource);
   const tituloRepo = new SqlTituloRepository(AppDataSource);
   const recebimentoRepo = new SqlRecebimentoRepository(AppDataSource);
 
@@ -76,7 +81,7 @@ export function montarDependencias() {
     fornecedoresService: new FornecedoresService(fornecedoresRepo),
     vendedoresService: new VendedoresService(vendedoresRepo),
     precosService: new PrecosService(precoBaseRepo, precoClienteRepo),
-    pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, precoClienteRepo, clientesRepo, estoqueRepo, tituloRepo, condicaoRepo),
+    pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, precoClienteRepo, clientesRepo, estoqueRepo, etiquetaRepo, tituloRepo, condicaoRepo),
     condicoesService: new CondicoesService(condicaoRepo),
     financeiroService: new FinanceiroService(tituloRepo),
     comprasService: new ComprasService(produtosRepo, tituloRepo, recebimentoRepo, estoqueRepo),
@@ -84,7 +89,8 @@ export function montarDependencias() {
     contasService: new ContasService(new SqlContaCorrenteRepository(AppDataSource)),
     dashboardService: new DashboardService(new SqlDashboardRepository(AppDataSource)),
     relatoriosService: new RelatoriosService(new SqlRelatorioRepository(AppDataSource)),
-    estoqueService: new EstoqueService(estoqueRepo),
+    estoqueService: new EstoqueService(estoqueRepo, etiquetaRepo),
+    inventarioService: new InventarioService(inventarioRepo, etiquetaRepo, estoqueRepo),
   };
 }
 

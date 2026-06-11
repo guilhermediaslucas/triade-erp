@@ -4,6 +4,7 @@ import type { PrecoClienteRepository } from '../../domain/comercial/PrecoCliente
 import type { ProdutoRepository } from '../../domain/cadastro/Produto.js';
 import type { ClienteRepository, EnderecoCliente } from '../../domain/pessoa/Cliente.js';
 import type { EstoqueRepository } from '../../domain/estoque/Estoque.js';
+import type { EtiquetaRepository } from '../../domain/estoque/Etiqueta.js';
 import type { TituloRepository } from '../../domain/financeiro/Titulo.js';
 import type { CondicaoRepository } from '../../domain/comercial/Condicao.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
@@ -32,6 +33,7 @@ export class PedidosService {
     private readonly precosCliente: PrecoClienteRepository,
     private readonly clientes: ClienteRepository,
     private readonly estoque: EstoqueRepository,
+    private readonly etiquetas: EtiquetaRepository,
     private readonly titulos: TituloRepository,
     private readonly condicoes: CondicaoRepository,
   ) {}
@@ -120,5 +122,45 @@ export class PedidosService {
     }
 
     await this.pedidos.mudarStatus(schema, id, novo);
+  }
+
+  // Separacao por BIPAGEM: le a etiqueta de cada item; o codigo traz produto/lote/validade.
+  // Casa com o pedido pelo produto, da baixa do lote especifico da etiqueta e consome a etiqueta.
+  // Exige que TODOS os itens sejam bipados na quantidade certa. Move o pedido para 'separacao'.
+  async separarBipando(schema: string, id: string, codigosRaw: any): Promise<void> {
+    const pedido = await this.pedidos.buscarPorId(schema, id);
+    if (!pedido) throw new ErroAplicacao('pedido.nao_encontrado', 404);
+    if (!(TRANSICOES[pedido.status] ?? []).includes('separacao')) throw new ErroAplicacao('pedido.transicao_invalida', 400);
+
+    const codigos: string[] = Array.isArray(codigosRaw)
+      ? codigosRaw.map((c: any) => String(c).trim().toUpperCase()).filter(Boolean)
+      : [];
+    if (codigos.length === 0) throw new ErroAplicacao('etiqueta.bipe_obrigatorio', 400);
+    if (new Set(codigos).size !== codigos.length) throw new ErroAplicacao('etiqueta.duplicada_leitura', 400);
+
+    // Resolve cada etiqueta e valida contra o pedido + estoque.
+    const resolvidas: Array<{ codigo: string; loteId: string; produtoId: string }> = [];
+    const porProduto = new Map<string, number>();
+    for (const codigo of codigos) {
+      const et = await this.etiquetas.buscarPorCodigo(schema, codigo);
+      if (!et) throw new ErroAplicacao('etiqueta.nao_encontrada', 404);
+      if (et.status !== 'estoque') throw new ErroAplicacao('etiqueta.fora_estoque', 409);
+      const item = pedido.itens.find((i) => i.produtoId === et.produtoId);
+      if (!item) throw new ErroAplicacao('etiqueta.fora_pedido', 400);
+      porProduto.set(et.produtoId, (porProduto.get(et.produtoId) ?? 0) + 1);
+      resolvidas.push({ codigo, loteId: et.loteId, produtoId: et.produtoId });
+    }
+    // Cada item do pedido precisa estar bipado na quantidade exata.
+    for (const it of pedido.itens) {
+      if (!it.produtoId) continue;
+      if ((porProduto.get(it.produtoId) ?? 0) !== it.quantidade) throw new ErroAplicacao('separacao.incompleta', 400);
+    }
+
+    const ref = 'Pedido PE-' + String(pedido.numero).padStart(6, '0');
+    for (const r of resolvidas) {
+      await this.estoque.baixarUnidadeLote(schema, r.loteId, r.produtoId, ref);
+      await this.etiquetas.consumir(schema, r.codigo, 'saida');
+    }
+    await this.pedidos.mudarStatus(schema, id, 'separacao');
   }
 }

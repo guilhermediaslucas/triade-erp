@@ -18,6 +18,21 @@ export function rotasEstoque(deps: Dependencias): Router {
   r.post('/estoque/baixa', aut, az('estoque.baixa.criar'), async (req, res: Response) => {
     try { await deps.estoqueService.baixaPerda(sch(req), req.body ?? {}); res.status(201).json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });
+  r.get('/estoque/lotes/:loteId/etiquetas', aut, az('estoque.saldo.ver'), async (req, res: Response) => {
+    try { res.json(await deps.estoqueService.etiquetasDoLote(sch(req), req.params.loteId!)); } catch (e) { tratarErro(res, e); }
+  });
+  r.get('/estoque/etiquetas/:codigo', aut, az('estoque.saldo.ver'), async (req, res: Response) => {
+    try { res.json(await deps.estoqueService.consultarEtiqueta(sch(req), req.params.codigo!)); } catch (e) { tratarErro(res, e); }
+  });
+  r.get('/inventario', aut, az('estoque.inventario.ver'), async (req, res: Response) => {
+    try { res.json(await deps.inventarioService.listar(sch(req))); } catch (e) { tratarErro(res, e); }
+  });
+  r.get('/inventario/:id/faltantes', aut, az('estoque.inventario.ver'), async (req, res: Response) => {
+    try { res.json(await deps.inventarioService.faltantesDe(sch(req), req.params.id!)); } catch (e) { tratarErro(res, e); }
+  });
+  r.post('/inventario', aut, az('estoque.inventario.gerenciar'), async (req, res: Response) => {
+    try { res.status(201).json(await deps.inventarioService.finalizar(sch(req), req.body ?? {})); } catch (e) { tratarErro(res, e); }
+  });
   r.get('/estoque/recebimentos', aut, az('estoque.entrada.criar'), async (req, res: Response) => {
     try { res.json(await deps.comprasService.listarPendentes(sch(req))); } catch (e) { tratarErro(res, e); }
   });
