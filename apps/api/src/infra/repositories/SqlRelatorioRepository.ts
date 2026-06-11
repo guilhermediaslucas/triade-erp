@@ -1,5 +1,5 @@
 import type { DataSource } from 'typeorm';
-import type { LinhaProduto, RelatorioRepository, RelatorioVendas } from '../../domain/relatorio/Relatorio.js';
+import type { LinhaProduto, LinhaValidadeLote, RelatorioRepository, RelatorioVendas } from '../../domain/relatorio/Relatorio.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 const ATIVO = "status NOT IN ('orcamento','cancelado')";
@@ -39,5 +39,24 @@ export class SqlRelatorioRepository implements RelatorioRepository {
           AND ($2::date IS NULL OR p.criado_em::date <= $2)
         GROUP BY pi.produto_nome ORDER BY q DESC`, [de, ate]);
     return linhas.map((r: any) => ({ nome: r.nome, quantidade: Number(r.q), total: Number(r.total) }));
+  }
+
+  // Lotes com saldo, ordenados pela validade (mais cedo primeiro; sem validade ao final).
+  async validadeLotes(schema: string): Promise<LinhaValidadeLote[]> {
+    const s = validarSchema(schema);
+    const linhas = await this.ds.query(
+      `SELECT el.produto_id, pr.nome produto, el.lote, el.validade, el.quantidade saldo, el.custo_unitario
+         FROM "${s}".estoque_lote el
+         JOIN "${s}".produto pr ON pr.id = el.produto_id
+        WHERE el.quantidade > 0
+        ORDER BY el.validade NULLS LAST, pr.nome`);
+    return linhas.map((r: any) => {
+      const saldo = Number(r.saldo), custo = Number(r.custo_unitario);
+      return {
+        produtoId: r.produto_id, produto: r.produto, lote: r.lote ?? null,
+        validade: r.validade ? new Date(r.validade).toISOString().slice(0, 10) : null,
+        saldo, custoUnitario: custo, valor: Math.round(saldo * custo * 100) / 100,
+      };
+    });
   }
 }

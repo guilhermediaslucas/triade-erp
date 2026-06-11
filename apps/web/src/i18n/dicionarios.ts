@@ -980,3 +980,32 @@ Object.assign(es, {
   'romaneio.titulo': 'Remito', 'romaneio.imprimir': 'Imprimir', 'romaneio.pedido': 'Pedido',
   'romaneio.recebido_por': 'Recibido por (nombre / firma)',
 });
+
+// --- Refinamento: Relatório de validade de lotes ---
+Object.assign(pt, {
+  'menu.rel_validade': 'Validade de lotes',
+  'rel.validade': 'Validade de lotes', 'rel.validade_sub': 'Lotes em estoque ordenados pela validade. Acompanhe vencidos e a vencer.',
+  'rel.saldo': 'Saldo', 'rel.valor': 'Valor',
+  'validade.situacao': 'Situação', 'validade.dias': 'Dias p/ vencer', 'validade.ha_dias': 'vencido há {n} d',
+  'validade.so_vencer': 'Só vencidos / a vencer (90 d)',
+  'validade.kpi_vencidos': 'Lotes vencidos', 'validade.kpi_criticos': 'Vencem em 30 dias',
+  'validade.vencido': 'Vencido', 'validade.critico': 'Vence ≤ 30 d', 'validade.atencao': 'Vence ≤ 90 d', 'validade.ok': 'OK', 'validade.sem': 'Sem validade',
+});
+Object.assign(en, {
+  'menu.rel_validade': 'Lot expiry',
+  'rel.validade': 'Lot expiry', 'rel.validade_sub': 'Lots in stock sorted by expiry date. Track expired and expiring soon.',
+  'rel.saldo': 'Balance', 'rel.valor': 'Value',
+  'validade.situacao': 'Status', 'validade.dias': 'Days to expiry', 'validade.ha_dias': 'expired {n} d ago',
+  'validade.so_vencer': 'Only expired / expiring (90 d)',
+  'validade.kpi_vencidos': 'Expired lots', 'validade.kpi_criticos': 'Expiring in 30 days',
+  'validade.vencido': 'Expired', 'validade.critico': 'Expires ≤ 30 d', 'validade.atencao': 'Expires ≤ 90 d', 'validade.ok': 'OK', 'validade.sem': 'No expiry',
+});
+Object.assign(es, {
+  'menu.rel_validade': 'Vencimiento de lotes',
+  'rel.validade': 'Vencimiento de lotes', 'rel.validade_sub': 'Lotes en stock ordenados por vencimiento. Controla vencidos y por vencer.',
+  'rel.saldo': 'Saldo', 'rel.valor': 'Valor',
+  'validade.situacao': 'Situación', 'validade.dias': 'Días p/ vencer', 'validade.ha_dias': 'vencido hace {n} d',
+  'validade.so_vencer': 'Solo vencidos / por vencer (90 d)',
+  'validade.kpi_vencidos': 'Lotes vencidos', 'validade.kpi_criticos': 'Vencen en 30 días',
+  'validade.vencido': 'Vencido', 'validade.critico': 'Vence ≤ 30 d', 'validade.atencao': 'Vence ≤ 90 d', 'validade.ok': 'OK', 'validade.sem': 'Sin vencimiento',
+});

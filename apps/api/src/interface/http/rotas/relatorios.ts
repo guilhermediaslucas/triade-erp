@@ -15,5 +15,8 @@ export function rotasRelatorios(deps: Dependencias): Router {
   r.get('/relatorios/produtos-vendidos', aut, az('relatorios.ver'), async (req, res: Response) => {
     try { res.json(await deps.relatoriosService.produtosVendidos(sch(req), req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
   });
+  r.get('/relatorios/validade-lotes', aut, az('relatorios.ver'), async (req, res: Response) => {
+    try { res.json(await deps.relatoriosService.validadeLotes(sch(req))); } catch (e) { tratarErro(res, e); }
+  });
   return r;
 }

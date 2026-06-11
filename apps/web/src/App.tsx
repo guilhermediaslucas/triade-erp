@@ -33,6 +33,7 @@ import { NotaEntrada } from './pages/NotaEntrada.js';
 import { Recebimento } from './pages/Recebimento.js';
 import { RelVendas } from './pages/RelVendas.js';
 import { RelProdutos } from './pages/RelProdutos.js';
+import { RelValidade } from './pages/RelValidade.js';
 import { Condicoes } from './pages/Condicoes.js';
 import { Comissoes } from './pages/Comissoes.js';
 import { ContasCorrentes } from './pages/ContasCorrentes.js';
@@ -74,6 +75,7 @@ export function App() {
               <Route path="/financeiro/pagar" element={<Protegida cap="financeiro.pagar.listar"><Contas tipo="pagar" /></Protegida>} />
               <Route path="/relatorios/vendas" element={<Protegida cap="relatorios.ver"><RelVendas /></Protegida>} />
               <Route path="/relatorios/produtos" element={<Protegida cap="relatorios.ver"><RelProdutos /></Protegida>} />
+              <Route path="/relatorios/validade" element={<Protegida cap="relatorios.ver"><RelValidade /></Protegida>} />
               <Route path="/cadastros/contas-correntes" element={<Protegida cap="cadastros.conta.listar"><ContasCorrentes /></Protegida>} />
               <Route path="/cadastros/condicoes" element={<Protegida cap="cadastros.condicao.listar"><Condicoes /></Protegida>} />
               <Route path="/cadastros/clientes" element={<Protegida cap="cadastros.cliente.listar"><Clientes /></Protegida>} />
