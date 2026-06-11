@@ -311,3 +311,24 @@ a { text-decoration: none; color: inherit; }
 
 .cols-chooser { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
 .col-check { display:flex; align-items:center; gap:8px; font-size:14px; }
+
+/* ===== Modo escuro ===== */
+body.theme-dark {
+  --bg: #0e1016; --card: #171a21; --ink: #e6e8ee; --muted: #9aa1b1; --borda: #2a2f3a;
+  --shadow: 0 1px 3px rgba(0,0,0,.45), 0 1px 2px rgba(0,0,0,.4);
+  background: var(--bg); color: var(--ink);
+}
+body.theme-dark .btn-ghost { background: var(--card); color: var(--ink); }
+body.theme-dark .modal { background: var(--card); color: var(--ink); }
+body.theme-dark .kpi-card { background: var(--card); }
+body.theme-dark .kpi-card.kpi-vermelho { background: #261a1d; border-color: #5b2733; }
+body.theme-dark .campo input, body.theme-dark .campo select, body.theme-dark input, body.theme-dark select, body.theme-dark textarea { background: #1b1f27; color: var(--ink); border-color: var(--borda); }
+body.theme-dark .tabela th { background: #1b1f27; color: var(--muted); }
+body.theme-dark .tabela tr:hover td { background: #1e2330; }
+body.theme-dark input::placeholder, body.theme-dark textarea::placeholder { color: #71778a; }
+body.theme-dark .login-pane { background: #0b0d14; }
+body.theme-dark .login-card { background: var(--card); color: var(--ink); }
+body.theme-dark .login-logo, body.theme-dark .login-card h2 { color: var(--ink); }
+body.theme-dark .nota-info { background: #14233a; color: #93c5fd; border-color: #1e3a5f; }
+.btn-tema { background: none; border: 0; cursor: pointer; font-size: 18px; padding: 4px 6px; line-height: 1; border-radius: 8px; }
+.btn-tema:hover { background: #00000010; }

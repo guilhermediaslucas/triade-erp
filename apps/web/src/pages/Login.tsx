@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import type { ErroApi } from '../api/client.js';
 import { SeletorIdioma } from '../components/SeletorIdioma.js';
+import { useTema } from '../theme/ThemeContext.js';
 
 const FEATS: [string, string, string][] = [
   ['▦', 'login.f1_t', 'login.f1_d'],
@@ -16,6 +17,7 @@ const FEATS: [string, string, string][] = [
 
 export function Login() {
   const { login } = useAuth();
+  const { escuro, alternar } = useTema();
   const { t } = useI18n();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -35,7 +37,7 @@ export function Login() {
 
   return (
     <div className="login">
-      <div className="login-top"><SeletorIdioma /></div>
+      <div className="login-top"><button className="btn-tema" onClick={alternar} title={t('tema.alternar')}>{escuro ? '☀️' : '🌙'}</button><SeletorIdioma /></div>
       <div className="login-wrap">
         <div className="login-hero">
           <div className="lh-brand">TR<span>Í</span>ADE <small>ERP</small></div>

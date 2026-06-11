@@ -1412,3 +1412,8 @@ Object.assign(es, {
   'login.rec_titulo': 'Recuperar contraseña', 'login.rec_sub': 'Ingresa tu correo registrado. Enviaremos un enlace para crear una nueva contraseña.',
   'login.rec_enviar': 'Enviar enlace', 'login.rec_ok': 'Si el correo existe, enviamos un enlace de restablecimiento válido por 30 minutos. Revisa tu bandeja y el spam.',
 });
+
+// --- Modo escuro ---
+Object.assign(pt, { 'tema.alternar': 'Alternar tema claro/escuro' });
+Object.assign(en, { 'tema.alternar': 'Toggle light/dark theme' });
+Object.assign(es, { 'tema.alternar': 'Alternar tema claro/oscuro' });

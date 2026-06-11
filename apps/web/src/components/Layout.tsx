@@ -6,6 +6,7 @@ import { useBranding } from '../branding/BrandingContext.js';
 import { SeletorIdioma } from './SeletorIdioma.js';
 import { BuscaGlobal } from './BuscaGlobal.js';
 import { Sino } from './Sino.js';
+import { useTema } from '../theme/ThemeContext.js';
 
 interface Item { rotulo: string; icone: string; to: string; cap?: string; }
 interface Secao { sublabel?: string; itens: Item[]; }
@@ -120,6 +121,7 @@ const GRUPOS: Grupo[] = [
 
 export function Layout({ children }: { children: ReactNode }) {
   const { usuario, empresaFantasia, logout, temCapability } = useAuth();
+  const { escuro, alternar } = useTema();
   const { branding } = useBranding();
   const { t } = useI18n();
   const fantasia = branding?.fantasia ?? empresaFantasia;
@@ -168,6 +170,7 @@ export function Layout({ children }: { children: ReactNode }) {
             <button className="btn-busca" onClick={() => window.dispatchEvent(new Event('abrir-busca'))} title="Ctrl+K">
               🔎 <span>{t('busca.abrir')}</span> <kbd>Ctrl K</kbd>
             </button>
+            <button className="btn-tema" onClick={alternar} title={t('tema.alternar')}>{escuro ? '☀️' : '🌙'}</button>
             <Sino />
             <SeletorIdioma />
             <span className="topbar-user">{usuario?.nome}</span>
