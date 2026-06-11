@@ -176,6 +176,19 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Refinamento — Cadastro de Favorecidos (reembolso).** Migration tenant **021**
+  (`favorecido`: nome, tipo_pessoa PF/PJ, documento, chave_pix, banco, agencia, conta, observacao,
+  ativo). Caps `cadastros.favorecido.listar/gerenciar`. **Backend (hexagonal):** domínio
+  `Favorecido`/`FavorecidoRepository` (`TIPOS_FAVORECIDO`), `SqlFavorecidoRepository`,
+  `FavorecidosService` (CRUD + ativo; valida nome ≥2 e tipo PF/PJ; campos vazios → null); rota
+  `/favorecidos` (GET/POST/PUT/PATCH ativo) registrada no server + composition. **Frontend:** cadastro
+  **Cadastros › Pessoas › Favorecidos** (lista + modal com tipo PF/PJ, CPF/CNPJ, chave PIX, banco/
+  agência/conta, observação; ativar/inativar); CSS `.form-linha`; menu + rota + i18n pt/en/es (+ labels
+  das caps). **Validação:** **type-check api+web verde (exit 0)** + **e2e Postgres real (10 PASS)** via
+  pglite: cria PF e PJ, ordena por nome, PF com pix/documento, PJ com dados bancários, campos vazios →
+  null, nome curto→400, edita tipo/pix→null, inativar, editar inexistente→404. **Pendente:** Gui rodar
+  `db-setup.bat` (migration 021) + `git push` + testar. **Vínculo do favorecido no título a pagar (pessoa)
+  fica como evolução.** **Próximo (opcional):** conciliação bancária, Excel formatado, ou CRM (em revisão).
 - **2026-06-11** — **Refinamento — Histórico de inventários (Relatórios).** **Sem migration nem
   backend novo**; reusa `estoque.inventario.ver` e os endpoints `GET /inventario` + `GET
   /inventario/:id/faltantes` (já testados no e2e de Inventário). **Frontend:** tela **Relatórios ›

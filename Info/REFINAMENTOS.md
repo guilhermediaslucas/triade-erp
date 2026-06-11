@@ -34,7 +34,7 @@
 
 ## Cadastros (Pessoas)
 - [x] Motoboys (cadastro + configuração de frete km/mín)
-- [ ] Favorecidos (para reembolso)
+- [x] Favorecidos (para reembolso) — cadastro PF/PJ, documento, PIX e dados bancários (CRUD + ativo)
 
 ## Relatórios (além de Vendas e Produtos mais vendidos, já prontos)
 - [x] DRE simplificada (resultado do período — caixa realizado por origem; receitas/despesas/resultado, export CSV)

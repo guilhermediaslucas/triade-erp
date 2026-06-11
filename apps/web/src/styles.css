@@ -273,3 +273,6 @@ a { text-decoration: none; color: inherit; }
 .bulk-acoes { display: flex; align-items: center; gap: 8px; }
 .bulk-acoes .btn-link { color: var(--accent-fg, #fff); text-decoration: underline; }
 .linha-sel { background: var(--accent-soft, #f3effe); }
+
+.form-linha { display:flex; gap:10px; flex-wrap:wrap; }
+.form-linha .campo { flex:1; min-width:120px; }

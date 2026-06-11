@@ -81,6 +81,7 @@ const GRUPOS: Grupo[] = [
           { rotulo: 'menu.fornecedores', icone: '🏭', to: '/cadastros/fornecedores', cap: 'cadastros.fornecedor.listar' },
           { rotulo: 'menu.vendedores', icone: '💼', to: '/cadastros/vendedores', cap: 'cadastros.vendedor.listar' },
           { rotulo: 'menu.motoboys', icone: '🛵', to: '/cadastros/motoboys', cap: 'cadastros.motoboy.listar' },
+          { rotulo: 'menu.favorecidos', icone: '🧾', to: '/cadastros/favorecidos', cap: 'cadastros.favorecido.listar' },
         ],
       },
       {

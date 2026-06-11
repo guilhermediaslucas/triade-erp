@@ -1209,3 +1209,35 @@ Object.assign(es, {
   'relinv.kpi_total': 'Inventarios', 'relinv.kpi_acur': 'Exactitud media', 'relinv.kpi_falt': 'Ítems faltantes', 'relinv.kpi_baixados': 'Dados de baja',
   'relinv.ver_falt': 'Ver faltantes', 'relinv.ocultar': 'Ocultar',
 });
+
+// --- Refinamento: Cadastro de Favorecidos (reembolso) ---
+Object.assign(pt, {
+  'menu.favorecidos': 'Favorecidos',
+  'cap.cadastros.favorecido.listar': 'Listar favorecidos', 'cap.cadastros.favorecido.gerenciar': 'Criar e editar favorecidos',
+  'favorecido.tipo_invalido': 'Tipo de pessoa inválido.',
+  'favorecidos.titulo': 'Favorecidos', 'favorecidos.sub': 'Pessoas e empresas que recebem reembolsos e pagamentos avulsos.',
+  'favorecidos.novo': 'Novo favorecido', 'favorecidos.nome': 'Nome', 'favorecidos.tipo': 'Tipo',
+  'favorecidos.pf': 'Pessoa física', 'favorecidos.pj': 'Pessoa jurídica',
+  'favorecidos.documento': 'CPF / CNPJ', 'favorecidos.pix': 'Chave PIX',
+  'favorecidos.banco': 'Banco', 'favorecidos.agencia': 'Agência', 'favorecidos.conta': 'Conta', 'favorecidos.observacao': 'Observação',
+});
+Object.assign(en, {
+  'menu.favorecidos': 'Payees',
+  'cap.cadastros.favorecido.listar': 'List payees', 'cap.cadastros.favorecido.gerenciar': 'Create and edit payees',
+  'favorecido.tipo_invalido': 'Invalid person type.',
+  'favorecidos.titulo': 'Payees', 'favorecidos.sub': 'People and companies that receive reimbursements and one-off payments.',
+  'favorecidos.novo': 'New payee', 'favorecidos.nome': 'Name', 'favorecidos.tipo': 'Type',
+  'favorecidos.pf': 'Individual', 'favorecidos.pj': 'Company',
+  'favorecidos.documento': 'Tax ID', 'favorecidos.pix': 'PIX key',
+  'favorecidos.banco': 'Bank', 'favorecidos.agencia': 'Branch', 'favorecidos.conta': 'Account', 'favorecidos.observacao': 'Notes',
+});
+Object.assign(es, {
+  'menu.favorecidos': 'Beneficiarios',
+  'cap.cadastros.favorecido.listar': 'Listar beneficiarios', 'cap.cadastros.favorecido.gerenciar': 'Crear y editar beneficiarios',
+  'favorecido.tipo_invalido': 'Tipo de persona inválido.',
+  'favorecidos.titulo': 'Beneficiarios', 'favorecidos.sub': 'Personas y empresas que reciben reembolsos y pagos puntuales.',
+  'favorecidos.novo': 'Nuevo beneficiario', 'favorecidos.nome': 'Nombre', 'favorecidos.tipo': 'Tipo',
+  'favorecidos.pf': 'Persona física', 'favorecidos.pj': 'Persona jurídica',
+  'favorecidos.documento': 'CPF / CNPJ', 'favorecidos.pix': 'Clave PIX',
+  'favorecidos.banco': 'Banco', 'favorecidos.agencia': 'Agencia', 'favorecidos.conta': 'Cuenta', 'favorecidos.observacao': 'Observación',
+});
