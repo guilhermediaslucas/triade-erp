@@ -56,6 +56,7 @@ export function EntradaEstoque() {
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       {ok && <div className="alerta-ok">{t('entrada.ok')}</div>}
       <div className="card" style={{ maxWidth: 560 }}>
+        <div className="card-head"><h3>{t('entrada.card')}</h3></div>
         <label className="campo">{t('precos.produto')}
           <select value={produtoId} onChange={(e) => setProdutoId(e.target.value)}>
             <option value="">—</option>{produtos.map((p) => <option key={p.produtoId} value={p.produtoId}>{p.produtoNome}</option>)}

@@ -1617,3 +1617,7 @@ Object.assign(es, {
 Object.assign(pt, { 'pedido.workflow': 'Workflow', 'pedido.titulo': 'Pedido' });
 Object.assign(en, { 'pedido.workflow': 'Workflow', 'pedido.titulo': 'Order' });
 Object.assign(es, { 'pedido.workflow': 'Flujo', 'pedido.titulo': 'Pedido' });
+
+Object.assign(pt, { 'entrada.card': 'Dados da entrada', 'nota.card': 'Dados da nota', 'perda.card': 'Dados da baixa' });
+Object.assign(en, { 'entrada.card': 'Entry details', 'nota.card': 'Note details', 'perda.card': 'Write-off details' });
+Object.assign(es, { 'entrada.card': 'Datos de la entrada', 'nota.card': 'Datos de la nota', 'perda.card': 'Datos de la baja' });

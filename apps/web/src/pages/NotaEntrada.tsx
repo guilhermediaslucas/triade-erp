@@ -44,6 +44,7 @@ export function NotaEntrada() {
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       {ok && <div className="alerta-ok">{t('nota.ok')}</div>}
       <div className="card" style={{ maxWidth: 560 }}>
+        <div className="card-head"><h3>{t('nota.card')}</h3></div>
         <label className="campo">{t('fin.fornecedor')}
           <input list="dlForn" value={fornecedorNome} onChange={(e) => setFornecedor(e.target.value)} placeholder={t('nota.forn_ph')} />
           <datalist id="dlForn">{forns.map((f) => <option key={f.id} value={f.nome} />)}</datalist>
