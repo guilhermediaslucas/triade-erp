@@ -54,7 +54,7 @@
 - [x] Sino de notificações (topbar: títulos vencidos, lotes vencendo, estoque baixo; respeita permissões)
 - [x] Ações em massa (Contas: selecionar títulos → baixar/excluir em lote)
 - [ ] Esconder/mostrar e redimensionar colunas das listas
-- [ ] Ajuste fino de espaçamentos/cores para casar com o mockup
+- [x] Ajuste fino de cores/tokens p/ casar com o mockup (paleta, raio 14px, sombra de card, fonte, sidebar 260px, cores de status)
 
 ---
 

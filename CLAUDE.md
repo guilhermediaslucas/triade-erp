@@ -176,6 +176,16 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Polimento visual — passada de fidelidade nos tokens (casar com o mockup).** Só
+  `apps/web/src/styles.css` (sem lógica). Alinhei os design tokens ao `Info/mockups/erp-mockup.html`:
+  `--bg #f4f5fa`, `--ink #1f2430`, `--muted #8a90a2`, `--borda #ececf2`, **`--radius 14px`**, **`--shadow`**
+  suave, `--accent` default `#7b61ff` (white-label ainda sobrepõe por empresa) + `--accent-soft`; fonte
+  "Segoe UI"/Inter; **sidebar 260px**; `.card`/`.kpi-card` com raio+sombra do mockup; cores de status
+  (verde #16a34a/laranja #ea9213/ciano #3b82f6/vermelho #e1483b com fundos suaves). Chaves CSS
+  balanceadas (227/227), type-check web verde, lock íntegro. **Nota:** accent no ar reflete a paleta da
+  empresa (iSKINS), não o roxo do mockup. **Pendente:** Gui `git push` + Ctrl+Shift+R. Restam itens
+  funcionais de polimento (filtros avançados nas Contas, esconder/redimensionar colunas, forms em
+  página inteira).
 - **2026-06-11** — **Refinamento — Exportar Excel formatado (.xls) nos relatórios.** **Sem dependência
   nova** (evita mexer no `package-lock`): novo `apps/web/src/lib/excel.ts` (`baixarExcel`, mesma
   assinatura do `baixarCsv`) gera **SpreadsheetML 2003** — cabeçalho em negrito (fundo índigo),
