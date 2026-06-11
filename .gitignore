@@ -42,3 +42,6 @@ desktop.ini
 tmp/
 temp/
 *.tmp
+
+# Excecao: a URL publica da API no build do site pode ir para o repo
+!apps/web/.env.production
