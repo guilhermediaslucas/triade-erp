@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
+import { baixarExcel } from '../lib/excel.js';
 
 interface Linha { origem: string; total: number; }
 interface Dre { por: 'origem' | 'categoria'; receitas: Linha[]; despesas: Linha[]; totalReceitas: number; totalDespesas: number; resultado: number; }
@@ -25,13 +26,13 @@ export function RelDRE() {
   // Quando agrupado por origem, traduz a chave; por categoria, mostra o nome como está.
   const rotulo = (chave: string) => (d?.por === 'categoria' ? chave : (t('origem.' + chave) === 'origem.' + chave ? chave : t('origem.' + chave)));
 
-  function exportar() {
+  function exportar(fmt: 'csv' | 'xlsx' = 'csv') {
     if (!d) return;
     const linhas: (string | number)[][] = [
       ...d.receitas.map((l) => [t('dre.receitas'), rotulo(l.origem), l.total]),
       ...d.despesas.map((l) => [t('dre.despesas'), rotulo(l.origem), -l.total]),
     ];
-    baixarCsv('dre_' + por + '_' + de + '_' + ate, [t('dre.grupo'), d.por === 'categoria' ? t('catfin.titulo_s') : t('dre.origem'), t('fin.valor')], linhas);
+    (fmt === 'xlsx' ? baixarExcel : baixarCsv)('dre_' + por + '_' + de + '_' + ate, [t('dre.grupo'), d.por === 'categoria' ? t('catfin.titulo_s') : t('dre.origem'), t('fin.valor')], linhas);
   }
 
   const colRot = d?.por === 'categoria' ? t('catfin.titulo_s') : t('dre.origem');
@@ -50,7 +51,7 @@ export function RelDRE() {
           </select>
         </label>
         <button className="btn-primary" onClick={gerar}>{t('rel.gerar')}</button>
-        {d && <button className="btn-ghost" onClick={exportar}>{t('rel.exportar')}</button>}
+        {d && <><button className="btn-ghost" onClick={() => exportar('csv')}>{t('rel.exportar_csv')}</button> <button className="btn-ghost" onClick={() => exportar('xlsx')}>{t('rel.exportar_xlsx')}</button></>}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       {d && (

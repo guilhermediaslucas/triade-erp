@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
+import { baixarExcel } from '../lib/excel.js';
 
 type Faixa = 'a_vencer' | 'd1_30' | 'd31_60' | 'd61_90' | 'd90_mais';
 interface Linha { id: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; diasAtraso: number; faixa: Faixa; }
@@ -39,9 +40,11 @@ export function AgingReceber() {
       <div className="rel-filtro">
         <button className="btn-primary" onClick={gerar}>{t('rel.gerar')}</button>
         {data && data.linhas.length > 0 && (
-          <button className="btn-ghost" onClick={() => baixarCsv('aging_receber_' + new Date().toISOString().slice(0, 10),
+          <><button className="btn-ghost" onClick={() => baixarCsv('aging_receber_' + new Date().toISOString().slice(0, 10),
             [t('fin.descricao'), t('fin.pessoa'), t('fin.vencimento'), t('aging.dias_atraso'), t('aging.faixa'), t('fin.valor')],
-            data.linhas.map((l) => [l.descricao, l.pessoaNome ?? '', l.vencimento, l.diasAtraso, t('aging.' + l.faixa), l.valor]))}>{t('rel.exportar')}</button>
+            data.linhas.map((l) => [l.descricao, l.pessoaNome ?? '', l.vencimento, l.diasAtraso, t('aging.' + l.faixa), l.valor]))}>{t('rel.exportar_csv')}</button> <button className="btn-ghost" onClick={() => baixarExcel('aging_receber_' + new Date().toISOString().slice(0, 10),
+            [t('fin.descricao'), t('fin.pessoa'), t('fin.vencimento'), t('aging.dias_atraso'), t('aging.faixa'), t('fin.valor')],
+            data.linhas.map((l) => [l.descricao, l.pessoaNome ?? '', l.vencimento, l.diasAtraso, t('aging.' + l.faixa), l.valor]))}>{t('rel.exportar_xlsx')}</button></>
         )}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}

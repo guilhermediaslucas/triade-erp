@@ -176,6 +176,16 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Refinamento — Exportar Excel formatado (.xls) nos relatórios.** **Sem dependência
+  nova** (evita mexer no `package-lock`): novo `apps/web/src/lib/excel.ts` (`baixarExcel`, mesma
+  assinatura do `baixarCsv`) gera **SpreadsheetML 2003** — cabeçalho em negrito (fundo índigo),
+  células numéricas com `NumberFormat`, abre direto no Excel. Botão **Exportar Excel** adicionado ao
+  lado do **Exportar CSV** em **11 telas** (Aging, Conciliação, DRE, Curva ABC, Vendas, Vendas por
+  categoria, Produtos, Validade, Estoque parado, Perdas, Inventários); CSV virou `rel.exportar_csv`,
+  Excel `rel.exportar_xlsx` (i18n pt/en/es). DRE/Vendas usavam função `exportar()` → parametrizada
+  `exportar(fmt)`. **Validação:** **type-check api+web verde** + **teste do gerador (6 PASS)** via tsx
+  (stubs de Blob/document): cabeçalho do Excel, número como `Number`, escape de `<&>`, fecha Workbook.
+  `package-lock.json` validado íntegro (JSON.parse OK). **Pendente:** Gui `git push` + Ctrl+Shift+R.
 - **2026-06-11** — **Refinamento — Conciliação bancária etapa 2 (importar extrato OFX/CSV).** **Sem
   backend/migration novos** — leitura e match no **navegador**, reusa `PATCH /financeiro/conciliacao/:id`.
   Novo `apps/web/src/lib/extrato.ts` (`lerExtrato`): parser de **OFX** (blocos `STMTTRN` → DTPOSTED/

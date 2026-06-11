@@ -30,7 +30,7 @@
 - [x] Parcelar / Multiplicar títulos (dividir o valor em N parcelas ou replicar o valor recorrente; substitui o original)
 - [x] Categorias financeiras (cadastro receita/despesa + vínculo no título) — Tipos de documento / Credores: futuro
 - [ ] KPIs clicáveis + filtros avançados nas contas (mockup tem modal de 14 filtros)
-- [ ] Exportar Excel formatado (hoje os relatórios exportam CSV)
+- [x] Exportar Excel formatado (.xls SpreadsheetML, sem dependência) ao lado do CSV em todos os relatórios
 
 ## Cadastros (Pessoas)
 - [x] Motoboys (cadastro + configuração de frete km/mín)

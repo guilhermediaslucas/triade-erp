@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
+import { baixarExcel } from '../lib/excel.js';
 
 interface Lote { produtoId: string; produto: string; lote: string | null; validade: string | null; saldo: number; custoUnitario: number; valor: number; }
 type Situacao = 'vencido' | 'critico' | 'atencao' | 'ok' | 'sem';
@@ -63,9 +64,11 @@ export function RelValidade() {
         </label>
         <button className="btn-primary" onClick={gerar}>{t('rel.gerar')}</button>
         {linhas.length > 0 && (
-          <button className="btn-ghost" onClick={() => baixarCsv('validade_lotes_' + hojeISO(),
+          <><button className="btn-ghost" onClick={() => baixarCsv('validade_lotes_' + hojeISO(),
             [t('precos.produto'), t('estoque.lote'), t('estoque.validade'), t('validade.dias'), t('rel.saldo'), t('rel.valor'), t('validade.situacao')],
-            linhas.map((l) => [l.produto, l.lote ?? '', l.validade ?? '', l.dias ?? '', l.saldo, l.valor, t('validade.' + l.sit)]))}>{t('rel.exportar')}</button>
+            linhas.map((l) => [l.produto, l.lote ?? '', l.validade ?? '', l.dias ?? '', l.saldo, l.valor, t('validade.' + l.sit)]))}>{t('rel.exportar_csv')}</button> <button className="btn-ghost" onClick={() => baixarExcel('validade_lotes_' + hojeISO(),
+            [t('precos.produto'), t('estoque.lote'), t('estoque.validade'), t('validade.dias'), t('rel.saldo'), t('rel.valor'), t('validade.situacao')],
+            linhas.map((l) => [l.produto, l.lote ?? '', l.validade ?? '', l.dias ?? '', l.saldo, l.valor, t('validade.' + l.sit)]))}>{t('rel.exportar_xlsx')}</button></>
         )}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}

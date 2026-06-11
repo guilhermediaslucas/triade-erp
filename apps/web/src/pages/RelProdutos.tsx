@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
+import { baixarExcel } from '../lib/excel.js';
 
 interface Linha { nome: string; quantidade: number; total: number; }
 const primeiroDia = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10); };
@@ -29,7 +30,7 @@ export function RelProdutos() {
         <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
         <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
         <button className="btn-primary" onClick={gerar}>{t('rel.gerar')}</button>
-        {linhas.length > 0 && <button className="btn-ghost" onClick={() => baixarCsv('produtos_' + de + '_' + ate, [t('precos.produto'), t('rel.qtd'), t('rel.total')], linhas.map((l) => [l.nome, l.quantidade, l.total]))}>{t('rel.exportar')}</button>}
+        {linhas.length > 0 && <><button className="btn-ghost" onClick={() => baixarCsv('produtos_' + de + '_' + ate, [t('precos.produto'), t('rel.qtd'), t('rel.total')], linhas.map((l) => [l.nome, l.quantidade, l.total]))}>{t('rel.exportar_csv')}</button> <button className="btn-ghost" onClick={() => baixarExcel('produtos_' + de + '_' + ate, [t('precos.produto'), t('rel.qtd'), t('rel.total')], linhas.map((l) => [l.nome, l.quantidade, l.total]))}>{t('rel.exportar_xlsx')}</button></>}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="card pad0"><table className="tabela">

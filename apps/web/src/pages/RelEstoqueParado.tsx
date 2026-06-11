@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
+import { baixarExcel } from '../lib/excel.js';
 
 interface Linha { produtoId: string; produto: string; saldo: number; valor: number; ultimaSaida: string | null; }
 
@@ -48,9 +49,11 @@ export function RelEstoqueParado() {
         </label>
         <button className="btn-primary" onClick={gerar}>{t('rel.gerar')}</button>
         {linhas.length > 0 && (
-          <button className="btn-ghost" onClick={() => baixarCsv('estoque_parado_' + new Date().toISOString().slice(0, 10),
+          <><button className="btn-ghost" onClick={() => baixarCsv('estoque_parado_' + new Date().toISOString().slice(0, 10),
             [t('precos.produto'), t('rel.saldo'), t('rel.valor'), t('parado.ultima_saida'), t('parado.dias_parado')],
-            linhas.map((l) => [l.produto, l.saldo, l.valor, l.ultimaSaida ? l.ultimaSaida.slice(0, 10) : t('parado.nunca'), l.dias ?? t('parado.nunca')]))}>{t('rel.exportar')}</button>
+            linhas.map((l) => [l.produto, l.saldo, l.valor, l.ultimaSaida ? l.ultimaSaida.slice(0, 10) : t('parado.nunca'), l.dias ?? t('parado.nunca')]))}>{t('rel.exportar_csv')}</button> <button className="btn-ghost" onClick={() => baixarExcel('estoque_parado_' + new Date().toISOString().slice(0, 10),
+            [t('precos.produto'), t('rel.saldo'), t('rel.valor'), t('parado.ultima_saida'), t('parado.dias_parado')],
+            linhas.map((l) => [l.produto, l.saldo, l.valor, l.ultimaSaida ? l.ultimaSaida.slice(0, 10) : t('parado.nunca'), l.dias ?? t('parado.nunca')]))}>{t('rel.exportar_xlsx')}</button></>
         )}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}

@@ -1336,3 +1336,8 @@ Object.assign(es, {
   'concil.imp_conciliar': 'Conciliar {n} coincidencias', 'concil.imp_toast': '{n} movimientos conciliados.',
   'concil.imp_vazio': 'No encontré movimientos en el archivo.', 'concil.imp_erro': 'No pude leer el archivo.',
 });
+
+// --- Refinamento: exportar Excel (.xls formatado) ---
+Object.assign(pt, { 'rel.exportar_csv': 'Exportar CSV', 'rel.exportar_xlsx': 'Exportar Excel' });
+Object.assign(en, { 'rel.exportar_csv': 'Export CSV', 'rel.exportar_xlsx': 'Export Excel' });
+Object.assign(es, { 'rel.exportar_csv': 'Exportar CSV', 'rel.exportar_xlsx': 'Exportar Excel' });
