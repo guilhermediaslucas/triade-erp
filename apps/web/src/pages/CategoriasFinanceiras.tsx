@@ -28,11 +28,11 @@ export function CategoriasFinanceiras() {
 
   return (
     <div>
+      <div className="crumb">{t('catfin.crumb')}</div>
       <div className="page-head">
-        <h1 className="page-titulo">{t('catfin.titulo')}</h1>
+        <div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('catfin.titulo')}</h1><div className="muted page-sub">{t('catfin.sub')}</div></div>
         {pode && <button className="btn-primary" onClick={() => setEdit({ id: '', nome: '', tipo: 'despesa', ativo: true })}>+ {t('catfin.nova')}</button>}
       </div>
-      <p className="muted" style={{ marginTop: -8 }}>{t('catfin.sub')}</p>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="card pad0">
         <table className="tabela">

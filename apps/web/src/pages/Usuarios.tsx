@@ -31,8 +31,9 @@ export function Usuarios() {
 
   return (
     <div>
+      <div className="crumb">{t('usuarios.crumb')}</div>
       <div className="page-head">
-        <h1 className="page-titulo">{t('usuarios.titulo')}</h1>
+        <div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('usuarios.titulo')}</h1><div className="muted page-sub">{t('usuarios.sub')}</div></div>
         {podeGerenciar && <button className="btn-primary" onClick={() => setForm({ aberto: true, editandoId: null })}>+ {t('usuarios.novo')}</button>}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}

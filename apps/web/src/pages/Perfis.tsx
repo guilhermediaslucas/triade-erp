@@ -32,8 +32,9 @@ export function Perfis() {
 
   return (
     <div>
+      <div className="crumb">{t('perfis.crumb')}</div>
       <div className="page-head">
-        <h1 className="page-titulo">{t('perfis.titulo')}</h1>
+        <div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('perfis.titulo')}</h1><div className="muted page-sub">{t('perfis.sub')}</div></div>
         {podeGerenciar && <button className="btn-primary" onClick={abrirNovo}>+ {t('perfis.novo')}</button>}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}

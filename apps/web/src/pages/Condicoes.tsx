@@ -20,7 +20,8 @@ export function Condicoes() {
 
   return (
     <div>
-      <div className="page-head"><h1 className="page-titulo">{t('cond.titulo')}</h1>
+      <div className="crumb">{t('cond.crumb')}</div>
+      <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('cond.titulo')}</h1><div className="muted page-sub">{t('cond.sub')}</div></div>
         {pode && <button className="btn-primary" onClick={() => setEdit(vazio())}>+ {t('cond.nova')}</button>}</div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="card pad0"><table className="tabela">

@@ -20,7 +20,8 @@ export function ContasCorrentes() {
 
   return (
     <div>
-      <div className="page-head"><h1 className="page-titulo">{t('cc.titulo')}</h1>
+      <div className="crumb">{t('cc.crumb')}</div>
+      <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('cc.titulo')}</h1><div className="muted page-sub">{t('cc.sub')}</div></div>
         {pode && <button className="btn-primary" onClick={() => setEdit(vazio())}>+ {t('cc.nova')}</button>}</div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="dash-cards">

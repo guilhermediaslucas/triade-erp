@@ -1494,3 +1494,29 @@ Object.assign(es, {
   'favorecidos.buscar': 'Buscar beneficiario', 'favorecidos.crumb': 'Registros / Beneficiarios',
   'motoboys.crumb': 'Registros / Mensajeros', 'motoboys.sub': 'Mensajeros usados en el envío', 'motoboys.buscar': 'Buscar mensajero',
 });
+
+// --- crumb+sub: Usuarios/Perfis/Condicoes/CatFin/Produtos/ContasCorrentes ---
+Object.assign(pt, {
+  'usuarios.crumb': 'Configurações / Usuários', 'usuarios.sub': 'Quem acessa o sistema e seus perfis',
+  'perfis.crumb': 'Configurações / Perfis', 'perfis.sub': 'Perfis de acesso e permissões por tela',
+  'cond.crumb': 'Cadastros / Condições de pagamento', 'cond.sub': 'Parcelas e prazos usados nos pedidos',
+  'catfin.crumb': 'Cadastros / Categorias financeiras',
+  'produtos.crumb': 'Cadastros / Produtos', 'produtos.sub': 'Itens vendidos — preço, lote e validade vêm depois',
+  'cc.crumb': 'Cadastros / Contas correntes', 'cc.sub': 'Bancos e saldos usados nas baixas',
+});
+Object.assign(en, {
+  'usuarios.crumb': 'Settings / Users', 'usuarios.sub': 'Who accesses the system and their roles',
+  'perfis.crumb': 'Settings / Roles', 'perfis.sub': 'Access roles and per-screen permissions',
+  'cond.crumb': 'Records / Payment terms', 'cond.sub': 'Installments and terms used in orders',
+  'catfin.crumb': 'Records / Financial categories',
+  'produtos.crumb': 'Records / Products', 'produtos.sub': 'Sold items — price, batch and expiry come later',
+  'cc.crumb': 'Records / Bank accounts', 'cc.sub': 'Banks and balances used when settling',
+});
+Object.assign(es, {
+  'usuarios.crumb': 'Configuración / Usuarios', 'usuarios.sub': 'Quién accede al sistema y sus perfiles',
+  'perfis.crumb': 'Configuración / Perfiles', 'perfis.sub': 'Perfiles de acceso y permisos por pantalla',
+  'cond.crumb': 'Registros / Condiciones de pago', 'cond.sub': 'Cuotas y plazos usados en los pedidos',
+  'catfin.crumb': 'Registros / Categorías financieras',
+  'produtos.crumb': 'Registros / Productos', 'produtos.sub': 'Ítems vendidos — precio, lote y vencimiento después',
+  'cc.crumb': 'Registros / Cuentas bancarias', 'cc.sub': 'Bancos y saldos usados en las bajas',
+});
