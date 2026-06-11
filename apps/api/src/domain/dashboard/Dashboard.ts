@@ -6,6 +6,9 @@ export interface ResumoDashboard {
   estoqueBaixo: number;
   saldoCaixa: number;
   topProdutos: { nome: string; quantidade: number }[];
+  faturamentoMensal: { mes: string; total: number }[];
+  vendasCategoria: { categoria: string; total: number }[];
+  saldosBancarios: { nome: string; saldo: number }[];
 }
 export interface DashboardRepository {
   resumo(schema: string): Promise<ResumoDashboard>;
