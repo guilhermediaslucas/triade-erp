@@ -1082,3 +1082,17 @@ Object.assign(es, {
 Object.assign(pt, { 'busca.abrir': 'Buscar', 'busca.placeholder': 'Buscar telas… (ex.: pedidos, estoque, DRE)', 'busca.vazio': 'Nada encontrado.', 'busca.dica': '↑ ↓ navegar · Enter abrir · Esc fechar' });
 Object.assign(en, { 'busca.abrir': 'Search', 'busca.placeholder': 'Search screens… (e.g. orders, stock, P&L)', 'busca.vazio': 'Nothing found.', 'busca.dica': '↑ ↓ navigate · Enter open · Esc close' });
 Object.assign(es, { 'busca.abrir': 'Buscar', 'busca.placeholder': 'Buscar pantallas… (ej.: pedidos, stock, resultados)', 'busca.vazio': 'Nada encontrado.', 'busca.dica': '↑ ↓ navegar · Enter abrir · Esc cerrar' });
+
+// --- Refinamento: Toasts de confirmação ---
+Object.assign(pt, {
+  'fin.toast_criado': 'Título lançado.', 'fin.toast_baixado': 'Título baixado.', 'fin.toast_cancelado': 'Baixa cancelada.',
+  'pedido.toast_status': 'Pedido movido para', 'sep.toast_ok': 'Separação concluída e estoque baixado.',
+});
+Object.assign(en, {
+  'fin.toast_criado': 'Title created.', 'fin.toast_baixado': 'Title settled.', 'fin.toast_cancelado': 'Settlement reverted.',
+  'pedido.toast_status': 'Order moved to', 'sep.toast_ok': 'Picking done and stock deducted.',
+});
+Object.assign(es, {
+  'fin.toast_criado': 'Título creado.', 'fin.toast_baixado': 'Título pagado.', 'fin.toast_cancelado': 'Pago cancelado.',
+  'pedido.toast_status': 'Pedido movido a', 'sep.toast_ok': 'Preparación hecha y stock descontado.',
+});

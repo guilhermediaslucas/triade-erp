@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { useToast } from '../components/Toast.js';
 import { moeda } from '../lib/pedido.js';
 
 type Tipo = 'receber' | 'pagar';
@@ -16,6 +17,7 @@ function situacao(t: Titulo): 'pago' | 'vencido' | 'aberto' {
 export function Contas({ tipo }: { tipo: Tipo }) {
   const { token, temCapability } = useAuth();
   const { t } = useI18n();
+  const toast = useToast();
   const capBase = tipo === 'receber' ? 'financeiro.receber' : 'financeiro.pagar';
   const pode = temCapability(capBase + '.gerenciar');
   const [itens, setItens] = useState<Titulo[]>([]);
@@ -34,7 +36,10 @@ export function Contas({ tipo }: { tipo: Tipo }) {
     return { total, qtd: abertos.length, totalVenc, qtdVenc: vencidos.length };
   }, [itens]);
 
-  async function cancelar(tt: Titulo) { try { await api.patch('/financeiro/' + tipo + '/' + tt.id + '/cancelar', {}, token!); carregar(); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
+  async function cancelar(tt: Titulo) {
+    try { await api.patch('/financeiro/' + tipo + '/' + tt.id + '/cancelar', {}, token!); carregar(); toast(t('fin.toast_cancelado')); }
+    catch (e) { setErro((e as ErroApi).chaveI18n); toast(t((e as ErroApi).chaveI18n), 'erro'); }
+  }
 
   return (
     <div>
@@ -63,8 +68,8 @@ export function Contas({ tipo }: { tipo: Tipo }) {
           ); })}
         </tbody>
       </table></div>
-      {novo && <ModalNovo tipo={tipo} onFechar={() => setNovo(false)} onSalvo={() => { setNovo(false); carregar(); }} />}
-      {baixar && <ModalBaixa tipo={tipo} titulo={baixar} onFechar={() => setBaixar(null)} onSalvo={() => { setBaixar(null); carregar(); }} />}
+      {novo && <ModalNovo tipo={tipo} onFechar={() => setNovo(false)} onSalvo={() => { setNovo(false); carregar(); toast(t('fin.toast_criado')); }} />}
+      {baixar && <ModalBaixa tipo={tipo} titulo={baixar} onFechar={() => setBaixar(null)} onSalvo={() => { setBaixar(null); carregar(); toast(t('fin.toast_baixado')); }} />}
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { useToast } from '../components/Toast.js';
 import { corStatus, moeda, numeroPedido, PROXIMOS, type StatusPedido } from '../lib/pedido.js';
 
 interface Item { produtoNome: string; quantidade: number; precoUnitario: number; subtotal: number; }
@@ -17,6 +18,7 @@ export function PedidoDetalhe() {
   const { id } = useParams();
   const { token, temCapability } = useAuth();
   const { t } = useI18n();
+  const toast = useToast();
   const nav = useNavigate();
   const [p, setP] = useState<Pedido | null>(null);
   const [erro, setErro] = useState<string | null>(null);
@@ -34,8 +36,8 @@ export function PedidoDetalhe() {
 
   async function mudar(status: StatusPedido) {
     setErro(null);
-    try { await api.patch('/pedidos/' + id + '/status', { status }, token!); carregar(); }
-    catch (e) { setErro((e as ErroApi).chaveI18n); }
+    try { await api.patch('/pedidos/' + id + '/status', { status }, token!); carregar(); toast(t('pedido.toast_status') + ' ' + t('status.' + status)); }
+    catch (e) { const k = (e as ErroApi).chaveI18n; setErro(k); toast(t(k), 'erro'); }
   }
 
   function abrirSeparacao() { setCodigos([]); setScan(''); setSepErro(null); setSepOpen(true); setTimeout(() => scanRef.current?.focus(), 50); }
@@ -49,7 +51,7 @@ export function PedidoDetalhe() {
   const totalItens = p ? p.itens.reduce((a, i) => a + i.quantidade, 0) : 0;
   async function confirmarSeparacao() {
     setSepErro(null);
-    try { await api.post('/pedidos/' + id + '/separar', { codigos }, token!); setSepOpen(false); carregar(); }
+    try { await api.post('/pedidos/' + id + '/separar', { codigos }, token!); setSepOpen(false); carregar(); toast(t('sep.toast_ok')); }
     catch (e) { setSepErro((e as ErroApi).chaveI18n); }
   }
 

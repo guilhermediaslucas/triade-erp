@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { AuthProvider } from './auth/AuthContext.js';
 import { BrandingProvider } from './branding/BrandingContext.js';
 import { I18nProvider } from './i18n/I18nContext.js';
+import { ToastProvider } from './components/Toast.js';
 import { Login } from './pages/Login.js';
 import { Dashboard } from './pages/Dashboard.js';
 import { Usuarios } from './pages/Usuarios.js';
@@ -53,50 +54,52 @@ export function App() {
     <I18nProvider>
       <AuthProvider>
         <BrandingProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/" element={<Protegida><Dashboard /></Protegida>} />
-              <Route path="/acesso/usuarios" element={<Protegida cap="acesso.usuario.listar"><Usuarios /></Protegida>} />
-              <Route path="/acesso/perfis" element={<Protegida cap="acesso.perfil.listar"><Perfis /></Protegida>} />
-              <Route path="/config/empresa" element={<Protegida cap="acesso.empresa.editar"><DadosEmpresa /></Protegida>} />
-              <Route path="/comercial/pedidos" element={<Protegida cap="comercial.pedido.listar"><Pedidos /></Protegida>} />
-              <Route path="/comercial/pedidos/novo" element={<Protegida cap="comercial.pedido.criar"><NovoPedido /></Protegida>} />
-              <Route path="/comercial/pedidos/:id/romaneio" element={<ProtectedRoute capability="comercial.pedido.listar"><Romaneio /></ProtectedRoute>} />
-              <Route path="/comercial/pedidos/:id" element={<Protegida cap="comercial.pedido.listar"><PedidoDetalhe /></Protegida>} />
-              <Route path="/comercial/precos" element={<Protegida cap="comercial.preco.listar"><TabelaPreco /></Protegida>} />
-              <Route path="/estoque/expedicao" element={<Protegida cap="comercial.pedido.gerenciar"><KanbanExpedicao /></Protegida>} />
-              <Route path="/estoque/baixa" element={<Protegida cap="estoque.baixa.criar"><BaixaPerda /></Protegida>} />
-              <Route path="/estoque/posicao" element={<Protegida cap="estoque.saldo.ver"><PosicaoEstoque /></Protegida>} />
-              <Route path="/estoque/entrada" element={<Protegida cap="estoque.entrada.criar"><EntradaEstoque /></Protegida>} />
-              <Route path="/estoque/inventario" element={<Protegida cap="estoque.inventario.ver"><Inventario /></Protegida>} />
-              <Route path="/logistica/fretes" element={<Protegida cap="logistica.frete.ver"><GestaoFretes /></Protegida>} />
-              <Route path="/financeiro/receber" element={<Protegida cap="financeiro.receber.listar"><Contas tipo="receber" /></Protegida>} />
-              <Route path="/financeiro/aging-receber" element={<Protegida cap="financeiro.receber.listar"><AgingReceber /></Protegida>} />
-              <Route path="/financeiro/dre" element={<Protegida cap="financeiro.fluxo.ver"><RelDRE /></Protegida>} />
-              <Route path="/financeiro/nota" element={<Protegida cap="financeiro.compra.criar"><NotaEntrada /></Protegida>} />
-              <Route path="/estoque/recebimento" element={<Protegida cap="estoque.entrada.criar"><Recebimento /></Protegida>} />
-              <Route path="/financeiro/comissoes" element={<Protegida cap="financeiro.comissao.ver"><Comissoes /></Protegida>} />
-              <Route path="/financeiro/fluxo" element={<Protegida cap="financeiro.fluxo.ver"><FluxoCaixa /></Protegida>} />
-              <Route path="/financeiro/pagar" element={<Protegida cap="financeiro.pagar.listar"><Contas tipo="pagar" /></Protegida>} />
-              <Route path="/relatorios/vendas" element={<Protegida cap="relatorios.ver"><RelVendas /></Protegida>} />
-              <Route path="/relatorios/produtos" element={<Protegida cap="relatorios.ver"><RelProdutos /></Protegida>} />
-              <Route path="/relatorios/vendas-categoria" element={<Protegida cap="relatorios.ver"><RelCategorias /></Protegida>} />
-              <Route path="/relatorios/validade" element={<Protegida cap="relatorios.ver"><RelValidade /></Protegida>} />
-              <Route path="/relatorios/estoque-parado" element={<Protegida cap="relatorios.ver"><RelEstoqueParado /></Protegida>} />
-              <Route path="/cadastros/contas-correntes" element={<Protegida cap="cadastros.conta.listar"><ContasCorrentes /></Protegida>} />
-              <Route path="/cadastros/condicoes" element={<Protegida cap="cadastros.condicao.listar"><Condicoes /></Protegida>} />
-              <Route path="/cadastros/clientes" element={<Protegida cap="cadastros.cliente.listar"><Clientes /></Protegida>} />
-              <Route path="/cadastros/fornecedores" element={<Protegida cap="cadastros.fornecedor.listar"><Fornecedores /></Protegida>} />
-              <Route path="/cadastros/vendedores" element={<Protegida cap="cadastros.vendedor.listar"><Vendedores /></Protegida>} />
-              <Route path="/cadastros/motoboys" element={<Protegida cap="cadastros.motoboy.listar"><Motoboys /></Protegida>} />
-              <Route path="/cadastros/categorias" element={<Protegida cap="cadastros.categoria.listar"><Categorias /></Protegida>} />
-              <Route path="/cadastros/marcas" element={<Protegida cap="cadastros.marca.listar"><Marcas /></Protegida>} />
-              <Route path="/cadastros/produtos" element={<Protegida cap="cadastros.produto.listar"><Produtos /></Protegida>} />
-              <Route path="/superadmin/empresas" element={<Protegida cap="superadmin.empresa.provisionar"><Empresas /></Protegida>} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </BrowserRouter>
+          <ToastProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/" element={<Protegida><Dashboard /></Protegida>} />
+                <Route path="/acesso/usuarios" element={<Protegida cap="acesso.usuario.listar"><Usuarios /></Protegida>} />
+                <Route path="/acesso/perfis" element={<Protegida cap="acesso.perfil.listar"><Perfis /></Protegida>} />
+                <Route path="/config/empresa" element={<Protegida cap="acesso.empresa.editar"><DadosEmpresa /></Protegida>} />
+                <Route path="/comercial/pedidos" element={<Protegida cap="comercial.pedido.listar"><Pedidos /></Protegida>} />
+                <Route path="/comercial/pedidos/novo" element={<Protegida cap="comercial.pedido.criar"><NovoPedido /></Protegida>} />
+                <Route path="/comercial/pedidos/:id/romaneio" element={<ProtectedRoute capability="comercial.pedido.listar"><Romaneio /></ProtectedRoute>} />
+                <Route path="/comercial/pedidos/:id" element={<Protegida cap="comercial.pedido.listar"><PedidoDetalhe /></Protegida>} />
+                <Route path="/comercial/precos" element={<Protegida cap="comercial.preco.listar"><TabelaPreco /></Protegida>} />
+                <Route path="/estoque/expedicao" element={<Protegida cap="comercial.pedido.gerenciar"><KanbanExpedicao /></Protegida>} />
+                <Route path="/estoque/baixa" element={<Protegida cap="estoque.baixa.criar"><BaixaPerda /></Protegida>} />
+                <Route path="/estoque/posicao" element={<Protegida cap="estoque.saldo.ver"><PosicaoEstoque /></Protegida>} />
+                <Route path="/estoque/entrada" element={<Protegida cap="estoque.entrada.criar"><EntradaEstoque /></Protegida>} />
+                <Route path="/estoque/inventario" element={<Protegida cap="estoque.inventario.ver"><Inventario /></Protegida>} />
+                <Route path="/logistica/fretes" element={<Protegida cap="logistica.frete.ver"><GestaoFretes /></Protegida>} />
+                <Route path="/financeiro/receber" element={<Protegida cap="financeiro.receber.listar"><Contas tipo="receber" /></Protegida>} />
+                <Route path="/financeiro/aging-receber" element={<Protegida cap="financeiro.receber.listar"><AgingReceber /></Protegida>} />
+                <Route path="/financeiro/dre" element={<Protegida cap="financeiro.fluxo.ver"><RelDRE /></Protegida>} />
+                <Route path="/financeiro/nota" element={<Protegida cap="financeiro.compra.criar"><NotaEntrada /></Protegida>} />
+                <Route path="/estoque/recebimento" element={<Protegida cap="estoque.entrada.criar"><Recebimento /></Protegida>} />
+                <Route path="/financeiro/comissoes" element={<Protegida cap="financeiro.comissao.ver"><Comissoes /></Protegida>} />
+                <Route path="/financeiro/fluxo" element={<Protegida cap="financeiro.fluxo.ver"><FluxoCaixa /></Protegida>} />
+                <Route path="/financeiro/pagar" element={<Protegida cap="financeiro.pagar.listar"><Contas tipo="pagar" /></Protegida>} />
+                <Route path="/relatorios/vendas" element={<Protegida cap="relatorios.ver"><RelVendas /></Protegida>} />
+                <Route path="/relatorios/produtos" element={<Protegida cap="relatorios.ver"><RelProdutos /></Protegida>} />
+                <Route path="/relatorios/vendas-categoria" element={<Protegida cap="relatorios.ver"><RelCategorias /></Protegida>} />
+                <Route path="/relatorios/validade" element={<Protegida cap="relatorios.ver"><RelValidade /></Protegida>} />
+                <Route path="/relatorios/estoque-parado" element={<Protegida cap="relatorios.ver"><RelEstoqueParado /></Protegida>} />
+                <Route path="/cadastros/contas-correntes" element={<Protegida cap="cadastros.conta.listar"><ContasCorrentes /></Protegida>} />
+                <Route path="/cadastros/condicoes" element={<Protegida cap="cadastros.condicao.listar"><Condicoes /></Protegida>} />
+                <Route path="/cadastros/clientes" element={<Protegida cap="cadastros.cliente.listar"><Clientes /></Protegida>} />
+                <Route path="/cadastros/fornecedores" element={<Protegida cap="cadastros.fornecedor.listar"><Fornecedores /></Protegida>} />
+                <Route path="/cadastros/vendedores" element={<Protegida cap="cadastros.vendedor.listar"><Vendedores /></Protegida>} />
+                <Route path="/cadastros/motoboys" element={<Protegida cap="cadastros.motoboy.listar"><Motoboys /></Protegida>} />
+                <Route path="/cadastros/categorias" element={<Protegida cap="cadastros.categoria.listar"><Categorias /></Protegida>} />
+                <Route path="/cadastros/marcas" element={<Protegida cap="cadastros.marca.listar"><Marcas /></Protegida>} />
+                <Route path="/cadastros/produtos" element={<Protegida cap="cadastros.produto.listar"><Produtos /></Protegida>} />
+                <Route path="/superadmin/empresas" element={<Protegida cap="superadmin.empresa.provisionar"><Empresas /></Protegida>} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </BrowserRouter>
+          </ToastProvider>
         </BrandingProvider>
       </AuthProvider>
     </I18nProvider>

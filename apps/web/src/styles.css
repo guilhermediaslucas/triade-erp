@@ -244,3 +244,11 @@ a { text-decoration: none; color: inherit; }
 .busca-ic { width: 22px; text-align: center; }
 .busca-vazio { padding: 18px; color: var(--muted, #64748b); text-align: center; }
 .busca-rodape { border-top: 1px solid var(--borda, #e2e8f0); padding: 8px 14px; font-size: 12px; color: var(--muted, #64748b); }
+
+/* --- Toasts de confirmação --- */
+.toast-wrap { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 1100; }
+.toast-item { display: flex; align-items: center; gap: 8px; background: #1e293b; color: #fff; padding: 11px 16px; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.25); font-size: 14px; max-width: 360px; animation: toast-in .18s ease-out; }
+.toast-item.ok { background: #166534; }
+.toast-item.erro { background: #b91c1c; }
+.toast-ic { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: rgba(255,255,255,.2); font-size: 12px; font-weight: 700; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
