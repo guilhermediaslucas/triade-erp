@@ -33,6 +33,12 @@ const GRUPOS: Grupo[] = [
     ] }],
   },
   {
+    rotulo: 'menu.logistica',
+    secoes: [{ itens: [
+      { rotulo: 'menu.gestao_fretes', icone: '🛣️', to: '/logistica/fretes', cap: 'logistica.frete.ver' },
+    ] }],
+  },
+  {
     rotulo: 'menu.financeiro',
     secoes: [{ itens: [
       { rotulo: 'menu.receber', icone: '💰', to: '/financeiro/receber', cap: 'financeiro.receber.listar' },

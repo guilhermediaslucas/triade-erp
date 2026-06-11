@@ -25,6 +25,7 @@ import { EntradaEstoque } from './pages/EntradaEstoque.js';
 import { Inventario } from './pages/Inventario.js';
 import { KanbanExpedicao } from './pages/KanbanExpedicao.js';
 import { BaixaPerda } from './pages/BaixaPerda.js';
+import { GestaoFretes } from './pages/GestaoFretes.js';
 import { Contas } from './pages/Contas.js';
 import { FluxoCaixa } from './pages/FluxoCaixa.js';
 import { NotaEntrada } from './pages/NotaEntrada.js';
@@ -62,6 +63,7 @@ export function App() {
               <Route path="/estoque/posicao" element={<Protegida cap="estoque.saldo.ver"><PosicaoEstoque /></Protegida>} />
               <Route path="/estoque/entrada" element={<Protegida cap="estoque.entrada.criar"><EntradaEstoque /></Protegida>} />
               <Route path="/estoque/inventario" element={<Protegida cap="estoque.inventario.ver"><Inventario /></Protegida>} />
+              <Route path="/logistica/fretes" element={<Protegida cap="logistica.frete.ver"><GestaoFretes /></Protegida>} />
               <Route path="/financeiro/receber" element={<Protegida cap="financeiro.receber.listar"><Contas tipo="receber" /></Protegida>} />
               <Route path="/financeiro/nota" element={<Protegida cap="financeiro.compra.criar"><NotaEntrada /></Protegida>} />
               <Route path="/estoque/recebimento" element={<Protegida cap="estoque.entrada.criar"><Recebimento /></Protegida>} />

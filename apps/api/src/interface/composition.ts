@@ -30,6 +30,8 @@ import { SqlCondicaoRepository } from '../infra/repositories/SqlCondicaoReposito
 import { CondicoesService } from '../application/comercial/CondicoesService.js';
 import { SqlFreteConfigRepository } from '../infra/repositories/SqlFreteConfigRepository.js';
 import { FreteService } from '../application/comercial/FreteService.js';
+import { SqlGestaoFreteRepository } from '../infra/repositories/SqlGestaoFreteRepository.js';
+import { GestaoFretesService } from '../application/comercial/GestaoFretesService.js';
 import { SqlPedidoRepository } from '../infra/repositories/SqlPedidoRepository.js';
 import { PedidosService } from '../application/comercial/PedidosService.js';
 import { SqlEstoqueRepository } from '../infra/repositories/SqlEstoqueRepository.js';
@@ -93,6 +95,7 @@ export function montarDependencias() {
     motoboysService: new MotoboysService(motoboysRepo),
     precosService: new PrecosService(precoBaseRepo, precoClienteRepo),
     freteService: new FreteService(freteConfigRepo),
+    gestaoFretesService: new GestaoFretesService(new SqlGestaoFreteRepository(AppDataSource), tituloRepo),
     pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, precoClienteRepo, clientesRepo, estoqueRepo, etiquetaRepo, tituloRepo, condicaoRepo, motoboysRepo),
     condicoesService: new CondicoesService(condicaoRepo),
     financeiroService: new FinanceiroService(tituloRepo),

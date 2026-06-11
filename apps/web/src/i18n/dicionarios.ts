@@ -931,3 +931,38 @@ Object.assign(es, {
   'frete.min_invalido': 'Flete mínimo inválido.', 'frete.manual_invalido': 'Ingresa un valor de flete válido.',
   'pedido.motoboy_obrigatorio': 'Selecciona el motoboy.', 'pedido.motoboy_invalido': 'Motoboy inválido.',
 });
+
+// --- Refinamento: Logística › Gestão de fretes ---
+Object.assign(pt, {
+  'cap.modulo.logistica': 'Logística',
+  'cap.logistica.frete.ver': 'Ver gestão de fretes', 'cap.logistica.frete.gerenciar': 'Fechar fretes (gerar títulos)',
+  'menu.logistica': 'Logística', 'menu.gestao_fretes': 'Gestão de fretes',
+  'gfrete.titulo': 'Gestão de fretes', 'gfrete.sub': 'Fretes de motoboy por período. Feche a competência para gerar um título a pagar por motoboy.',
+  'gfrete.total': 'Total de fretes', 'gfrete.pedidos': 'Pedidos', 'gfrete.frete': 'Frete acumulado',
+  'gfrete.vazio': 'Nenhum frete de motoboy no período.', 'gfrete.fechar': 'Fechar competência',
+  'gfrete.fechar_dica': 'Gera um título a pagar por motoboy com o frete do período.',
+  'gfrete.gerar_titulos': 'Gerar títulos', 'gfrete.fechado': '{n} título(s) a pagar gerado(s).',
+  'frete.nada_apurar': 'Nenhum frete a apurar no período.',
+});
+Object.assign(en, {
+  'cap.modulo.logistica': 'Logistics',
+  'cap.logistica.frete.ver': 'View freight management', 'cap.logistica.frete.gerenciar': 'Close freight (generate payables)',
+  'menu.logistica': 'Logistics', 'menu.gestao_fretes': 'Freight management',
+  'gfrete.titulo': 'Freight management', 'gfrete.sub': 'Courier freight by period. Close the period to generate one payable per courier.',
+  'gfrete.total': 'Total freight', 'gfrete.pedidos': 'Orders', 'gfrete.frete': 'Accrued freight',
+  'gfrete.vazio': 'No courier freight in the period.', 'gfrete.fechar': 'Close period',
+  'gfrete.fechar_dica': 'Generates one payable per courier with the period freight.',
+  'gfrete.gerar_titulos': 'Generate payables', 'gfrete.fechado': '{n} payable(s) generated.',
+  'frete.nada_apurar': 'No freight to settle in the period.',
+});
+Object.assign(es, {
+  'cap.modulo.logistica': 'Logística',
+  'cap.logistica.frete.ver': 'Ver gestión de fletes', 'cap.logistica.frete.gerenciar': 'Cerrar fletes (generar cuentas)',
+  'menu.logistica': 'Logística', 'menu.gestao_fretes': 'Gestión de fletes',
+  'gfrete.titulo': 'Gestión de fletes', 'gfrete.sub': 'Fletes de motoboy por período. Cierra la competencia para generar una cuenta a pagar por motoboy.',
+  'gfrete.total': 'Total de fletes', 'gfrete.pedidos': 'Pedidos', 'gfrete.frete': 'Flete acumulado',
+  'gfrete.vazio': 'Sin fletes de motoboy en el período.', 'gfrete.fechar': 'Cerrar competencia',
+  'gfrete.fechar_dica': 'Genera una cuenta a pagar por motoboy con el flete del período.',
+  'gfrete.gerar_titulos': 'Generar cuentas', 'gfrete.fechado': '{n} cuenta(s) a pagar generada(s).',
+  'frete.nada_apurar': 'Sin flete a liquidar en el período.',
+});
