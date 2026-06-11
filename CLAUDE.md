@@ -176,6 +176,19 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Fix de deploy + lição: `package-lock.json` corrompido travava o Cloudflare.**
+  Um comando de shell deixou uma linha de espaços no fim do `package-lock.json` (JSON inválido). O
+  Cloudflare Pages roda `npm ci` (clean-install) e passou a **falhar silenciosamente em todo build**
+  do front desde o commit `0aa3745` — o site ficou numa versão antiga (sem Perdas/Inventários/
+  Favorecidos) mesmo com a API e as permissões já atualizadas. **Diagnóstico:** Cloudflare → Pages →
+  Deployments mostrava os commits novos como "No deployment available" (⚠️); o log do deploy acusava
+  `npm ci ... can only install with an existing package-lock.json`. **Correção:** restaurar o lock
+  válido (`git checkout 0aa3745 -- package-lock.json`; nenhum `package.json` mudou desde então, então
+  compatível) + commit + push → Pages rebuildou verde. **Regra nova:** nunca editar/anexar em
+  `package-lock.json` via shell; depois de mexer no projeto, validar com `node -e JSON.parse` antes de
+  commitar. **Pipeline confirmado:** API (Render) e site (Cloudflare Pages) têm deploys SEPARARADOS —
+  um push pode subir um e o outro falhar; conferir os dois. Após deploy do front, **Ctrl+Shift+R** +
+  relogar (menu lê capabilities no login).
 - **2026-06-11** — **Auto-migração no boot da API (deploy sem passo manual).** Nova rotina
   `infra/db/prepararBanco.ts`: no start a API roda `migrarTudo` (public + todos os tenants ativos) e
   **sincroniza as `CAPABILITY_IDS` no perfil Administrador de cada tenant** (idempotente,
