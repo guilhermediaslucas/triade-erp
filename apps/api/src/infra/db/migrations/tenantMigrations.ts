@@ -395,4 +395,10 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS conciliado_em timestamptz;
     `,
   },
+  {
+    nome: '024_frete_cep_origem',
+    sql: (s) => `
+      ALTER TABLE "${s}".frete_config ADD COLUMN IF NOT EXISTS cep_origem text;
+    `,
+  },
 ];

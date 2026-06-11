@@ -176,6 +176,18 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Excel real (.xlsx) + frete por Google Maps.** **(1) .xlsx:** `apps/web/src/lib/excel.ts`
+  reescrito — `gerarXlsx` monta um **OOXML/ZIP real** (método store, CRC32 próprio, partes mínimas +
+  styles com cabeçalho em negrito) **sem dependência**; `baixarExcel` baixa `.xlsx` de verdade. As 11
+  telas de relatório seguem iguais (mesma assinatura). Validado abrindo com **openpyxl** (3 linhas, A1
+  negrito, zip íntegro). **(2) Frete Google Maps:** migration tenant **024** (`frete_config.cep_origem`).
+  `FreteService.calcular` (motoboy) chama o **Distance Matrix** quando há `GOOGLE_MAPS_API_KEY` no
+  servidor + CEP de origem salvo; em qualquer falta/erro cai no fallback determinístico (estimativa por
+  CEP). Campo **CEP de origem** + dica adicionados na config de frete (tela Motoboys). **Validação:**
+  type-check api+web verde + e2e Postgres real (5 PASS: salva CEP origem, motoboy c/ mínimo, fallback
+  "estimado", retirada 0, correios manual). **Pendente:** Gui `git push` (Render migra) + **setar
+  `GOOGLE_MAPS_API_KEY` no Render** + preencher o CEP de origem na config de frete. **Nota:** a chamada
+  real ao Google não dá p/ testar aqui (sem chave/rede) — fica coberta pelo fallback.
 - **2026-06-11** — **Fidelidade visual tela a tela (padrão do mockup).** Aplicado o padrão do
   `erp-mockup.html` em ~30 telas: **breadcrumb** (`.crumb` "Módulo / Tela"), **título + subtítulo**
   (`.page-sub`) e, nas listas, **toolbar** com busca (`.busca-box-tb`) + **chips** Todos/Ativos/Inativos

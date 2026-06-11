@@ -1588,3 +1588,8 @@ Object.assign(es, { 'dash.faturamento': 'Facturación (6 meses)', 'dash.por_cate
 Object.assign(pt, { 'usuarios.buscar': 'Buscar usuário', 'cond.buscar': 'Buscar condição', 'catfin.buscar': 'Buscar categoria' });
 Object.assign(en, { 'usuarios.buscar': 'Search user', 'cond.buscar': 'Search term', 'catfin.buscar': 'Search category' });
 Object.assign(es, { 'usuarios.buscar': 'Buscar usuario', 'cond.buscar': 'Buscar condición', 'catfin.buscar': 'Buscar categoría' });
+
+// --- Frete por Google Maps (CEP de origem) ---
+Object.assign(pt, { 'motoboys.cep_origem': 'CEP de origem (saída das entregas)', 'motoboys.cep_origem_ph': 'Ex.: 01001-000', 'motoboys.google_dica': 'Com a chave do Google Maps configurada no servidor (GOOGLE_MAPS_API_KEY) e este CEP preenchido, a distância do motoboy é calculada por rota real. Sem isso, usa estimativa pelo CEP.' });
+Object.assign(en, { 'motoboys.cep_origem': 'Origin ZIP (deliveries start)', 'motoboys.cep_origem_ph': 'e.g. 01001-000', 'motoboys.google_dica': 'With the Google Maps key set on the server (GOOGLE_MAPS_API_KEY) and this ZIP filled, courier distance uses real routing. Otherwise it estimates from the ZIP.' });
+Object.assign(es, { 'motoboys.cep_origem': 'CP de origen (salida de entregas)', 'motoboys.cep_origem_ph': 'Ej.: 01001-000', 'motoboys.google_dica': 'Con la clave de Google Maps en el servidor (GOOGLE_MAPS_API_KEY) y este CP, la distancia usa ruta real. Sin eso, estima por el CP.' });

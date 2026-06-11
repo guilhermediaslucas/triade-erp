@@ -4,7 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 
 interface Motoboy { id: string; nome: string; telefone: string | null; ativo: boolean; }
-interface FreteConfig { kmRate: number; minMotoboy: number; }
+interface FreteConfig { kmRate: number; minMotoboy: number; cepOrigem: string | null; }
 
 export function Motoboys() {
   const { token, temCapability } = useAuth();
@@ -77,18 +77,19 @@ function ConfigFrete({ pode }: { pode: boolean }) {
   const [cfg, setCfg] = useState<FreteConfig | null>(null);
   const [kmRate, setKmRate] = useState('');
   const [minMotoboy, setMinMotoboy] = useState('');
+  const [cepOrigem, setCepOrigem] = useState('');
   const [msg, setMsg] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
-    api.get<FreteConfig>('/frete/config', token!).then((c) => { setCfg(c); setKmRate(String(c.kmRate)); setMinMotoboy(String(c.minMotoboy)); }).catch(() => {});
+    api.get<FreteConfig>('/frete/config', token!).then((c) => { setCfg(c); setKmRate(String(c.kmRate)); setMinMotoboy(String(c.minMotoboy)); setCepOrigem(c.cepOrigem ?? ''); }).catch(() => {});
     /* eslint-disable-next-line */
   }, []);
 
   async function salvar() {
     setErro(null); setMsg(null);
     try {
-      const c = await api.put<FreteConfig>('/frete/config', { kmRate: Number(kmRate), minMotoboy: Number(minMotoboy) }, token!);
+      const c = await api.put<FreteConfig>('/frete/config', { kmRate: Number(kmRate), minMotoboy: Number(minMotoboy), cepOrigem }, token!);
       setCfg(c); setMsg('motoboys.cfg_ok');
     } catch (e) { setErro((e as ErroApi).chaveI18n); }
   }
@@ -103,6 +104,9 @@ function ConfigFrete({ pode }: { pode: boolean }) {
         <label className="campo">{t('motoboys.min_motoboy')}
           <input type="number" min="0" step="0.01" value={minMotoboy} disabled={!pode} onChange={(e) => setMinMotoboy(e.target.value)} /></label>
       </div>
+      <label className="campo">{t('motoboys.cep_origem')}
+        <input value={cepOrigem} disabled={!pode} onChange={(e) => setCepOrigem(e.target.value)} placeholder={t('motoboys.cep_origem_ph')} /></label>
+      <p className="muted" style={{ fontSize: 12, marginTop: 0 }}>{t('motoboys.google_dica')}</p>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       {msg && <div className="alerta-ok">{t(msg)}</div>}
       {pode && <div className="modal-acoes"><button className="btn-primary btn-mini" onClick={salvar}>{t('common.salvar')}</button></div>}
