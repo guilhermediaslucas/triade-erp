@@ -122,4 +122,33 @@ export class FinanceiroService {
     if (t.status !== 'pago') throw new ErroAplicacao('conciliacao.so_pago', 400);
     await this.repo.definirConciliado(schema, id, !!conciliado);
   }
+
+  // Parcela/replica um título em aberto. modo 'dividir' reparte o valor em N parcelas;
+  // 'replicar' cria N cópias com o mesmo valor (ex.: aluguel mensal). Substitui o original.
+  async parcelar(schema: string, id: string, e: any): Promise<number> {
+    const t = await this.repo.buscarPorId(schema, id);
+    if (!t) throw new ErroAplicacao('financeiro.nao_encontrado', 404);
+    if (t.status !== 'aberto') throw new ErroAplicacao('parcelar.so_aberto', 400);
+    const modo = e?.modo === 'replicar' ? 'replicar' : 'dividir';
+    const n = Math.trunc(Number(e?.parcelas));
+    if (!Number.isFinite(n) || n < 2 || n > 99) throw new ErroAplicacao('parcelar.parcelas_invalidas', 400);
+    const intervalo = Math.trunc(Number(e?.intervaloDias ?? 30));
+    if (!Number.isFinite(intervalo) || intervalo < 0) throw new ErroAplicacao('parcelar.intervalo_invalido', 400);
+
+    const base = modo === 'dividir' ? Math.floor((t.valor / n) * 100) / 100 : t.valor;
+    const addDias = (iso: string, dias: number): string => {
+      const d = new Date(iso + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + dias);
+      return d.toISOString().slice(0, 10);
+    };
+    for (let i = 1; i <= n; i++) {
+      const valor = modo === 'dividir' && i === n ? r2(t.valor - base * (n - 1)) : base;
+      await this.repo.criar(schema, {
+        tipo: t.tipo, descricao: `${t.descricao} (${i}/${n})`, pessoaNome: t.pessoaNome,
+        valor, vencimento: addDias(t.vencimento, (i - 1) * intervalo),
+        categoriaFinanceiraId: t.categoriaFinanceiraId, favorecidoId: t.favorecidoId,
+      }, t.origem, t.pedidoId);
+    }
+    await this.repo.excluir(schema, id);
+    return n;
+  }
 }

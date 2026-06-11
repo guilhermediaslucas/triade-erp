@@ -25,6 +25,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   const [itens, setItens] = useState<Titulo[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [novo, setNovo] = useState(false);
+  const [parcelarT, setParcelarT] = useState<Titulo | null>(null);
   const [baixar, setBaixar] = useState<Titulo | null>(null);
   const [sel, setSel] = useState<Set<string>>(new Set());
   const [baixaMassa, setBaixaMassa] = useState(false);
@@ -97,13 +98,14 @@ export function Contas({ tipo }: { tipo: Tipo }) {
               <td>{moeda(tt.valor)}</td>
               <td><span className={'pill ' + (sit === 'pago' ? 'st-verde' : sit === 'vencido' ? 'st-vermelho' : 'st-laranja')}>{t('fin.' + sit)}</span></td>
               <td className="acoes">{pode && (tt.status === 'aberto'
-                ? <button className="btn-link" onClick={() => setBaixar(tt)}>{t('fin.baixar')}</button>
+                ? <><button className="btn-link" onClick={() => setBaixar(tt)}>{t('fin.baixar')}</button> <button className="btn-link" onClick={() => setParcelarT(tt)}>{t('parcelar.acao')}</button></>
                 : <button className="btn-link" onClick={() => cancelar(tt)}>{t('fin.cancelar_baixa')}</button>)}</td>
             </tr>
           ); })}
         </tbody>
       </table></div>
       {novo && <ModalNovo tipo={tipo} onFechar={() => setNovo(false)} onSalvo={() => { setNovo(false); carregar(); toast(t('fin.toast_criado')); }} />}
+      {parcelarT && <ModalParcelar tipo={tipo} titulo={parcelarT} onFechar={() => setParcelarT(null)} onSalvo={(n) => { setParcelarT(null); carregar(); toast(t('parcelar.toast').replace('{n}', String(n))); }} />}
       {baixar && <ModalBaixa tipo={tipo} titulos={[baixar]} onFechar={() => setBaixar(null)} onSalvo={() => { setBaixar(null); carregar(); toast(t('fin.toast_baixado')); }} />}
       {baixaMassa && <ModalBaixa tipo={tipo} titulos={abertosSel} onFechar={() => setBaixaMassa(false)} onSalvo={(n) => { setBaixaMassa(false); carregar(); toast(t('bulk.baixados').replace('{n}', String(n))); }} />}
     </div>
@@ -184,6 +186,43 @@ function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos:
       </label>}
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv} onClick={salvar}>{t('fin.confirmar_baixa')}</button></div>
+    </div></div>
+  );
+}
+
+
+function ModalParcelar({ tipo, titulo, onFechar, onSalvo }: { tipo: Tipo; titulo: Titulo; onFechar: () => void; onSalvo: (n: number) => void; }) {
+  const { token } = useAuth(); const { t } = useI18n();
+  const [modo, setModo] = useState<'dividir' | 'replicar'>('dividir');
+  const [parcelas, setParcelas] = useState('2');
+  const [intervalo, setIntervalo] = useState('30');
+  const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
+  const n = Math.max(1, Math.trunc(Number(parcelas) || 0));
+  const valorParcela = modo === 'dividir' && n > 0 ? titulo.valor / n : titulo.valor;
+  async function salvar() {
+    setErro(null); setSalv(true);
+    try {
+      const r = await api.post<{ criados: number }>('/financeiro/' + tipo + '/' + titulo.id + '/parcelar', { modo, parcelas: n, intervaloDias: Number(intervalo) }, token!);
+      onSalvo(r.criados);
+    } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
+  }
+  return (
+    <div className="modal-fundo" onClick={onFechar}><div className="modal" onClick={(e) => e.stopPropagation()}>
+      <h2>{t('parcelar.titulo')}</h2>
+      <p className="muted" style={{ marginTop: -6 }}>{titulo.descricao} · {moeda(titulo.valor)}</p>
+      <label className="campo">{t('parcelar.modo')}
+        <select value={modo} onChange={(e) => setModo(e.target.value as 'dividir' | 'replicar')}>
+          <option value="dividir">{t('parcelar.dividir')}</option>
+          <option value="replicar">{t('parcelar.replicar')}</option>
+        </select>
+      </label>
+      <div className="cores-grid">
+        <label className="campo">{t('parcelar.parcelas')}<input type="number" min="2" max="99" value={parcelas} onChange={(e) => setParcelas(e.target.value)} /></label>
+        <label className="campo">{t('parcelar.intervalo')}<input type="number" min="0" value={intervalo} onChange={(e) => setIntervalo(e.target.value)} /></label>
+      </div>
+      <p className="muted">{modo === 'dividir' ? t('parcelar.previa_dividir') : t('parcelar.previa_replicar')}{' '}<b>{n}× {moeda(valorParcela)}</b></p>
+      {erro && <div className="alerta-erro">{t(erro)}</div>}
+      <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv} onClick={salvar}>{t('common.salvar')}</button></div>
     </div></div>
   );
 }

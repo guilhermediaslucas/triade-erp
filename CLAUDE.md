@@ -176,6 +176,18 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Refinamento — Parcelar / multiplicar títulos.** **Sem migration**; reusa a cap
+  `financeiro.{receber,pagar}.gerenciar`. **Backend:** `FinanceiroService.parcelar(schema, id, {modo,
+  parcelas, intervaloDias})` — só título **em aberto** (senão 400); `modo=dividir` reparte o valor em N
+  (última ajusta a sobra), `modo=replicar` cria N cópias com o valor cheio (recorrente); vencimentos a
+  partir do venc original espaçados por `intervaloDias`; preserva tipo/pessoa/categoria/favorecido/
+  origem; descrição `(i/N)`; **substitui o original** (cria N + exclui). Rota `POST /financeiro/:tipo/
+  :id/parcelar`. **Frontend:** no Contas (receber/pagar), botão **Parcelar** nos títulos em aberto →
+  modal (modo dividir/replicar, nº de parcelas, intervalo, prévia N× valor); toast; i18n pt/en/es.
+  **Validação:** **type-check api+web verde** + **e2e Postgres real (10 PASS)** via pglite: dividir 900→
+  3×300 (soma 900, vencimentos 30/60, desc i/3), replicar 100→4×100, parcelas<2→400, título pago→400.
+  **Pendente:** Gui `git push` + relogar. **Próximo (opcional):** conciliação etapa 2 (importar extrato
+  OFX/CSV) ou exportar Excel formatado.
 - **2026-06-11** — **Refinamento — Conciliação bancária (etapa 1: manual por conta).** Migration
   tenant **023** (`titulo.conciliado` bool + `titulo.conciliado_em`). Caps `financeiro.conciliacao.ver/
   gerenciar`. **Backend:** `TituloRepository.conciliacao` (títulos **pagos** numa conta corrente no

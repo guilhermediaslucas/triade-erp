@@ -1284,3 +1284,32 @@ Object.assign(es, {
   'concil.saldo_sistema': 'Saldo en el sistema', 'concil.saldo_extrato': 'Saldo del extracto', 'concil.diferenca': 'Diferencia',
   'concil.bate': 'Los saldos coinciden — cuenta conciliada.', 'concil.vazio': 'Sin movimientos pagados en esta cuenta en el período.',
 });
+
+// --- Refinamento: Parcelar / Multiplicar títulos ---
+Object.assign(pt, {
+  'parcelar.acao': 'Parcelar', 'parcelar.titulo': 'Parcelar / multiplicar título',
+  'parcelar.modo': 'Modo', 'parcelar.dividir': 'Dividir o valor em parcelas', 'parcelar.replicar': 'Replicar o valor (recorrente)',
+  'parcelar.parcelas': 'Parcelas', 'parcelar.intervalo': 'Intervalo (dias)',
+  'parcelar.previa_dividir': 'Vai gerar', 'parcelar.previa_replicar': 'Vai gerar',
+  'parcelar.toast': '{n} parcelas geradas.',
+  'parcelar.so_aberto': 'Só títulos em aberto podem ser parcelados.',
+  'parcelar.parcelas_invalidas': 'Informe de 2 a 99 parcelas.', 'parcelar.intervalo_invalido': 'Intervalo inválido.',
+});
+Object.assign(en, {
+  'parcelar.acao': 'Split', 'parcelar.titulo': 'Split / multiply entry',
+  'parcelar.modo': 'Mode', 'parcelar.dividir': 'Split the amount into installments', 'parcelar.replicar': 'Replicate the amount (recurring)',
+  'parcelar.parcelas': 'Installments', 'parcelar.intervalo': 'Interval (days)',
+  'parcelar.previa_dividir': 'Will generate', 'parcelar.previa_replicar': 'Will generate',
+  'parcelar.toast': '{n} installments created.',
+  'parcelar.so_aberto': 'Only open entries can be split.',
+  'parcelar.parcelas_invalidas': 'Enter 2 to 99 installments.', 'parcelar.intervalo_invalido': 'Invalid interval.',
+});
+Object.assign(es, {
+  'parcelar.acao': 'Dividir', 'parcelar.titulo': 'Dividir / multiplicar título',
+  'parcelar.modo': 'Modo', 'parcelar.dividir': 'Dividir el valor en cuotas', 'parcelar.replicar': 'Replicar el valor (recurrente)',
+  'parcelar.parcelas': 'Cuotas', 'parcelar.intervalo': 'Intervalo (días)',
+  'parcelar.previa_dividir': 'Generará', 'parcelar.previa_replicar': 'Generará',
+  'parcelar.toast': '{n} cuotas generadas.',
+  'parcelar.so_aberto': 'Solo títulos abiertos pueden dividirse.',
+  'parcelar.parcelas_invalidas': 'Ingrese de 2 a 99 cuotas.', 'parcelar.intervalo_invalido': 'Intervalo inválido.',
+});

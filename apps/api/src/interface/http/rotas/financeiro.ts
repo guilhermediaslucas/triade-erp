@@ -25,6 +25,9 @@ function registrar(r: Router, deps: Dependencias, tipo: TipoTitulo, capBase: str
   r.delete(`${base}/:id`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
     try { await deps.financeiroService.excluir(sch(req), req.params.id!); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });
+  r.post(`${base}/:id/parcelar`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
+    try { res.status(201).json({ criados: await deps.financeiroService.parcelar(sch(req), req.params.id!, req.body ?? {}) }); } catch (e) { tratarErro(res, e); }
+  });
 }
 
 export function rotasFinanceiro(deps: Dependencias): Router {
