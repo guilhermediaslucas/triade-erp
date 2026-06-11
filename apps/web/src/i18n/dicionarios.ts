@@ -1037,3 +1037,23 @@ Object.assign(es, {
 Object.assign(pt, { 'menu.rel_categorias': 'Vendas por categoria', 'rel.categorias': 'Vendas por categoria' });
 Object.assign(en, { 'menu.rel_categorias': 'Sales by category', 'rel.categorias': 'Sales by category' });
 Object.assign(es, { 'menu.rel_categorias': 'Ventas por categoría', 'rel.categorias': 'Ventas por categoría' });
+
+// --- Refinamento: Aging de recebíveis ---
+Object.assign(pt, {
+  'menu.aging': 'Aging de recebíveis', 'fin.pessoa': 'Cliente / pessoa',
+  'aging.titulo': 'Aging de recebíveis', 'aging.sub': 'Contas a receber em aberto por faixa de atraso (gestão de caixa).',
+  'aging.dias_atraso': 'Dias de atraso', 'aging.faixa': 'Faixa', 'aging.total_aberto': 'Total em aberto', 'aging.vazio': 'Nenhum título a receber em aberto.',
+  'aging.a_vencer': 'A vencer', 'aging.d1_30': 'Atraso 1–30 d', 'aging.d31_60': 'Atraso 31–60 d', 'aging.d61_90': 'Atraso 61–90 d', 'aging.d90_mais': 'Atraso 90+ d',
+});
+Object.assign(en, {
+  'menu.aging': 'Receivables aging', 'fin.pessoa': 'Customer / payer',
+  'aging.titulo': 'Receivables aging', 'aging.sub': 'Open receivables by overdue bucket (cash management).',
+  'aging.dias_atraso': 'Days overdue', 'aging.faixa': 'Bucket', 'aging.total_aberto': 'Total open', 'aging.vazio': 'No open receivables.',
+  'aging.a_vencer': 'Not due', 'aging.d1_30': 'Overdue 1–30 d', 'aging.d31_60': 'Overdue 31–60 d', 'aging.d61_90': 'Overdue 61–90 d', 'aging.d90_mais': 'Overdue 90+ d',
+});
+Object.assign(es, {
+  'menu.aging': 'Aging de cobranzas', 'fin.pessoa': 'Cliente / persona',
+  'aging.titulo': 'Aging de cobranzas', 'aging.sub': 'Cuentas por cobrar abiertas por franja de atraso (gestión de caja).',
+  'aging.dias_atraso': 'Días de atraso', 'aging.faixa': 'Franja', 'aging.total_aberto': 'Total abierto', 'aging.vazio': 'Sin cuentas por cobrar abiertas.',
+  'aging.a_vencer': 'Por vencer', 'aging.d1_30': 'Atraso 1–30 d', 'aging.d31_60': 'Atraso 31–60 d', 'aging.d61_90': 'Atraso 61–90 d', 'aging.d90_mais': 'Atraso 90+ d',
+});

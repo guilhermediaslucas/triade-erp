@@ -29,6 +29,7 @@ import { BaixaPerda } from './pages/BaixaPerda.js';
 import { GestaoFretes } from './pages/GestaoFretes.js';
 import { Contas } from './pages/Contas.js';
 import { FluxoCaixa } from './pages/FluxoCaixa.js';
+import { AgingReceber } from './pages/AgingReceber.js';
 import { NotaEntrada } from './pages/NotaEntrada.js';
 import { Recebimento } from './pages/Recebimento.js';
 import { RelVendas } from './pages/RelVendas.js';
@@ -70,6 +71,7 @@ export function App() {
               <Route path="/estoque/inventario" element={<Protegida cap="estoque.inventario.ver"><Inventario /></Protegida>} />
               <Route path="/logistica/fretes" element={<Protegida cap="logistica.frete.ver"><GestaoFretes /></Protegida>} />
               <Route path="/financeiro/receber" element={<Protegida cap="financeiro.receber.listar"><Contas tipo="receber" /></Protegida>} />
+              <Route path="/financeiro/aging-receber" element={<Protegida cap="financeiro.receber.listar"><AgingReceber /></Protegida>} />
               <Route path="/financeiro/nota" element={<Protegida cap="financeiro.compra.criar"><NotaEntrada /></Protegida>} />
               <Route path="/estoque/recebimento" element={<Protegida cap="estoque.entrada.criar"><Recebimento /></Protegida>} />
               <Route path="/financeiro/comissoes" element={<Protegida cap="financeiro.comissao.ver"><Comissoes /></Protegida>} />

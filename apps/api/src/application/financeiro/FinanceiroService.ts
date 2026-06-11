@@ -1,10 +1,46 @@
 import type { MovimentoFluxo, Titulo, TipoTitulo, TituloRepository } from '../../domain/financeiro/Titulo.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
+export type AgingFaixa = 'a_vencer' | 'd1_30' | 'd31_60' | 'd61_90' | 'd90_mais';
+export interface AgingLinha {
+  id: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; diasAtraso: number; faixa: AgingFaixa;
+}
+export interface RelatorioAging { linhas: AgingLinha[]; totais: Record<AgingFaixa, number>; totalAberto: number; }
+
+function faixaDe(dias: number): AgingFaixa {
+  if (dias <= 0) return 'a_vencer';
+  if (dias <= 30) return 'd1_30';
+  if (dias <= 60) return 'd31_60';
+  if (dias <= 90) return 'd61_90';
+  return 'd90_mais';
+}
+const r2 = (n: number) => Math.round(n * 100) / 100;
+
 export class FinanceiroService {
   constructor(private readonly repo: TituloRepository) {}
   listar(schema: string, tipo: TipoTitulo): Promise<Titulo[]> { return this.repo.listar(schema, tipo); }
   fluxo(schema: string): Promise<MovimentoFluxo[]> { return this.repo.listarPagos(schema); }
+
+  // Aging: títulos em aberto agrupados por faixa de atraso (relativo a hoje).
+  async aging(schema: string, tipo: TipoTitulo): Promise<RelatorioAging> {
+    const todos = await this.repo.listar(schema, tipo);
+    const hoje = new Date(new Date().toISOString().slice(0, 10) + 'T00:00:00').getTime();
+    const linhas: AgingLinha[] = todos
+      .filter((t) => t.status === 'aberto')
+      .map((t) => {
+        const venc = new Date(String(t.vencimento).slice(0, 10) + 'T00:00:00').getTime();
+        const diasAtraso = Math.round((hoje - venc) / 86400000);
+        return {
+          id: t.id, descricao: t.descricao, pessoaNome: t.pessoaNome, valor: t.valor,
+          vencimento: String(t.vencimento).slice(0, 10), diasAtraso, faixa: faixaDe(diasAtraso),
+        };
+      })
+      .sort((a, b) => b.diasAtraso - a.diasAtraso);
+    const totais: Record<AgingFaixa, number> = { a_vencer: 0, d1_30: 0, d31_60: 0, d61_90: 0, d90_mais: 0 };
+    for (const l of linhas) totais[l.faixa] += l.valor;
+    (Object.keys(totais) as AgingFaixa[]).forEach((k) => { totais[k] = r2(totais[k]); });
+    return { linhas, totais, totalAberto: r2(linhas.reduce((a, l) => a + l.valor, 0)) };
+  }
 
   async criar(schema: string, tipo: TipoTitulo, e: any): Promise<string> {
     if (!e?.descricao || String(e.descricao).trim().length < 2) throw new ErroAplicacao('financeiro.descricao_invalida', 400);
