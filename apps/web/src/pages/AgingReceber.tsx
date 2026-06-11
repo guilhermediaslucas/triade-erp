@@ -35,7 +35,7 @@ export function AgingReceber() {
 
   return (
     <div>
-      <h1 className="page-titulo">{t('aging.titulo')}</h1>
+      <div className="crumb">{t('rel.crumb_aging')}</div><h1 className="page-titulo">{t('aging.titulo')}</h1>
       <p className="muted" style={{ marginTop: -8 }}>{t('aging.sub')}</p>
       <div className="rel-filtro">
         <button className="btn-primary" onClick={gerar}>{t('rel.gerar')}</button>

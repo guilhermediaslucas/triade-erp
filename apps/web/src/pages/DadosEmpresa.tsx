@@ -52,7 +52,7 @@ export function DadosEmpresa() {
 
   return (
     <div>
-      <h1 className="page-titulo">{t('empresa.titulo')}</h1>
+      <div className="crumb">{t('empresa.crumb')}</div><h1 className="page-titulo">{t('empresa.titulo')}</h1>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       {ok && <div className="alerta-ok">{t('empresa.salvo')}</div>}
 

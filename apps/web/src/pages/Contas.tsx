@@ -91,6 +91,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
 
   return (
     <div>
+      <div className="crumb">{t(tipo === 'receber' ? 'fin.crumb_receber' : 'fin.crumb_pagar')}</div>
       <div className="page-head"><h1 className="page-titulo">{t(tipo === 'receber' ? 'fin.receber' : 'fin.pagar')}</h1>
         <div style={{ display: 'flex', gap: 8 }}>
           <button className="btn-ghost" onClick={() => setFiltroAberto((v) => !v)}>{t('fin.filtros')}{temFiltro ? ' •' : ''}</button>

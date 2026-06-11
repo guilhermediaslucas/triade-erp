@@ -36,7 +36,7 @@ export function RelEstoqueParado() {
 
   return (
     <div>
-      <h1 className="page-titulo">{t('rel.parado')}</h1>
+      <div className="crumb">{t('rel.crumb_parado')}</div><h1 className="page-titulo">{t('rel.parado')}</h1>
       <p className="muted" style={{ marginTop: -8 }}>{t('rel.parado_sub')}</p>
       <div className="rel-filtro">
         <label className="campo">{t('parado.limite')}

@@ -1546,3 +1546,36 @@ Object.assign(es, {
   'com.crumb': 'Financiero / Comisiones', 'com.sub': 'Cálculo por vendedor y cierre de período',
   'gfrete.crumb': 'Logística / Gestión de fletes', 'precos.crumb': 'Comercial / Tabla de precios',
 });
+
+// --- crumb dos Relatórios + Empresas/Dados + Contas ---
+Object.assign(pt, {
+  'rel.crumb_vendas': 'Relatórios / Vendas', 'rel.crumb_produtos': 'Relatórios / Produtos mais vendidos',
+  'rel.crumb_categorias': 'Relatórios / Vendas por categoria', 'rel.crumb_abc': 'Relatórios / Curva ABC',
+  'rel.crumb_validade': 'Relatórios / Validade de lotes', 'rel.crumb_parado': 'Relatórios / Estoque parado',
+  'rel.crumb_perdas': 'Relatórios / Perdas de estoque', 'rel.crumb_inv': 'Relatórios / Inventários',
+  'rel.crumb_dre': 'Financeiro / DRE', 'rel.crumb_aging': 'Financeiro / Aging de recebíveis',
+  'empresas.crumb': 'Super-admin / Empresas', 'empresa.crumb': 'Configurações / Dados da empresa',
+  'fin.crumb_receber': 'Financeiro / Contas a receber', 'fin.crumb_pagar': 'Financeiro / Contas a pagar',
+});
+Object.assign(en, {
+  'rel.crumb_vendas': 'Reports / Sales', 'rel.crumb_produtos': 'Reports / Top products',
+  'rel.crumb_categorias': 'Reports / Sales by category', 'rel.crumb_abc': 'Reports / ABC curve',
+  'rel.crumb_validade': 'Reports / Batch expiry', 'rel.crumb_parado': 'Reports / Idle stock',
+  'rel.crumb_perdas': 'Reports / Stock losses', 'rel.crumb_inv': 'Reports / Inventories',
+  'rel.crumb_dre': 'Finance / Income statement', 'rel.crumb_aging': 'Finance / Receivables aging',
+  'empresas.crumb': 'Super-admin / Companies', 'empresa.crumb': 'Settings / Company details',
+  'fin.crumb_receber': 'Finance / Receivables', 'fin.crumb_pagar': 'Finance / Payables',
+});
+Object.assign(es, {
+  'rel.crumb_vendas': 'Informes / Ventas', 'rel.crumb_produtos': 'Informes / Productos más vendidos',
+  'rel.crumb_categorias': 'Informes / Ventas por categoría', 'rel.crumb_abc': 'Informes / Curva ABC',
+  'rel.crumb_validade': 'Informes / Vencimiento de lotes', 'rel.crumb_parado': 'Informes / Stock parado',
+  'rel.crumb_perdas': 'Informes / Pérdidas de stock', 'rel.crumb_inv': 'Informes / Inventarios',
+  'rel.crumb_dre': 'Financiero / Estado de resultados', 'rel.crumb_aging': 'Financiero / Aging de cobros',
+  'empresas.crumb': 'Super-admin / Empresas', 'empresa.crumb': 'Configuración / Datos de la empresa',
+  'fin.crumb_receber': 'Financiero / Cuentas por cobrar', 'fin.crumb_pagar': 'Financiero / Cuentas por pagar',
+});
+
+Object.assign(pt, { 'concil.crumb': 'Financeiro / Conciliação bancária' });
+Object.assign(en, { 'concil.crumb': 'Finance / Bank reconciliation' });
+Object.assign(es, { 'concil.crumb': 'Financiero / Conciliación bancaria' });

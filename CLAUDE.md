@@ -176,6 +176,18 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Fidelidade visual tela a tela (padrão do mockup).** Aplicado o padrão do
+  `erp-mockup.html` em ~30 telas: **breadcrumb** (`.crumb` "Módulo / Tela"), **título + subtítulo**
+  (`.page-sub`) e, nas listas, **toolbar** com busca (`.busca-box-tb`) + **chips** Todos/Ativos/Inativos
+  (`.chip-f`, filtro client-side por status/texto). Telas com toolbar completa: Clientes, Fornecedores,
+  Vendedores, Marcas, Categorias, Favorecidos, Motoboys. Dashboard refeito (KPIs com ícone colorido +
+  Avisos e pendências + Ações rápidas). Pedidos (Kanban) ganhou crumb + filtro de data. Demais telas
+  (Usuários, Perfis, Condições, Cat. financeiras, Produtos, Contas correntes, Estoque/Expedição,
+  Financeiro, Logística, Relatórios, Empresas, Dados da empresa, Conciliação) receberam crumb +
+  subtítulo. CSS novo (`.crumb/.toolbar/.busca-box-tb/.chip-f/.kpi-mock/.tint-*/.dash-*`); i18n pt/en/es
+  de crumbs/subs. **type-check web verde** em todos os lotes; lock íntegro. **Pendente:** Gui revisar no
+  ar e ajustar textos de subtítulo/ordem fina onde quiser. **Nota:** gráficos do dashboard (Chart.js) e
+  busca/chips nas telas que ficaram só com crumb são evolução (não consigo renderizar p/ conferir aqui).
 - **2026-06-11** — **Modo escuro + Administrador do sistema (global) + troca de empresas.** **(1) Modo
   escuro:** `ThemeProvider` (classe `theme-dark` no body, persistido em localStorage), tokens dark no CSS
   e botão 🌙/☀️ na **topbar** e no **login**. **(2) Admin do sistema:** nova tabela `public.super_admin`

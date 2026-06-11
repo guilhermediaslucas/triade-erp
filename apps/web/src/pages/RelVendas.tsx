@@ -33,7 +33,7 @@ export function RelVendas() {
 
   return (
     <div>
-      <h1 className="page-titulo">{t('rel.vendas')}</h1>
+      <div className="crumb">{t('rel.crumb_vendas')}</div><h1 className="page-titulo">{t('rel.vendas')}</h1>
       <div className="rel-filtro">
         <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
         <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>

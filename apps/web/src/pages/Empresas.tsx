@@ -34,7 +34,7 @@ export function Empresas() {
 
   return (
     <div>
-      <h1 className="page-titulo">{t('empresas.titulo')}</h1>
+      <div className="crumb">{t('empresas.crumb')}</div><h1 className="page-titulo">{t('empresas.titulo')}</h1>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       {ok && <div className="alerta-ok">{t(ok)}</div>}
 

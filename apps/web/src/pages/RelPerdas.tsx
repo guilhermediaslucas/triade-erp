@@ -31,7 +31,7 @@ export function RelPerdas() {
 
   return (
     <div>
-      <h1 className="page-titulo">{t('perdas.titulo')}</h1>
+      <div className="crumb">{t('rel.crumb_perdas')}</div><h1 className="page-titulo">{t('perdas.titulo')}</h1>
       <p className="muted" style={{ marginTop: -8 }}>{t('perdas.sub')}</p>
       <div className="rel-filtro">
         <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
