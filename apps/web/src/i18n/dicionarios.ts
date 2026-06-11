@@ -1057,3 +1057,23 @@ Object.assign(es, {
   'aging.dias_atraso': 'Días de atraso', 'aging.faixa': 'Franja', 'aging.total_aberto': 'Total abierto', 'aging.vazio': 'Sin cuentas por cobrar abiertas.',
   'aging.a_vencer': 'Por vencer', 'aging.d1_30': 'Atraso 1–30 d', 'aging.d31_60': 'Atraso 31–60 d', 'aging.d61_90': 'Atraso 61–90 d', 'aging.d90_mais': 'Atraso 90+ d',
 });
+
+// --- Refinamento: DRE simplificada (resultado do período) ---
+Object.assign(pt, {
+  'menu.dre': 'DRE (resultado)',
+  'dre.titulo': 'DRE simplificada — resultado do período', 'dre.sub': 'Caixa realizado no período (títulos pagos), por origem. Resultado = receitas − despesas.',
+  'dre.receitas': 'Receitas', 'dre.despesas': 'Despesas', 'dre.resultado': 'Resultado', 'dre.origem': 'Origem', 'dre.grupo': 'Grupo',
+  'origem.pedido': 'Pedidos', 'origem.compra': 'Compras', 'origem.comissao': 'Comissões', 'origem.frete': 'Fretes', 'origem.manual': 'Manual',
+});
+Object.assign(en, {
+  'menu.dre': 'P&L (result)',
+  'dre.titulo': 'Simplified P&L — period result', 'dre.sub': 'Cash realized in the period (paid titles), by source. Result = income − expenses.',
+  'dre.receitas': 'Income', 'dre.despesas': 'Expenses', 'dre.resultado': 'Result', 'dre.origem': 'Source', 'dre.grupo': 'Group',
+  'origem.pedido': 'Orders', 'origem.compra': 'Purchases', 'origem.comissao': 'Commissions', 'origem.frete': 'Freight', 'origem.manual': 'Manual',
+});
+Object.assign(es, {
+  'menu.dre': 'Estado de resultados',
+  'dre.titulo': 'Estado de resultados simplificado — período', 'dre.sub': 'Caja realizada en el período (títulos pagados), por origen. Resultado = ingresos − gastos.',
+  'dre.receitas': 'Ingresos', 'dre.despesas': 'Gastos', 'dre.resultado': 'Resultado', 'dre.origem': 'Origen', 'dre.grupo': 'Grupo',
+  'origem.pedido': 'Pedidos', 'origem.compra': 'Compras', 'origem.comissao': 'Comisiones', 'origem.frete': 'Fletes', 'origem.manual': 'Manual',
+});

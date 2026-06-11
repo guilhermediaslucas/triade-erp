@@ -7,6 +7,9 @@ export interface AgingLinha {
 }
 export interface RelatorioAging { linhas: AgingLinha[]; totais: Record<AgingFaixa, number>; totalAberto: number; }
 
+export interface DreLinha { origem: string; total: number; }
+export interface RelatorioDre { receitas: DreLinha[]; despesas: DreLinha[]; totalReceitas: number; totalDespesas: number; resultado: number; }
+
 function faixaDe(dias: number): AgingFaixa {
   if (dias <= 0) return 'a_vencer';
   if (dias <= 30) return 'd1_30';
@@ -15,6 +18,7 @@ function faixaDe(dias: number): AgingFaixa {
   return 'd90_mais';
 }
 const r2 = (n: number) => Math.round(n * 100) / 100;
+const lim = (v: any): string | null => (v && /^\d{4}-\d{2}-\d{2}$/.test(String(v)) ? String(v) : null);
 
 export class FinanceiroService {
   constructor(private readonly repo: TituloRepository) {}
@@ -40,6 +44,16 @@ export class FinanceiroService {
     for (const l of linhas) totais[l.faixa] += l.valor;
     (Object.keys(totais) as AgingFaixa[]).forEach((k) => { totais[k] = r2(totais[k]); });
     return { linhas, totais, totalAberto: r2(linhas.reduce((a, l) => a + l.valor, 0)) };
+  }
+
+  // DRE de caixa (resultado do período): títulos pagos no período, agrupados por origem.
+  async dre(schema: string, de: any, ate: any): Promise<RelatorioDre> {
+    const linhas = await this.repo.pagosPorOrigem(schema, lim(de), lim(ate));
+    const receitas = linhas.filter((l) => l.tipo === 'receber').map((l) => ({ origem: l.origem, total: r2(l.total) })).sort((a, b) => b.total - a.total);
+    const despesas = linhas.filter((l) => l.tipo === 'pagar').map((l) => ({ origem: l.origem, total: r2(l.total) })).sort((a, b) => b.total - a.total);
+    const totalReceitas = r2(receitas.reduce((a, l) => a + l.total, 0));
+    const totalDespesas = r2(despesas.reduce((a, l) => a + l.total, 0));
+    return { receitas, despesas, totalReceitas, totalDespesas, resultado: r2(totalReceitas - totalDespesas) };
   }
 
   async criar(schema: string, tipo: TipoTitulo, e: any): Promise<string> {

@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { DataSource } from 'typeorm';
-import type { MovimentoFluxo, NovoTitulo, Titulo, TipoTitulo, TituloRepository } from '../../domain/financeiro/Titulo.js';
+import type { MovimentoFluxo, NovoTitulo, PagoOrigem, Titulo, TipoTitulo, TituloRepository } from '../../domain/financeiro/Titulo.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 const iso = (d: any) => (d ? new Date(d).toISOString() : null);
@@ -28,6 +28,19 @@ export class SqlTituloRepository implements TituloRepository {
       descricao: r.descricao, pessoaNome: r.pessoa_nome ?? null, valor: Number(r.valor),
       formaPagamento: r.forma_pagamento ?? null,
     }));
+  }
+
+  // Soma dos títulos pagos por tipo + origem, no período (pela data de pagamento).
+  async pagosPorOrigem(schema: string, de: string | null, ate: string | null): Promise<PagoOrigem[]> {
+    const s = validarSchema(schema);
+    const linhas = await this.ds.query(
+      `SELECT tipo, origem, SUM(valor)::numeric total
+         FROM "${s}".titulo
+        WHERE status = 'pago' AND pago_em IS NOT NULL
+          AND ($1::date IS NULL OR pago_em::date >= $1)
+          AND ($2::date IS NULL OR pago_em::date <= $2)
+        GROUP BY tipo, origem`, [de, ate]);
+    return linhas.map((r: any) => ({ tipo: r.tipo, origem: r.origem, total: Number(r.total) }));
   }
 
   async listar(schema: string, tipo: TipoTitulo): Promise<Titulo[]> {
