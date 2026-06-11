@@ -1,5 +1,5 @@
 import type { DataSource } from 'typeorm';
-import type { LinhaCategoria, LinhaEstoqueParado, LinhaProduto, LinhaValidadeLote, RelatorioRepository, RelatorioVendas } from '../../domain/relatorio/Relatorio.js';
+import type { LinhaCategoria, LinhaEstoqueParado, LinhaPerda, LinhaProduto, LinhaValidadeLote, RelatorioRepository, RelatorioVendas } from '../../domain/relatorio/Relatorio.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 const ATIVO = "status NOT IN ('orcamento','cancelado')";
@@ -41,7 +41,6 @@ export class SqlRelatorioRepository implements RelatorioRepository {
     return linhas.map((r: any) => ({ nome: r.nome, quantidade: Number(r.q), total: Number(r.total) }));
   }
 
-  // Vendas agrupadas pela categoria do produto (item sem produto/categoria cai em "—").
   async vendasPorCategoria(schema: string, de: string | null, ate: string | null): Promise<LinhaCategoria[]> {
     const s = validarSchema(schema);
     const linhas = await this.ds.query(
@@ -57,7 +56,6 @@ export class SqlRelatorioRepository implements RelatorioRepository {
     return linhas.map((r: any) => ({ categoria: r.categoria, quantidade: Number(r.q), total: Number(r.total) }));
   }
 
-  // Produtos por receita (desc) — base da Curva ABC (classificação fica no serviço).
   async curvaAbcProdutos(schema: string, de: string | null, ate: string | null): Promise<LinhaProduto[]> {
     const s = validarSchema(schema);
     const linhas = await this.ds.query(
@@ -70,7 +68,6 @@ export class SqlRelatorioRepository implements RelatorioRepository {
     return linhas.map((r: any) => ({ nome: r.nome, quantidade: Number(r.q), total: Number(r.total) }));
   }
 
-  // Lotes com saldo, ordenados pela validade (mais cedo primeiro; sem validade ao final).
   async validadeLotes(schema: string): Promise<LinhaValidadeLote[]> {
     const s = validarSchema(schema);
     const linhas = await this.ds.query(
@@ -89,7 +86,6 @@ export class SqlRelatorioRepository implements RelatorioRepository {
     });
   }
 
-  // Produtos com saldo em estoque + data da última saída (venda/separação).
   async estoqueParado(schema: string): Promise<LinhaEstoqueParado[]> {
     const s = validarSchema(schema);
     const linhas = await this.ds.query(
@@ -109,5 +105,28 @@ export class SqlRelatorioRepository implements RelatorioRepository {
       valor: Math.round(Number(r.valor) * 100) / 100,
       ultimaSaida: r.ultima_saida ? new Date(r.ultima_saida).toISOString() : null,
     }));
+  }
+
+  // Movimentos de PERDA no período (baixa/perda + ajuste de inventário). Valor ≈ qtd × custo do lote.
+  async perdasEstoque(schema: string, de: string | null, ate: string | null): Promise<LinhaPerda[]> {
+    const s = validarSchema(schema);
+    const linhas = await this.ds.query(
+      `SELECT m.produto_id, pr.nome produto, el.lote, m.quantidade, m.observacao motivo, m.criado_em,
+              COALESCE(el.custo_unitario, 0) custo
+         FROM "${s}".estoque_movimento m
+         JOIN "${s}".produto pr ON pr.id = m.produto_id
+         LEFT JOIN "${s}".estoque_lote el ON el.id = m.lote_id
+        WHERE m.tipo = 'perda'
+          AND ($1::date IS NULL OR m.criado_em::date >= $1)
+          AND ($2::date IS NULL OR m.criado_em::date <= $2)
+        ORDER BY m.criado_em DESC`, [de, ate]);
+    return linhas.map((r: any) => {
+      const qtd = Number(r.quantidade), custo = Number(r.custo);
+      return {
+        produtoId: r.produto_id, produto: r.produto, lote: r.lote ?? null, quantidade: qtd,
+        motivo: r.motivo ?? null, data: new Date(r.criado_em).toISOString(),
+        valor: Math.round(qtd * custo * 100) / 100,
+      };
+    });
   }
 }

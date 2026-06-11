@@ -1,4 +1,4 @@
-import type { ClasseAbc, LinhaAbc, LinhaCategoria, LinhaEstoqueParado, LinhaProduto, RelatorioAbc, RelatorioRepository, RelatorioVendas } from '../../domain/relatorio/Relatorio.js';
+import type { ClasseAbc, LinhaAbc, LinhaCategoria, LinhaEstoqueParado, LinhaPerda, LinhaProduto, RelatorioAbc, RelatorioRepository, RelatorioVendas } from '../../domain/relatorio/Relatorio.js';
 const lim = (v: any): string | null => (v && /^\d{4}-\d{2}-\d{2}$/.test(String(v)) ? String(v) : null);
 const r2 = (n: number) => Math.round(n * 100) / 100;
 
@@ -9,6 +9,7 @@ export class RelatoriosService {
   vendasPorCategoria(schema: string, de: any, ate: any): Promise<LinhaCategoria[]> { return this.repo.vendasPorCategoria(schema, lim(de), lim(ate)); }
   validadeLotes(schema: string) { return this.repo.validadeLotes(schema); }
   estoqueParado(schema: string) { return this.repo.estoqueParado(schema); }
+  perdasEstoque(schema: string, de: any, ate: any): Promise<LinhaPerda[]> { return this.repo.perdasEstoque(schema, lim(de), lim(ate)); }
 
   // Curva ABC de produtos: ordenados por receita, classe A (≤80% acumulado), B (≤95%), C (resto).
   async curvaAbc(schema: string, de: any, ate: any): Promise<RelatorioAbc> {

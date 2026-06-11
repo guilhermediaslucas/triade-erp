@@ -40,6 +40,7 @@ import { RelCategorias } from './pages/RelCategorias.js';
 import { RelAbc } from './pages/RelAbc.js';
 import { RelValidade } from './pages/RelValidade.js';
 import { RelEstoqueParado } from './pages/RelEstoqueParado.js';
+import { RelPerdas } from './pages/RelPerdas.js';
 import { Condicoes } from './pages/Condicoes.js';
 import { Comissoes } from './pages/Comissoes.js';
 import { ContasCorrentes } from './pages/ContasCorrentes.js';
@@ -89,6 +90,7 @@ export function App() {
                 <Route path="/relatorios/curva-abc" element={<Protegida cap="relatorios.ver"><RelAbc /></Protegida>} />
                 <Route path="/relatorios/validade" element={<Protegida cap="relatorios.ver"><RelValidade /></Protegida>} />
                 <Route path="/relatorios/estoque-parado" element={<Protegida cap="relatorios.ver"><RelEstoqueParado /></Protegida>} />
+                <Route path="/relatorios/perdas" element={<Protegida cap="relatorios.ver"><RelPerdas /></Protegida>} />
                 <Route path="/cadastros/contas-correntes" element={<Protegida cap="cadastros.conta.listar"><ContasCorrentes /></Protegida>} />
                 <Route path="/cadastros/categorias-financeiras" element={<Protegida cap="cadastros.catfin.listar"><CategoriasFinanceiras /></Protegida>} />
                 <Route path="/cadastros/condicoes" element={<Protegida cap="cadastros.condicao.listar"><Condicoes /></Protegida>} />

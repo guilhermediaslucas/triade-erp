@@ -1166,3 +1166,23 @@ Object.assign(es, {
   'abc.titulo': 'Curva ABC de productos', 'abc.sub': 'Productos por participación en los ingresos. A ≈ 80%, B ≈ 15%, C ≈ 5%.',
   'abc.pct': '% de ingresos', 'abc.acumulado': '% acumulado', 'abc.classe': 'Clase', 'abc.itens': 'ítems',
 });
+
+// --- Refinamento: Relatório de Perdas de estoque ---
+Object.assign(pt, {
+  'menu.rel_perdas': 'Perdas de estoque',
+  'perdas.titulo': 'Perdas de estoque', 'perdas.sub': 'Baixas por perda no período (vencimento, avaria, ajuste de inventário, etc.).',
+  'perdas.motivo': 'Motivo', 'perdas.todos': 'Todos os motivos', 'perdas.vazio': 'Nenhuma perda no período.',
+  'perdas.kpi_valor': 'Valor perdido', 'perdas.kpi_itens': 'Itens perdidos', 'perdas.kpi_lancamentos': 'Lançamentos',
+});
+Object.assign(en, {
+  'menu.rel_perdas': 'Stock losses',
+  'perdas.titulo': 'Stock losses', 'perdas.sub': 'Write-offs in the period (expiry, damage, inventory adjustment, etc.).',
+  'perdas.motivo': 'Reason', 'perdas.todos': 'All reasons', 'perdas.vazio': 'No losses in the period.',
+  'perdas.kpi_valor': 'Lost value', 'perdas.kpi_itens': 'Lost items', 'perdas.kpi_lancamentos': 'Entries',
+});
+Object.assign(es, {
+  'menu.rel_perdas': 'Pérdidas de stock',
+  'perdas.titulo': 'Pérdidas de stock', 'perdas.sub': 'Bajas por pérdida en el período (vencimiento, avería, ajuste de inventario, etc.).',
+  'perdas.motivo': 'Motivo', 'perdas.todos': 'Todos los motivos', 'perdas.vazio': 'Sin pérdidas en el período.',
+  'perdas.kpi_valor': 'Valor perdido', 'perdas.kpi_itens': 'Ítems perdidos', 'perdas.kpi_lancamentos': 'Registros',
+});

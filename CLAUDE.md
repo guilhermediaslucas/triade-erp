@@ -176,6 +176,25 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Sistema PUBLICADO na nuvem (Cloudflare Pages + Render + Neon).** Site real no ar
+  em `https://triade-erp.pages.dev` (Cloudflare Pages, deploy via Git), API no Render
+  (`https://triade-api.onrender.com`, `/health` ok), banco na branch **production** do Neon
+  (migrations + seed aplicados: empresa `belle`/`admin@belle.com.br`). Login ponta a ponta funcionando.
+  Ajuste de produção: `apps/web/src/api/client.ts` usa **`VITE_API_URL`** (build) p/ chamar a API direto
+  (CORS na API) — committado `apps/web/.env.production` (URL pública) com exceção no `.gitignore`.
+  Domínio `triadeerp.com.br`: nameservers do Cloudflare setados no Registro.br (em propagação); falta
+  só adicionar o Custom Domain no Pages quando ficar "Active". **Pendente (Gui):** trocar senha do admin,
+  provisionar empresa real, apertar `CORS_ORIGIN` p/ a URL do site, finalizar o domínio.
+- **2026-06-11** — **Refinamento — Relatório de Perdas de estoque.** **Sem migration**; reusa
+  `relatorios.ver`. **Backend:** `RelatorioRepository.perdasEstoque` (movimentos `tipo='perda'` no
+  período — baixa/perda + ajuste de inventário; JOIN produto, LEFT JOIN lote p/ custo; `valor = qtd ×
+  custo`; ordena por data desc); rota `GET /relatorios/perdas-estoque`. **Frontend:** tela
+  **Relatórios › Perdas de estoque** (filtro de período + motivo, KPIs valor/itens/lançamentos, tabela
+  data/produto/lote/motivo/qtd/valor com pill de motivo, export CSV); menu + rota + i18n pt/en/es.
+  **Validação:** **type-check api+web verde (exit 0)** + **e2e Postgres real (5 PASS)** via pglite:
+  só perdas no período (saída/entrada/fora ignorados), valor = qtd×custo (30 e 20), total 50.
+  **Pendente:** Gui `git push` + testar. **Próximo (opcional):** histórico de inventários, cadastros
+  de credores/favorecidos/tipos de documento, CRM (em revisão pelo Gui), ou conciliação bancária.
 - **2026-06-11** — **Deploy na nuvem (preparação) — Netlify + Render + Neon.** Ajustes p/ produção:
   **API** (`env.ts`) passa a usar `process.env.PORT` (Render injeta) com fallback `API_PORT`/3333;
   novo `corsOrigin` (`CORS_ORIGIN`, padrão `*`). **`server.ts`** ganhou middleware **CORS** (headers +
@@ -780,272 +799,4 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   vendedor loga e só tem dashboard.ver, guard bloqueia vendedor (403) em listar usuários e
   criar perfil, editar perfil reflete na hora — **12/12 PASS**. **Pendente:** Gui rodar
   `db-setup.bat` (aplica migration 002 + cria perfil admin) e testar telas no navegador + commit.
-- **2026-06-10** — **Fase 0 implementada — primeiro código de sistema.** Sai do
-  planejamento puro. **Decisões:** MVP = Fases 0–6 (sem fiscal/Fase 7 por ora,
-  operação interna); banco de dev/prod = **Postgres na nuvem (Neon**, região
-  sa-east-1). Repo git inicializado e no GitHub (`guilhermediaslucas/triade-erp`).
-  Demo do mockup planejada via Netlify (`_redirects` + `Info/DEPLOY-MOCKUP.md`).
-  Orçamento das fases em `Info/ORCAMENTO-FASES.md` (modelo "Claude + Gui").
-  **Monorepo** npm workspaces: `packages/shared` (tipos/i18n), `apps/api`
-  (Node+TS, Express, TypeORM/pg), `apps/web` (React+Vite+TS). TS estrito.
-  **Backend (hexagonal):** `domain/` puro (entidades Empresa/Usuario, portas
-  Clock/HashSenha/GeradorToken, repos como interfaces, `ErroAplicacao` com chave
-  i18n); `application/` (`AutenticarUsuario`); `infra/` (`env` centralizado com
-  busca do .env subindo à raiz, `AppDataSource` único e DB-agnóstico com SSL
-  configurável, `BcryptHashSenha` com **bcryptjs** — puro JS, sem build nativo
-  no Windows, `JwtGeradorToken`, repos SQL parametrizados, **runner de migrations
-  por tenant** com ledger `migracao` em public e em cada schema, `seedDemo`
-  idempotente); `interface/` (composition root com DI manual, middleware de auth
-  JWT, rotas `/auth/login` e `/me`, `/health`). **Multi-tenant schema-por-tenant:**
-  `public.empresa` (registro) + schema `t_<codigo>` por tenant com `usuario`;
-  login resolve empresa por código → schema → usuário. Nome de schema validado
-  (anti-injeção). **Frontend:** i18n próprio pt-BR/en-US/es (chaves, sem texto
-  fixo), `AuthContext` (token em localStorage), client com proxy `/api`→3333,
-  tela de Login (empresa+email+senha), layout sidebar/topbar, rota protegida,
-  dashboard placeholder. **Validação:** type-check verde nos 3 pacotes + build
-  Vite OK + **teste e2e contra Postgres real** (embedded-postgres): login certo
-  gera token, senha/empresa erradas → 401 com chave i18n, `/me` com/sem token,
-  seed idempotente — todos PASS. **Scripts Windows:** `db-setup.bat` (migrate+seed),
-  `dev.bat` (sobe API+Web). `.env` com `DB_URL`/`DB_SSL`/`JWT_SECRET` (gitignored).
-  Demo seed: empresa `belle` / `admin@belle.com.br` / `admin123`. **Pendente:**
-  Gui rodar na máquina dele e confirmar login no navegador + commit/push.
-- **2026-06-10** — **Remoção da tela "Formas de pagamento"** (mockup). A tela
-  `s-formas-pgto` (menu Cadastros › Financeiro) era placeholder estático: tabela
-  com 4 linhas hardcoded, chips (`Pix/TED/Boleto/Dinheiro/Cartão/Reembolso`) e
-  campos de data **sem nenhum JS** — nenhum event listener, nenhuma leitura de
-  dados reais. As chips nem batiam com as formas de baixa que o sistema usa de
-  fato (`Conta corrente/Dinheiro/Cartão/Reembolso`, via `bxForma`/`data-bx-forma`).
-  O que ela prometia (pagamentos por forma/período) já é coberto pelo **Fluxo de
-  caixa** + relatórios financeiros, alimentados pelas baixas do Contas a pagar/
-  receber. Removidos: a `<section id="s-formas-pgto">`, o link de menu
-  (`<a data-go="formas-pgto">`), o registro de permissão (`{id:'formas-pgto'...}`)
-  e a entrada da busca (`{l:'Formas de pagamento'...}`). Sem referência órfã
-  (`grep` limpo) e JS validado (`node --check`). **Nota:** a pasta
-  `Desktop\ERP_TRIADE` **não é repositório git** — não houve commit/push.
-  **Sem código de sistema ainda** (mockup).
-- **2026-06-09** — **Rodada de correções + recebimento multi-lote + Marcas + motoboy
-  na expedição** (mockup). **Correções:** romaneio com logo da empresa **preta de
-  verdade** (conversão via canvas `source-in` preto — `window._abrirRomaneioPedido`
-  reutilizável); **alinhamento** dos títulos novos no Contas a pagar/receber
-  (MutationObserver injeta a coluna `pe-cell` Previsto/Efetivo em qualquer linha
-  nova); **Credores/Reembolso** ganhou CRUD (editar/excluir/salvar `modalCredor`,
-  com `data-*`); **Recebimento** não abre mais sozinho (form `#entFormWrap`
-  escondido até clicar **Receber**); **Lotes do produto** — duplo-clique agora
-  abre só a **movimentação** (`_abrirMovLote`), sem editar quantidade.
-  **Cadastro Marcas de produtos** (`s-marcas`, `modalMarca`, store
-  `triade_marcas_<emp>` {nome,fab,ativo}, `window._marcasAtivas`, menu Cadastros›
-  Estoque + perm `marcas`). **Recebimento multi-lote:** form reescrito — marca
-  vira **select** (do cadastro Marcas); botão **Adicionar lote**; cada bloco
-  (`.receb-lote`) tem lote/validade/qtd + bipagem própria (`.rl-scan`, debounce
-  s/ Enter) e contador; confirma só quando soma das qtds dos lotes = qtd da nota
-  e cada bloco bipado completo; cria/mescla N lotes com etiquetas+mov. **Motoboy
-  na expedição:** modal forma de envio mostra **select `#fenvMotoboy`** (do
-  cadastro) quando tipo=Motoboy. **Romaneio automático:** ao confirmar a
-  expedição (`fenvConfirmar`), abre `_abrirRomaneioPedido`. **Limpeza v3**
-  (flag `triade_clear_v3`): zera movimentação (pedidos/kanban/etiquetas/estoque/
-  receber/pagar/perdas/inventários/**recebimentos**/notif), mantém cadastros.
-  Validado com `node --check` + testes de lógica (multi-lote, campanhas).
-  **Sem código de sistema ainda** (mockup).
-- **2026-06-09** — **Tabela de preço: histórico de campanhas + romaneio logo preta**
-  (mockup). Preço base mudou de **uma** campanha (`camp`) para **lista**
-  (`camps:[]`) em `triade_precobase_<emp>` `{produto:{fixo,camps:[{preco,motivo,
-  de,ate}]}}` — migra `camp`→`camps[]` automático (`_campsOf`). `_precoBase`
-  usa `_campVigente` (campanha que cobre a data; se sobrepõem, a de **início
-  mais recente**) → senão fixo. `window._campStatus` = vigente/agendada/
-  encerrada. Tela base reformulada: colunas Produto·Categoria·**Preço fixo**·
-  **Campanha vigente**·botão **Campanhas (N)** (`.pcb-camp`); modal
-  **`modalCampanhas`** (`tblCampanhas`) lista o histórico com status + form
-  "Nova campanha" (`campAdd`) + remover (`camp-del`). `_salvar` base agora só
-  grava o `fixo` (preserva `camps`). Modo "Por cliente" inalterado. **Romaneio:**
-  logo da empresa **sempre preta** (`filter:grayscale(1) brightness(0)` na img;
-  texto fallback `color:#000`). Validado com `node --check` + teste de vigência/
-  sobreposição/status. **Sem código de sistema ainda** (mockup).
-- **2026-06-09** — **Rodada grande "compra/frete/logística" — EM ANDAMENTO (blocos).**
-  Decisões fechadas com o Gui: (1) entrada de estoque em **2 etapas** —
-  Financeiro lança a NOTA (fornecedor, produto, qtd, custo unit., total auto) →
-  gera título no Contas a pagar + **pendência de recebimento**; Estoque abre a
-  pendência, informa **marca** + bipa etiquetas + distribui por **lote/validade**
-  (sem localização, sem estoque mínimo na entrada — mínimo só no cadastro do
-  produto). (2) Bipagem **registra ao ler, sem Enter** (debounce ~120ms).
-  (3) Romaneio **imprimível** com logo da empresa (esq.) + marca TRIADE (dir.) +
-  **vendedor** + itens/lotes/endereço. (4) **Pix = só à vista**. (5) Frete:
-  **Motoboy** = distância **simulada por CEP** × R$/km (edit.) com **mínimo**
-  (memória de cálculo "12 km × R$2 = R$24, mín R$20"); **Correios/Transportadora**
-  = valor **manual**. (6) Novo menu **Logística › Gestão de fretes** (alimentado
-  pelos fretes dos pedidos; km/mín editáveis; **gerar títulos por motoboy** no
-  Contas a pagar, igual fechar comissão). (7) Novo cadastro **Pessoas › Motoboys**
-  (alimenta o seletor de motoboy no pedido). (8) Obrigatório: **endereço de
-  entrega** no pedido e **CPF/CNPJ** em cliente e fornecedor. (9) Pedido mostra
-  **qtd disponível** + campo **Frete** no total. (10) Arrastar p/ **Em separação**
-  abre a janela de separação/bipagem.
-  **JÁ APLICADO (blocos 1,2,3,5,6):**
-  **B1 Pedido** — `#npFrete` no card de totais + `_npRecalc` somando frete;
-  `#npSubItens`; **forma de entrega** `#npFormaEntrega` + `#npMotoboy` +
-  auto-cálculo do frete (`_recalcFretePedido`: motoboy = km simulado por CEP via
-  `_simKm` empresa→entrega × kmRate, mín; correios/transp = manual; retirada=0;
-  memória em `#npFreteMemo`); Pix trava `#npCondPgto` (`_aplicarPixAvista`);
-  `#itDisp` disponível no modal de item (`_dispProdutoPedido`, aviso se qtd>disp);
-  `_coletaPedido(true)` exige endereço ao Criar e grava `frete/formaEntrega/
-  motoboy/distanciaKm`. **B2** — CPF/CNPJ obrigatório (cliente `_salvar`,
-  fornecedor `frnSalvar` e cadastro rápido `mfSalvar`); cadastro **Motoboys**
-  (`s-motoboys`+`modalMotoboy`, store `triade_motoboys_<emp>`, `window.
-  _motoboysAtivos`, permissão `motoboys`, menu Pessoas). **B3** — bipagem sem
-  Enter (debounce 120ms em `#entScan`/`#sepScan`/`#invScan`) + arrastar p/
-  `aprovado`/`separacao` abre `_abrirSeparacao`. **B5 Logística › Gestão de
-  fretes** (`s-gestao-fretes`, menu+perm `logistica`/`gestao-fretes`; store
-  `triade_frete_<emp>` {kmRate,minMotoboy} edit.; tabela dos pedidos c/ frete;
-  **Gerar títulos por motoboy** → Contas a pagar, soma por motoboy no período).
-  **B6 Romaneio** — botão `#pvRomaneio` na visualização do pedido abre página
-  imprimível com **logo da empresa** (esq.) + **TRIADE** (dir.) + **vendedor** +
-  cliente/endereço/forma de envio + itens/lotes. Tudo validado com `node --check`.
-  **B4 Entrada em 2 etapas — APLICADO.** **Nota (Financeiro):** tela
-  `s-nota-entrada` (menu Financeiro, perm `nota-entrada`): fornecedor, produto,
-  qtd, custo unit., total auto; "Lançar nota" cria título no **Contas a pagar**
-  (`data-origem='compra'`) + pendência em **`triade_recebimentos_<emp>`**
-  `{id,fornecedor,produto,qtd,custo,total,nf,status:'pendente'}`. **Recebimento
-  (Estoque):** `s-entrada` reescrita — tabela `#tblRecebPend` lista pendências;
-  "Receber" abre `#entFormWrap` com produto/fornecedor/qtd/custo/NF readonly +
-  campos **marca/lote/validade** + bipagem; "Confirmar recebimento"
-  (`entConfirmar`) cria o lote com etiquetas/mov e chama
-  `window._recebimentoConcluir(id)` (marca recebido). **Sem localização nem
-  estoque mínimo** na entrada. Validado com `node --check` + teste de fluxo.
-  **Sem código de sistema ainda** (mockup).
-- **2026-06-09** — **Limpeza v2 + Cliente PF/PJ** (mockup). **Limpeza única v2**
-  (flag `triade_clear_v2`, IIFE no boot): zera em TODAS as empresas os pedidos
-  (`pedidoData`/`pedidoItens`/`kbCom`/`kbExp`), **etiquetas** (`triade_etiquetas_`
-  → `{}`), **entradas/lotes do estoque** (`d.estoque=''` + `#tblEstoque`),
-  **Contas a receber/pagar** (+ conciliação derivada) e **notificações**; também
-  zera `triade_perdas_`/`triade_inventarios_` (órfãos do estoque). **Mantém**
-  cadastros, tabela de preços e CRM. **Cliente PF/PJ:** modal de cliente ganhou
-  **Tipo de pessoa** (`#mclTipoPessoa` PJ/PF). PJ = Razão social + Nome fantasia
-  + CNPJ (como antes); PF = Nome completo + CPF (esconde fantasia/CNPJ via
-  `_aplicarTipoPessoa`, labels dinâmicas `#mclNomeLabel`). Linha guarda
-  `data-pessoa`/`data-doc`/`data-cpf`; coluna da lista virou **CPF/CNPJ**
-  (mostra `docPessoa`). Editar repopula tipo+doc. Adicionada máscara `.mask-cpf`
-  (`###.###.###-##`, delegada) — corrige também o CPF do favorecido. Validado
-  com `node --check`. **Sem código de sistema ainda** (mockup).
-- **2026-06-09** — **Lotes sem exclusão + zerado preservado + movimentação por lote**
-  (mockup). **Excluir lote removido de vez:** tirados os botões `.ep-excluir`/
-  `.ep-bulk-excluir`, a coluna de seleção do `tblEstoqueProd`, a permissão
-  `estoque:excluir-lote`, o CSS `sem-excluir-lote` e a IIFE
-  `_applyExcluirLotePerm`. (Exclusão de **produto** inteiro — `estq-excluir` —
-  continua.) **Lote nunca some:** ao zerar (saída por leitura, baixa/perda
-  manual, inventário) o lote fica com `status:'zerado'` + `zeradoEm`, saldo 0,
-  no histórico — `_consumirEtiquetas` e `pdConfirmar` não removem mais o lote
-  nem o produto. Cada lote ganhou `status` (`ativo`/`zerado`) e **`mov:[]`**
-  (log de movimentação). **Filtro "Incluir zerados (histórico)"**
-  (`#epShowZerados`): por padrão `tblEstoqueProd` mostra só ativos; ligado,
-  revela zerados (linha esmaecida + selo `Zerado · data`). KPIs/saldo contam só
-  ativos. **Log de movimentação por lote:** registrado em cada ponto —
-  Entrada (entConfirmar, novo lote e reposição), Saída (`_consumirEtiquetas`,
-  ref `Pedido PE-xxxx`, 1 por etiqueta), Perda (`pdConfirmar` + inventário via
-  `_baixarEtiquetasComoPerda`, ref = motivo) e marcador `Zerado`. Cada movimento
-  guarda `{tipo,qtd,data(hora),resp,ref,etiqueta,obs,saldoApos}`. **Clicar no
-  lote** (nome ou ícone relógio `.ep-mov`) abre **`modalLoteMov`**: resumo
-  (produto, lote, validade, fornecedor/marca, NF, situação/saldo) + tabela
-  `tblLoteMov` com todos os movimentos + **Exportar Excel** (`data-export-table`).
-  Helper `_agoraDH()` (data+hora). Validado com `node --check` + teste de ciclo
-  (2 saídas → zerado, índice `saida`, log com refs). **Sem código de sistema
-  ainda** (mockup).
-- **2026-06-09** — **Expedição rastreada + Inventário com registro/log** (mockup).
-  **Expedido por:** ao confirmar a forma de envio (Aguardando retirada →
-  Expedido, `fenvConfirmar`), grava `data-expedido-por` (usuário logado) +
-  `data-expedido-em` (data/hora) no card e no espelho do Comercial — mesma
-  lógica do `data-separado-por`. Novo campo **"Expedido por"** (`#pvExpedido`)
-  na visualização do pedido. **Inventário reestruturado** (`s-inventario`):
-  painel **Iniciar** (data `#invData` + responsável `#invResp` → `#invIniciar`),
-  painel **Em andamento** (`#invEmAndamento`: bipagem + KPIs + faltantes +
-  `#invCancelar`/`#invFinalizar`/`#invFinalizarBaixar`) e **Histórico**
-  (`tblInvHist` + export Excel). Cada inventário finalizado vira um registro em
-  **`triade_inventarios_<emp>`** `{data,resp,criadoEm,finalizadoEm,esperados,
-  encontrados,faltando,baixouPerda,faltantes:[]}`. "Finalizar e baixar
-  faltantes como perda" usa `_baixarEtiquetasComoPerda`. Modal `modalInvDet`
-  (`tblInvDet`) lista os faltantes de um inventário. **Relatório de
-  inventários:** card no hub Estoque + tela `s-rel-inventarios` (`tblRelInv`,
-  `rel:estoque` no REL_SCREENS), alimentada por `_renderRelInventarios`.
-  Validado com `node --check` + teste funcional (finalizar com baixa,
-  esperadas pós-baixa). **Sem código de sistema ainda** (mockup).
-- **2026-06-09** — **Código de barras / rastreabilidade por item** (mockup).
-  Modelo: cada item físico tem uma **etiqueta** (impressa pelo usuário, lida
-  pelo sistema — leitor USB modo teclado). Índice global
-  **`triade_etiquetas_<emp>`** = `{ "<code>": {produto,lote,validade,local,
-  fornecedor,marca,custo,nf,cadastro,status} }` (status `estoque`→`saida`/
-  `perda`); cada lote ganhou `etiquetas:[]`, `fornecedor`, `marca`, `nf`.
-  Helpers em `window`: `_etqIndex`/`_saveEtqIndex`, `_consumirEtiquetas(codes,
-  status)` (remove do lote, decrementa saldo, marca status), `_baixarEtiquetas
-  ComoPerda(codes,motivo)` (registra em `triade_perdas_<emp>` + consome).
-  **Entrada (`s-entrada`) reestruturada:** cards Dados do lote (produto,
-  fornecedor, **marca**, lote, validade, qtd, custo, local, mínimo) · Nota
-  fiscal (número/série/emissão/chave) · **Etiquetas dos itens** — caixa de
-  bipagem (`.scan-box` `#entScan`, Enter adiciona; chips `.etq-chip`;
-  `#entScanCount`). Recusa etiqueta repetida (na entrada ou já no índice).
-  **Confirmar entrada** só habilita quando bipados = quantidade; grava
-  `etiquetas` no lote + registra cada code no índice. Guard
-  `s-entrada.active` p/ não colidir com o `#entConfirmar` duplicado do modal de
-  entrega. **Saída — separação por leitura** (modal `modalSeparacao`): caixa
-  `#sepScan` + coluna **Bipados** (`.sep-bip`) + `#sepScanCount`; bipar casa a
-  etiqueta com um item do pedido (pelo produto), monta `it.lotes`/`it.etqLidas`,
-  auto-marca **Conferido** quando bipados=qtd; recusa etiqueta fora do pedido/
-  já bipada/fora do estoque. Ao **Aprovar separação**, `_consumirEtiquetas`
-  baixa os itens do estoque (status `saida`). Continua possível usar
-  *Selecionar lotes* sem leitor. **Inventário por leitor** (`s-inventario`,
-  permissão `inventario`, menu Estoque): caixa `#invScan`, KPIs esperados/
-  encontrados/faltando, lista `tblInvFalta` de não localizadas, **Reiniciar
-  contagem** e **Baixar não localizados como perda** (Ajuste de inventário →
-  `_baixarEtiquetasComoPerda`, alimenta o relatório de perdas). CSS novo:
-  `.scan-box`, `.etq-chip`. Validado com `node --check` + teste funcional
-  ponta-a-ponta (entrada/duplicidade, separação casa/recusa, inventário
-  faltantes→perda). **Sem código de sistema ainda** (mockup).
-- **2026-06-09** — **Baixa / perda de estoque** (mockup). Nova capability de
-  tela `baixa-perda` ("Baixa / perda de estoque") no catálogo + item no menu
-  Estoque (`<a data-go="baixa-perda">`). Nova tela **`s-perda`** (espelha
-  Entrada/Transferência): produto (`pdProduto`+`dlPerdaProduto`, populado da
-  posição de estoque) → lote (`pdLote`, lotes com saldo>0 do produto) → qtd
-  (`pdQtd`, limitada ao saldo) → motivo (`pdMotivo`: Vencimento/Avaria/Furto/
-  Ajuste de inventário/Devolução descartada/Outro) → data (`pdData`) →
-  responsável (auto, `_userName`) → observação (`pdObs`). Cards calculados:
-  custo unit. (do lote), **valor da perda** e saldo após. **Confirmar baixa**
-  (`pdConfirmar`): registra no histórico **`triade_perdas_<emp>`**
-  (`window._perdasEstoque`), **decrementa o saldo do lote** (se zerar, remove o
-  lote; se for o último, remove o produto da posição) e re-renderiza
-  (`_renderRow`/`_persist`/`_refreshKpi`). **NÃO** gera lançamento no Financeiro
-  (decisão do Gui — a perda já reduz o valor do estoque). Atalho por lote:
-  botão `.ep-perda` em *Lotes do produto* (`tblEstoqueProd`) abre a tela
-  pré-preenchida (`window._abrirPerda(produto,lote)`). **Relatório de perdas:**
-  card no hub Estoque + tela **`s-rel-estoque-perdas`** (`rel:estoque`): KPIs
-  (itens, valor, lançamentos), filtro de data + motivo, tabela
-  (`tblRelPerdas`) com total e export Excel (`data-export-table`),
-  `window._refreshRelPerdas`/`_relPerdas`. Validado com `node --check` +
-  teste funcional da baixa (saldo/remoção de lote) e do filtro. **Sem código
-  de sistema ainda** (mockup).
-- **2026-06-09** — Rodada **preço / lote** no mockup. **Excluir lote virou
-  permissão:** novo item de catálogo `estoque:excluir-lote` ("Excluir lote
-  (estoque)"); sem ele os botões de excluir lote (`.ep-excluir` /
-  `.ep-bulk-excluir` no `tblEstoqueProd`) ficam escondidos via classe
-  `body.sem-excluir-lote` (IIFE `window._applyExcluirLotePerm`, reavalia no
-  boot e ao navegar p/ estoque). **Preço saiu do cadastro do produto:** campo
-  `pfPreco` removido da tela de produto (+ nota apontando p/ Comercial › Tabela
-  de preço); `_fillProduto`/`_salvar` não usam mais o campo — o preço exibido
-  na lista de produtos vem de `window._precoBase`; removida a permissão
-  `produto:preco-venda` e a função `_aplicarPermPreco`. **Tabela de preço
-  (`s-precos-cliente`) reestruturada** com seletor `pcModo` (**Preço base
-  (geral)** × **Por cliente**) e `thead` dinâmico (`pcThead`/`_setThead`).
-  Novo store **`triade_precobase_<emp>`** = `{ "<produto>": { fixo:<n>,
-  camp?:{preco,motivo,de,ate} } }` — **preço fixo** + **uma campanha/motivo
-  por vigência opcional**. `window._precoBase(produto,dataISO)` resolve:
-  campanha vigente na data (se preço>0 e dentro do de/até) → senão preço fixo →
-  senão null. `window._refreshProdutoPrecos` propaga o preço base p/
-  `tblProdutos[data-preco]`/célula e `dlProdutos`. **Preço efetivo no pedido**
-  (`itProd change`): **preço do cliente** (`_precoCliente`, vigente) → **preço
-  base** (`_precoBase`, campanha/fixo) → fallback do datalist; hint
-  `#itPrecoHint` quando há preço de cliente. Modo cliente continua salvando em
-  `triade_precos_<emp>` (Fixo/Período) e mostra o preço base como referência.
-  Validado com `node --check` (IIFE de preços + handler do pedido). **Sem
-  código de sistema ainda** (mockup).
-- **2026-06-08** — Rodada grande de ajustes no mockup (`erp-mockup.html`),
-  módulos Comercial / Estoque / Dashboard. **Pedidos/orçamento:** termo
-  "Rascunho" → **"Orçamento"** em todo texto visível (chave interna
-  `data-col="rascunho"` preservada, sem migração de dados). Sequencial do
-  pedido agora **persiste por empresa** (`triade_pedseq_<emp>`, sem reiniciar
-  a cada reload; padding corrigido p/ 6 dígitos) e o código é exibido como
-  **"DD/MM/AAAA
+- **2026-06-10** — **Fase 0 implementada — primei
