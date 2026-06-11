@@ -29,7 +29,7 @@
 - [x] Conciliação bancária — etapa 1 (manual por conta) + etapa 2 (importar extrato OFX/CSV com match automático por valor)
 - [x] Parcelar / Multiplicar títulos (dividir o valor em N parcelas ou replicar o valor recorrente; substitui o original)
 - [x] Categorias financeiras (cadastro receita/despesa + vínculo no título) — Tipos de documento / Credores: futuro
-- [ ] KPIs clicáveis + filtros avançados nas contas (mockup tem modal de 14 filtros)
+- [x] Filtros avançados nas Contas (busca, situação, categoria, faixa de vencimento, faixa de valor) — KPIs refletem o filtro
 - [x] Exportar Excel formatado (.xls SpreadsheetML, sem dependência) ao lado do CSV em todos os relatórios
 
 ## Cadastros (Pessoas)

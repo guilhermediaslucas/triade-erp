@@ -1341,3 +1341,20 @@ Object.assign(es, {
 Object.assign(pt, { 'rel.exportar_csv': 'Exportar CSV', 'rel.exportar_xlsx': 'Exportar Excel' });
 Object.assign(en, { 'rel.exportar_csv': 'Export CSV', 'rel.exportar_xlsx': 'Export Excel' });
 Object.assign(es, { 'rel.exportar_csv': 'Exportar CSV', 'rel.exportar_xlsx': 'Exportar Excel' });
+
+// --- Refinamento: filtros avançados nas Contas ---
+Object.assign(pt, {
+  'fin.filtros': 'Filtros', 'fin.f_busca': 'Buscar', 'fin.f_busca_ph': 'Descrição ou pessoa…',
+  'fin.f_situacao': 'Situação', 'fin.f_todos': 'Todos', 'fin.f_venc_de': 'Vence de', 'fin.f_venc_ate': 'Vence até',
+  'fin.f_min': 'Valor mín.', 'fin.f_max': 'Valor máx.', 'fin.f_limpar': 'Limpar filtros',
+});
+Object.assign(en, {
+  'fin.filtros': 'Filters', 'fin.f_busca': 'Search', 'fin.f_busca_ph': 'Description or person…',
+  'fin.f_situacao': 'Status', 'fin.f_todos': 'All', 'fin.f_venc_de': 'Due from', 'fin.f_venc_ate': 'Due until',
+  'fin.f_min': 'Min amount', 'fin.f_max': 'Max amount', 'fin.f_limpar': 'Clear filters',
+});
+Object.assign(es, {
+  'fin.filtros': 'Filtros', 'fin.f_busca': 'Buscar', 'fin.f_busca_ph': 'Descripción o persona…',
+  'fin.f_situacao': 'Situación', 'fin.f_todos': 'Todos', 'fin.f_venc_de': 'Vence desde', 'fin.f_venc_ate': 'Vence hasta',
+  'fin.f_min': 'Valor mín.', 'fin.f_max': 'Valor máx.', 'fin.f_limpar': 'Limpiar filtros',
+});

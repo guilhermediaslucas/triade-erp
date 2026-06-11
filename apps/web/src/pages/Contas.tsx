@@ -29,20 +29,39 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   const [baixar, setBaixar] = useState<Titulo | null>(null);
   const [sel, setSel] = useState<Set<string>>(new Set());
   const [baixaMassa, setBaixaMassa] = useState(false);
+  const [filtroAberto, setFiltroAberto] = useState(false);
+  const [fSit, setFSit] = useState<'todos' | 'aberto' | 'vencido' | 'pago'>('todos');
+  const [fQ, setFQ] = useState(''); const [fCat, setFCat] = useState('');
+  const [fVde, setFVde] = useState(''); const [fVate, setFVate] = useState('');
+  const [fMin, setFMin] = useState(''); const [fMax, setFMax] = useState('');
 
   async function carregar() { try { setItens(await api.get('/financeiro/' + tipo, token!)); setSel(new Set()); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
   useEffect(() => { carregar(); /* eslint-disable-next-line */ }, [tipo]);
 
+  const categorias = useMemo(() => Array.from(new Set(itens.map((x) => x.categoriaFinanceiraNome).filter(Boolean))) as string[], [itens]);
+  const filtrados = useMemo(() => itens.filter((x) => {
+    if (fSit !== 'todos' && situacao(x) !== fSit) return false;
+    if (fCat && (x.categoriaFinanceiraNome ?? '') !== fCat) return false;
+    if (fVde && x.vencimento < fVde) return false;
+    if (fVate && x.vencimento > fVate) return false;
+    if (fMin && x.valor < Number(fMin)) return false;
+    if (fMax && x.valor > Number(fMax)) return false;
+    if (fQ) { const q = fQ.toLowerCase(); if (!((x.descricao || '').toLowerCase().includes(q) || (x.pessoaNome || '').toLowerCase().includes(q))) return false; }
+    return true;
+  }), [itens, fSit, fCat, fVde, fVate, fMin, fMax, fQ]);
+  const temFiltro = fSit !== 'todos' || !!fQ || !!fCat || !!fVde || !!fVate || !!fMin || !!fMax;
+  function limparFiltros() { setFSit('todos'); setFQ(''); setFCat(''); setFVde(''); setFVate(''); setFMin(''); setFMax(''); }
+
   const kpis = useMemo(() => {
-    const abertos = itens.filter((x) => x.status === 'aberto');
+    const abertos = filtrados.filter((x) => x.status === 'aberto');
     const total = abertos.reduce((a, x) => a + x.valor, 0);
     const vencidos = abertos.filter((x) => x.vencimento < hojeISO());
     const totalVenc = vencidos.reduce((a, x) => a + x.valor, 0);
     return { total, qtd: abertos.length, totalVenc, qtdVenc: vencidos.length };
-  }, [itens]);
+  }, [filtrados]);
 
   function toggle(id: string) { setSel((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; }); }
-  function toggleTodos() { setSel((s) => (s.size === itens.length ? new Set() : new Set(itens.map((x) => x.id)))); }
+  function toggleTodos() { setSel((s) => (s.size === filtrados.length ? new Set() : new Set(filtrados.map((x) => x.id)))); }
   const selecionados = itens.filter((x) => sel.has(x.id));
   const abertosSel = selecionados.filter((x) => x.status === 'aberto');
   const nCols = pode ? 8 : 7;
@@ -63,12 +82,41 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   return (
     <div>
       <div className="page-head"><h1 className="page-titulo">{t(tipo === 'receber' ? 'fin.receber' : 'fin.pagar')}</h1>
-        {pode && <button className="btn-primary" onClick={() => setNovo(true)}>+ {t('fin.novo')}</button>}</div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button className="btn-ghost" onClick={() => setFiltroAberto((v) => !v)}>{t('fin.filtros')}{temFiltro ? ' •' : ''}</button>
+          {pode && <button className="btn-primary" onClick={() => setNovo(true)}>+ {t('fin.novo')}</button>}
+        </div></div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="kpis">
         <div className="kpi-card"><div className="kpi-l">{t(tipo === 'receber' ? 'fin.aberto_receber' : 'fin.aberto_pagar')}</div><div className="kpi-v">{moeda(kpis.total)}</div><div className="kpi-s">{kpis.qtd} {t('fin.titulos')}</div></div>
         <div className="kpi-card kpi-vermelho"><div className="kpi-l">{t('fin.vencidos')}</div><div className="kpi-v">{moeda(kpis.totalVenc)}</div><div className="kpi-s">{kpis.qtdVenc} {t('fin.titulos')}</div></div>
       </div>
+
+      {filtroAberto && (
+        <div className="card" style={{ maxWidth: '100%', marginBottom: 12 }}>
+          <div className="filtros-grid">
+            <label className="campo">{t('fin.f_busca')}<input value={fQ} onChange={(e) => setFQ(e.target.value)} placeholder={t('fin.f_busca_ph')} /></label>
+            <label className="campo">{t('fin.f_situacao')}
+              <select value={fSit} onChange={(e) => setFSit(e.target.value as 'todos' | 'aberto' | 'vencido' | 'pago')}>
+                <option value="todos">{t('fin.f_todos')}</option><option value="aberto">{t('fin.aberto')}</option><option value="vencido">{t('fin.vencido')}</option><option value="pago">{t('fin.pago')}</option>
+              </select>
+            </label>
+            {categorias.length > 0 && <label className="campo">{t('catfin.titulo_s')}
+              <select value={fCat} onChange={(e) => setFCat(e.target.value)}>
+                <option value="">{t('fin.f_todos')}</option>{categorias.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </label>}
+            <label className="campo">{t('fin.f_venc_de')}<input type="date" value={fVde} onChange={(e) => setFVde(e.target.value)} /></label>
+            <label className="campo">{t('fin.f_venc_ate')}<input type="date" value={fVate} onChange={(e) => setFVate(e.target.value)} /></label>
+            <label className="campo">{t('fin.f_min')}<input type="number" value={fMin} onChange={(e) => setFMin(e.target.value)} /></label>
+            <label className="campo">{t('fin.f_max')}<input type="number" value={fMax} onChange={(e) => setFMax(e.target.value)} /></label>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+            <span className="muted">{filtrados.length} {t('fin.titulos')}</span>
+            <button className="btn-link" onClick={limparFiltros}>{t('fin.f_limpar')}</button>
+          </div>
+        </div>
+      )}
 
       {pode && sel.size > 0 && (
         <div className="bulk-bar">
@@ -83,12 +131,12 @@ export function Contas({ tipo }: { tipo: Tipo }) {
 
       <div className="card pad0"><table className="tabela">
         <thead><tr>
-          {pode && <th style={{ width: 34 }}><input type="checkbox" checked={itens.length > 0 && sel.size === itens.length} onChange={toggleTodos} /></th>}
+          {pode && <th style={{ width: 34 }}><input type="checkbox" checked={filtrados.length > 0 && sel.size === filtrados.length} onChange={toggleTodos} /></th>}
           <th>{t('fin.descricao')}</th><th>{tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor')}</th><th>{t('catfin.titulo_s')}</th><th>{t('fin.vencimento')}</th><th>{t('fin.valor')}</th><th>{t('fin.situacao')}</th><th>{t('usuarios.acoes')}</th>
         </tr></thead>
         <tbody>
-          {itens.length === 0 && <tr><td colSpan={nCols} className="vazio">{t('common.nenhum')}</td></tr>}
-          {itens.map((tt) => { const sit = situacao(tt); return (
+          {filtrados.length === 0 && <tr><td colSpan={nCols} className="vazio">{t('common.nenhum')}</td></tr>}
+          {filtrados.map((tt) => { const sit = situacao(tt); return (
             <tr key={tt.id} className={sel.has(tt.id) ? 'linha-sel' : ''}>
               {pode && <td><input type="checkbox" checked={sel.has(tt.id)} onChange={() => toggle(tt.id)} /></td>}
               <td>{tt.descricao}{tt.origem === 'pedido' && <span className="tag-origem">{t('fin.do_pedido')}</span>}</td>

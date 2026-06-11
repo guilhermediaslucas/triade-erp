@@ -281,3 +281,6 @@ a { text-decoration: none; color: inherit; }
 .form-linha .campo { flex:1; min-width:120px; }
 
 .kpi-ok { color:#15803d; }
+
+.filtros-grid { display:flex; gap:10px; flex-wrap:wrap; }
+.filtros-grid .campo { flex:1; min-width:150px; margin:0; }
