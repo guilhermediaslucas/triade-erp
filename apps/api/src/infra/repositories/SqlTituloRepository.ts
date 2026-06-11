@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { DataSource } from 'typeorm';
-import type { MovimentoFluxo, NovoTitulo, PagoOrigem, Titulo, TipoTitulo, TituloRepository } from '../../domain/financeiro/Titulo.js';
+import type { MovimentoFluxo, NovoTitulo, PagoAgrupado, Titulo, TipoTitulo, TituloRepository } from '../../domain/financeiro/Titulo.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 const iso = (d: any) => (d ? new Date(d).toISOString() : null);
@@ -33,16 +33,30 @@ export class SqlTituloRepository implements TituloRepository {
   }
 
   // Soma dos títulos pagos por tipo + origem, no período (pela data de pagamento).
-  async pagosPorOrigem(schema: string, de: string | null, ate: string | null): Promise<PagoOrigem[]> {
+  async pagosPorOrigem(schema: string, de: string | null, ate: string | null): Promise<PagoAgrupado[]> {
     const s = validarSchema(schema);
     const linhas = await this.ds.query(
-      `SELECT tipo, origem, SUM(valor)::numeric total
+      `SELECT tipo, origem chave, SUM(valor)::numeric total
          FROM "${s}".titulo
         WHERE status = 'pago' AND pago_em IS NOT NULL
           AND ($1::date IS NULL OR pago_em::date >= $1)
           AND ($2::date IS NULL OR pago_em::date <= $2)
         GROUP BY tipo, origem`, [de, ate]);
-    return linhas.map((r: any) => ({ tipo: r.tipo, origem: r.origem, total: Number(r.total) }));
+    return linhas.map((r: any) => ({ tipo: r.tipo, chave: r.chave, total: Number(r.total) }));
+  }
+
+  // Soma dos títulos pagos por tipo + categoria financeira (sem categoria cai em "—").
+  async pagosPorCategoria(schema: string, de: string | null, ate: string | null): Promise<PagoAgrupado[]> {
+    const s = validarSchema(schema);
+    const linhas = await this.ds.query(
+      `SELECT t.tipo, COALESCE(cf.nome, '—') chave, SUM(t.valor)::numeric total
+         FROM "${s}".titulo t
+         LEFT JOIN "${s}".categoria_financeira cf ON cf.id = t.categoria_financeira_id
+        WHERE t.status = 'pago' AND t.pago_em IS NOT NULL
+          AND ($1::date IS NULL OR t.pago_em::date >= $1)
+          AND ($2::date IS NULL OR t.pago_em::date <= $2)
+        GROUP BY t.tipo, COALESCE(cf.nome, '—')`, [de, ate]);
+    return linhas.map((r: any) => ({ tipo: r.tipo, chave: r.chave, total: Number(r.total) }));
   }
 
   async listar(schema: string, tipo: TipoTitulo): Promise<Titulo[]> {

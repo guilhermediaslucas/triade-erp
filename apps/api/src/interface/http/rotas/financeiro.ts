@@ -38,7 +38,7 @@ export function rotasFinanceiro(deps: Dependencias): Router {
     try { res.json(await deps.financeiroService.aging(req.usuario!.schema, 'receber')); } catch (e) { tratarErro(res, e); }
   });
   r.get('/financeiro/dre', autF, azF('financeiro.fluxo.ver'), async (req, res) => {
-    try { res.json(await deps.financeiroService.dre(req.usuario!.schema, req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
+    try { res.json(await deps.financeiroService.dre(req.usuario!.schema, req.query.de, req.query.ate, req.query.por)); } catch (e) { tratarErro(res, e); }
   });
   r.post('/financeiro/nota', autF, azF('financeiro.compra.criar'), async (req, res) => {
     try { res.status(201).json(await deps.comprasService.lancarNota(req.usuario!.schema, req.body ?? {})); } catch (e) { tratarErro(res, e); }

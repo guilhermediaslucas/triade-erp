@@ -1144,3 +1144,8 @@ Object.assign(es, {
   'catfin.nome': 'Nombre', 'catfin.tipo': 'Tipo', 'catfin.receita': 'Ingreso', 'catfin.despesa': 'Gasto', 'catfin.sem': '(sin categoría)',
   'catfin.tipo_invalido': 'Tipo de categoría inválido.',
 });
+
+// --- Refinamento: DRE por categoria (seletor de agrupamento) ---
+Object.assign(pt, { 'dre.agrupar': 'Agrupar por', 'dre.por_origem': 'Origem', 'dre.por_categoria': 'Categoria financeira' });
+Object.assign(en, { 'dre.agrupar': 'Group by', 'dre.por_origem': 'Source', 'dre.por_categoria': 'Financial category' });
+Object.assign(es, { 'dre.agrupar': 'Agrupar por', 'dre.por_origem': 'Origen', 'dre.por_categoria': 'Categoría financiera' });

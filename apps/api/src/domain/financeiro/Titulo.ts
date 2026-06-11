@@ -15,12 +15,13 @@ export interface NovoTitulo {
 export interface MovimentoFluxo {
   data: string; tipo: 'entrada' | 'saida'; descricao: string; pessoaNome: string | null; valor: number; formaPagamento: string | null;
 }
-// Soma dos títulos pagos por tipo + origem (para a DRE de caixa).
-export interface PagoOrigem { tipo: TipoTitulo; origem: string; total: number; }
+// Soma dos títulos pagos por tipo + chave de agrupamento (origem ou categoria) — para a DRE de caixa.
+export interface PagoAgrupado { tipo: TipoTitulo; chave: string; total: number; }
 
 export interface TituloRepository {
   listarPagos(schema: string): Promise<MovimentoFluxo[]>;
-  pagosPorOrigem(schema: string, de: string | null, ate: string | null): Promise<PagoOrigem[]>;
+  pagosPorOrigem(schema: string, de: string | null, ate: string | null): Promise<PagoAgrupado[]>;
+  pagosPorCategoria(schema: string, de: string | null, ate: string | null): Promise<PagoAgrupado[]>;
   listar(schema: string, tipo: TipoTitulo): Promise<Titulo[]>;
   buscarPorId(schema: string, id: string): Promise<Titulo | null>;
   criar(schema: string, t: NovoTitulo, origem: string, pedidoId: string | null): Promise<string>;

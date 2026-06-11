@@ -1,4 +1,4 @@
-import type { MovimentoFluxo, Titulo, TipoTitulo, TituloRepository } from '../../domain/financeiro/Titulo.js';
+import type { MovimentoFluxo, PagoAgrupado, Titulo, TipoTitulo, TituloRepository } from '../../domain/financeiro/Titulo.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
 export type AgingFaixa = 'a_vencer' | 'd1_30' | 'd31_60' | 'd61_90' | 'd90_mais';
@@ -7,8 +7,9 @@ export interface AgingLinha {
 }
 export interface RelatorioAging { linhas: AgingLinha[]; totais: Record<AgingFaixa, number>; totalAberto: number; }
 
+export type DrePor = 'origem' | 'categoria';
 export interface DreLinha { origem: string; total: number; }
-export interface RelatorioDre { receitas: DreLinha[]; despesas: DreLinha[]; totalReceitas: number; totalDespesas: number; resultado: number; }
+export interface RelatorioDre { por: DrePor; receitas: DreLinha[]; despesas: DreLinha[]; totalReceitas: number; totalDespesas: number; resultado: number; }
 
 function faixaDe(dias: number): AgingFaixa {
   if (dias <= 0) return 'a_vencer';
@@ -46,14 +47,17 @@ export class FinanceiroService {
     return { linhas, totais, totalAberto: r2(linhas.reduce((a, l) => a + l.valor, 0)) };
   }
 
-  // DRE de caixa (resultado do período): títulos pagos no período, agrupados por origem.
-  async dre(schema: string, de: any, ate: any): Promise<RelatorioDre> {
-    const linhas = await this.repo.pagosPorOrigem(schema, lim(de), lim(ate));
-    const receitas = linhas.filter((l) => l.tipo === 'receber').map((l) => ({ origem: l.origem, total: r2(l.total) })).sort((a, b) => b.total - a.total);
-    const despesas = linhas.filter((l) => l.tipo === 'pagar').map((l) => ({ origem: l.origem, total: r2(l.total) })).sort((a, b) => b.total - a.total);
+  // DRE de caixa (resultado do período): títulos pagos no período, agrupados por origem ou categoria.
+  async dre(schema: string, de: any, ate: any, por: any): Promise<RelatorioDre> {
+    const grupo: DrePor = por === 'categoria' ? 'categoria' : 'origem';
+    const linhas: PagoAgrupado[] = grupo === 'categoria'
+      ? await this.repo.pagosPorCategoria(schema, lim(de), lim(ate))
+      : await this.repo.pagosPorOrigem(schema, lim(de), lim(ate));
+    const receitas = linhas.filter((l) => l.tipo === 'receber').map((l) => ({ origem: l.chave, total: r2(l.total) })).sort((a, b) => b.total - a.total);
+    const despesas = linhas.filter((l) => l.tipo === 'pagar').map((l) => ({ origem: l.chave, total: r2(l.total) })).sort((a, b) => b.total - a.total);
     const totalReceitas = r2(receitas.reduce((a, l) => a + l.total, 0));
     const totalDespesas = r2(despesas.reduce((a, l) => a + l.total, 0));
-    return { receitas, despesas, totalReceitas, totalDespesas, resultado: r2(totalReceitas - totalDespesas) };
+    return { por: grupo, receitas, despesas, totalReceitas, totalDespesas, resultado: r2(totalReceitas - totalDespesas) };
   }
 
   async criar(schema: string, tipo: TipoTitulo, e: any): Promise<string> {
