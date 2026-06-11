@@ -229,3 +229,18 @@ a { text-decoration: none; color: inherit; }
 }
 
 .kpi-sub { font-size: 12px; color: var(--muted); }
+
+/* --- Busca global (Ctrl+K) --- */
+.btn-busca { display: inline-flex; align-items: center; gap: 6px; background: var(--card, #fff); border: 1px solid var(--borda, #e2e8f0); color: var(--muted, #64748b); padding: 5px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+.btn-busca:hover { border-color: var(--accent, #6d28d9); color: var(--texto, #1e293b); }
+.btn-busca kbd { background: #00000010; border-radius: 4px; padding: 1px 5px; font-size: 11px; font-family: inherit; }
+.btn-busca span { }
+.busca-fundo { position: fixed; inset: 0; background: rgba(15,23,42,.45); display: flex; align-items: flex-start; justify-content: center; padding-top: 12vh; z-index: 1000; }
+.busca-box { width: min(560px, 92vw); background: var(--card, #fff); border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,.3); overflow: hidden; display: flex; flex-direction: column; max-height: 70vh; }
+.busca-input { border: none; border-bottom: 1px solid var(--borda, #e2e8f0); padding: 16px 18px; font-size: 16px; outline: none; background: transparent; color: var(--texto, #1e293b); }
+.busca-lista { overflow: auto; padding: 6px; }
+.busca-item { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: transparent; border: none; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; color: var(--texto, #1e293b); }
+.busca-item.sel, .busca-item:hover { background: var(--accent, #6d28d9); color: var(--accent-fg, #fff); }
+.busca-ic { width: 22px; text-align: center; }
+.busca-vazio { padding: 18px; color: var(--muted, #64748b); text-align: center; }
+.busca-rodape { border-top: 1px solid var(--borda, #e2e8f0); padding: 8px 14px; font-size: 12px; color: var(--muted, #64748b); }

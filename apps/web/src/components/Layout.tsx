@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { useBranding } from '../branding/BrandingContext.js';
 import { SeletorIdioma } from './SeletorIdioma.js';
+import { BuscaGlobal } from './BuscaGlobal.js';
 
 interface Item { rotulo: string; icone: string; to: string; cap?: string; }
 interface Secao { sublabel?: string; itens: Item[]; }
@@ -119,6 +120,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="app-shell">
+      <BuscaGlobal />
       <aside className="sidebar">
         <div className="sidebar-brand">
           {branding?.logo
@@ -156,6 +158,9 @@ export function Layout({ children }: { children: ReactNode }) {
         <header className="topbar">
           <div className="topbar-empresa">{fantasia}</div>
           <div className="topbar-dir">
+            <button className="btn-busca" onClick={() => window.dispatchEvent(new Event('abrir-busca'))} title="Ctrl+K">
+              🔎 <span>{t('busca.abrir')}</span> <kbd>Ctrl K</kbd>
+            </button>
             <SeletorIdioma />
             <span className="topbar-user">{usuario?.nome}</span>
             <button className="btn-sair" onClick={logout}>{t('topbar.sair')}</button>

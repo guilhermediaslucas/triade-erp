@@ -1077,3 +1077,8 @@ Object.assign(es, {
   'dre.receitas': 'Ingresos', 'dre.despesas': 'Gastos', 'dre.resultado': 'Resultado', 'dre.origem': 'Origen', 'dre.grupo': 'Grupo',
   'origem.pedido': 'Pedidos', 'origem.compra': 'Compras', 'origem.comissao': 'Comisiones', 'origem.frete': 'Fletes', 'origem.manual': 'Manual',
 });
+
+// --- Refinamento: Busca global (Ctrl+K) ---
+Object.assign(pt, { 'busca.abrir': 'Buscar', 'busca.placeholder': 'Buscar telas… (ex.: pedidos, estoque, DRE)', 'busca.vazio': 'Nada encontrado.', 'busca.dica': '↑ ↓ navegar · Enter abrir · Esc fechar' });
+Object.assign(en, { 'busca.abrir': 'Search', 'busca.placeholder': 'Search screens… (e.g. orders, stock, P&L)', 'busca.vazio': 'Nothing found.', 'busca.dica': '↑ ↓ navigate · Enter open · Esc close' });
+Object.assign(es, { 'busca.abrir': 'Buscar', 'busca.placeholder': 'Buscar pantallas… (ej.: pedidos, stock, resultados)', 'busca.vazio': 'Nada encontrado.', 'busca.dica': '↑ ↓ navegar · Enter abrir · Esc cerrar' });
