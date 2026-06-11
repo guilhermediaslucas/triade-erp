@@ -107,7 +107,7 @@ export function gerarXlsx(cabecalho: string[], linhas: (string | number)[][]): U
 
 export function baixarExcel(nome: string, cabecalho: string[], linhas: (string | number)[][]): void {
   const bytes = gerarXlsx(cabecalho, linhas);
-  const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const blob = new Blob([bytes.buffer as ArrayBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = nome + '.xlsx'; a.click();
