@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type { DataSource } from 'typeorm';
 import { CAPABILITY_IDS } from '@triade/shared';
 import { migrarPublic, migrarTenant } from './migrate.js';
+import { garantirSuperAdmin } from './superAdminSeed.js';
 import { BcryptHashSenha } from '../security/BcryptHashSenha.js';
 
 export interface ResultadoSeed {
@@ -16,6 +17,7 @@ export interface ResultadoSeed {
 // (assim novas permissoes criadas em versoes futuras passam a valer ao re-seedar).
 export async function seedDemo(ds: DataSource): Promise<ResultadoSeed> {
   await migrarPublic(ds);
+  await garantirSuperAdmin(ds);
 
   const codigo = 'belle';
   const schema = 't_belle';

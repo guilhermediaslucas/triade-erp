@@ -10,8 +10,8 @@ export function rotasMe(deps: Dependencias): Router {
   r.get('/me', autenticar, async (req: Request, res: Response) => {
     try {
       const u = req.usuario!;
-      const capabilities = await deps.usuariosRepo.capabilities(u.schema, u.sub);
-      res.json({ id: u.sub, nome: u.nome, email: u.email, empresa: u.empresa, capabilities });
+      const capabilities = u.superAdmin ? [] : await deps.usuariosRepo.capabilities(u.schema, u.sub);
+      res.json({ id: u.sub, nome: u.nome, email: u.email, empresa: u.empresa, capabilities, superAdmin: u.superAdmin === true });
     } catch (e) { tratarErro(res, e); }
   });
 

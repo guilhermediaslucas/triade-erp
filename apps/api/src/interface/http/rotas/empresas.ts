@@ -1,16 +1,14 @@
 import { Router, type Request, type Response } from 'express';
 import type { Dependencias } from '../../composition.js';
 import { criarAutenticar } from '../middlewares/autenticar.js';
-import { criarAutorizar } from '../middlewares/autorizar.js';
+import { exigirSuperAdmin } from '../middlewares/exigirSuperAdmin.js';
 import { tratarErro } from '../responder.js';
 
 export function rotasEmpresas(deps: Dependencias): Router {
   const r = Router();
   const autenticar = criarAutenticar(deps.tokens);
-  const autorizar = criarAutorizar(deps.usuariosRepo);
-  const CAP = 'superadmin.empresa.provisionar';
 
-  r.get('/empresas', autenticar, autorizar(CAP), async (_req: Request, res: Response) => {
+  r.get('/empresas', autenticar, exigirSuperAdmin, async (_req: Request, res: Response) => {
     try {
       const lista = (await deps.empresasRepo.listarTodas()).map((e) => ({
         codigo: e.codigo, nome: e.nome, fantasia: e.fantasia, ativo: e.ativo,
@@ -19,7 +17,7 @@ export function rotasEmpresas(deps: Dependencias): Router {
     } catch (e) { tratarErro(res, e); }
   });
 
-  r.post('/empresas', autenticar, autorizar(CAP), async (req: Request, res: Response) => {
+  r.post('/empresas', autenticar, exigirSuperAdmin, async (req: Request, res: Response) => {
     try {
       const b = req.body ?? {};
       const saida = await deps.provisionarEmpresa.executar({

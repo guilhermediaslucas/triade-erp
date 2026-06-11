@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 
-interface Destino { rotulo: string; icone: string; to: string; cap?: string; }
+interface Destino { rotulo: string; icone: string; to: string; cap?: string; soSuperAdmin?: boolean; }
 
 // Telas navegáveis (espelha o menu). Filtradas por capability do usuário.
 const DESTINOS: Destino[] = [
@@ -42,7 +42,7 @@ const DESTINOS: Destino[] = [
   { rotulo: 'menu.usuarios', icone: '👤', to: '/acesso/usuarios', cap: 'acesso.usuario.listar' },
   { rotulo: 'menu.perfis', icone: '🔑', to: '/acesso/perfis', cap: 'acesso.perfil.listar' },
   { rotulo: 'menu.empresa', icone: '🏢', to: '/config/empresa', cap: 'acesso.empresa.editar' },
-  { rotulo: 'menu.empresas', icone: '🏬', to: '/superadmin/empresas', cap: 'superadmin.empresa.provisionar' },
+  { rotulo: 'menu.empresas', icone: '🏬', to: '/superadmin/empresas', soSuperAdmin: true },
 ];
 
 function normaliza(s: string): string {
@@ -50,7 +50,7 @@ function normaliza(s: string): string {
 }
 
 export function BuscaGlobal() {
-  const { temCapability } = useAuth();
+  const { temCapability, superAdmin } = useAuth();
   const { t } = useI18n();
   const nav = useNavigate();
   const [aberto, setAberto] = useState(false);
@@ -58,7 +58,7 @@ export function BuscaGlobal() {
   const [sel, setSel] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const visiveis = useMemo(() => DESTINOS.filter((d) => !d.cap || temCapability(d.cap)).map((d) => ({ ...d, label: t(d.rotulo) })), [temCapability, t]);
+  const visiveis = useMemo(() => DESTINOS.filter((d) => d.soSuperAdmin ? superAdmin : (!d.cap || temCapability(d.cap))).map((d) => ({ ...d, label: t(d.rotulo) })), [temCapability, superAdmin, t]);
   const filtrados = useMemo(() => {
     const termo = normaliza(q.trim());
     if (!termo) return visiveis;

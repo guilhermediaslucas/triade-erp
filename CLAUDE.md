@@ -176,6 +176,24 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Modo escuro + Administrador do sistema (global) + troca de empresas.** **(1) Modo
+  escuro:** `ThemeProvider` (classe `theme-dark` no body, persistido em localStorage), tokens dark no CSS
+  e botão 🌙/☀️ na **topbar** e no **login**. **(2) Admin do sistema:** nova tabela `public.super_admin`
+  (migration public **003**) + `garantirSuperAdmin` (idempotente, roda no boot via `prepararBanco` e no
+  `db-setup` via seed) cria **admin@triadeerp.com.br** (senha default `admin123`, sobrescrevível por
+  `SUPER_ADMIN_*`). Login só por e-mail: `AutenticarUsuario` checa primeiro o `super_admin`; se for ele,
+  emite token com **`superAdmin: true`** + a 1ª empresa ativa como contexto. Token (`TokenPayload`) e
+  middleware de autorização passam a **liberar tudo** quando `superAdmin` (god-mode). **(3) Super-admin
+  restrito:** menu/rota/busca de Empresas agora gateados pela **flag `superAdmin`** (não mais pela
+  capability) — `ProtectedRoute soSuperAdmin`, item de menu `soSuperAdmin`; rotas `/empresas` exigem
+  `exigirSuperAdmin`. Removida a cap `superadmin.empresa.provisionar` (inerte). **(4) Trocar empresa:**
+  `POST /auth/trocar-empresa` (só super-admin) emite novo token p/ o schema escolhido; `AuthContext.trocarEmpresa`
+  troca o token e recarrega; componente **`EmpresaSwitcher`** (pill 🏢 + dropdown das empresas ativas) na
+  topbar, só p/ o admin do sistema. i18n pt/en/es. **Validação:** **type-check api+web verde** + **testes
+  (7 PASS super-admin/troca; 6 PASS boot cria super_admin; 5 PASS login por e-mail)** via tsx/pglite.
+  **Pendente:** Gui `git push` (Render cria o super-admin no boot) + Ctrl+Shift+R. **Login do sistema:**
+  **admin@triadeerp.com.br** / `admin123` (trocar a senha). **Nota:** belle/admin@belle continua como
+  admin **da empresa** (sem super-admin).
 - **2026-06-11** — **Tela de login refeita no padrão do mockup.** **Backend:** login passa a aceitar
   **só e-mail + senha** — `AutenticarUsuario` com `codigoEmpresa` opcional: sem ele, descobre a empresa
   procurando o usuário em cada tenant ativo (`empresas.listarTodas` × `usuarios.buscarPorEmail`);

@@ -52,8 +52,8 @@ import { CategoriasFinanceiras } from './pages/CategoriasFinanceiras.js';
 import { Layout } from './components/Layout.js';
 import { ProtectedRoute } from './components/ProtectedRoute.js';
 
-function Protegida({ children, cap }: { children: ReactNode; cap?: string }) {
-  return <ProtectedRoute capability={cap}><Layout>{children}</Layout></ProtectedRoute>;
+function Protegida({ children, cap, soSuper }: { children: ReactNode; cap?: string; soSuper?: boolean }) {
+  return <ProtectedRoute capability={cap} soSuperAdmin={soSuper}><Layout>{children}</Layout></ProtectedRoute>;
 }
 
 export function App() {
@@ -109,7 +109,7 @@ export function App() {
                 <Route path="/cadastros/categorias" element={<Protegida cap="cadastros.categoria.listar"><Categorias /></Protegida>} />
                 <Route path="/cadastros/marcas" element={<Protegida cap="cadastros.marca.listar"><Marcas /></Protegida>} />
                 <Route path="/cadastros/produtos" element={<Protegida cap="cadastros.produto.listar"><Produtos /></Protegida>} />
-                <Route path="/superadmin/empresas" element={<Protegida cap="superadmin.empresa.provisionar"><Empresas /></Protegida>} />
+                <Route path="/superadmin/empresas" element={<Protegida soSuper><Empresas /></Protegida>} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </BrowserRouter>

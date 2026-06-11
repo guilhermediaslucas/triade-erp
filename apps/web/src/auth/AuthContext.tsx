@@ -2,23 +2,25 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import { api } from '../api/client.js';
 
 export interface UsuarioLogado { id: string; nome: string; email: string; empresa: string; }
-interface LoginResp { token: string; usuario: { id: string; nome: string; email: string }; empresa: { codigo: string; fantasia: string }; }
-interface MeResp { id: string; nome: string; email: string; empresa: string; capabilities: string[]; }
+interface LoginResp { token: string; usuario: { id: string; nome: string; email: string }; empresa: { codigo: string; fantasia: string }; superAdmin?: boolean; }
+interface MeResp { id: string; nome: string; email: string; empresa: string; capabilities: string[]; superAdmin?: boolean; }
 
 interface AuthCtx {
   token: string | null;
   usuario: UsuarioLogado | null;
   empresaFantasia: string | null;
   capabilities: string[];
+  superAdmin: boolean;
   temCapability: (id: string) => boolean;
   login: (email: string, senha: string, lembrar?: boolean) => Promise<void>;
+  trocarEmpresa: (codigo: string) => Promise<void>;
   logout: () => void;
 }
 
 const Ctx = createContext<AuthCtx | null>(null);
 const CHAVE = 'triade_sessao';
 
-interface Sessao { token: string; usuario: UsuarioLogado; empresaFantasia: string; capabilities: string[]; }
+interface Sessao { token: string; usuario: UsuarioLogado; empresaFantasia: string; capabilities: string[]; superAdmin: boolean; }
 
 // "Lembrar-me": sessão persiste em localStorage; senão, só em sessionStorage (cai ao fechar o navegador).
 function carregar(): Sessao | null {
@@ -27,6 +29,7 @@ function carregar(): Sessao | null {
     return raw ? (JSON.parse(raw) as Sessao) : null;
   } catch { return null; }
 }
+const persistido = () => { try { return localStorage.getItem(CHAVE) != null; } catch { return false; } };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [sessao, setSessao] = useState<Sessao | null>(carregar);
@@ -40,21 +43,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function login(email: string, senha: string, lembrar = true): Promise<void> {
     const r = await api.post<LoginResp>('/auth/login', { email, senha });
     let capabilities: string[] = [];
+    let superAdmin = r.superAdmin === true;
+    try { const me = await api.get<MeResp>('/me', r.token); capabilities = me.capabilities; superAdmin = me.superAdmin === true; } catch { /* ignora */ }
+    salvar({
+      token: r.token,
+      usuario: { ...r.usuario, empresa: r.empresa.codigo },
+      empresaFantasia: r.empresa.fantasia,
+      capabilities, superAdmin,
+    }, lembrar);
+  }
+
+  async function trocarEmpresa(codigo: string): Promise<void> {
+    if (!sessao) return;
+    const r = await api.post<LoginResp>('/auth/trocar-empresa', { codigo }, sessao.token);
+    let capabilities: string[] = [];
     try { capabilities = (await api.get<MeResp>('/me', r.token)).capabilities; } catch { /* ignora */ }
     salvar({
       token: r.token,
       usuario: { ...r.usuario, empresa: r.empresa.codigo },
       empresaFantasia: r.empresa.fantasia,
-      capabilities,
-    }, lembrar);
+      capabilities, superAdmin: true,
+    }, persistido());
+    // Recarrega para refazer branding e dados da nova empresa.
+    window.location.assign('/');
   }
 
-  // Ao recarregar com sessao salva, revalida e atualiza capabilities (token expirado -> logout).
+  // Ao recarregar com sessao salva, revalida e atualiza capabilities/superAdmin (token expirado -> logout).
   useEffect(() => {
     if (!sessao?.token) return;
-    const persistido = localStorage.getItem(CHAVE) != null;
+    const persist = persistido();
     api.get<MeResp>('/me', sessao.token)
-      .then((me) => { if (JSON.stringify(me.capabilities) !== JSON.stringify(sessao.capabilities)) salvar({ ...sessao, capabilities: me.capabilities }, persistido); })
+      .then((me) => {
+        const sa = me.superAdmin === true;
+        if (JSON.stringify(me.capabilities) !== JSON.stringify(sessao.capabilities) || sa !== sessao.superAdmin) {
+          salvar({ ...sessao, capabilities: me.capabilities, superAdmin: sa }, persist);
+        }
+      })
       .catch(() => salvar(null));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -65,8 +89,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       usuario: sessao?.usuario ?? null,
       empresaFantasia: sessao?.empresaFantasia ?? null,
       capabilities: sessao?.capabilities ?? [],
-      temCapability: (id) => (sessao?.capabilities ?? []).includes(id),
-      login,
+      superAdmin: sessao?.superAdmin ?? false,
+      temCapability: (id) => (sessao?.superAdmin ? true : (sessao?.capabilities ?? []).includes(id)),
+      login, trocarEmpresa,
       logout: () => salvar(null),
     }}>{children}</Ctx.Provider>
   );

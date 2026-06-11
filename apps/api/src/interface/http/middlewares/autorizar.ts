@@ -10,6 +10,7 @@ export function criarAutorizar(usuarios: UsuarioRepository) {
         res.status(401).json({ erro: 'auth.token_ausente' });
         return;
       }
+      if (u.superAdmin) { next(); return; }
       try {
         const caps = await usuarios.capabilities(u.schema, u.sub);
         if (!caps.includes(capability)) {

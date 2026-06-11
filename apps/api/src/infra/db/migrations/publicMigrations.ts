@@ -27,4 +27,16 @@ export const publicMigrations: MigracaoPublic[] = [
         ADD COLUMN IF NOT EXISTS timezone_padrao text NOT NULL DEFAULT 'America/Sao_Paulo';
     `,
   },
+  {
+    nome: '003_super_admin',
+    sql: `
+      CREATE TABLE IF NOT EXISTS public.super_admin (
+        id         uuid PRIMARY KEY,
+        email      text UNIQUE NOT NULL,
+        senha_hash text NOT NULL,
+        nome       text NOT NULL,
+        criado_em  timestamptz NOT NULL DEFAULT now()
+      );
+    `,
+  },
 ];

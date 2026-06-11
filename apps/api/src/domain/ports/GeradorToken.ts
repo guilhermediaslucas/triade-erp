@@ -4,6 +4,7 @@ export interface TokenPayload {
   schema: string;    // schema do tenant
   nome: string;
   email: string;
+  superAdmin?: boolean;  // admin global do sistema (acesso total + troca de empresa)
 }
 
 // Porta para emitir/validar tokens (impl. com JWT na infra).

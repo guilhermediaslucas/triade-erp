@@ -30,7 +30,7 @@ const pt: Dict = {
   'cap.acesso.perfil.listar': 'Listar perfis', 'cap.acesso.perfil.gerenciar': 'Criar e editar perfis',
   'cap.acesso.empresa.editar': 'Editar dados da empresa',
   'auth.campos_obrigatorios': 'Preencha empresa, e-mail e senha.',
-  'auth.credenciais_invalidas': 'E-mail ou senha incorretos.',
+  'auth.credenciais_invalidas': 'E-mail ou senha incorretos.', 'auth.sem_empresas': 'Nenhuma empresa ativa para acessar.',
   'auth.empresa_invalida': 'Empresa não encontrada ou inativa.',
   'auth.token_ausente': 'Sessão não encontrada. Faça login novamente.',
   'auth.token_invalido': 'Sessão expirada. Faça login novamente.',
@@ -112,7 +112,7 @@ const es: Dict = {
   'cap.acesso.perfil.listar': 'Listar perfiles', 'cap.acesso.perfil.gerenciar': 'Crear y editar perfiles',
   'cap.acesso.empresa.editar': 'Editar datos de la empresa',
   'auth.campos_obrigatorios': 'Completa empresa, correo y contraseña.',
-  'auth.credenciais_invalidas': 'Correo o contraseña incorrectos.',
+  'auth.credenciais_invalidas': 'Correo o contraseña incorrectos.', 'auth.sem_empresas': 'Ninguna empresa activa para acceder.',
   'auth.empresa_invalida': 'Empresa no encontrada o inactiva.',
   'auth.token_ausente': 'Sesión no encontrada. Inicia sesión de nuevo.',
   'auth.token_invalido': 'Sesión expirada. Inicia sesión de nuevo.',
@@ -1417,3 +1417,10 @@ Object.assign(es, {
 Object.assign(pt, { 'tema.alternar': 'Alternar tema claro/escuro' });
 Object.assign(en, { 'tema.alternar': 'Toggle light/dark theme' });
 Object.assign(es, { 'tema.alternar': 'Alternar tema claro/oscuro' });
+
+// --- Seletor de empresa (admin do sistema) ---
+Object.assign(pt, { 'emp.trocar': 'Trocar empresa (admin do sistema)', 'emp.titulo': 'Trocar empresa', 'emp.vazio': 'Nenhuma empresa.' });
+Object.assign(en, { 'emp.trocar': 'Switch company (system admin)', 'emp.titulo': 'Switch company', 'emp.vazio': 'No companies.' });
+Object.assign(es, { 'emp.trocar': 'Cambiar empresa (admin del sistema)', 'emp.titulo': 'Cambiar empresa', 'emp.vazio': 'Sin empresas.' });
+
+Object.assign(es, { 'auth.sem_empresas': 'Ninguna empresa activa para acceder.' });

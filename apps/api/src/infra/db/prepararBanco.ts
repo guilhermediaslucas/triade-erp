@@ -1,6 +1,7 @@
 import type { DataSource } from 'typeorm';
 import { CAPABILITY_IDS } from '@triade/shared';
 import { migrarTudo } from './migrate.js';
+import { garantirSuperAdmin } from './superAdminSeed.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 // Roda no boot da API (produção): aplica as migrations pendentes em public +
@@ -9,6 +10,7 @@ import { validarSchema } from '../tenant/validarSchema.js';
 // Tudo idempotente — seguro de rodar a cada deploy.
 export async function prepararBanco(ds: DataSource): Promise<void> {
   const aplicadas = await migrarTudo(ds);
+  await garantirSuperAdmin(ds);
   if (aplicadas.length) console.log(`[db] migrations aplicadas no boot:\n - ${aplicadas.join('\n - ')}`);
   else console.log('[db] migrations: tudo já atualizado.');
 

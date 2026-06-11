@@ -19,6 +19,7 @@ export class JwtGeradorToken implements GeradorToken {
       schema: String(dados.schema),
       nome: String(dados.nome),
       email: String(dados.email),
+      superAdmin: dados.superAdmin === true,
     };
   }
 }

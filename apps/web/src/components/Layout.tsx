@@ -7,8 +7,9 @@ import { SeletorIdioma } from './SeletorIdioma.js';
 import { BuscaGlobal } from './BuscaGlobal.js';
 import { Sino } from './Sino.js';
 import { useTema } from '../theme/ThemeContext.js';
+import { EmpresaSwitcher } from './EmpresaSwitcher.js';
 
-interface Item { rotulo: string; icone: string; to: string; cap?: string; }
+interface Item { rotulo: string; icone: string; to: string; cap?: string; soSuperAdmin?: boolean; }
 interface Secao { sublabel?: string; itens: Item[]; }
 interface Grupo { rotulo?: string; secoes: Secao[]; }
 
@@ -115,17 +116,17 @@ const GRUPOS: Grupo[] = [
   },
   {
     rotulo: 'menu.superadmin',
-    secoes: [{ itens: [{ rotulo: 'menu.empresas', icone: '🏬', to: '/superadmin/empresas', cap: 'superadmin.empresa.provisionar' }] }],
+    secoes: [{ itens: [{ rotulo: 'menu.empresas', icone: '🏬', to: '/superadmin/empresas', soSuperAdmin: true }] }],
   },
 ];
 
 export function Layout({ children }: { children: ReactNode }) {
-  const { usuario, empresaFantasia, logout, temCapability } = useAuth();
+  const { usuario, empresaFantasia, logout, temCapability, superAdmin } = useAuth();
   const { escuro, alternar } = useTema();
   const { branding } = useBranding();
   const { t } = useI18n();
   const fantasia = branding?.fantasia ?? empresaFantasia;
-  const visivel = (it: Item) => !it.cap || temCapability(it.cap);
+  const visivel = (it: Item) => it.soSuperAdmin ? superAdmin : (!it.cap || temCapability(it.cap));
 
   return (
     <div className="app-shell">
@@ -170,6 +171,7 @@ export function Layout({ children }: { children: ReactNode }) {
             <button className="btn-busca" onClick={() => window.dispatchEvent(new Event('abrir-busca'))} title="Ctrl+K">
               🔎 <span>{t('busca.abrir')}</span> <kbd>Ctrl K</kbd>
             </button>
+            <EmpresaSwitcher />
             <button className="btn-tema" onClick={alternar} title={t('tema.alternar')}>{escuro ? '☀️' : '🌙'}</button>
             <Sino />
             <SeletorIdioma />

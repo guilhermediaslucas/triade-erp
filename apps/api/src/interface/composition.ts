@@ -1,6 +1,7 @@
 import { AppDataSource } from '../infra/db/data-source.js';
 import { env } from '../infra/config/env.js';
 import { SqlEmpresaRepository } from '../infra/repositories/SqlEmpresaRepository.js';
+import { SqlSuperAdminRepository } from '../infra/repositories/SqlSuperAdminRepository.js';
 import { SqlUsuarioRepository } from '../infra/repositories/SqlUsuarioRepository.js';
 import { SqlPerfilRepository } from '../infra/repositories/SqlPerfilRepository.js';
 import { BcryptHashSenha } from '../infra/security/BcryptHashSenha.js';
@@ -58,6 +59,7 @@ import { RelatoriosService } from '../application/relatorio/RelatoriosService.js
 
 export function montarDependencias() {
   const empresasRepo = new SqlEmpresaRepository(AppDataSource);
+  const superAdminsRepo = new SqlSuperAdminRepository(AppDataSource);
   const usuariosRepo = new SqlUsuarioRepository(AppDataSource);
   const perfisRepo = new SqlPerfilRepository(AppDataSource);
   const hash = new BcryptHashSenha();
@@ -87,7 +89,7 @@ export function montarDependencias() {
     tokens,
     usuariosRepo,
     empresasRepo,
-    autenticarUsuario: new AutenticarUsuario(empresasRepo, usuariosRepo, hash, tokens),
+    autenticarUsuario: new AutenticarUsuario(empresasRepo, usuariosRepo, hash, tokens, superAdminsRepo),
     usuariosService: new UsuariosService(usuariosRepo, perfisRepo, hash),
     perfisService: new PerfisService(perfisRepo),
     empresaService: new EmpresaService(empresasRepo),
