@@ -57,6 +57,7 @@ export function DadosEmpresa() {
       {ok && <div className="alerta-ok">{t('empresa.salvo')}</div>}
 
       <div className="card" style={{ maxWidth: 620 }}>
+        <div className="card-head"><h3>{t('empresa.card')}</h3></div>
         <label className="campo">{t('empresa.fantasia')}
           <input value={form.fantasia} onChange={(e) => set('fantasia', e.target.value)} />
         </label>
