@@ -1460,3 +1460,17 @@ Object.assign(es, { 'common.todos': 'Todos', 'common.ativos': 'Activos', 'common
 Object.assign(pt, { 'pedidos.crumb': 'Comercial / Pedidos', 'pedidos.data_de': 'Data início', 'pedidos.data_ate': 'Data fim', 'pedidos.filtro_dica': 'Filtra os pedidos pela data de criação.' });
 Object.assign(en, { 'pedidos.crumb': 'Sales / Orders', 'pedidos.data_de': 'Start date', 'pedidos.data_ate': 'End date', 'pedidos.filtro_dica': 'Filters orders by creation date.' });
 Object.assign(es, { 'pedidos.crumb': 'Comercial / Pedidos', 'pedidos.data_de': 'Fecha inicio', 'pedidos.data_ate': 'Fecha fin', 'pedidos.filtro_dica': 'Filtra los pedidos por fecha de creación.' });
+
+// --- Fornecedores / Vendedores (crumb+sub+busca) ---
+Object.assign(pt, {
+  'fornecedores.crumb': 'Cadastros / Fornecedores', 'fornecedores.sub': 'Empresas que fornecem os produtos', 'fornecedores.buscar': 'Buscar fornecedor',
+  'vendedores.crumb': 'Cadastros / Vendedores', 'vendedores.sub': 'Equipe comercial e metas', 'vendedores.buscar': 'Buscar vendedor',
+});
+Object.assign(en, {
+  'fornecedores.crumb': 'Records / Suppliers', 'fornecedores.sub': 'Companies that supply the products', 'fornecedores.buscar': 'Search supplier',
+  'vendedores.crumb': 'Records / Salespeople', 'vendedores.sub': 'Sales team and targets', 'vendedores.buscar': 'Search salesperson',
+});
+Object.assign(es, {
+  'fornecedores.crumb': 'Registros / Proveedores', 'fornecedores.sub': 'Empresas que proveen los productos', 'fornecedores.buscar': 'Buscar proveedor',
+  'vendedores.crumb': 'Registros / Vendedores', 'vendedores.sub': 'Equipo comercial y metas', 'vendedores.buscar': 'Buscar vendedor',
+});

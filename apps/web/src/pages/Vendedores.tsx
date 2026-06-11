@@ -14,20 +14,33 @@ export function Vendedores() {
   const [itens, setItens] = useState<Vendedor[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [edit, setEdit] = useState<Vendedor | null>(null);
+  const [busca, setBusca] = useState(''); const [statusF, setStatusF] = useState<'todos' | 'ativos' | 'inativos'>('todos');
   async function carregar() { try { setItens(await api.get('/vendedores', token!)); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
   useEffect(() => { carregar(); /* eslint-disable-next-line */ }, []);
   async function alternar(v: Vendedor) { try { await api.patch('/vendedores/' + v.id + '/ativo', { ativo: !v.ativo }, token!); carregar(); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
 
+  const filtrados = itens.filter((x: any) => {
+    if (statusF === 'ativos' && !x.ativo) return false;
+    if (statusF === 'inativos' && x.ativo) return false;
+    if (busca) { const q = busca.toLowerCase(); const txt = [x.nome, x.fantasia, x.documento, x.email].filter(Boolean).join(' ').toLowerCase(); if (!txt.includes(q)) return false; }
+    return true;
+  });
+
   return (
     <div>
-      <div className="page-head"><h1 className="page-titulo">{t('vendedores.titulo')}</h1>
+      <div className="crumb">{t('vendedores.crumb')}</div>
+      <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('vendedores.titulo')}</h1><div className="muted page-sub">{t('vendedores.sub')}</div></div>
         {pode && <button className="btn-primary" onClick={() => setEdit(vazio())}>+ {t('vendedores.novo')}</button>}</div>
+      <div className="toolbar">
+        <div className="busca-box-tb">🔎<input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('vendedores.buscar')} /></div>
+        {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
+      </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="card pad0"><table className="tabela">
         <thead><tr><th>{t('pessoa.nome')}</th><th>{t('vendedores.regiao')}</th><th>{t('vendedores.meta')}</th><th>{t('vendedores.comissao')}</th><th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
         <tbody>
-          {itens.length === 0 && <tr><td colSpan={6} className="vazio">{t('common.nenhum')}</td></tr>}
-          {itens.map((v) => (
+          {filtrados.length === 0 && <tr><td colSpan={6} className="vazio">{t('common.nenhum')}</td></tr>}
+          {filtrados.map((v) => (
             <tr key={v.id} className={v.ativo ? '' : 'linha-inativa'}>
               <td>{v.nome}</td><td>{v.regiao ?? '—'}</td><td>{moeda(v.metaMensal)}</td>
               <td>{v.segueRegraGeral ? t('vendedores.regra_geral_curta') : v.comissaoPercentual + '%'}</td>
