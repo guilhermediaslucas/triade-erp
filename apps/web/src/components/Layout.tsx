@@ -50,6 +50,7 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'menu.dre', icone: '📋', to: '/financeiro/dre', cap: 'financeiro.fluxo.ver' },
       { rotulo: 'menu.nota', icone: '🧾', to: '/financeiro/nota', cap: 'financeiro.compra.criar' },
       { rotulo: 'menu.comissoes', icone: '🧮', to: '/financeiro/comissoes', cap: 'financeiro.comissao.ver' },
+      { rotulo: 'menu.conciliacao', icone: '🏦', to: '/financeiro/conciliacao', cap: 'financeiro.conciliacao.ver' },
     ] }],
   },
   {

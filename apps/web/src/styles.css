@@ -276,3 +276,5 @@ a { text-decoration: none; color: inherit; }
 
 .form-linha { display:flex; gap:10px; flex-wrap:wrap; }
 .form-linha .campo { flex:1; min-width:120px; }
+
+.kpi-ok { color:#15803d; }

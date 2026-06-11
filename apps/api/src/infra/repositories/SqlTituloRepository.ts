@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { DataSource } from 'typeorm';
-import type { MovimentoFluxo, NovoTitulo, PagoAgrupado, Titulo, TipoTitulo, TituloRepository } from '../../domain/financeiro/Titulo.js';
+import type { LinhaConciliacao, MovimentoFluxo, NovoTitulo, PagoAgrupado, Titulo, TipoTitulo, TituloRepository } from '../../domain/financeiro/Titulo.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 const iso = (d: any) => (d ? new Date(d).toISOString() : null);
@@ -107,5 +107,27 @@ export class SqlTituloRepository implements TituloRepository {
          VALUES ($1,'receber',$2,$3,$4,(CURRENT_DATE + $5::int),'pedido',$6)`,
         [randomUUID(), desc, pessoaNome, valor, dias, pedidoId]);
     }
+  }
+
+  async conciliacao(schema: string, contaCorrenteId: string, de: string | null, ate: string | null): Promise<LinhaConciliacao[]> {
+    const s = validarSchema(schema);
+    const linhas = await this.ds.query(
+      `SELECT id, tipo, descricao, pessoa_nome, valor, pago_em, conciliado
+         FROM "${s}".titulo
+        WHERE status = 'pago' AND conta_corrente_id = $1
+          AND ($2::date IS NULL OR pago_em::date >= $2)
+          AND ($3::date IS NULL OR pago_em::date <= $3)
+        ORDER BY pago_em`, [contaCorrenteId, de, ate]);
+    return linhas.map((r: any) => ({
+      id: r.id, tipo: r.tipo, descricao: r.descricao, pessoaNome: r.pessoa_nome ?? null,
+      valor: Number(r.valor), pagoEm: iso(r.pago_em)!, conciliado: r.conciliado,
+    }));
+  }
+
+  async definirConciliado(schema: string, id: string, conciliado: boolean): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(
+      `UPDATE "${s}".titulo SET conciliado = $2, conciliado_em = CASE WHEN $2 THEN now() ELSE NULL END WHERE id = $1`,
+      [id, conciliado]);
   }
 }

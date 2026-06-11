@@ -26,7 +26,7 @@
 ## Financeiro
 - [x] Controle de comissões (fechar competência → título a pagar)
 - [x] Contas correntes / Bancos (cadastro + saldos + vínculo na baixa)
-- [ ] Conciliação bancária
+- [~] Conciliação bancária — **etapa 1 feita** (manual por conta: marca lançamentos pagos como conciliados, saldo sistema × extrato, CSV). Importar OFX/CSV: etapa 2 (futuro)
 - [ ] Parcelar / Multiplicar títulos
 - [x] Categorias financeiras (cadastro receita/despesa + vínculo no título) — Tipos de documento / Credores: futuro
 - [ ] KPIs clicáveis + filtros avançados nas contas (mockup tem modal de 14 filtros)

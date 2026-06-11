@@ -1246,3 +1246,41 @@ Object.assign(es, {
 Object.assign(pt, { 'fin.favorecido': 'Favorecido', 'fin.sem_favorecido': 'Sem favorecido (nome livre)' });
 Object.assign(en, { 'fin.favorecido': 'Payee', 'fin.sem_favorecido': 'No payee (free text)' });
 Object.assign(es, { 'fin.favorecido': 'Beneficiario', 'fin.sem_favorecido': 'Sin beneficiario (texto libre)' });
+
+// --- Refinamento: Conciliação bancária (manual) ---
+Object.assign(pt, {
+  'menu.conciliacao': 'Conciliação bancária',
+  'cap.financeiro.conciliacao.ver': 'Ver conciliação bancária', 'cap.financeiro.conciliacao.gerenciar': 'Conciliar lançamentos',
+  'conciliacao.conta_obrigatoria': 'Selecione uma conta corrente.', 'conciliacao.so_pago': 'Só títulos pagos podem ser conciliados.',
+  'concil.titulo': 'Conciliação bancária', 'concil.sub': 'Confira os lançamentos pagos de cada conta contra o extrato do banco.',
+  'concil.conta': 'Conta corrente', 'concil.sem_contas': 'Nenhuma conta cadastrada',
+  'concil.tipo': 'Tipo', 'concil.entrada': 'Entrada', 'concil.saida': 'Saída', 'concil.conciliado': 'Conciliado',
+  'concil.entradas': 'Entradas', 'concil.saidas': 'Saídas', 'concil.saldo_mov': 'Saldo de movimentos',
+  'concil.conciliados': 'Conciliados', 'concil.pendentes': 'Pendentes',
+  'concil.saldo_sistema': 'Saldo no sistema', 'concil.saldo_extrato': 'Saldo do extrato', 'concil.diferenca': 'Diferença',
+  'concil.bate': 'Saldos batem — conta conciliada.', 'concil.vazio': 'Nenhum lançamento pago nesta conta no período.',
+});
+Object.assign(en, {
+  'menu.conciliacao': 'Bank reconciliation',
+  'cap.financeiro.conciliacao.ver': 'View bank reconciliation', 'cap.financeiro.conciliacao.gerenciar': 'Reconcile entries',
+  'conciliacao.conta_obrigatoria': 'Select a bank account.', 'conciliacao.so_pago': 'Only paid entries can be reconciled.',
+  'concil.titulo': 'Bank reconciliation', 'concil.sub': 'Check paid entries of each account against the bank statement.',
+  'concil.conta': 'Bank account', 'concil.sem_contas': 'No accounts registered',
+  'concil.tipo': 'Type', 'concil.entrada': 'Inflow', 'concil.saida': 'Outflow', 'concil.conciliado': 'Reconciled',
+  'concil.entradas': 'Inflows', 'concil.saidas': 'Outflows', 'concil.saldo_mov': 'Net movement',
+  'concil.conciliados': 'Reconciled', 'concil.pendentes': 'Pending',
+  'concil.saldo_sistema': 'System balance', 'concil.saldo_extrato': 'Statement balance', 'concil.diferenca': 'Difference',
+  'concil.bate': 'Balances match — account reconciled.', 'concil.vazio': 'No paid entries in this account for the period.',
+});
+Object.assign(es, {
+  'menu.conciliacao': 'Conciliación bancaria',
+  'cap.financeiro.conciliacao.ver': 'Ver conciliación bancaria', 'cap.financeiro.conciliacao.gerenciar': 'Conciliar movimientos',
+  'conciliacao.conta_obrigatoria': 'Seleccione una cuenta bancaria.', 'conciliacao.so_pago': 'Solo títulos pagados pueden conciliarse.',
+  'concil.titulo': 'Conciliación bancaria', 'concil.sub': 'Compare los movimientos pagados de cada cuenta con el extracto del banco.',
+  'concil.conta': 'Cuenta bancaria', 'concil.sem_contas': 'Ninguna cuenta registrada',
+  'concil.tipo': 'Tipo', 'concil.entrada': 'Entrada', 'concil.saida': 'Salida', 'concil.conciliado': 'Conciliado',
+  'concil.entradas': 'Entradas', 'concil.saidas': 'Salidas', 'concil.saldo_mov': 'Saldo de movimientos',
+  'concil.conciliados': 'Conciliados', 'concil.pendentes': 'Pendientes',
+  'concil.saldo_sistema': 'Saldo en el sistema', 'concil.saldo_extrato': 'Saldo del extracto', 'concil.diferenca': 'Diferencia',
+  'concil.bate': 'Los saldos coinciden — cuenta conciliada.', 'concil.vazio': 'Sin movimientos pagados en esta cuenta en el período.',
+});

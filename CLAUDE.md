@@ -176,6 +176,20 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Refinamento — Conciliação bancária (etapa 1: manual por conta).** Migration
+  tenant **023** (`titulo.conciliado` bool + `titulo.conciliado_em`). Caps `financeiro.conciliacao.ver/
+  gerenciar`. **Backend:** `TituloRepository.conciliacao` (títulos **pagos** numa conta corrente no
+  período, pela data de pagamento) + `definirConciliado`; `FinanceiroService.conciliacao` soma
+  entradas (receber) / saídas (pagar) / saldo de movimentos e conta conciliados×pendentes;
+  `marcarConciliado` (só título pago → senão 400). Rotas `GET /financeiro/conciliacao?contaId&de&ate`
+  e `PATCH /financeiro/conciliacao/:id`. **Frontend:** tela **Financeiro › Conciliação bancária**
+  (seletor de conta + período; KPIs entradas/saídas/saldo/conciliados/pendentes; checkbox conciliado
+  por lançamento; campo de **saldo do extrato** comparado ao **saldo do sistema** com diferença e selo
+  "bate"; export CSV); menu + rota + i18n pt/en/es. **Validação:** **type-check api+web verde** +
+  **e2e Postgres real (10 PASS)** via pglite: lista só pagos da conta, totais 1000/300, saldo 700,
+  marcar/desmarcar conciliado, sem conta→400, título não pago→400. **Etapa 2 (futuro):** importar
+  extrato OFX/CSV com matching automático. **Pendente:** Gui `git push` (Render migra sozinho no boot)
+  + relogar.
 - **2026-06-11** — **Fix de deploy + lição: `package-lock.json` corrompido travava o Cloudflare.**
   Um comando de shell deixou uma linha de espaços no fim do `package-lock.json` (JSON inválido). O
   Cloudflare Pages roda `npm ci` (clean-install) e passou a **falhar silenciosamente em todo build**

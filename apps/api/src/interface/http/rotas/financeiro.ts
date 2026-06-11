@@ -43,6 +43,12 @@ export function rotasFinanceiro(deps: Dependencias): Router {
   r.post('/financeiro/nota', autF, azF('financeiro.compra.criar'), async (req, res) => {
     try { res.status(201).json(await deps.comprasService.lancarNota(req.usuario!.schema, req.body ?? {})); } catch (e) { tratarErro(res, e); }
   });
+  r.get('/financeiro/conciliacao', autF, azF('financeiro.conciliacao.ver'), async (req, res) => {
+    try { res.json(await deps.financeiroService.conciliacao(req.usuario!.schema, req.query.contaId, req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
+  });
+  r.patch('/financeiro/conciliacao/:id', autF, azF('financeiro.conciliacao.gerenciar'), async (req, res) => {
+    try { await deps.financeiroService.marcarConciliado(req.usuario!.schema, req.params.id!, !!(req.body ?? {}).conciliado); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
   r.get('/financeiro/comissoes', autF, azF('financeiro.comissao.ver'), async (req, res) => {
     try { res.json(await deps.comissoesService.apurar(req.usuario!.schema, req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
   });

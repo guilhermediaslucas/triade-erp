@@ -45,6 +45,7 @@ import { RelPerdas } from './pages/RelPerdas.js';
 import { RelInventarios } from './pages/RelInventarios.js';
 import { Condicoes } from './pages/Condicoes.js';
 import { Comissoes } from './pages/Comissoes.js';
+import { Conciliacao } from './pages/Conciliacao.js';
 import { ContasCorrentes } from './pages/ContasCorrentes.js';
 import { CategoriasFinanceiras } from './pages/CategoriasFinanceiras.js';
 import { Layout } from './components/Layout.js';
@@ -84,6 +85,7 @@ export function App() {
                 <Route path="/financeiro/nota" element={<Protegida cap="financeiro.compra.criar"><NotaEntrada /></Protegida>} />
                 <Route path="/estoque/recebimento" element={<Protegida cap="estoque.entrada.criar"><Recebimento /></Protegida>} />
                 <Route path="/financeiro/comissoes" element={<Protegida cap="financeiro.comissao.ver"><Comissoes /></Protegida>} />
+                <Route path="/financeiro/conciliacao" element={<Protegida cap="financeiro.conciliacao.ver"><Conciliacao /></Protegida>} />
                 <Route path="/financeiro/fluxo" element={<Protegida cap="financeiro.fluxo.ver"><FluxoCaixa /></Protegida>} />
                 <Route path="/financeiro/pagar" element={<Protegida cap="financeiro.pagar.listar"><Contas tipo="pagar" /></Protegida>} />
                 <Route path="/relatorios/vendas" element={<Protegida cap="relatorios.ver"><RelVendas /></Protegida>} />

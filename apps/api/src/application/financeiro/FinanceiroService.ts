@@ -1,4 +1,4 @@
-import type { MovimentoFluxo, PagoAgrupado, Titulo, TipoTitulo, TituloRepository } from '../../domain/financeiro/Titulo.js';
+import type { LinhaConciliacao, MovimentoFluxo, PagoAgrupado, Titulo, TipoTitulo, TituloRepository } from '../../domain/financeiro/Titulo.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
 export type AgingFaixa = 'a_vencer' | 'd1_30' | 'd31_60' | 'd61_90' | 'd90_mais';
@@ -10,6 +10,12 @@ export interface RelatorioAging { linhas: AgingLinha[]; totais: Record<AgingFaix
 export type DrePor = 'origem' | 'categoria';
 export interface DreLinha { origem: string; total: number; }
 export interface RelatorioDre { por: DrePor; receitas: DreLinha[]; despesas: DreLinha[]; totalReceitas: number; totalDespesas: number; resultado: number; }
+
+export interface RelatorioConciliacao {
+  linhas: LinhaConciliacao[];
+  totalEntradas: number; totalSaidas: number; saldoMovimento: number;
+  qtdConciliado: number; qtdPendente: number; valorConciliado: number; valorPendente: number;
+}
 
 function faixaDe(dias: number): AgingFaixa {
   if (dias <= 0) return 'a_vencer';
@@ -88,5 +94,32 @@ export class FinanceiroService {
     const t = await this.repo.buscarPorId(schema, id);
     if (!t) throw new ErroAplicacao('financeiro.nao_encontrado', 404);
     await this.repo.excluir(schema, id);
+  }
+
+  // Conciliação bancária (manual): lançamentos pagos numa conta no período + totais.
+  // Sinal por tipo: receber = entrada (+), pagar = saída (-).
+  async conciliacao(schema: string, contaCorrenteId: any, de: any, ate: any): Promise<RelatorioConciliacao> {
+    const conta = (contaCorrenteId && String(contaCorrenteId).trim()) || '';
+    if (!conta) throw new ErroAplicacao('conciliacao.conta_obrigatoria', 400);
+    const linhas = await this.repo.conciliacao(schema, conta, lim(de), lim(ate));
+    let totalEntradas = 0, totalSaidas = 0, valorConciliado = 0, valorPendente = 0, qtdConciliado = 0, qtdPendente = 0;
+    for (const l of linhas) {
+      const sinal = l.tipo === 'receber' ? l.valor : -l.valor;
+      if (l.tipo === 'receber') totalEntradas = r2(totalEntradas + l.valor);
+      else totalSaidas = r2(totalSaidas + l.valor);
+      if (l.conciliado) { valorConciliado = r2(valorConciliado + sinal); qtdConciliado++; }
+      else { valorPendente = r2(valorPendente + sinal); qtdPendente++; }
+    }
+    return {
+      linhas, totalEntradas, totalSaidas, saldoMovimento: r2(totalEntradas - totalSaidas),
+      qtdConciliado, qtdPendente, valorConciliado, valorPendente,
+    };
+  }
+
+  async marcarConciliado(schema: string, id: string, conciliado: boolean): Promise<void> {
+    const t = await this.repo.buscarPorId(schema, id);
+    if (!t) throw new ErroAplicacao('financeiro.nao_encontrado', 404);
+    if (t.status !== 'pago') throw new ErroAplicacao('conciliacao.so_pago', 400);
+    await this.repo.definirConciliado(schema, id, !!conciliado);
   }
 }

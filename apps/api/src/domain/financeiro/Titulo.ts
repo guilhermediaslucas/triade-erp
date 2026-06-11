@@ -19,6 +19,8 @@ export interface MovimentoFluxo {
 }
 // Soma dos títulos pagos por tipo + chave de agrupamento (origem ou categoria) — para a DRE de caixa.
 export interface PagoAgrupado { tipo: TipoTitulo; chave: string; total: number; }
+// Lançamento (título pago) numa conta corrente, para conciliação bancária.
+export interface LinhaConciliacao { id: string; tipo: TipoTitulo; descricao: string; pessoaNome: string | null; valor: number; pagoEm: string; conciliado: boolean; }
 
 export interface TituloRepository {
   listarPagos(schema: string): Promise<MovimentoFluxo[]>;
@@ -31,4 +33,6 @@ export interface TituloRepository {
   cancelarBaixa(schema: string, id: string): Promise<void>;
   excluir(schema: string, id: string): Promise<void>;
   criarParcelasDePedido(schema: string, descricao: string, pessoaNome: string | null, valorTotal: number, pedidoId: string, parcelas: number, intervaloDias: number): Promise<void>;
+  conciliacao(schema: string, contaCorrenteId: string, de: string | null, ate: string | null): Promise<LinhaConciliacao[]>;
+  definirConciliado(schema: string, id: string, conciliado: boolean): Promise<void>;
 }
