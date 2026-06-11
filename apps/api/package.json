@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/main.ts",
     "start": "node dist/main.js",
+    "start:prod": "tsx src/main.ts",
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "db:migrate": "tsx src/infra/db/cli.ts migrate",
@@ -19,6 +20,7 @@
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.13.1",
     "reflect-metadata": "^0.2.2",
+    "tsx": "^4.19.2",
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
@@ -26,7 +28,6 @@
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.9.0",
-    "tsx": "^4.19.2",
     "typescript": "^5.6.3"
   }
 }

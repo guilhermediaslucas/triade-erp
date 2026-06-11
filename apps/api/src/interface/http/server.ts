@@ -1,5 +1,6 @@
-import express, { type Express, type Request, type Response } from 'express';
+import express, { type Express, type Request, type Response, type NextFunction } from 'express';
 import { AppDataSource } from '../../infra/db/data-source.js';
+import { env } from '../../infra/config/env.js';
 import { montarDependencias } from '../composition.js';
 import { rotasAuth } from './rotas/auth.js';
 import { rotasMe } from './rotas/me.js';
@@ -27,6 +28,17 @@ import { rotasContas } from './rotas/contas.js';
 
 export function criarServidor(): Express {
   const app = express();
+
+  // CORS: permite o site (frontend) chamar a API. A origem vem de CORS_ORIGIN
+  // (padrao '*'). Responde o preflight (OPTIONS) direto.
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    res.header('Access-Control-Allow-Origin', env.corsOrigin);
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    if (req.method === 'OPTIONS') { res.sendStatus(204); return; }
+    next();
+  });
+
   app.use(express.json({ limit: '3mb' }));
 
   const deps = montarDependencias();

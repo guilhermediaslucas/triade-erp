@@ -30,7 +30,11 @@ export const env = {
   dbUrl: obrigatorio('DB_URL'),
   // SSL ligado por padrao (Neon exige). Local sem SSL: DB_SSL=false.
   dbSsl: (process.env.DB_SSL ?? 'true') !== 'false',
-  apiPort: Number(process.env.API_PORT ?? 3333),
+  // Em producao (Render/Railway/etc.) a porta vem em PORT. Local usa API_PORT.
+  apiPort: Number(process.env.PORT ?? process.env.API_PORT ?? 3333),
+  // Origem permitida no CORS. '*' libera geral (ok para comecar — tudo exige JWT).
+  // Em producao, pode-se restringir para a URL do site (ex.: https://erp.suaclinica.com.br).
+  corsOrigin: process.env.CORS_ORIGIN ?? '*',
   jwtSecret: obrigatorio('JWT_SECRET'),
   nodeEnv: process.env.NODE_ENV ?? 'development',
   get isProd(): boolean {
