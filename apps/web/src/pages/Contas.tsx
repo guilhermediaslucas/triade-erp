@@ -52,6 +52,17 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   const temFiltro = fSit !== 'todos' || !!fQ || !!fCat || !!fVde || !!fVate || !!fMin || !!fMax;
   function limparFiltros() { setFSit('todos'); setFQ(''); setFCat(''); setFVde(''); setFVate(''); setFMin(''); setFMax(''); }
 
+  const HIDEABLE = ['pessoa', 'cat', 'venc', 'valor', 'sit'] as const;
+  const [colsAberto, setColsAberto] = useState(false);
+  const [colsOcultas, setColsOcultas] = useState<Set<string>>(() => {
+    try { return new Set(JSON.parse(localStorage.getItem('contas-cols-' + tipo) || '[]')); } catch { return new Set(); }
+  });
+  const oc = (k: string) => colsOcultas.has(k);
+  function toggleCol(k: string) {
+    setColsOcultas((cur) => { const n = new Set(cur); n.has(k) ? n.delete(k) : n.add(k); try { localStorage.setItem('contas-cols-' + tipo, JSON.stringify([...n])); } catch { /* ignora */ } return n; });
+  }
+  const colLabel = (k: string) => k === 'pessoa' ? (tipo === 'receber' ? 'fin.cliente' : 'fin.fornecedor') : k === 'cat' ? 'catfin.titulo_s' : k === 'venc' ? 'fin.vencimento' : k === 'valor' ? 'fin.valor' : 'fin.situacao';
+
   const kpis = useMemo(() => {
     const abertos = filtrados.filter((x) => x.status === 'aberto');
     const total = abertos.reduce((a, x) => a + x.valor, 0);
@@ -64,7 +75,6 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   function toggleTodos() { setSel((s) => (s.size === filtrados.length ? new Set() : new Set(filtrados.map((x) => x.id)))); }
   const selecionados = itens.filter((x) => sel.has(x.id));
   const abertosSel = selecionados.filter((x) => x.status === 'aberto');
-  const nCols = pode ? 8 : 7;
 
   async function cancelar(tt: Titulo) {
     try { await api.patch('/financeiro/' + tipo + '/' + tt.id + '/cancelar', {}, token!); carregar(); toast(t('fin.toast_cancelado')); }
@@ -84,6 +94,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
       <div className="page-head"><h1 className="page-titulo">{t(tipo === 'receber' ? 'fin.receber' : 'fin.pagar')}</h1>
         <div style={{ display: 'flex', gap: 8 }}>
           <button className="btn-ghost" onClick={() => setFiltroAberto((v) => !v)}>{t('fin.filtros')}{temFiltro ? ' •' : ''}</button>
+          <button className="btn-ghost" onClick={() => setColsAberto((v) => !v)}>{t('fin.colunas')}</button>
           {pode && <button className="btn-primary" onClick={() => setNovo(true)}>+ {t('fin.novo')}</button>}
         </div></div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
@@ -118,6 +129,17 @@ export function Contas({ tipo }: { tipo: Tipo }) {
         </div>
       )}
 
+      {colsAberto && (
+        <div className="card" style={{ maxWidth: 420, marginBottom: 12 }}>
+          <b style={{ fontSize: 13 }}>{t('fin.colunas')}</b>
+          <div className="cols-chooser">
+            {HIDEABLE.map((k) => (
+              <label key={k} className="col-check"><input type="checkbox" checked={!oc(k)} onChange={() => toggleCol(k)} /> {t(colLabel(k))}</label>
+            ))}
+          </div>
+        </div>
+      )}
+
       {pode && sel.size > 0 && (
         <div className="bulk-bar">
           <span>{t('bulk.selecionados').replace('{n}', String(sel.size))}</span>
@@ -132,19 +154,19 @@ export function Contas({ tipo }: { tipo: Tipo }) {
       <div className="card pad0"><table className="tabela">
         <thead><tr>
           {pode && <th style={{ width: 34 }}><input type="checkbox" checked={filtrados.length > 0 && sel.size === filtrados.length} onChange={toggleTodos} /></th>}
-          <th>{t('fin.descricao')}</th><th>{tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor')}</th><th>{t('catfin.titulo_s')}</th><th>{t('fin.vencimento')}</th><th>{t('fin.valor')}</th><th>{t('fin.situacao')}</th><th>{t('usuarios.acoes')}</th>
+          <th>{t('fin.descricao')}</th>{!oc('pessoa') && <th>{tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor')}</th>}{!oc('cat') && <th>{t('catfin.titulo_s')}</th>}{!oc('venc') && <th>{t('fin.vencimento')}</th>}{!oc('valor') && <th>{t('fin.valor')}</th>}{!oc('sit') && <th>{t('fin.situacao')}</th>}<th>{t('usuarios.acoes')}</th>
         </tr></thead>
         <tbody>
-          {filtrados.length === 0 && <tr><td colSpan={nCols} className="vazio">{t('common.nenhum')}</td></tr>}
+          {filtrados.length === 0 && <tr><td colSpan={(pode ? 1 : 0) + 2 + HIDEABLE.filter((k) => !oc(k)).length} className="vazio">{t('common.nenhum')}</td></tr>}
           {filtrados.map((tt) => { const sit = situacao(tt); return (
             <tr key={tt.id} className={sel.has(tt.id) ? 'linha-sel' : ''}>
               {pode && <td><input type="checkbox" checked={sel.has(tt.id)} onChange={() => toggle(tt.id)} /></td>}
               <td>{tt.descricao}{tt.origem === 'pedido' && <span className="tag-origem">{t('fin.do_pedido')}</span>}</td>
-              <td>{tt.pessoaNome ?? '—'}</td>
-              <td>{tt.categoriaFinanceiraNome ?? '—'}</td>
-              <td>{new Date(tt.vencimento + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
-              <td>{moeda(tt.valor)}</td>
-              <td><span className={'pill ' + (sit === 'pago' ? 'st-verde' : sit === 'vencido' ? 'st-vermelho' : 'st-laranja')}>{t('fin.' + sit)}</span></td>
+              {!oc('pessoa') && <td>{tt.pessoaNome ?? '—'}</td>}
+              {!oc('cat') && <td>{tt.categoriaFinanceiraNome ?? '—'}</td>}
+              {!oc('venc') && <td>{new Date(tt.vencimento + 'T00:00:00').toLocaleDateString('pt-BR')}</td>}
+              {!oc('valor') && <td>{moeda(tt.valor)}</td>}
+              {!oc('sit') && <td><span className={'pill ' + (sit === 'pago' ? 'st-verde' : sit === 'vencido' ? 'st-vermelho' : 'st-laranja')}>{t('fin.' + sit)}</span></td>}
               <td className="acoes">{pode && (tt.status === 'aberto'
                 ? <><button className="btn-link" onClick={() => setBaixar(tt)}>{t('fin.baixar')}</button> <button className="btn-link" onClick={() => setParcelarT(tt)}>{t('parcelar.acao')}</button></>
                 : <button className="btn-link" onClick={() => cancelar(tt)}>{t('fin.cancelar_baixa')}</button>)}</td>

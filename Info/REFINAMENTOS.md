@@ -53,7 +53,7 @@
 - [x] Toasts de confirmação (sucesso/erro flutuantes; ligados em Contas e ações do pedido)
 - [x] Sino de notificações (topbar: títulos vencidos, lotes vencendo, estoque baixo; respeita permissões)
 - [x] Ações em massa (Contas: selecionar títulos → baixar/excluir em lote)
-- [ ] Esconder/mostrar e redimensionar colunas das listas
+- [~] Esconder/mostrar colunas (Contas, persistido em localStorage). Redimensionar por arraste: deferido (alto esforço/baixo valor)
 - [x] Ajuste fino de cores/tokens p/ casar com o mockup (paleta, raio 14px, sombra de card, fonte, sidebar 260px, cores de status)
 
 ---

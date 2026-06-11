@@ -1363,3 +1363,8 @@ Object.assign(es, {
 Object.assign(pt, { 'common.voltar': 'Voltar' });
 Object.assign(en, { 'common.voltar': 'Back' });
 Object.assign(es, { 'common.voltar': 'Volver' });
+
+// --- Refinamento: esconder/mostrar colunas ---
+Object.assign(pt, { 'fin.colunas': 'Colunas' });
+Object.assign(en, { 'fin.colunas': 'Columns' });
+Object.assign(es, { 'fin.colunas': 'Columnas' });

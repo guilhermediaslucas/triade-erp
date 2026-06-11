@@ -176,6 +176,16 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Polimento funcional — filtros avançados, colunas e form em página inteira.** Três
+  entregas de UI (sem backend): (1) **Filtros avançados nas Contas** — barra com busca (descrição/pessoa),
+  situação, categoria, faixa de vencimento e faixa de valor; KPIs e seleção refletem o filtro (frontend
+  puro sobre a lista carregada). (2) **Esconder/mostrar colunas** na lista de Contas (cliente/categoria/
+  vencimento/valor/situação), persistido em `localStorage` por tipo; th/td condicionais + colSpan dinâmico.
+  Redimensionar por arraste **deferido** (alto esforço/baixo valor, difícil de testar no ambiente). (3)
+  **Cadastro de Produto** convertido de modal para **formulário de página inteira** com botão Voltar
+  (padrão do mockup; demais cadastros podem migrar aos poucos). i18n pt/en/es; CSS (`.filtros-grid`,
+  `.cols-chooser`, `.form-pagina`, `.form-acoes`). **Validação:** **type-check web verde** nos três;
+  lock íntegro. **Pendente:** Gui `git push` + Ctrl+Shift+R.
 - **2026-06-11** — **Polimento visual — passada de fidelidade nos tokens (casar com o mockup).** Só
   `apps/web/src/styles.css` (sem lógica). Alinhei os design tokens ao `Info/mockups/erp-mockup.html`:
   `--bg #f4f5fa`, `--ink #1f2430`, `--muted #8a90a2`, `--borda #ececf2`, **`--radius 14px`**, **`--shadow`**

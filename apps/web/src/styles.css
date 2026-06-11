@@ -287,3 +287,6 @@ a { text-decoration: none; color: inherit; }
 
 .form-pagina { max-width: 720px; }
 .form-acoes { display:flex; gap:10px; justify-content:flex-end; margin-top:18px; padding-top:16px; border-top:1px solid var(--borda); }
+
+.cols-chooser { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+.col-check { display:flex; align-items:center; gap:8px; font-size:14px; }
