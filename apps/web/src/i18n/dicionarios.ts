@@ -1424,3 +1424,26 @@ Object.assign(en, { 'emp.trocar': 'Switch company (system admin)', 'emp.titulo':
 Object.assign(es, { 'emp.trocar': 'Cambiar empresa (admin del sistema)', 'emp.titulo': 'Cambiar empresa', 'emp.vazio': 'Sin empresas.' });
 
 Object.assign(es, { 'auth.sem_empresas': 'Ninguna empresa activa para acceder.' });
+
+// --- Dashboard fiel ao mockup ---
+Object.assign(pt, {
+  'dash.subtitulo': 'Visão geral da operação',
+  'dash.avisos': 'Avisos e pendências', 'dash.acoes': 'Ações rápidas',
+  'dash.av_orcamento': 'Pedidos em orçamento', 'dash.av_aguardando': 'Pedidos aguardando pagamento',
+  'dash.av_estoque': 'Produtos com estoque baixo', 'dash.av_receber_venc': 'A receber vencido',
+  'dash.qa_novo_pedido': 'Novo pedido', 'dash.qa_novo_cliente': 'Novo cliente', 'dash.qa_entrada': 'Entrada de estoque',
+});
+Object.assign(en, {
+  'dash.subtitulo': 'Operations overview',
+  'dash.avisos': 'Alerts & pending', 'dash.acoes': 'Quick actions',
+  'dash.av_orcamento': 'Orders in quote', 'dash.av_aguardando': 'Orders awaiting payment',
+  'dash.av_estoque': 'Low-stock products', 'dash.av_receber_venc': 'Overdue receivables',
+  'dash.qa_novo_pedido': 'New order', 'dash.qa_novo_cliente': 'New customer', 'dash.qa_entrada': 'Stock entry',
+});
+Object.assign(es, {
+  'dash.subtitulo': 'Visión general de la operación',
+  'dash.avisos': 'Avisos y pendientes', 'dash.acoes': 'Acciones rápidas',
+  'dash.av_orcamento': 'Pedidos en presupuesto', 'dash.av_aguardando': 'Pedidos esperando pago',
+  'dash.av_estoque': 'Productos con stock bajo', 'dash.av_receber_venc': 'Por cobrar vencido',
+  'dash.qa_novo_pedido': 'Nuevo pedido', 'dash.qa_novo_cliente': 'Nuevo cliente', 'dash.qa_entrada': 'Entrada de stock',
+});
