@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { useToast } from '../components/Toast.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
+import { lerExtrato, type TxExtrato } from '../lib/extrato.js';
 
 interface Conta { id: string; nome: string; banco: string | null; saldo: number; ativo: boolean; }
 interface Linha { id: string; tipo: 'receber' | 'pagar'; descricao: string; pessoaNome: string | null; valor: number; pagoEm: string; conciliado: boolean; }
@@ -24,6 +25,8 @@ export function Conciliacao() {
   const [de, setDe] = useState(primeiroDia()); const [ate, setAte] = useState(hoje());
   const [resp, setResp] = useState<Resp | null>(null);
   const [extrato, setExtrato] = useState('');
+  const [imp, setImp] = useState<{ txs: TxExtrato[]; saldoFinal: number | null } | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
@@ -62,6 +65,23 @@ export function Conciliacao() {
     });
   }
 
+  async function aoEscolherArquivo(e: { target: HTMLInputElement }) {
+    const f = e.target.files?.[0]; if (!f) return;
+    try {
+      const texto = await f.text();
+      const lido = lerExtrato(texto, f.name);
+      if (lido.saldoFinal != null) setExtrato(String(lido.saldoFinal));
+      if (lido.txs.length === 0) setErro('concil.imp_vazio'); else setImp(lido);
+    } catch { setErro('concil.imp_erro'); }
+    e.target.value = '';
+  }
+  async function conciliarMuitos(ids: string[]) {
+    for (const id of ids) { try { await api.patch(`/financeiro/conciliacao/${id}`, { conciliado: true }, token!); } catch { /* ignora individual */ } }
+    setImp(null);
+    await gerar();
+    toast(t('concil.imp_toast').replace('{n}', String(ids.length)));
+  }
+
   const conta = useMemo(() => contas.find((c) => c.id === contaId) ?? null, [contas, contaId]);
   const fmt = (d: string) => new Date(d).toLocaleDateString('pt-BR');
   const saldoSistema = conta?.saldo ?? 0;
@@ -82,6 +102,10 @@ export function Conciliacao() {
         <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
         <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
         <button className="btn-primary" onClick={() => gerar()}>{t('rel.gerar')}</button>
+        {pode && <>
+          <button className="btn-ghost" onClick={() => fileRef.current?.click()}>{t('concil.importar')}</button>
+          <input ref={fileRef} type="file" accept=".ofx,.csv,.txt" style={{ display: 'none' }} onChange={aoEscolherArquivo} />
+        </>}
         {resp && resp.linhas.length > 0 && (
           <button className="btn-ghost" onClick={() => baixarCsv('conciliacao_' + de + '_' + ate,
             [t('pedidos.data'), t('fin.descricao'), t('fin.cliente'), t('concil.tipo'), t('rel.valor'), t('concil.conciliado')],
@@ -133,6 +157,47 @@ export function Conciliacao() {
           </table></div>
         </>
       )}
+      {imp && resp && <ModalImportar linhas={resp.linhas} txs={imp.txs} onFechar={() => setImp(null)} onConfirmar={conciliarMuitos} />}
     </div>
+  );
+}
+
+function ModalImportar({ linhas, txs, onFechar, onConfirmar }: { linhas: Linha[]; txs: TxExtrato[]; onFechar: () => void; onConfirmar: (ids: string[]) => void; }) {
+  const { t } = useI18n();
+  const fmt = (d: string) => new Date(d + 'T00:00:00').toLocaleDateString('pt-BR');
+  // Casa cada lançamento do extrato com um título ainda não conciliado, pelo valor com sinal
+  // (entrada = receber +valor; saída = pagar -valor). Cada título é usado uma vez só.
+  const { pares, matchedIds } = (() => {
+    const usados = new Set<string>();
+    const naoConc = linhas.filter((l) => !l.conciliado);
+    const pares = txs.map((tx) => {
+      const alvo = naoConc.find((l) => !usados.has(l.id) && Math.abs((l.tipo === 'receber' ? l.valor : -l.valor) - tx.valor) < 0.01) || null;
+      if (alvo) usados.add(alvo.id);
+      return { tx, titulo: alvo };
+    });
+    return { pares, matchedIds: pares.filter((p) => p.titulo).map((p) => p.titulo!.id) };
+  })();
+  return (
+    <div className="modal-fundo" onClick={onFechar}><div className="modal modal-lg" onClick={(e) => e.stopPropagation()}>
+      <h2>{t('concil.imp_titulo')}</h2>
+      <p className="muted" style={{ marginTop: -6 }}>{t('concil.imp_resumo').replace('{m}', String(matchedIds.length)).replace('{n}', String(txs.length))}</p>
+      <div className="card pad0" style={{ maxHeight: 320, overflow: 'auto' }}><table className="tabela">
+        <thead><tr><th>{t('pedidos.data')}</th><th>{t('rel.valor')}</th><th>{t('concil.imp_extrato')}</th><th>{t('concil.imp_match')}</th></tr></thead>
+        <tbody>
+          {pares.map((p, i) => (
+            <tr key={i}>
+              <td>{fmt(p.tx.data)}</td>
+              <td className={p.tx.valor < 0 ? 'kpi-vermelho' : 'kpi-ok'}>{moeda(p.tx.valor)}</td>
+              <td>{p.tx.descricao || '—'}</td>
+              <td>{p.titulo ? <span className="pill" style={{ background: '#dcfce7', color: '#15803d' }}>{p.titulo.descricao}</span> : <span className="muted">{t('concil.imp_sem')}</span>}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table></div>
+      <div className="modal-acoes">
+        <button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button>
+        <button className="btn-primary" disabled={matchedIds.length === 0} onClick={() => onConfirmar(matchedIds)}>{t('concil.imp_conciliar').replace('{n}', String(matchedIds.length))}</button>
+      </div>
+    </div></div>
   );
 }

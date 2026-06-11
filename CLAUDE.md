@@ -176,6 +176,17 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Refinamento — Conciliação bancária etapa 2 (importar extrato OFX/CSV).** **Sem
+  backend/migration novos** — leitura e match no **navegador**, reusa `PATCH /financeiro/conciliacao/:id`.
+  Novo `apps/web/src/lib/extrato.ts` (`lerExtrato`): parser de **OFX** (blocos `STMTTRN` → DTPOSTED/
+  TRNAMT/MEMO + `LEDGERBAL`) e **CSV** (delimitador `;`/`,`, datas DD/MM/AAAA ou ISO, valores BR
+  1.234,56; sinal crédito+/débito−). Na tela de Conciliação: botão **Importar extrato (OFX/CSV)** →
+  lê o arquivo, preenche o saldo do extrato (se houver `LEDGERBAL`) e abre **modal de correspondências**
+  que casa cada lançamento do extrato a um título **ainda não conciliado** pelo **valor com sinal**
+  (entrada=receber, saída=pagar; cada título usado 1×); botão **Conciliar N correspondências** marca
+  todos via PATCH. i18n pt/en/es. **Validação:** **type-check api+web verde** + **teste do parser
+  (7 PASS)** via tsx: OFX 2 lançamentos (+1000/−300, saldo 700) e CSV BR (cabeçalho ignorado, 1.234,56→
+  número). **Pendente:** Gui `git push` + relogar/Ctrl+Shift+R. **Conciliação concluída (etapas 1 e 2).**
 - **2026-06-11** — **Refinamento — Parcelar / multiplicar títulos.** **Sem migration**; reusa a cap
   `financeiro.{receber,pagar}.gerenciar`. **Backend:** `FinanceiroService.parcelar(schema, id, {modo,
   parcelas, intervaloDias})` — só título **em aberto** (senão 400); `modo=dividir` reparte o valor em N

@@ -1313,3 +1313,26 @@ Object.assign(es, {
   'parcelar.so_aberto': 'Solo títulos abiertos pueden dividirse.',
   'parcelar.parcelas_invalidas': 'Ingrese de 2 a 99 cuotas.', 'parcelar.intervalo_invalido': 'Intervalo inválido.',
 });
+
+// --- Refinamento: conciliação etapa 2 (importar extrato) ---
+Object.assign(pt, {
+  'concil.importar': 'Importar extrato (OFX/CSV)',
+  'concil.imp_titulo': 'Importar extrato bancário', 'concil.imp_resumo': '{m} de {n} lançamentos do extrato casaram com títulos.',
+  'concil.imp_extrato': 'Descrição no extrato', 'concil.imp_match': 'Título correspondente', 'concil.imp_sem': 'Sem correspondência',
+  'concil.imp_conciliar': 'Conciliar {n} correspondências', 'concil.imp_toast': '{n} lançamentos conciliados.',
+  'concil.imp_vazio': 'Não encontrei lançamentos no arquivo.', 'concil.imp_erro': 'Não consegui ler o arquivo.',
+});
+Object.assign(en, {
+  'concil.importar': 'Import statement (OFX/CSV)',
+  'concil.imp_titulo': 'Import bank statement', 'concil.imp_resumo': '{m} of {n} statement entries matched entries.',
+  'concil.imp_extrato': 'Statement description', 'concil.imp_match': 'Matched entry', 'concil.imp_sem': 'No match',
+  'concil.imp_conciliar': 'Reconcile {n} matches', 'concil.imp_toast': '{n} entries reconciled.',
+  'concil.imp_vazio': 'No entries found in the file.', 'concil.imp_erro': 'Could not read the file.',
+});
+Object.assign(es, {
+  'concil.importar': 'Importar extracto (OFX/CSV)',
+  'concil.imp_titulo': 'Importar extracto bancario', 'concil.imp_resumo': '{m} de {n} movimientos del extracto coincidieron con títulos.',
+  'concil.imp_extrato': 'Descripción en el extracto', 'concil.imp_match': 'Título correspondiente', 'concil.imp_sem': 'Sin coincidencia',
+  'concil.imp_conciliar': 'Conciliar {n} coincidencias', 'concil.imp_toast': '{n} movimientos conciliados.',
+  'concil.imp_vazio': 'No encontré movimientos en el archivo.', 'concil.imp_erro': 'No pude leer el archivo.',
+});
