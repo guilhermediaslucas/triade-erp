@@ -1584,3 +1584,7 @@ Object.assign(es, { 'concil.crumb': 'Financiero / Conciliación bancaria' });
 Object.assign(pt, { 'dash.faturamento': 'Faturamento (6 meses)', 'dash.por_categoria': 'Vendas por categoria', 'dash.saldos': 'Saldos bancários', 'dash.total': 'Total' });
 Object.assign(en, { 'dash.faturamento': 'Revenue (6 months)', 'dash.por_categoria': 'Sales by category', 'dash.saldos': 'Bank balances', 'dash.total': 'Total' });
 Object.assign(es, { 'dash.faturamento': 'Facturación (6 meses)', 'dash.por_categoria': 'Ventas por categoría', 'dash.saldos': 'Saldos bancarios', 'dash.total': 'Total' });
+
+Object.assign(pt, { 'usuarios.buscar': 'Buscar usuário', 'cond.buscar': 'Buscar condição', 'catfin.buscar': 'Buscar categoria' });
+Object.assign(en, { 'usuarios.buscar': 'Search user', 'cond.buscar': 'Search term', 'catfin.buscar': 'Search category' });
+Object.assign(es, { 'usuarios.buscar': 'Buscar usuario', 'cond.buscar': 'Buscar condición', 'catfin.buscar': 'Buscar categoría' });

@@ -11,6 +11,7 @@ export function Usuarios() {
   const { t } = useI18n();
   const podeGerenciar = temCapability('acesso.usuario.gerenciar');
   const [usuarios, setUsuarios] = useState<UsuarioResumo[]>([]);
+  const [busca, setBusca] = useState(''); const [statusF, setStatusF] = useState<'todos' | 'ativos' | 'inativos'>('todos');
   const [perfis, setPerfis] = useState<Perfil[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [form, setForm] = useState<{ aberto: boolean; editandoId: string | null } | null>(null);
@@ -29,6 +30,13 @@ export function Usuarios() {
     catch (e) { setErro((e as ErroApi).chaveI18n); }
   }
 
+  const filtrados = usuarios.filter((x: any) => {
+    if (statusF === 'ativos' && !x.ativo) return false;
+    if (statusF === 'inativos' && x.ativo) return false;
+    if (busca) { const q = busca.toLowerCase(); const txt = [x.nome, x.email, x.perfilNome].filter(Boolean).join(' ').toLowerCase(); if (!txt.includes(q)) return false; }
+    return true;
+  });
+
   return (
     <div>
       <div className="crumb">{t('usuarios.crumb')}</div>
@@ -37,6 +45,10 @@ export function Usuarios() {
         {podeGerenciar && <button className="btn-primary" onClick={() => setForm({ aberto: true, editandoId: null })}>+ {t('usuarios.novo')}</button>}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
+      <div className="toolbar">
+        <div className="busca-box-tb">🔎<input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('usuarios.buscar')} /></div>
+        {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
+      </div>
       <div className="card pad0">
         <table className="tabela">
           <thead><tr>
@@ -44,8 +56,8 @@ export function Usuarios() {
             <th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th>
           </tr></thead>
           <tbody>
-            {usuarios.length === 0 && <tr><td colSpan={5} className="vazio">{t('common.nenhum')}</td></tr>}
-            {usuarios.map((u) => (
+            {filtrados.length === 0 && <tr><td colSpan={5} className="vazio">{t('common.nenhum')}</td></tr>}
+            {filtrados.map((u) => (
               <tr key={u.id} className={u.ativo ? '' : 'linha-inativa'}>
                 <td>{u.nome}</td>
                 <td>{u.email}</td>

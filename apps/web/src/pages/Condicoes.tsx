@@ -11,6 +11,7 @@ export function Condicoes() {
   const { t } = useI18n();
   const pode = temCapability('cadastros.condicao.gerenciar');
   const [itens, setItens] = useState<Condicao[]>([]);
+  const [busca, setBusca] = useState(''); const [statusF, setStatusF] = useState<'todos' | 'ativos' | 'inativos'>('todos');
   const [erro, setErro] = useState<string | null>(null);
   const [edit, setEdit] = useState<Condicao | null>(null);
 
@@ -18,17 +19,28 @@ export function Condicoes() {
   useEffect(() => { carregar(); /* eslint-disable-next-line */ }, []);
   async function alternar(c: Condicao) { try { await api.patch('/condicoes/' + c.id + '/ativo', { ativo: !c.ativo }, token!); carregar(); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
 
+  const filtrados = itens.filter((x: any) => {
+    if (statusF === 'ativos' && !x.ativo) return false;
+    if (statusF === 'inativos' && x.ativo) return false;
+    if (busca) { const q = busca.toLowerCase(); const txt = [x.nome, x.email, x.perfilNome].filter(Boolean).join(' ').toLowerCase(); if (!txt.includes(q)) return false; }
+    return true;
+  });
+
   return (
     <div>
       <div className="crumb">{t('cond.crumb')}</div>
       <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('cond.titulo')}</h1><div className="muted page-sub">{t('cond.sub')}</div></div>
         {pode && <button className="btn-primary" onClick={() => setEdit(vazio())}>+ {t('cond.nova')}</button>}</div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
+      <div className="toolbar">
+        <div className="busca-box-tb">🔎<input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('cond.buscar')} /></div>
+        {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
+      </div>
       <div className="card pad0"><table className="tabela">
         <thead><tr><th>{t('categorias.nome')}</th><th>{t('cond.parcelas')}</th><th>{t('cond.intervalo')}</th><th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
         <tbody>
-          {itens.length === 0 && <tr><td colSpan={5} className="vazio">{t('common.nenhum')}</td></tr>}
-          {itens.map((c) => (
+          {filtrados.length === 0 && <tr><td colSpan={5} className="vazio">{t('common.nenhum')}</td></tr>}
+          {filtrados.map((c) => (
             <tr key={c.id} className={c.ativo ? '' : 'linha-inativa'}>
               <td>{c.nome}</td><td>{c.parcelas}x</td><td>{c.intervaloDias} {t('cond.dias')}</td>
               <td><span className={c.ativo ? 'pill-ok' : 'pill-off'}>{c.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>

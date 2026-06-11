@@ -13,6 +13,7 @@ export function CategoriasFinanceiras() {
   const toast = useToast();
   const pode = temCapability('cadastros.catfin.gerenciar');
   const [itens, setItens] = useState<Cat[]>([]);
+  const [busca, setBusca] = useState(''); const [statusF, setStatusF] = useState<'todos' | 'ativos' | 'inativos'>('todos');
   const [erro, setErro] = useState<string | null>(null);
   const [edit, setEdit] = useState<Cat | null>(null);
 
@@ -26,6 +27,13 @@ export function CategoriasFinanceiras() {
     catch (e) { setErro((e as ErroApi).chaveI18n); }
   }
 
+  const filtrados = itens.filter((x: any) => {
+    if (statusF === 'ativos' && !x.ativo) return false;
+    if (statusF === 'inativos' && x.ativo) return false;
+    if (busca) { const q = busca.toLowerCase(); const txt = [x.nome, x.email, x.perfilNome].filter(Boolean).join(' ').toLowerCase(); if (!txt.includes(q)) return false; }
+    return true;
+  });
+
   return (
     <div>
       <div className="crumb">{t('catfin.crumb')}</div>
@@ -34,12 +42,16 @@ export function CategoriasFinanceiras() {
         {pode && <button className="btn-primary" onClick={() => setEdit({ id: '', nome: '', tipo: 'despesa', ativo: true })}>+ {t('catfin.nova')}</button>}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
+      <div className="toolbar">
+        <div className="busca-box-tb">🔎<input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('catfin.buscar')} /></div>
+        {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
+      </div>
       <div className="card pad0">
         <table className="tabela">
           <thead><tr><th>{t('catfin.nome')}</th><th>{t('catfin.tipo')}</th><th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
           <tbody>
-            {itens.length === 0 && <tr><td colSpan={4} className="vazio">{t('common.nenhum')}</td></tr>}
-            {itens.map((c) => (
+            {filtrados.length === 0 && <tr><td colSpan={4} className="vazio">{t('common.nenhum')}</td></tr>}
+            {filtrados.map((c) => (
               <tr key={c.id} className={c.ativo ? '' : 'linha-inativa'}>
                 <td>{c.nome}</td>
                 <td><span className={'pill ' + (c.tipo === 'receita' ? 'st-verde' : 'st-laranja')}>{t('catfin.' + c.tipo)}</span></td>
