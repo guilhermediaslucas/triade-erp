@@ -176,6 +176,16 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Refinamento — Vínculo do favorecido no título a pagar.** Migration tenant **022**
+  (`titulo.favorecido_id` → `favorecido`). **Backend:** `NovoTitulo.favorecidoId?` (opcional — não
+  quebra os geradores automáticos pedido/compra/comissão/frete); `Titulo` += `favorecidoId/Nome`;
+  `SqlTituloRepository.criar` grava a coluna e `listar` faz **LEFT JOIN** em `favorecido` p/ o nome;
+  `FinanceiroService.criar` repassa o favorecido (títulos manuais a pagar). **Frontend:** no **Novo
+  título** das Contas a pagar, select de **Favorecido** (ativos) que ao escolher preenche o nome da
+  pessoa se vazio; i18n pt/en/es. **Validação:** **type-check api+web verde (exit 0)** + **e2e Postgres
+  real (6 PASS)** via pglite: título a pagar grava favorecido_id, `listar` traz o nome (JOIN), favorecido
+  **opcional** (null), receber segue sem favorecido. **Pendente:** Gui rodar `db-setup.bat` (migration
+  022) + `git push` + testar. **Próximo (opcional):** conciliação bancária, Excel formatado, ou CRM.
 - **2026-06-11** — **Refinamento — Cadastro de Favorecidos (reembolso).** Migration tenant **021**
   (`favorecido`: nome, tipo_pessoa PF/PJ, documento, chave_pix, banco, agencia, conta, observacao,
   ativo). Caps `cadastros.favorecido.listar/gerenciar`. **Backend (hexagonal):** domínio

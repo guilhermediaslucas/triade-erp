@@ -8,6 +8,7 @@ import { moeda } from '../lib/pedido.js';
 type Tipo = 'receber' | 'pagar';
 interface Titulo { id: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; }
 interface CatFin { id: string; nome: string; tipo: 'receita' | 'despesa'; ativo: boolean; }
+interface Fav { id: string; nome: string; ativo: boolean; }
 
 const hojeISO = () => new Date().toISOString().slice(0, 10);
 function situacao(t: Titulo): 'pago' | 'vencido' | 'aberto' {
@@ -115,15 +116,18 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
   const [valor, setValor] = useState(''); const [vencimento, setVenc] = useState('');
   const [categoriaFinanceiraId, setCatId] = useState('');
   const [cats, setCats] = useState<CatFin[]>([]);
+  const [favorecidoId, setFavId] = useState('');
+  const [favs, setFavs] = useState<Fav[]>([]);
   const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
   const tipoCat = tipo === 'receber' ? 'receita' : 'despesa';
   useEffect(() => {
     if (temCapability('cadastros.catfin.listar')) api.get<CatFin[]>('/categorias-financeiras', token!).then((l) => setCats(l.filter((c) => c.ativo && c.tipo === tipoCat))).catch(() => {});
+    if (tipo === 'pagar' && temCapability('cadastros.favorecido.listar')) api.get<Fav[]>('/favorecidos', token!).then((l) => setFavs(l.filter((f) => f.ativo))).catch(() => {});
     /* eslint-disable-next-line */
   }, []);
   async function salvar() {
     setErro(null); setSalv(true);
-    try { await api.post('/financeiro/' + tipo, { descricao, pessoaNome, valor: Number(valor), vencimento, categoriaFinanceiraId: categoriaFinanceiraId || null }, token!); onSalvo(); }
+    try { await api.post('/financeiro/' + tipo, { descricao, pessoaNome, valor: Number(valor), vencimento, categoriaFinanceiraId: categoriaFinanceiraId || null, favorecidoId: favorecidoId || null }, token!); onSalvo(); }
     catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
   return (
@@ -131,6 +135,11 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
       <h2>{t('fin.novo')}</h2>
       <label className="campo">{t('fin.descricao')}<input value={descricao} onChange={(e) => setDescricao(e.target.value)} autoFocus /></label>
       <label className="campo">{tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor')}<input value={pessoaNome} onChange={(e) => setPessoa(e.target.value)} /></label>
+      {favs.length > 0 && <label className="campo">{t('fin.favorecido')}
+        <select value={favorecidoId} onChange={(e) => { const id = e.target.value; setFavId(id); const f = favs.find((x) => x.id === id); if (f && !pessoaNome.trim()) setPessoa(f.nome); }}>
+          <option value="">{t('fin.sem_favorecido')}</option>{favs.map((f) => <option key={f.id} value={f.id}>{f.nome}</option>)}
+        </select>
+      </label>}
       {cats.length > 0 && <label className="campo">{t('catfin.titulo_s')}
         <select value={categoriaFinanceiraId} onChange={(e) => setCatId(e.target.value)}>
           <option value="">{t('catfin.sem')}</option>{cats.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}

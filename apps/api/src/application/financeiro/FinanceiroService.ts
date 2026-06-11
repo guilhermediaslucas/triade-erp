@@ -69,6 +69,7 @@ export class FinanceiroService {
     return this.repo.criar(schema, {
       tipo, descricao: String(e.descricao).trim(), pessoaNome: (e?.pessoaNome && String(e.pessoaNome).trim()) || null,
       valor, vencimento, categoriaFinanceiraId: (e?.categoriaFinanceiraId && String(e.categoriaFinanceiraId).trim()) || null,
+      favorecidoId: (e?.favorecidoId && String(e.favorecidoId).trim()) || null,
     }, 'manual', null);
   }
 

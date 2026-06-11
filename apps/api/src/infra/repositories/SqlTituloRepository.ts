@@ -13,6 +13,7 @@ function map(r: any): Titulo {
     formaPagamento: r.forma_pagamento ?? null, pagoEm: iso(r.pago_em), origem: r.origem,
     pedidoId: r.pedido_id ?? null,
     categoriaFinanceiraId: r.categoria_financeira_id ?? null, categoriaFinanceiraNome: r.categoria_financeira_nome ?? null,
+    favorecidoId: r.favorecido_id ?? null, favorecidoNome: r.favorecido_nome ?? null,
     criadoEm: iso(r.criado_em)!,
   };
 }
@@ -62,9 +63,10 @@ export class SqlTituloRepository implements TituloRepository {
   async listar(schema: string, tipo: TipoTitulo): Promise<Titulo[]> {
     const s = validarSchema(schema);
     return (await this.ds.query(
-      `SELECT t.*, cf.nome AS categoria_financeira_nome
+      `SELECT t.*, cf.nome AS categoria_financeira_nome, fv.nome AS favorecido_nome
          FROM "${s}".titulo t
          LEFT JOIN "${s}".categoria_financeira cf ON cf.id = t.categoria_financeira_id
+         LEFT JOIN "${s}".favorecido fv ON fv.id = t.favorecido_id
         WHERE t.tipo = $1 ORDER BY t.vencimento`, [tipo])).map(map);
   }
   async buscarPorId(schema: string, id: string): Promise<Titulo | null> {
@@ -75,9 +77,9 @@ export class SqlTituloRepository implements TituloRepository {
   async criar(schema: string, t: NovoTitulo, origem: string, pedidoId: string | null): Promise<string> {
     const s = validarSchema(schema); const id = randomUUID();
     await this.ds.query(
-      `INSERT INTO "${s}".titulo (id, tipo, descricao, pessoa_nome, valor, vencimento, origem, pedido_id, categoria_financeira_id)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
-      [id, t.tipo, t.descricao, t.pessoaNome, t.valor, t.vencimento, origem, pedidoId, t.categoriaFinanceiraId ?? null]);
+      `INSERT INTO "${s}".titulo (id, tipo, descricao, pessoa_nome, valor, vencimento, origem, pedido_id, categoria_financeira_id, favorecido_id)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+      [id, t.tipo, t.descricao, t.pessoaNome, t.valor, t.vencimento, origem, pedidoId, t.categoriaFinanceiraId ?? null, t.favorecidoId ?? null]);
     return id;
   }
   async baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null): Promise<void> {

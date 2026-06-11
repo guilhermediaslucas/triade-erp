@@ -1241,3 +1241,8 @@ Object.assign(es, {
   'favorecidos.documento': 'CPF / CNPJ', 'favorecidos.pix': 'Clave PIX',
   'favorecidos.banco': 'Banco', 'favorecidos.agencia': 'Agencia', 'favorecidos.conta': 'Cuenta', 'favorecidos.observacao': 'Observación',
 });
+
+// --- Refinamento: favorecido no título a pagar ---
+Object.assign(pt, { 'fin.favorecido': 'Favorecido', 'fin.sem_favorecido': 'Sem favorecido (nome livre)' });
+Object.assign(en, { 'fin.favorecido': 'Payee', 'fin.sem_favorecido': 'No payee (free text)' });
+Object.assign(es, { 'fin.favorecido': 'Beneficiario', 'fin.sem_favorecido': 'Sin beneficiario (texto libre)' });

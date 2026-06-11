@@ -382,4 +382,10 @@ export const tenantMigrations: MigracaoTenant[] = [
       );
     `,
   },
+  {
+    nome: '022_titulo_favorecido',
+    sql: (s) => `
+      ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS favorecido_id uuid REFERENCES "${s}".favorecido(id);
+    `,
+  },
 ];
