@@ -18,6 +18,9 @@ export function rotasRelatorios(deps: Dependencias): Router {
   r.get('/relatorios/vendas-categoria', aut, az('relatorios.ver'), async (req, res: Response) => {
     try { res.json(await deps.relatoriosService.vendasPorCategoria(sch(req), req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
   });
+  r.get('/relatorios/curva-abc', aut, az('relatorios.ver'), async (req, res: Response) => {
+    try { res.json(await deps.relatoriosService.curvaAbc(sch(req), req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
+  });
   r.get('/relatorios/validade-lotes', aut, az('relatorios.ver'), async (req, res: Response) => {
     try { res.json(await deps.relatoriosService.validadeLotes(sch(req))); } catch (e) { tratarErro(res, e); }
   });

@@ -10,10 +10,14 @@ export interface LinhaValidadeLote {
 export interface LinhaEstoqueParado {
   produtoId: string; produto: string; saldo: number; valor: number; ultimaSaida: string | null;
 }
+export type ClasseAbc = 'A' | 'B' | 'C';
+export interface LinhaAbc { nome: string; quantidade: number; total: number; pct: number; acumuladoPct: number; classe: ClasseAbc; }
+export interface RelatorioAbc { linhas: LinhaAbc[]; totalGeral: number; resumo: Record<ClasseAbc, { itens: number; total: number }>; }
 export interface RelatorioRepository {
   vendas(schema: string, de: string | null, ate: string | null): Promise<RelatorioVendas>;
   produtosVendidos(schema: string, de: string | null, ate: string | null): Promise<LinhaProduto[]>;
   vendasPorCategoria(schema: string, de: string | null, ate: string | null): Promise<LinhaCategoria[]>;
+  curvaAbcProdutos(schema: string, de: string | null, ate: string | null): Promise<LinhaProduto[]>;
   validadeLotes(schema: string): Promise<LinhaValidadeLote[]>;
   estoqueParado(schema: string): Promise<LinhaEstoqueParado[]>;
 }

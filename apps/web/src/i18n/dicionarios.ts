@@ -1149,3 +1149,20 @@ Object.assign(es, {
 Object.assign(pt, { 'dre.agrupar': 'Agrupar por', 'dre.por_origem': 'Origem', 'dre.por_categoria': 'Categoria financeira' });
 Object.assign(en, { 'dre.agrupar': 'Group by', 'dre.por_origem': 'Source', 'dre.por_categoria': 'Financial category' });
 Object.assign(es, { 'dre.agrupar': 'Agrupar por', 'dre.por_origem': 'Origen', 'dre.por_categoria': 'Categoría financiera' });
+
+// --- Refinamento: Curva ABC de produtos ---
+Object.assign(pt, {
+  'menu.rel_abc': 'Curva ABC',
+  'abc.titulo': 'Curva ABC de produtos', 'abc.sub': 'Produtos por participação na receita. A ≈ 80% (poucos vitais), B ≈ 15%, C ≈ 5%.',
+  'abc.pct': '% da receita', 'abc.acumulado': '% acumulado', 'abc.classe': 'Classe', 'abc.itens': 'itens',
+});
+Object.assign(en, {
+  'menu.rel_abc': 'ABC analysis',
+  'abc.titulo': 'Product ABC analysis', 'abc.sub': 'Products by revenue share. A ≈ 80% (vital few), B ≈ 15%, C ≈ 5%.',
+  'abc.pct': '% of revenue', 'abc.acumulado': 'cumulative %', 'abc.classe': 'Class', 'abc.itens': 'items',
+});
+Object.assign(es, {
+  'menu.rel_abc': 'Curva ABC',
+  'abc.titulo': 'Curva ABC de productos', 'abc.sub': 'Productos por participación en los ingresos. A ≈ 80%, B ≈ 15%, C ≈ 5%.',
+  'abc.pct': '% de ingresos', 'abc.acumulado': '% acumulado', 'abc.classe': 'Clase', 'abc.itens': 'ítems',
+});

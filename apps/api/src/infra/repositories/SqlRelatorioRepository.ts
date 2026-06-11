@@ -57,6 +57,19 @@ export class SqlRelatorioRepository implements RelatorioRepository {
     return linhas.map((r: any) => ({ categoria: r.categoria, quantidade: Number(r.q), total: Number(r.total) }));
   }
 
+  // Produtos por receita (desc) — base da Curva ABC (classificação fica no serviço).
+  async curvaAbcProdutos(schema: string, de: string | null, ate: string | null): Promise<LinhaProduto[]> {
+    const s = validarSchema(schema);
+    const linhas = await this.ds.query(
+      `SELECT pi.produto_nome nome, SUM(pi.quantidade)::numeric q, SUM(pi.subtotal)::numeric total
+         FROM "${s}".pedido_item pi JOIN "${s}".pedido p ON p.id = pi.pedido_id
+        WHERE p.${ATIVO}
+          AND ($1::date IS NULL OR p.criado_em::date >= $1)
+          AND ($2::date IS NULL OR p.criado_em::date <= $2)
+        GROUP BY pi.produto_nome ORDER BY total DESC, q DESC`, [de, ate]);
+    return linhas.map((r: any) => ({ nome: r.nome, quantidade: Number(r.q), total: Number(r.total) }));
+  }
+
   // Lotes com saldo, ordenados pela validade (mais cedo primeiro; sem validade ao final).
   async validadeLotes(schema: string): Promise<LinhaValidadeLote[]> {
     const s = validarSchema(schema);
