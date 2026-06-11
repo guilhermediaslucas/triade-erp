@@ -32,7 +32,7 @@ export function PosicaoEstoque() {
 
   return (
     <div>
-      <h1 className="page-titulo">{t('estoque.titulo')}</h1>
+      <div className="crumb">{t('estoque.crumb')}</div><h1 className="page-titulo">{t('estoque.titulo')}</h1><p className="muted page-sub">{t('estoque.sub')}</p>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="card pad0"><table className="tabela">
         <thead><tr><th></th><th>{t('precos.produto')}</th><th>{t('produtos.unidade')}</th><th>{t('estoque.saldo')}</th><th>{t('produtos.minimo')}</th><th>{t('usuarios.situacao')}</th></tr></thead>

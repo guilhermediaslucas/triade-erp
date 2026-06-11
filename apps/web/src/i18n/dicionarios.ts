@@ -1520,3 +1520,29 @@ Object.assign(es, {
   'produtos.crumb': 'Registros / Productos', 'produtos.sub': 'Ítems vendidos — precio, lote y vencimiento después',
   'cc.crumb': 'Registros / Cuentas bancarias', 'cc.sub': 'Bancos y saldos usados en las bajas',
 });
+
+// --- crumb das telas de Estoque/Financeiro ---
+Object.assign(pt, {
+  'estoque.crumb': 'Estoque/Expedição / Posição de estoque', 'estoque.sub': 'Saldo por produto, com lotes e validade',
+  'entrada.crumb': 'Estoque/Expedição / Entrada de estoque', 'receb.crumb': 'Estoque/Expedição / Recebimento',
+  'perda.crumb': 'Estoque/Expedição / Baixa / perda', 'inv.crumb': 'Estoque/Expedição / Inventário',
+  'fluxo.crumb': 'Financeiro / Fluxo de caixa', 'nota.crumb': 'Financeiro / Nota de entrada',
+  'com.crumb': 'Financeiro / Controle de comissões', 'com.sub': 'Apuração por vendedor e fechamento de competência',
+  'gfrete.crumb': 'Logística / Gestão de fretes', 'precos.crumb': 'Comercial / Tabela de preço',
+});
+Object.assign(en, {
+  'estoque.crumb': 'Stock / Stock position', 'estoque.sub': 'Balance per product, with batches and expiry',
+  'entrada.crumb': 'Stock / Stock entry', 'receb.crumb': 'Stock / Receiving',
+  'perda.crumb': 'Stock / Write-off', 'inv.crumb': 'Stock / Inventory',
+  'fluxo.crumb': 'Finance / Cash flow', 'nota.crumb': 'Finance / Purchase note',
+  'com.crumb': 'Finance / Commissions', 'com.sub': 'Per-salesperson calculation and period closing',
+  'gfrete.crumb': 'Logistics / Freight management', 'precos.crumb': 'Sales / Price table',
+});
+Object.assign(es, {
+  'estoque.crumb': 'Stock / Posición de stock', 'estoque.sub': 'Saldo por producto, con lotes y vencimiento',
+  'entrada.crumb': 'Stock / Entrada de stock', 'receb.crumb': 'Stock / Recepción',
+  'perda.crumb': 'Stock / Baja / pérdida', 'inv.crumb': 'Stock / Inventario',
+  'fluxo.crumb': 'Financiero / Flujo de caja', 'nota.crumb': 'Financiero / Nota de entrada',
+  'com.crumb': 'Financiero / Comisiones', 'com.sub': 'Cálculo por vendedor y cierre de período',
+  'gfrete.crumb': 'Logística / Gestión de fletes', 'precos.crumb': 'Comercial / Tabla de precios',
+});

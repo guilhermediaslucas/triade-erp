@@ -51,7 +51,7 @@ export function EntradaEstoque() {
 
   return (
     <div>
-      <h1 className="page-titulo">{t('entrada.titulo')}</h1>
+      <div className="crumb">{t('entrada.crumb')}</div><h1 className="page-titulo">{t('entrada.titulo')}</h1>
       <p className="muted" style={{ marginTop: -8 }}>{t('entrada.sub')}</p>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       {ok && <div className="alerta-ok">{t('entrada.ok')}</div>}

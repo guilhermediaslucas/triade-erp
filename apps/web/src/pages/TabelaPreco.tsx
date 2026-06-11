@@ -46,7 +46,7 @@ export function TabelaPreco() {
 
   return (
     <div>
-      <h1 className="page-titulo">{t('precos.titulo')}</h1>
+      <div className="crumb">{t('precos.crumb')}</div><h1 className="page-titulo">{t('precos.titulo')}</h1>
       <div className="rel-filtro">
         <label className="campo">{t('precos.modo')}
           <select value={modo} onChange={(e) => { const m = e.target.value as any; setModo(m); if (m === 'base') setValores(Object.fromEntries(base.map((p) => [p.produtoId, String(p.preco)]))); else { setCli([]); setClienteId(''); } }}>

@@ -22,7 +22,7 @@ export function Recebimento() {
 
   return (
     <div>
-      <h1 className="page-titulo">{t('receb.titulo')}</h1>
+      <div className="crumb">{t('receb.crumb')}</div><h1 className="page-titulo">{t('receb.titulo')}</h1>
       <p className="muted" style={{ marginTop: -8 }}>{t('receb.sub')}</p>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="card pad0"><table className="tabela">

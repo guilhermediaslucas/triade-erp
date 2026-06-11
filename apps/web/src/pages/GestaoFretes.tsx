@@ -32,7 +32,7 @@ export function GestaoFretes() {
 
   return (
     <div>
-      <h1 className="page-titulo">{t('gfrete.titulo')}</h1>
+      <div className="crumb">{t('gfrete.crumb')}</div><h1 className="page-titulo">{t('gfrete.titulo')}</h1>
       <p className="muted" style={{ marginTop: -8 }}>{t('gfrete.sub')}</p>
       <div className="rel-filtro">
         <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>

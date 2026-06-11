@@ -37,7 +37,7 @@ export function BaixaPerda() {
 
   return (
     <div>
-      <h1 className="page-titulo">{t('perda.titulo')}</h1>
+      <div className="crumb">{t('perda.crumb')}</div><h1 className="page-titulo">{t('perda.titulo')}</h1>
       <p className="muted" style={{ marginTop: -8 }}>{t('perda.sub')}</p>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       {ok && <div className="alerta-ok">{t('perda.ok')}</div>}

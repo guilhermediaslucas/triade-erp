@@ -41,7 +41,7 @@ export function Inventario() {
 
   return (
     <div>
-      <h1 className="page-titulo">{t('inv.titulo')}</h1>
+      <div className="crumb">{t('inv.crumb')}</div><h1 className="page-titulo">{t('inv.titulo')}</h1>
       <p className="muted" style={{ marginTop: -8 }}>{t('inv.sub')}</p>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
 

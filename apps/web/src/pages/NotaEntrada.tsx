@@ -39,7 +39,7 @@ export function NotaEntrada() {
 
   return (
     <div>
-      <h1 className="page-titulo">{t('nota.titulo')}</h1>
+      <div className="crumb">{t('nota.crumb')}</div><h1 className="page-titulo">{t('nota.titulo')}</h1>
       <p className="muted" style={{ marginTop: -8 }}>{t('nota.sub')}</p>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       {ok && <div className="alerta-ok">{t('nota.ok')}</div>}

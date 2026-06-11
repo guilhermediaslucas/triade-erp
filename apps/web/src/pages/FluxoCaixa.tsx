@@ -22,7 +22,7 @@ export function FluxoCaixa() {
 
   return (
     <div>
-      <h1 className="page-titulo">{t('fluxo.titulo')}</h1>
+      <div className="crumb">{t('fluxo.crumb')}</div><h1 className="page-titulo">{t('fluxo.titulo')}</h1>
       <p className="muted" style={{ marginTop: -8 }}>{t('fluxo.sub')}</p>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="kpis">

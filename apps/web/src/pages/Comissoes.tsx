@@ -29,7 +29,7 @@ export function Comissoes() {
 
   return (
     <div>
-      <h1 className="page-titulo">{t('com.titulo')}</h1>
+      <div className="crumb">{t('com.crumb')}</div><h1 className="page-titulo">{t('com.titulo')}</h1><p className="muted page-sub">{t('com.sub')}</p>
       <div className="rel-filtro">
         <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
         <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
