@@ -188,6 +188,14 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Cadastro inline de Fornecedor igualado ao mockup ("Cadastrar fornecedor").** O mini-modal
+  inline do lançamento estava mínimo (nome/doc/telefone); agora o **fornecedor** (pagar) espelha a tela do mockup:
+  **Razão social, Nome fantasia** (placeholder "usa 1º nome da razão social"), **CNPJ + Buscar** (BrasilAPI →
+  preenche razão/fantasia/cep/cidade/uf), **Celular**, **E-mail**, **UF** (select), **Cidade**, **CEP** (ViaCEP no
+  blur); botão "Salvar fornecedor"; usa `modal-lg`. Reusa máscaras/lookups de `lib/br`. O **cliente** (receber) ganhou
+  e-mail + máscara de CNPJ. POST manda os campos extras (FornecedoresService já aceita fantasia/email/cep/cidade/uf).
+  i18n `fin.cadastrar_fornecedor/fantasia_ph/celular/uf/salvar_fornecedor` pt/en/es. **Validação:** hand-review;
+  sem backend/migration novos. **Pendente:** Gui build + commit+push.
 - **2026-06-12** — **Auto-serviço "Trocar senha" (super-admin + usuário de tenant).** O Gui perguntou como trocar a
   senha do admin do sistema — não havia jeito pela UI (o `garantirSuperAdmin` só cria se não existe; mudar a env
   `SUPER_ADMIN_SENHA` não atualiza quem já existe). Implementado o jeito definitivo: **PUT `/auth/senha`** (autenticado)
