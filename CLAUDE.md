@@ -176,6 +176,13 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Paridade §6: Reembolsos a favorecidos (relatório).** Novo relatório **Relatórios ›
+  Reembolsos** — lista os **títulos a pagar vinculados a um favorecido** (favorecidoId não nulo), com filtro
+  de período (vencimento) e situação + export CSV/Excel. **Frontend puro** (`RelFavorecidos.tsx`): reusa o
+  endpoint já testado `GET /financeiro/pagar` (que já traz `favorecidoId/favorecidoNome` via JOIN), filtra no
+  cliente; 2 KPIs (lançamentos/total) + tabela (favorecido, descrição, valor, vencimento, situação, pago em);
+  menu Relatórios (cap `financeiro.pagar.listar`), i18n pt/en/es. Sem backend/migration novos. **Validação:**
+  **type-check web verde** (reusa endpoint coberto; sem e2e novo). **Pendente:** Gui git push.
 - **2026-06-12** — **Paridade §6: Fluxo de caixa projetado (13 semanas, método direto).** Novo relatório
   **Financeiro › Fluxo projetado**: projeção rolling de 13 semanas a partir dos **títulos em aberto**.
   **Backend (sem migration):** `FinanceiroService.fluxoProjetado` — saldo inicial = caixa atual (Σ títulos

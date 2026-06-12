@@ -48,6 +48,7 @@ import { RelEstoqueParado } from './pages/RelEstoqueParado.js';
 import { RelPerdas } from './pages/RelPerdas.js';
 import { RelInventarios } from './pages/RelInventarios.js';
 import { RelPedidos } from './pages/RelPedidos.js';
+import { RelFavorecidos } from './pages/RelFavorecidos.js';
 import { Condicoes } from './pages/Condicoes.js';
 import { Comissoes } from './pages/Comissoes.js';
 import { Conciliacao } from './pages/Conciliacao.js';
@@ -100,6 +101,7 @@ export function App() {
                 <Route path="/financeiro/pagar" element={<Protegida cap="financeiro.pagar.listar"><Contas tipo="pagar" /></Protegida>} />
                 <Route path="/relatorios/vendas" element={<Protegida cap="relatorios.ver"><RelVendas /></Protegida>} />
                 <Route path="/relatorios/pedidos" element={<Protegida cap="relatorios.ver"><RelPedidos /></Protegida>} />
+                <Route path="/relatorios/reembolsos" element={<Protegida cap="financeiro.pagar.listar"><RelFavorecidos /></Protegida>} />
                 <Route path="/relatorios/produtos" element={<Protegida cap="relatorios.ver"><RelProdutos /></Protegida>} />
                 <Route path="/relatorios/vendas-categoria" element={<Protegida cap="relatorios.ver"><RelCategorias /></Protegida>} />
                 <Route path="/relatorios/curva-abc" element={<Protegida cap="relatorios.ver"><RelAbc /></Protegida>} />
