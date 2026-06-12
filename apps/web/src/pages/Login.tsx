@@ -107,4 +107,15 @@ function ModalRecuperar({ onFechar }: { onFechar: () => void }) {
           <label className="campo">{t('login.email')}<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="seu@email.com" autoFocus /></label>
           <div className="modal-acoes">
             <button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button>
-  
+            <button className="btn-primary" disabled={!email.trim()} onClick={() => setEnviado(true)}>{t('login.rec_enviar')}</button>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="alerta-ok">{t('login.rec_ok')}</div>
+          <div className="modal-acoes"><button className="btn-primary" onClick={onFechar}>{t('common.fechar')}</button></div>
+        </>
+      )}
+    </div></div>
+  );
+}
