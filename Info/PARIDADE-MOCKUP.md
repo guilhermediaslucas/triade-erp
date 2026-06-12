@@ -7,6 +7,15 @@
 > Como manter: ao implementar um item, marque ✅ e cite o commit. Quando um
 > comportamento do mockup mudar, atualize aqui **antes** de codar no sistema.
 
+> **Sweep "tela a tela" (em andamento — 2026-06-12).** Já alinhadas ao mockup nesta leva:
+> menu/topbar, login, Pedidos (kanban), Tabela de preço, Dados da empresa, Perfil,
+> Contas a receber/pagar (toolbar + barra de ações). **Fila sugerida (próximas telas):**
+> 1. **Novo pedido** (form completo do mockup) · 2. **Cadastros › Clientes/Fornecedores/
+> Vendedores/Produtos** (campos e toolbar) · 3. **Estoque/Expedição** (kanban + recebimento)
+> · 4. **Relatórios** (cabeçalhos/KPIs) · 5. **Itens funcionais**: ordenar por clique no
+> cabeçalho + reordenar colunas por arraste (Contas e demais tabelas). **Princípio:** §0 do
+> CLAUDE.md — fidelidade visual+funcional é primordial.
+
 ---
 
 ## 0. Método (a forma prática que você pediu)
