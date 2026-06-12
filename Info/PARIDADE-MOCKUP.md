@@ -32,7 +32,7 @@ de memória", o fluxo prático é:
 
 ## 1. GAP PRIORITÁRIO — Fluxo Pix/Boleto → Financeiro → liberação no Kanban
 
-**(o exemplo que você citou — hoje o sistema NÃO faz isto por completo)**
+**(o exemplo que você citou — ✅ IMPLEMENTADO no commit do fluxo Pix/Boleto; e2e 5 PASS)**
 
 No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toast */`):
 
@@ -51,14 +51,14 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
   "Aguardando pagamento" e já fica liberado; **Pix/Boleto** **só** avança para
   separação **depois** da confirmação financeira (baixa do título).
 
-**Estado no sistema:** ⚠️
+**Estado no sistema:** ✅ (implementado — toast persistente de ação fica como refino)
 - ✅ Confirmar pedido gera título a receber.
 - ✅ Workflow de status no Kanban (drag) com transições.
-- ❌ Gate por **forma de pagamento** (Cartão/Dinheiro liberam direto; Pix/Boleto
+- ✅ Gate por **forma de pagamento** (Cartão/Dinheiro liberam direto → `aprovado`; Pix/Boleto
   exigem baixa antes de `separacao`).
-- ❌ **Pendência de baixa** + **toast no canto** + entrada no **sino**, restritos
-  a quem vê Financeiro.
-- ❌ Ao baixar o título de origem `pedido`, **avançar o status** do pedido.
+- ✅ **Pendência de baixa** no **sino** + **toast** ao confirmar, restritos a quem vê Financeiro
+  (toast fixo no canto com botão Abrir = refino futuro).
+- ✅ Ao baixar o título de origem `pedido`, o pedido **avança** (aguardando_pagamento → aprovado).
 
 **Especificação para implementar (proposta):**
 - Backend: ao `baixar` um título com `origem='pedido'`, mover o pedido de
@@ -86,7 +86,7 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 | Forma de entrega (retirada/motoboy/correios/transportadora) + frete | ✅ | motoboy via Google Maps c/ fallback |
 | Kanban Comercial (leitura) + filtro de data | ⚠️ | Kanban existe; filtro por data de criação a confirmar |
 | Kanban Expedição (drag) + sincronização | ✅ | |
-| **Gate Pix/Boleto antes de separar** | ❌ | ver §1 |
+| **Gate Pix/Boleto antes de separar** | ✅ | ver §1 (e2e 5 PASS) |
 | Visualização do pedido (duplo-clique, leitura, entrega editável) | ⚠️ | há página de detalhe; "forma de entrega editável no view" a confirmar |
 | Romaneio imprimível | ✅ | |
 | Campanhas de preço (período) | ✅ | |
@@ -98,8 +98,8 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 |---|---|---|
 | Contas a receber / a pagar (CRUD, baixar, cancelar baixa) | ✅ | |
 | Título automático do pedido | ✅ | |
-| **Notificação de pendência de baixa (Pix/Boleto) + toast** | ❌ | ver §1 |
-| **Baixa do título do pedido → avança status do pedido** | ❌ | ver §1 |
+| **Notificação de pendência de baixa (Pix/Boleto) + toast** | ✅ | sino + toast; toast fixo c/ Abrir = refino |
+| **Baixa do título do pedido → avança status do pedido** | ✅ | ver §1 |
 | Filtros avançados (multi-status + favorecido + faixas) | ⚠️ | barra de filtros existe; multi-status/favorecido a confirmar |
 | Esconder/mostrar colunas (modalColunas) | ⚠️ | feito nas Contas; revisar paridade |
 | **Redimensionar colunas (arraste)** | ❌ | adiado (alto esforço) |
@@ -200,7 +200,7 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 | Busca global (Ctrl+K) | ✅ | |
 | Toasts de confirmação | ✅ | |
 | Sino de notificações | ⚠️ | existe; falta pendência de baixa Pix/Boleto (§1) |
-| **Toast de ação persistente (Pix/Boleto)** | ❌ | ver §1 |
+| **Toast de ação persistente (Pix/Boleto)** | ⚠️ | toast simples feito; variante fixa c/ botão Abrir pendente |
 | Tooltip global nos botões de ação | ⚠️ | usa title nativo |
 | Redimensionar colunas | ❌ | adiado |
 | Ações em massa (Contas) | ✅ | |
@@ -211,8 +211,7 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 
 ## 11. Próximos passos sugeridos (ordem de valor)
 
-1. **§1 — Fluxo Pix/Boleto → Financeiro → Kanban** (workflow de negócio real; o
-   exemplo que você deu). Maior impacto.
+1. ✅ **§1 — Fluxo Pix/Boleto → Financeiro → Kanban** (feito; toast fixo c/ botão Abrir = refino).
 2. Curva ABC de clientes (rápido; já temos a de produtos).
 3. KPIs clicáveis no Dashboard (drill por período).
 4. Coluna Previsto/Efetivo + detalhe do título (duplo-clique).

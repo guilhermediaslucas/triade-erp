@@ -176,6 +176,16 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Paridade mockup→sistema (doc) + §1 fluxo Pix/Boleto.** Criado `Info/PARIDADE-MOCKUP.md`:
+  inventário de tudo que o mockup faz (68 telas, 40 modais, ~60 blocos de JS) com status ✅/⚠️/❌ por módulo —
+  fonte de verdade/checklist p/ deixar o sistema idêntico. **Implementado o §1** (o exemplo do Gui): **gate por
+  forma de pagamento** — Cartão/Dinheiro liberam o pedido direto (`aguardando_pagamento`→`aprovado`); **Pix/Boleto**
+  ficam aguardando e **não** vão p/ separação até a **baixa do título** no Financeiro, que **avança o pedido** no
+  Kanban (`FinanceiroService.baixar` recebe `PedidoRepository`; se origem='pedido', libera). **Sino** ganhou o grupo
+  *Pendências de baixa (Pix/Boleto)* (recebíveis em aberto origem=pedido, gated por `financeiro.receber.listar`) e
+  **toast** ao confirmar pedido Pix/Boleto. i18n pt/en/es. **Validação:** type-check api+web verde + **e2e Postgres
+  real (pglite, 5 PASS)**: Pix espera→bloqueia separação→baixa libera (aprovado); Cartão libera direto. **Refino
+  futuro:** toast fixo no canto com botão Abrir (hoje é toast simples + sino). **Pendente:** Gui `git push` + relogar.
 - **2026-06-11** — **Dashboard reescrito fiel ao mockup + scroll-to-top + menu recolhido por padrão.** **(1)**
   `ScrollToTop` (useLocation) rola a página ao topo a cada troca de rota — montado no `BrowserRouter`. **(2)** Menu
   lateral passa a iniciar com **todos os grupos recolhidos** (só os nomes; clicar expande/recolhe). **(3) Dashboard**
