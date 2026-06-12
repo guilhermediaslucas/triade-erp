@@ -91,8 +91,8 @@ export function Conciliacao() {
 
   return (
     <div>
-      <div className="crumb">{t('concil.crumb')}</div><h1 className="page-titulo">{t('concil.titulo')}</h1>
-      <p className="muted" style={{ marginTop: -8 }}>{t('concil.sub')}</p>
+      <div className="crumb">{t('concil.crumb')}</div>
+      <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('concil.titulo')}</h1><div className="muted page-sub">{t('concil.sub')}</div></div></div>
       <div className="rel-filtro">
         <label className="campo">{t('concil.conta')}
           <select value={contaId} onChange={(e) => setContaId(e.target.value)}>
@@ -102,7 +102,8 @@ export function Conciliacao() {
         </label>
         <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
         <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
-        <button className="btn-primary" onClick={() => gerar()}>{t('rel.gerar')}</button>
+        <button className="btn-primary" onClick={() => gerar()}>🔎 {t('fluxo.filtrar')}</button>
+        <button className="btn-ghost" onClick={() => { setDe(primeiroDia()); setAte(hoje()); }}>✕ {t('fluxo.limpar')}</button>
         {pode && <>
           <button className="btn-ghost" onClick={() => fileRef.current?.click()}>{t('concil.importar')}</button>
           <input ref={fileRef} type="file" accept=".ofx,.csv,.txt" style={{ display: 'none' }} onChange={aoEscolherArquivo} />
@@ -117,7 +118,7 @@ export function Conciliacao() {
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
 
-      {resp && (
+      {resp && resp.linhas.length > 0 && (
         <>
           <div className="kpi-row">
             <div className="card kpi-mock"><div className="kpi-ic tint-gr">💰</div><div className="kpi-body"><div className="kpi-lbl">{t('concil.entradas')}</div><div className="kpi-val">{moeda(resp.totalEntradas)}</div></div></div>
@@ -141,25 +142,25 @@ export function Conciliacao() {
             </div>
             {diferenca != null && Math.abs(diferenca) < 0.005 && <div className="alerta-ok">{t('concil.bate')}</div>}
           </div>
-
-          <div className="card pad0"><table className="tabela">
-            <thead><tr><th>{t('pedidos.data')}</th><th>{t('fin.descricao')}</th><th>{t('fin.cliente')}</th><th>{t('concil.tipo')}</th><th>{t('rel.valor')}</th><th>{t('concil.conciliado')}</th></tr></thead>
-            <tbody>
-              {resp.linhas.length === 0 && <tr><td colSpan={6} className="vazio">{t('concil.vazio')}</td></tr>}
-              {resp.linhas.map((l) => (
-                <tr key={l.id} className={l.conciliado ? 'linha-sel' : ''}>
-                  <td>{fmt(l.pagoEm)}</td>
-                  <td>{l.descricao}</td>
-                  <td>{l.pessoaNome ?? '—'}</td>
-                  <td><span className="pill" style={l.tipo === 'receber' ? { background: '#dcfce7', color: '#15803d' } : { background: '#fee2e2', color: '#b91c1c' }}>{l.tipo === 'receber' ? t('concil.entrada') : t('concil.saida')}</span></td>
-                  <td>{moeda(l.valor)}</td>
-                  <td><input type="checkbox" checked={l.conciliado} disabled={!pode} onChange={() => alternar(l)} /></td>
-                </tr>
-              ))}
-            </tbody>
-          </table></div>
         </>
       )}
+
+      <div className="card pad0"><table className="tabela">
+        <thead><tr><th>{t('pedidos.data')}</th><th>{t('fin.descricao')}</th><th>{t('fin.cliente')}</th><th>{t('concil.tipo')}</th><th>{t('rel.valor')}</th><th>{t('concil.conciliado')}</th></tr></thead>
+        <tbody>
+          {(!resp || resp.linhas.length === 0) && <tr><td colSpan={6} className="vazio">{t('concil.vazio')}</td></tr>}
+          {resp && resp.linhas.map((l) => (
+            <tr key={l.id} className={l.conciliado ? 'linha-sel' : ''}>
+              <td>{fmt(l.pagoEm)}</td>
+              <td>{l.descricao}</td>
+              <td>{l.pessoaNome ?? '—'}</td>
+              <td><span className="pill" style={l.tipo === 'receber' ? { background: '#dcfce7', color: '#15803d' } : { background: '#fee2e2', color: '#b91c1c' }}>{l.tipo === 'receber' ? t('concil.entrada') : t('concil.saida')}</span></td>
+              <td>{moeda(l.valor)}</td>
+              <td><input type="checkbox" checked={l.conciliado} disabled={!pode} onChange={() => alternar(l)} /></td>
+            </tr>
+          ))}
+        </tbody>
+      </table></div>
       {imp && resp && <ModalImportar linhas={resp.linhas} txs={imp.txs} onFechar={() => setImp(null)} onConfirmar={conciliarMuitos} />}
     </div>
   );
