@@ -543,6 +543,7 @@ Object.assign(pt, {
   'fin.receber': 'Contas a receber', 'fin.pagar': 'Contas a pagar', 'fin.novo': 'Novo título',
   'fin.descricao': 'Descrição', 'fin.cliente': 'Cliente', 'fin.fornecedor': 'Fornecedor', 'fin.vencimento': 'Vencimento',
   'fin.numero': 'Título', 'fin.documento': 'Documento', 'fin.emissao': 'Emissão', 'fin.baixa': 'Baixa', 'fin.vendedor': 'Vendedor',
+  'fin.sub': 'Baixa, conta bancária, conciliação · clique nas colunas p/ ordenar, arraste p/ reordenar',
   'fin.favorecido_cliente': 'Favorecido / Cliente', 'fin.boletos_abertos': 'Boletos abertos', 'fin.a_vencer': 'A vencer',
   'fin.todos_clientes': 'Todos clientes', 'fin.todos_favorecidos': 'Todos favorecidos',
   'fin.valor': 'Valor', 'fin.situacao': 'Situação', 'fin.aberto': 'Em aberto', 'fin.vencido': 'Vencido', 'fin.pago': 'Pago',
@@ -561,6 +562,7 @@ Object.assign(en, {
   'fin.receber': 'Receivables', 'fin.pagar': 'Payables', 'fin.novo': 'New entry',
   'fin.descricao': 'Description', 'fin.cliente': 'Customer', 'fin.fornecedor': 'Supplier', 'fin.vencimento': 'Due date',
   'fin.numero': 'Doc. #', 'fin.documento': 'Document', 'fin.emissao': 'Issued', 'fin.baixa': 'Settled', 'fin.vendedor': 'Salesperson',
+  'fin.sub': 'Settlement, bank account, reconciliation · click columns to sort, drag to reorder',
   'fin.favorecido_cliente': 'Payee / Customer', 'fin.boletos_abertos': 'Open invoices', 'fin.a_vencer': 'Upcoming',
   'fin.todos_clientes': 'All customers', 'fin.todos_favorecidos': 'All payees',
   'fin.valor': 'Amount', 'fin.situacao': 'Status', 'fin.aberto': 'Open', 'fin.vencido': 'Overdue', 'fin.pago': 'Paid',
@@ -579,6 +581,7 @@ Object.assign(es, {
   'fin.receber': 'Cuentas a cobrar', 'fin.pagar': 'Cuentas a pagar', 'fin.novo': 'Nuevo título',
   'fin.descricao': 'Descripción', 'fin.cliente': 'Cliente', 'fin.fornecedor': 'Proveedor', 'fin.vencimento': 'Vencimiento',
   'fin.numero': 'Título', 'fin.documento': 'Documento', 'fin.emissao': 'Emisión', 'fin.baixa': 'Baja', 'fin.vendedor': 'Vendedor',
+  'fin.sub': 'Baja, cuenta bancaria, conciliación · clic en las columnas para ordenar, arrastra para reordenar',
   'fin.favorecido_cliente': 'Beneficiario / Cliente', 'fin.boletos_abertos': 'Boletos abiertos', 'fin.a_vencer': 'Por vencer',
   'fin.todos_clientes': 'Todos los clientes', 'fin.todos_favorecidos': 'Todos los beneficiarios',
   'fin.valor': 'Valor', 'fin.situacao': 'Estado', 'fin.aberto': 'Abierto', 'fin.vencido': 'Vencido', 'fin.pago': 'Pagado',
@@ -1335,7 +1338,7 @@ Object.assign(es, {
 
 // --- Refinamento: Parcelar / Multiplicar títulos ---
 Object.assign(pt, {
-  'parcelar.acao': 'Parcelar', 'parcelar.titulo': 'Parcelar / multiplicar título',
+  'parcelar.acao': 'Parcelar', 'parcelar.multiplicar': 'Multiplicar', 'parcelar.titulo': 'Parcelar / multiplicar título',
   'parcelar.modo': 'Modo', 'parcelar.dividir': 'Dividir o valor em parcelas', 'parcelar.replicar': 'Replicar o valor (recorrente)',
   'parcelar.parcelas': 'Parcelas', 'parcelar.intervalo': 'Intervalo (dias)',
   'parcelar.previa_dividir': 'Vai gerar', 'parcelar.previa_replicar': 'Vai gerar',
@@ -1344,7 +1347,7 @@ Object.assign(pt, {
   'parcelar.parcelas_invalidas': 'Informe de 2 a 99 parcelas.', 'parcelar.intervalo_invalido': 'Intervalo inválido.',
 });
 Object.assign(en, {
-  'parcelar.acao': 'Split', 'parcelar.titulo': 'Split / multiply entry',
+  'parcelar.acao': 'Split', 'parcelar.multiplicar': 'Multiply', 'parcelar.titulo': 'Split / multiply entry',
   'parcelar.modo': 'Mode', 'parcelar.dividir': 'Split the amount into installments', 'parcelar.replicar': 'Replicate the amount (recurring)',
   'parcelar.parcelas': 'Installments', 'parcelar.intervalo': 'Interval (days)',
   'parcelar.previa_dividir': 'Will generate', 'parcelar.previa_replicar': 'Will generate',
@@ -1353,7 +1356,7 @@ Object.assign(en, {
   'parcelar.parcelas_invalidas': 'Enter 2 to 99 installments.', 'parcelar.intervalo_invalido': 'Invalid interval.',
 });
 Object.assign(es, {
-  'parcelar.acao': 'Dividir', 'parcelar.titulo': 'Dividir / multiplicar título',
+  'parcelar.acao': 'Dividir', 'parcelar.multiplicar': 'Multiplicar', 'parcelar.titulo': 'Dividir / multiplicar título',
   'parcelar.modo': 'Modo', 'parcelar.dividir': 'Dividir el valor en cuotas', 'parcelar.replicar': 'Replicar el valor (recurrente)',
   'parcelar.parcelas': 'Cuotas', 'parcelar.intervalo': 'Intervalo (días)',
   'parcelar.previa_dividir': 'Generará', 'parcelar.previa_replicar': 'Generará',

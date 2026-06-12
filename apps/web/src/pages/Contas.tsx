@@ -29,6 +29,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   const [erro, setErro] = useState<string | null>(null);
   const [novo, setNovo] = useState(false);
   const [parcelarT, setParcelarT] = useState<Titulo | null>(null);
+  const [parcelarModo, setParcelarModo] = useState<'dividir' | 'replicar'>('dividir');
   const [baixar, setBaixar] = useState<Titulo | null>(null);
   const [verT, setVerT] = useState<Titulo | null>(null);
   const [sel, setSel] = useState<Set<string>>(new Set());
@@ -120,6 +121,9 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   const selecionados = itens.filter((x) => sel.has(x.id));
   // Títulos previstos (provisão) não podem ser baixados — ficam fora da baixa em massa.
   const abertosSel = selecionados.filter((x) => x.status === 'aberto' && !x.previsto);
+  // Multiplicar/Parcelar agem sobre 1 título em aberto selecionado.
+  const umAberto = abertosSel.length === 1 ? abertosSel[0] : null;
+  function abrirParcelar(tt: Titulo, modo: 'dividir' | 'replicar') { setParcelarModo(modo); setParcelarT(tt); }
 
   async function cancelar(tt: Titulo) {
     try { await api.patch('/financeiro/' + tipo + '/' + tt.id + '/cancelar', {}, token!); carregar(); toast(t('fin.toast_cancelado')); }
@@ -142,13 +146,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   return (
     <div>
       <div className="crumb">{t(tipo === 'receber' ? 'fin.crumb_receber' : 'fin.crumb_pagar')}</div>
-      <div className="page-head"><h1 className="page-titulo">{t(tipo === 'receber' ? 'fin.receber' : 'fin.pagar')}</h1>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button className="btn-ghost" onClick={() => setFiltroAberto((v) => !v)}>{t('fin.filtros')}{temFiltro ? ' •' : ''}</button>
-          <button className="btn-ghost" onClick={() => setColsAberto((v) => !v)}>{t('fin.colunas')}</button>
-          {filtrados.length > 0 && <button className="btn-ghost" onClick={() => exportar('xlsx')}>{t('rel.exportar_xlsx')}</button>}
-          {pode && <button className="btn-primary" onClick={() => setNovo(true)}>+ {t('fin.novo')}</button>}
-        </div></div>
+      <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t(tipo === 'receber' ? 'fin.receber' : 'fin.pagar')}</h1><div className="muted page-sub">{t('fin.sub')}</div></div></div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="kpi-row" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
         <div className="card kpi-mock"><div className="kpi-ic tint-gr">{tipo === 'receber' ? '💰' : '💸'}</div><div className="kpi-body"><div className="kpi-lbl">{t(tipo === 'receber' ? 'fin.aberto_receber' : 'fin.aberto_pagar')}</div><div className="kpi-val">{moeda(kpis.total)}</div><div className="kpi-delta">{kpis.qtd} {t('fin.titulos')}</div></div></div>
@@ -157,17 +155,27 @@ export function Contas({ tipo }: { tipo: Tipo }) {
         <div className="card kpi-mock"><div className="kpi-ic tint-bl">📄</div><div className="kpi-body"><div className="kpi-lbl">{t('fin.boletos_abertos')}</div><div className="kpi-val">{kpis.boletos}</div><div className="kpi-delta">{t('fin.titulos')}</div></div></div>
       </div>
 
-      <div className="contas-chips">
+      <div className="contas-toolbar">
+        <span className="busca-box-tb"><span className="lupa">🔎</span><input value={fQ} onChange={(e) => setFQ(e.target.value)} placeholder={t('fin.f_busca')} /></span>
         <span className="muted" style={{ fontSize: 12 }}>{t('fin.f_situacao')}:</span>
         {(['todos', 'aberto', 'vencido', 'pago'] as const).map((s) => (
           <button key={s} className={'chip-f' + (fSit === s ? ' ativo' : '')} onClick={() => setFSit(s)}>{t(s === 'todos' ? 'fin.f_todos' : s === 'aberto' ? 'fin.a_vencer' : 'fin.' + s)}</button>
         ))}
-        {pessoas.length > 0 && (
-          <select className="chip-sel" value={fPessoa} onChange={(e) => setFPessoa(e.target.value)}>
-            <option value="">{tipo === 'receber' ? t('fin.todos_clientes') : t('fin.todos_favorecidos')}</option>
-            {pessoas.map((p) => <option key={p} value={p}>{p}</option>)}
-          </select>
-        )}
+        <select className="chip-sel" value={fPessoa} onChange={(e) => setFPessoa(e.target.value)}>
+          <option value="">{tipo === 'receber' ? t('fin.todos_clientes') : t('fin.todos_favorecidos')}</option>
+          {pessoas.map((p) => <option key={p} value={p}>{p}</option>)}
+        </select>
+        <button className="btn-ghost" onClick={() => setFiltroAberto((v) => !v)}>⚙ {t('fin.filtros')} {temFiltro ? '•' : '0'}</button>
+        <button className="btn-ghost" onClick={() => setColsAberto((v) => !v)}>▦ {t('fin.colunas')}</button>
+      </div>
+
+      <div className="contas-acoes">
+        {pode && <button className="btn-primary" onClick={() => setNovo(true)}>+ {t('fin.novo')}</button>}
+        {pode && <button className="btn-acao verde" disabled={abertosSel.length === 0} onClick={() => setBaixaMassa(true)}>✓ {t('bulk.baixar')}{abertosSel.length > 0 ? ` (${abertosSel.length})` : ''}</button>}
+        {pode && <button className="btn-acao vermelho" disabled={sel.size === 0} onClick={excluirMassa}>🗑 {t('bulk.excluir')}</button>}
+        {pode && <button className="btn-ghost" disabled={!umAberto} onClick={() => umAberto && abrirParcelar(umAberto, 'replicar')}>＋ {t('parcelar.multiplicar')}</button>}
+        {pode && <button className="btn-ghost" disabled={!umAberto} onClick={() => umAberto && abrirParcelar(umAberto, 'dividir')}>▤ {t('parcelar.acao')}</button>}
+        {filtrados.length > 0 && <button className="btn-acao verde" onClick={() => exportar('xlsx')}>⬇ {t('rel.exportar_xlsx')}</button>}
       </div>
 
       {filtroAberto && (
@@ -207,16 +215,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
         </div>
       )}
 
-      {pode && sel.size > 0 && (
-        <div className="bulk-bar">
-          <span>{t('bulk.selecionados').replace('{n}', String(sel.size))}</span>
-          <div className="bulk-acoes">
-            {abertosSel.length > 0 && <button className="btn-primary btn-mini" onClick={() => setBaixaMassa(true)}>{t('bulk.baixar')} ({abertosSel.length})</button>}
-            <button className="btn-ghost btn-mini" onClick={excluirMassa}>{t('bulk.excluir')}</button>
-            <button className="btn-link" onClick={() => setSel(new Set())}>{t('bulk.limpar')}</button>
-          </div>
-        </div>
-      )}
+      {pode && sel.size > 0 && <div className="muted" style={{ fontSize: 12, marginBottom: 8 }}>{t('bulk.selecionados').replace('{n}', String(sel.size))} · <button className="btn-link" onClick={() => setSel(new Set())}>{t('bulk.limpar')}</button></div>}
 
       <div className="card pad0"><table className="tabela">
         <thead><tr>
@@ -245,14 +244,14 @@ export function Contas({ tipo }: { tipo: Tipo }) {
                   : <span className="muted">—</span>}
               </td>
               <td className="acoes">{pode && (tt.status === 'aberto'
-                ? <>{!tt.previsto && <button className="btn-link" onClick={() => setBaixar(tt)}>{t('fin.baixar')}</button>} <button className="btn-link" onClick={() => setParcelarT(tt)}>{t('parcelar.acao')}</button></>
+                ? <>{!tt.previsto && <button className="btn-link" onClick={() => setBaixar(tt)}>{t('fin.baixar')}</button>} <button className="btn-link" onClick={() => abrirParcelar(tt, 'dividir')}>{t('parcelar.acao')}</button></>
                 : <button className="btn-link" onClick={() => cancelar(tt)}>{t('fin.cancelar_baixa')}</button>)}</td>
             </tr>
           ); })}
         </tbody>
       </table></div>
       {novo && <ModalNovo tipo={tipo} onFechar={() => setNovo(false)} onSalvo={() => { setNovo(false); carregar(); toast(t('fin.toast_criado')); }} />}
-      {parcelarT && <ModalParcelar tipo={tipo} titulo={parcelarT} onFechar={() => setParcelarT(null)} onSalvo={(n) => { setParcelarT(null); carregar(); toast(t('parcelar.toast').replace('{n}', String(n))); }} />}
+      {parcelarT && <ModalParcelar tipo={tipo} titulo={parcelarT} modoInicial={parcelarModo} onFechar={() => setParcelarT(null)} onSalvo={(n) => { setParcelarT(null); carregar(); toast(t('parcelar.toast').replace('{n}', String(n))); }} />}
       {baixar && <ModalBaixa tipo={tipo} titulos={[baixar]} onFechar={() => setBaixar(null)} onSalvo={() => { setBaixar(null); carregar(); toast(t('fin.toast_baixado')); }} />}
       {baixaMassa && <ModalBaixa tipo={tipo} titulos={abertosSel} onFechar={() => setBaixaMassa(false)} onSalvo={(n) => { setBaixaMassa(false); carregar(); toast(t('bulk.baixados').replace('{n}', String(n))); }} />}
       {verT && <ModalVerTitulo tipo={tipo} titulo={verT} onFechar={() => setVerT(null)} />}
@@ -377,9 +376,9 @@ function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos:
 }
 
 
-function ModalParcelar({ tipo, titulo, onFechar, onSalvo }: { tipo: Tipo; titulo: Titulo; onFechar: () => void; onSalvo: (n: number) => void; }) {
+function ModalParcelar({ tipo, titulo, modoInicial, onFechar, onSalvo }: { tipo: Tipo; titulo: Titulo; modoInicial?: 'dividir' | 'replicar'; onFechar: () => void; onSalvo: (n: number) => void; }) {
   const { token } = useAuth(); const { t } = useI18n();
-  const [modo, setModo] = useState<'dividir' | 'replicar'>('dividir');
+  const [modo, setModo] = useState<'dividir' | 'replicar'>(modoInicial ?? 'dividir');
   const [parcelas, setParcelas] = useState('2');
   const [intervalo, setIntervalo] = useState('30');
   const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
