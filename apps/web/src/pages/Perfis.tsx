@@ -105,7 +105,7 @@ function ModalPerfil({ perfil, novo, porModulo, onFechar, onSalvo }: {
   }
 
   return (
-    <div className="modal-fundo" onClick={onFechar}>
+    <div className="modal-fundo">
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>{novo ? t('perfis.novo_titulo') : t('perfis.editar_titulo')}</h2>
         <label className="campo">{t('perfis.nome')}

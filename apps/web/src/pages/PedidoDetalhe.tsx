@@ -157,7 +157,7 @@ export function PedidoDetalhe() {
       </div>
 
       {sepOpen && (
-        <div className="modal-fundo" onClick={() => setSepOpen(false)}>
+        <div className="modal-fundo">
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h2>{t('sep.titulo')} · {numeroPedido(p.numero)}</h2>
             <div className="dash-s" style={{ marginBottom: 10 }}>{t('sep.sub')}</div>

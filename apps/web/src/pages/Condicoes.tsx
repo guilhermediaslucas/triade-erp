@@ -66,7 +66,7 @@ function ModalCond({ c, onFechar, onSalvo }: { c: Condicao; onFechar: () => void
     catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
   return (
-    <div className="modal-fundo" onClick={onFechar}><div className="modal" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()}>
       <h2>{novo ? t('cond.nova') : t('common.editar')}</h2>
       <label className="campo">{t('categorias.nome')}<input value={v.nome} onChange={(e) => set('nome', e.target.value)} placeholder="Ex.: À vista, 30/60/90" autoFocus /></label>
       <div className="cores-grid">

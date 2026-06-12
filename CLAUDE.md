@@ -176,6 +176,34 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Paridade do menu/topbar com o mockup + modais não fecham ao clicar fora + login lembra e-mail.**
+  Lote do Gui (5 pedidos). **(1) Topbar:** removido o nome da empresa; no lugar entrou a **barra de busca**
+  (estilo do mockup: ícone de lupa + placeholder + `Ctrl K`) que abre a paleta global (evento `abrir-busca`).
+  **(2) Menu idêntico ao mockup:** novos **ícones SVG line-style** portados do mockup (`components/Icones.tsx`:
+  `<SpriteIcones/>` + `<Ic name/>`), rótulo **PRINCIPAL**, grupos com ícone + chevron que gira ao abrir,
+  **sub-itens só texto recuado** (sem ícone), mesma fonte/espaçamento/raio do mockup (CSS `.nav-label/.nav-head/
+  .lead/.chev/.nav-sub/.nav-subitem`, `.ic`). **(3) Logo TRÍADE** no topo (fallback sem logo da empresa) e no
+  rodapé seguem o mockup: **TRÍADE** com **Í vermelho** + **E R P** espaçado abaixo (`.brand-logo/.brand-tag/
+  .side-brand-foot`). **(4) Modais fecham só no Cancelar:** removido o `onClick` do `modal-fundo` (backdrop) em
+  **todos os 31 modais** (26 arquivos) — clicar fora não fecha mais; só o botão Cancelar/Fechar. **(5) Login
+  lembra o último e-mail** usado quando "Lembrar-me" está marcado (`localStorage triade_ultimo_email`, preenche
+  ao abrir) — complementa o token de 30d. i18n `menu.principal` + placeholder de busca pt/en/es. **Validação:**
+  hand-review do Layout reescrito (240 linhas, fecha ok); **type-check NÃO rodou** (ver incidente abaixo) — Gui
+  rodar `npm run build -w @triade/web` local antes/depois do commit (o build do Cloudflare também roda tsc).
+  **Pendente:** Gui commit+push.
+  ⚠️ **INCIDENTE/LIÇÃO (importante p/ próximas sessões):** usei `sed -i` via **shell (bash)** para remover o
+  `onClick` dos 31 modais. O **mount do sandbox TRUNCA leituras** de arquivos grandes (e dos editados pelo
+  file-tool) — o `sed -i` leu a versão truncada e **gravou de volta truncada**, corrompendo 8 arquivos grandes
+  no Windows (Contas, Comissoes, Empresas, Usuarios, PedidoDetalhe, Clientes, Fornecedores, ContasCorrentes).
+  **Recuperação:** `git show HEAD:<path> | sed 's/.../.../' > <path>` — o `git show` lê do object store (íntegro,
+  não passa pelo mount truncado) e o redirect grava cheio; restaurei os 8 e reapliquei o fix limpo. Conferido:
+  todos batem a contagem de linhas do HEAD (Login +3 = adição legítima). **REGRAS:** (a) **NUNCA** usar bash
+  para escrever/editar arquivos do projeto no mount (sed -i, `>`, etc.) — só o **file-tool** (Edit/Write) grava
+  no Windows com segurança; (b) `git status`/`git diff` no mount vêm com `improper chunk offset` (corrupção de
+  view) e marcam dezenas de arquivos como modificados **falsamente** — não confiar; **`git show`/`git archive`**
+  ainda funcionam; (c) o file-tool **lê a verdade do Windows** (App.tsx lê 139 linhas certas onde o mount lê 119).
+  **`.git/index.lock`** ficou preso (não consegui remover pelo mount, "Operation not permitted") — se o git no
+  Windows reclamar de lock, **apagar `.git\index.lock`** antes de commitar.
 - **2026-06-12** — **Ajustes do Gui: editar admin inicial da empresa + Lembrar-me (token 30d) + logout confirma.**
   **(1) Lembrar-me — causa raiz:** o **JWT expirava em 8h** (`JwtGeradorToken`), então a sessão "Lembrar-me"
   caía no dia seguinte (token expirado → `/me` 401 → logout). Subi a expiração para **30 dias**; com o

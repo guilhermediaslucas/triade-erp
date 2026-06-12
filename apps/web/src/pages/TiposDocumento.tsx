@@ -82,7 +82,7 @@ function ModalTipoDoc({ m, onFechar, onSalvo }: { m: TipoDoc; onFechar: () => vo
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
   return (
-    <div className="modal-fundo" onClick={onFechar}>
+    <div className="modal-fundo">
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>{novo ? t('tipodoc.novo') : t('common.editar')}</h2>
         <label className="campo">{t('tipodoc.nome')}<input value={nome} onChange={(e) => setNome(e.target.value)} autoFocus placeholder={t('tipodoc.nome_ph')} /></label>

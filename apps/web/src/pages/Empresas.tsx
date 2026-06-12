@@ -137,7 +137,7 @@ function ModalEditar({ empresa, onFechar, onSalvo, onErro }: {
   }
 
   return (
-    <div className="modal-fundo" onClick={onFechar}><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
       <h2>{t('empresas.editar_titulo')}</h2>
       <label className="campo">{t('empresas.nome')}<input value={nome} onChange={(e) => setNome(e.target.value)} autoFocus /></label>
       <label className="campo">{t('empresas.fantasia')}<input value={fantasia} onChange={(e) => setFantasia(e.target.value)} /></label>

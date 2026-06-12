@@ -181,7 +181,7 @@ function ModalImportar({ linhas, txs, onFechar, onConfirmar }: { linhas: Linha[]
     return { pares, matchedIds: pares.filter((p) => p.titulo).map((p) => p.titulo!.id) };
   })();
   return (
-    <div className="modal-fundo" onClick={onFechar}><div className="modal modal-lg" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-fundo"><div className="modal modal-lg" onClick={(e) => e.stopPropagation()}>
       <h2>{t('concil.imp_titulo')}</h2>
       <p className="muted" style={{ marginTop: -6 }}>{t('concil.imp_resumo').replace('{m}', String(matchedIds.length)).replace('{n}', String(txs.length))}</p>
       <div className="card pad0" style={{ maxHeight: 320, overflow: 'auto' }}><table className="tabela">

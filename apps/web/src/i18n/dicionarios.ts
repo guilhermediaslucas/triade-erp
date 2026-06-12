@@ -1106,9 +1106,9 @@ Object.assign(es, {
 });
 
 // --- Refinamento: Busca global (Ctrl+K) ---
-Object.assign(pt, { 'busca.abrir': 'Buscar', 'busca.placeholder': 'Buscar telas… (ex.: pedidos, estoque, DRE)', 'busca.vazio': 'Nada encontrado.', 'busca.dica': '↑ ↓ navegar · Enter abrir · Esc fechar' });
-Object.assign(en, { 'busca.abrir': 'Search', 'busca.placeholder': 'Search screens… (e.g. orders, stock, P&L)', 'busca.vazio': 'Nothing found.', 'busca.dica': '↑ ↓ navigate · Enter open · Esc close' });
-Object.assign(es, { 'busca.abrir': 'Buscar', 'busca.placeholder': 'Buscar pantallas… (ej.: pedidos, stock, resultados)', 'busca.vazio': 'Nada encontrado.', 'busca.dica': '↑ ↓ navegar · Enter abrir · Esc cerrar' });
+Object.assign(pt, { 'busca.abrir': 'Buscar', 'busca.placeholder': 'Pesquisar telas, produtos, clientes…', 'busca.vazio': 'Nada encontrado.', 'busca.dica': '↑ ↓ navegar · Enter abrir · Esc fechar' });
+Object.assign(en, { 'busca.abrir': 'Search', 'busca.placeholder': 'Search screens, products, customers…', 'busca.vazio': 'Nothing found.', 'busca.dica': '↑ ↓ navigate · Enter open · Esc close' });
+Object.assign(es, { 'busca.abrir': 'Buscar', 'busca.placeholder': 'Buscar pantallas, productos, clientes…', 'busca.vazio': 'Nada encontrado.', 'busca.dica': '↑ ↓ navegar · Enter abrir · Esc cerrar' });
 
 // --- Refinamento: Toasts de confirmação ---
 Object.assign(pt, {
@@ -1791,7 +1791,7 @@ Object.assign(pt, {
   'pedido.forma_envio_obrigatoria': 'Informe a forma de envio para expedir o pedido.', 'pedido.data_entrega_obrigatoria': 'Informe a data de entrega.',
   'menu.rel_pedidos': 'Pedidos', 'relped.crumb': 'Relatórios / Pedidos', 'relped.titulo': 'Relatório de pedidos',
   'relped.sub': 'Todos os pedidos do sistema, com filtro de data e status', 'relped.todos': 'Todos os status', 'relped.qtd': 'Pedidos', 'relped.total': 'Valor total',
-  'menu.suporte': 'Suporte', 'menu.suporte_sub': 'Central de ajuda',
+  'menu.suporte': 'Suporte', 'menu.suporte_sub': 'Central de ajuda', 'menu.principal': 'PRINCIPAL',
   'logout.titulo': 'Sair do sistema?', 'logout.msg': 'Você precisará entrar novamente para acessar.',
   'menu.bancos': 'Bancos', 'cap.cadastros.banco.listar': 'Listar bancos', 'cap.cadastros.banco.gerenciar': 'Criar e editar bancos',
   'bancos.crumb': 'Cadastros / Financeiro / Bancos', 'bancos.titulo': 'Bancos', 'bancos.sub': 'Instituições usadas nas contas correntes e conciliação',
@@ -1824,7 +1824,7 @@ Object.assign(en, {
   'pedido.forma_envio_obrigatoria': 'Set the shipping method to dispatch the order.', 'pedido.data_entrega_obrigatoria': 'Enter the delivery date.',
   'menu.rel_pedidos': 'Orders', 'relped.crumb': 'Reports / Orders', 'relped.titulo': 'Orders report',
   'relped.sub': 'All orders in the system, with date and status filters', 'relped.todos': 'All statuses', 'relped.qtd': 'Orders', 'relped.total': 'Total value',
-  'menu.suporte': 'Support', 'menu.suporte_sub': 'Help center',
+  'menu.suporte': 'Support', 'menu.suporte_sub': 'Help center', 'menu.principal': 'MAIN',
   'logout.titulo': 'Sign out?', 'logout.msg': 'You will need to sign in again to access.',
   'menu.bancos': 'Banks', 'cap.cadastros.banco.listar': 'List banks', 'cap.cadastros.banco.gerenciar': 'Create and edit banks',
   'bancos.crumb': 'Records / Finance / Banks', 'bancos.titulo': 'Banks', 'bancos.sub': 'Institutions used in checking accounts and reconciliation',
@@ -1857,7 +1857,7 @@ Object.assign(es, {
   'pedido.forma_envio_obrigatoria': 'Informa la forma de envío para expedir el pedido.', 'pedido.data_entrega_obrigatoria': 'Informa la fecha de entrega.',
   'menu.rel_pedidos': 'Pedidos', 'relped.crumb': 'Informes / Pedidos', 'relped.titulo': 'Informe de pedidos',
   'relped.sub': 'Todos los pedidos del sistema, con filtro de fecha y estado', 'relped.todos': 'Todos los estados', 'relped.qtd': 'Pedidos', 'relped.total': 'Valor total',
-  'menu.suporte': 'Soporte', 'menu.suporte_sub': 'Centro de ayuda',
+  'menu.suporte': 'Soporte', 'menu.suporte_sub': 'Centro de ayuda', 'menu.principal': 'PRINCIPAL',
   'logout.titulo': '¿Salir del sistema?', 'logout.msg': 'Tendrás que iniciar sesión de nuevo para acceder.',
   'menu.bancos': 'Bancos', 'cap.cadastros.banco.listar': 'Listar bancos', 'cap.cadastros.banco.gerenciar': 'Crear y editar bancos',
   'bancos.crumb': 'Registros / Finanzas / Bancos', 'bancos.titulo': 'Bancos', 'bancos.sub': 'Instituciones usadas en las cuentas corrientes y conciliación',

@@ -80,7 +80,7 @@ function ModalReceber({ p, onFechar, onSalvo }: { p: Pend; onFechar: () => void;
   }
 
   return (
-    <div className="modal-fundo" onClick={onFechar}><div className="modal modal-lg" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-fundo"><div className="modal modal-lg" onClick={(e) => e.stopPropagation()}>
       <h2>{t('receb.receber')} — {p.produtoNome}</h2>
       <p className="muted" style={{ marginTop: 0 }}>
         {p.quantidade} {t('receb.un')} · {p.fornecedorNome ?? '—'} · <strong>{totalBipado}/{p.quantidade}</strong> {t('receb.bipados')}

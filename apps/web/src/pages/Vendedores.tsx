@@ -70,7 +70,7 @@ function ModalVend({ v, onFechar, onSalvo }: { v: Vendedor; onFechar: () => void
     catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
   return (
-    <div className="modal-fundo" onClick={onFechar}><div className="modal" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()}>
       <h2>{novo ? t('vendedores.novo') : t('common.editar')}</h2>
       <label className="campo">{t('clientes.nome_completo')}<input value={f.nome} onChange={(e) => set('nome', e.target.value)} autoFocus /></label>
       <div className="cores-grid">

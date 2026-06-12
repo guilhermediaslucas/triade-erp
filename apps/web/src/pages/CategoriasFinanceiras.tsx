@@ -87,7 +87,7 @@ function ModalCat({ c, onFechar, onSalvo }: { c: Cat; onFechar: () => void; onSa
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
   return (
-    <div className="modal-fundo" onClick={onFechar}>
+    <div className="modal-fundo">
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>{novo ? t('catfin.nova') : t('common.editar')}</h2>
         <label className="campo">{t('catfin.nome')}<input value={nome} onChange={(e) => setNome(e.target.value)} autoFocus /></label>

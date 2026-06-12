@@ -80,7 +80,7 @@ function ModalForn({ f, onFechar, onSalvo }: { f: Fornecedor; onFechar: () => vo
     catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
   return (
-    <div className="modal-fundo" onClick={onFechar}><div className="modal" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()}>
       <h2>{novo ? t('fornecedores.novo') : t('common.editar')}</h2>
       <label className="campo">{t('pessoa.razao')}<input value={v.nome} onChange={(e) => set('nome', e.target.value)} autoFocus /></label>
       <label className="campo">{t('pessoa.fantasia')}<input value={v.fantasia ?? ''} onChange={(e) => set('fantasia', e.target.value)} /></label>

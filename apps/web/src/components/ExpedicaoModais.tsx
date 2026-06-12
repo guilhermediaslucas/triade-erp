@@ -12,7 +12,7 @@ export function ModalFormaEnvio({ numero, formas, inicial, onFechar, onConfirmar
   const [forma, setForma] = useState(inicial?.forma ?? '');
   const [detalhe, setDetalhe] = useState(inicial?.detalhe ?? '');
   return (
-    <div className="modal-fundo" onClick={onFechar}><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 460 }}>
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 460 }}>
       <h2>{t('fenv.titulo')} · {numeroPedido(numero)}</h2>
       <label className="campo">{t('fenv.forma')}
         <input list="fenv-formas" value={forma} onChange={(e) => setForma(e.target.value)} placeholder={t('fenv.selecione')} autoFocus />
@@ -35,7 +35,7 @@ export function ModalDataEntrega({ numero, inicial, onFechar, onConfirmar }: {
   const hoje = new Date().toISOString().slice(0, 10);
   const [data, setData] = useState(inicial || hoje);
   return (
-    <div className="modal-fundo" onClick={onFechar}><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 420 }}>
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 420 }}>
       <h2>{t('ent.titulo')} · {numeroPedido(numero)}</h2>
       <label className="campo">{t('ent.data')}<input type="date" value={data} onChange={(e) => setData(e.target.value)} autoFocus /></label>
       <div className="modal-acoes">

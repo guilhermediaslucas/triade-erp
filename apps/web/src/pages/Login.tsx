@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
@@ -27,9 +27,24 @@ export function Login() {
   const [carregando, setCarregando] = useState(false);
   const [recuperar, setRecuperar] = useState(false);
 
+  // Lembra o último e-mail usado (quando "Lembrar-me" estava marcado) — preenche ao abrir.
+  useEffect(() => {
+    try {
+      const ultimo = localStorage.getItem('triade_ultimo_email');
+      if (ultimo) { setEmail(ultimo); setLembrar(true); }
+    } catch { /* ignora */ }
+  }, []);
+
   async function enviar(e: FormEvent) {
     e.preventDefault(); setErro(null); setCarregando(true);
-    try { await login(email, senha, lembrar); navigate('/'); }
+    try {
+      await login(email, senha, lembrar);
+      try {
+        if (lembrar) localStorage.setItem('triade_ultimo_email', email.trim());
+        else localStorage.removeItem('triade_ultimo_email');
+      } catch { /* ignora */ }
+      navigate('/');
+    }
     catch (ex) { setErro((ex as ErroApi).chaveI18n ?? 'erro.interno'); }
     finally { setCarregando(false); }
   }
@@ -84,7 +99,7 @@ function ModalRecuperar({ onFechar }: { onFechar: () => void }) {
   const [email, setEmail] = useState('');
   const [enviado, setEnviado] = useState(false);
   return (
-    <div className="modal-fundo" onClick={onFechar}><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 440 }}>
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 440 }}>
       <h2>🔑 {t('login.rec_titulo')}</h2>
       {!enviado ? (
         <>
@@ -92,15 +107,4 @@ function ModalRecuperar({ onFechar }: { onFechar: () => void }) {
           <label className="campo">{t('login.email')}<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="seu@email.com" autoFocus /></label>
           <div className="modal-acoes">
             <button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button>
-            <button className="btn-primary" disabled={!email.trim()} onClick={() => setEnviado(true)}>{t('login.rec_enviar')}</button>
-          </div>
-        </>
-      ) : (
-        <>
-          <div className="alerta-ok">{t('login.rec_ok')}</div>
-          <div className="modal-acoes"><button className="btn-primary" onClick={onFechar}>{t('common.fechar')}</button></div>
-        </>
-      )}
-    </div></div>
-  );
-}
+  

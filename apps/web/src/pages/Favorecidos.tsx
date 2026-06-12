@@ -95,7 +95,7 @@ function ModalFavorecido({ f, onFechar, onSalvo }: { f: Favorecido; onFechar: ()
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
   return (
-    <div className="modal-fundo" onClick={onFechar}>
+    <div className="modal-fundo">
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>{novo ? t('favorecidos.novo') : t('common.editar')}</h2>
         <label className="campo">{t('favorecidos.nome')}<input value={d.nome} onChange={set('nome')} autoFocus /></label>

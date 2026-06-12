@@ -125,7 +125,7 @@ export function PosicaoEstoque() {
       <div className="nota-info" style={{ marginTop: 10 }}>{t('estoque.nota_lotes')}</div>
 
       {ctx && (
-        <div className="modal-fundo" onClick={() => setCtx(null)}>
+        <div className="modal-fundo">
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h2>{t('etq.titulo')}</h2>
             <div className="dash-s" style={{ marginBottom: 8 }}>

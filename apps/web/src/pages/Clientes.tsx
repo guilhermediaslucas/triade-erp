@@ -145,7 +145,7 @@ function ModalCli({ c, onFechar, onSalvo }: { c: Cliente; onFechar: () => void; 
   }
 
   return (
-    <div className="modal-fundo" onClick={onFechar}><div className="modal modal-lg" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-fundo"><div className="modal modal-lg" onClick={(e) => e.stopPropagation()}>
       <h2>{novo ? t('clientes.novo') : t('common.editar')}</h2>
       <label className="campo">{t('clientes.tipo')}
         <select value={v.tipoPessoa} onChange={(e) => set('tipoPessoa', e.target.value)}>

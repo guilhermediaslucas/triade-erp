@@ -131,7 +131,7 @@ function ModalMotoboy({ m, onFechar, onSalvo }: { m: Motoboy; onFechar: () => vo
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
   return (
-    <div className="modal-fundo" onClick={onFechar}>
+    <div className="modal-fundo">
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>{novo ? t('motoboys.novo') : t('common.editar')}</h2>
         <label className="campo">{t('motoboys.nome')}<input value={nome} onChange={(e) => setNome(e.target.value)} autoFocus /></label>

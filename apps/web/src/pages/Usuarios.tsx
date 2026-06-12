@@ -127,7 +127,7 @@ function ModalUsuario({ usuario, perfis, onFechar, onSalvo }: {
   }
 
   return (
-    <div className="modal-fundo" onClick={onFechar}>
+    <div className="modal-fundo">
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>{editando ? t('usuarios.editar_titulo') : t('usuarios.novo_titulo')}</h2>
         <div className="campo">{t('usuarios.foto')}
@@ -182,7 +182,7 @@ function ModalSenha({ usuario, onFechar, onSalvo }: { usuario: { id: string; nom
   }
 
   return (
-    <div className="modal-fundo" onClick={onFechar}>
+    <div className="modal-fundo">
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>{t('usuarios.redefinir_senha')} — {usuario.nome}</h2>
         <label className="campo">{t('usuarios.nova_senha')}

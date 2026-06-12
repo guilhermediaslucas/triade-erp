@@ -82,7 +82,7 @@ function ModalBanco({ m, onFechar, onSalvo }: { m: Banco; onFechar: () => void; 
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
   return (
-    <div className="modal-fundo" onClick={onFechar}>
+    <div className="modal-fundo">
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>{novo ? t('bancos.novo') : t('common.editar')}</h2>
         <label className="campo">{t('bancos.nome')}<input value={nome} onChange={(e) => setNome(e.target.value)} autoFocus placeholder={t('bancos.nome_ph')} /></label>

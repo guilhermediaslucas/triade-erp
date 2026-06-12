@@ -245,7 +245,7 @@ function ModalVerTitulo({ tipo, titulo, onFechar }: { tipo: Tipo; titulo: Titulo
     <div className="det-linha"><span className="det-rot">{rotulo}</span><span className="det-val">{valor}</span></div>
   );
   return (
-    <div className="modal-fundo" onClick={onFechar}><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 460 }}>
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 460 }}>
       <h2>{t('fin.detalhe')}</h2>
       {linha(t('fin.descricao'), titulo.descricao)}
       {linha(tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor'), titulo.pessoaNome ?? '—')}
@@ -287,7 +287,7 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
     catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
   return (
-    <div className="modal-fundo" onClick={onFechar}><div className="modal" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()}>
       <h2>{t('fin.novo')}</h2>
       <label className="campo">{t('fin.descricao')}<input value={descricao} onChange={(e) => setDescricao(e.target.value)} autoFocus /></label>
       <label className="campo">{tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor')}<input value={pessoaNome} onChange={(e) => setPessoa(e.target.value)} /></label>
@@ -338,7 +338,7 @@ function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos:
     onSalvo(ok);
   }
   return (
-    <div className="modal-fundo" onClick={onFechar}><div className="modal" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()}>
       <h2>{t('fin.baixar')} — {massa ? `${titulos.length} ${t('fin.titulos')} · ` : ''}{moeda(totalSel)}</h2>
       <label className="campo">{t('pedidos.forma_pgto')}
         <select value={forma} onChange={(e) => setForma(e.target.value)}><option>Pix</option><option>Boleto</option><option>Cartão</option><option>Dinheiro</option><option>Transferência</option></select>
@@ -369,7 +369,7 @@ function ModalParcelar({ tipo, titulo, onFechar, onSalvo }: { tipo: Tipo; titulo
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
   return (
-    <div className="modal-fundo" onClick={onFechar}><div className="modal" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()}>
       <h2>{t('parcelar.titulo')}</h2>
       <p className="muted" style={{ marginTop: -6 }}>{titulo.descricao} · {moeda(titulo.valor)}</p>
       <label className="campo">{t('parcelar.modo')}

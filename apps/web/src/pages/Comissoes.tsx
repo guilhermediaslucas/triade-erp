@@ -126,7 +126,7 @@ function ModalRegra({ r, vendedores, onFechar, onSalvo }: { r: Regra; vendedores
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
   return (
-    <div className="modal-fundo" onClick={onFechar}><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 520 }}>
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 520 }}>
       <h2>{novo ? t('comregra.nova') : t('common.editar')}</h2>
       <label className="campo">{t('comregra.nome')}<input value={nome} onChange={(e) => setNome(e.target.value)} autoFocus placeholder={t('comregra.nome_ph')} /></label>
       <div className="cores-grid">

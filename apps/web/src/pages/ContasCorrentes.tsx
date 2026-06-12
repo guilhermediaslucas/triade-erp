@@ -53,7 +53,7 @@ function ModalConta({ c, onFechar, onSalvo }: { c: Conta; onFechar: () => void; 
     catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
   return (
-    <div className="modal-fundo" onClick={onFechar}><div className="modal" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()}>
       <h2>{novo ? t('cc.nova') : t('common.editar')}</h2>
       <label className="campo">{t('categorias.nome')}<input value={v.nome} onChange={(e) => set('nome', e.target.value)} placeholder="Ex.: Itaú Movimento" autoFocus /></label>
       <div className="cores-grid">

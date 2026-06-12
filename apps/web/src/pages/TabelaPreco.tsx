@@ -106,7 +106,7 @@ function ModalCampanhas({ produto, pode, onFechar }: { produto: PrecoProduto; po
   async function add() { setErro(null); try { await api.post('/precos/campanhas/' + produto.produtoId, { preco: Number(preco), motivo, de, ate }, token!); setPreco(''); setMotivo(''); setDe(''); setAte(''); carregar(); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
   async function rem(id: string) { try { await api.del('/precos/campanhas/item/' + id, token!); carregar(); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
   return (
-    <div className="modal-fundo" onClick={onFechar}><div className="modal modal-lg" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-fundo"><div className="modal modal-lg" onClick={(e) => e.stopPropagation()}>
       <h2>{t('camp.titulo')} — {produto.produtoNome}</h2>
       <table className="tabela" style={{ marginBottom: 14 }}>
         <thead><tr><th>{t('rel.total')}</th><th>{t('camp.motivo')}</th><th>{t('camp.periodo')}</th><th>{t('fin.situacao')}</th><th></th></tr></thead>
