@@ -429,6 +429,9 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
 .avatar-ph { display: inline-flex; align-items: center; justify-content: center; background: var(--accent); color: #fff; font-weight: 700; line-height: 1; }
 /* Título previsto (provisão): fica mais claro que os efetivos. */
 .linha-previsto td { color: var(--muted); font-style: italic; }
+/* Redimensionar colunas por arraste (alça na borda direita do cabeçalho). */
+.col-resize { position: absolute; top: 0; right: 0; width: 7px; height: 100%; cursor: col-resize; user-select: none; touch-action: none; }
+.col-resize:hover { background: var(--accent); opacity: .35; }
 .dash-row.d2 { grid-template-columns: 1.55fr 1fr 1fr; }
 .dash-row.d3 { grid-template-columns: 1.7fr 1fr; }
 .dash-row > .card { max-width: none; margin: 0; }

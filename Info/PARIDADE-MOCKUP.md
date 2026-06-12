@@ -102,7 +102,7 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 | **Baixa do título do pedido → avança status do pedido** | ✅ | ver §1 |
 | Filtros avançados (multi-status + favorecido + faixas) | ⚠️ | barra de filtros existe; multi-status/favorecido a confirmar |
 | Esconder/mostrar colunas (modalColunas) | ⚠️ | feito nas Contas; revisar paridade |
-| **Redimensionar colunas (arraste)** | ❌ | adiado (alto esforço) |
+| **Redimensionar colunas (arraste)** | ✅ | alça na borda do cabeçalho nas Contas; largura persistida por tipo (localStorage) |
 | **Coluna Previsto/Efetivo + destaque de previsão** | ✅ | check Previsto por título; previsto fica mais claro e **não pode ser baixado**; migration 026; e2e 7 PASS |
 | Janela de detalhe do título (duplo-clique) | ✅ | modal read-only nas Contas (duplo-clique na linha) |
 | Parcelar título (N parcelas) | ✅ | |
@@ -202,7 +202,7 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 | Sino de notificações | ⚠️ | existe; falta pendência de baixa Pix/Boleto (§1) |
 | **Toast de ação persistente (Pix/Boleto)** | ⚠️ | toast simples feito; variante fixa c/ botão Abrir pendente |
 | Tooltip global nos botões de ação | ⚠️ | usa title nativo |
-| Redimensionar colunas | ❌ | adiado |
+| Redimensionar colunas | ✅ | nas Contas (arraste na borda do cabeçalho) |
 | Ações em massa (Contas) | ✅ | |
 | Scroll ao topo na troca de tela | ✅ | |
 | Menu recolhível (grupos) | ✅ | |

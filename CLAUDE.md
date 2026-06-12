@@ -176,6 +176,15 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Paridade §3/§10: redimensionar colunas por arraste (Contas).** Frontend puro. Cada
+  cabeçalho redimensionável (descrição, pessoa, categoria, vencimento, valor, situação) ganhou uma **alça**
+  (`.col-resize` na borda direita, cursor `col-resize`); arrastar ajusta a largura da coluna (mín. 60px) via
+  `iniciarResize` (listeners de `mousemove`/`mouseup` no document). As larguras são **persistidas por tipo**
+  em `localStorage` (`contas-larg-{receber|pagar}`), no mesmo padrão do esconder/mostrar colunas. Helper
+  `thR(col, conteudo)` aplica a largura salva e a alça. **Validação:** **type-check web verde** (é
+  comportamento de UI, sem e2e). **Pendente:** Gui git push. Com isso fecha o último ❌ de UI da paridade;
+  restam só itens fora de escopo (CRM por decisão; tipos de documento; regra geral de comissão) e uns ⚠️ que
+  pedem só conferência no ar.
 - **2026-06-12** — **Paridade §5: UF + municípios IBGE no endereço.** Nos endereços (Clientes multi-endereço
   e Fornecedores), o campo **UF** virou **select** (27 siglas, `UFS` em `lib/br.ts`) e a **cidade** ganhou um
   **datalist** com os municípios da UF buscados na **API do IBGE** (`buscarMunicipios`, cache por UF). É

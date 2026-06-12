@@ -66,6 +66,31 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   }
   const colLabel = (k: string) => k === 'pessoa' ? (tipo === 'receber' ? 'fin.cliente' : 'fin.fornecedor') : k === 'cat' ? 'catfin.titulo_s' : k === 'venc' ? 'fin.vencimento' : k === 'valor' ? 'fin.valor' : 'fin.situacao';
 
+  // Redimensionar colunas por arraste (largura persistida por tipo em localStorage).
+  const [larguras, setLarguras] = useState<Record<string, number>>(() => {
+    try { return JSON.parse(localStorage.getItem('contas-larg-' + tipo) || '{}'); } catch { return {}; }
+  });
+  function iniciarResize(col: string, startX: number, handle: HTMLElement) {
+    const th = handle.parentElement as HTMLElement;
+    const startW = th.getBoundingClientRect().width;
+    function mover(e: MouseEvent) { setLarguras((cur) => ({ ...cur, [col]: Math.max(60, Math.round(startW + (e.clientX - startX))) })); }
+    function soltar() {
+      document.removeEventListener('mousemove', mover);
+      document.removeEventListener('mouseup', soltar);
+      setLarguras((cur) => { try { localStorage.setItem('contas-larg-' + tipo, JSON.stringify(cur)); } catch { /* ignora */ } return cur; });
+    }
+    document.addEventListener('mousemove', mover);
+    document.addEventListener('mouseup', soltar);
+  }
+  function thR(col: string, conteudo: ReactNode) {
+    return (
+      <th style={larguras[col] ? { position: 'relative', width: larguras[col] } : { position: 'relative' }}>
+        {conteudo}
+        <span className="col-resize" onMouseDown={(e) => { e.preventDefault(); iniciarResize(col, e.clientX, e.currentTarget as HTMLElement); }} />
+      </th>
+    );
+  }
+
   const kpis = useMemo(() => {
     const h = hojeISO();
     const d7 = new Date(); d7.setDate(d7.getDate() + 7); const ate7 = d7.toISOString().slice(0, 10);
@@ -176,7 +201,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
       <div className="card pad0"><table className="tabela">
         <thead><tr>
           {pode && <th style={{ width: 34 }}><input type="checkbox" checked={filtrados.length > 0 && sel.size === filtrados.length} onChange={toggleTodos} /></th>}
-          <th>{t('fin.descricao')}</th>{!oc('pessoa') && <th>{tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor')}</th>}{!oc('cat') && <th>{t('catfin.titulo_s')}</th>}{!oc('venc') && <th>{t('fin.vencimento')}</th>}{!oc('valor') && <th>{t('fin.valor')}</th>}{!oc('sit') && <th>{t('fin.situacao')}</th>}<th style={{ textAlign: 'center' }}>{t('fin.previsto')}</th><th>{t('usuarios.acoes')}</th>
+          {thR('descricao', t('fin.descricao'))}{!oc('pessoa') && thR('pessoa', tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor'))}{!oc('cat') && thR('cat', t('catfin.titulo_s'))}{!oc('venc') && thR('venc', t('fin.vencimento'))}{!oc('valor') && thR('valor', t('fin.valor'))}{!oc('sit') && thR('sit', t('fin.situacao'))}<th style={{ textAlign: 'center' }}>{t('fin.previsto')}</th><th>{t('usuarios.acoes')}</th>
         </tr></thead>
         <tbody>
           {filtrados.length === 0 && <tr><td colSpan={(pode ? 1 : 0) + 3 + HIDEABLE.filter((k) => !oc(k)).length} className="vazio">{t('common.nenhum')}</td></tr>}
