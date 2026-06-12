@@ -27,6 +27,20 @@ export class SqlUsuarioRepository implements UsuarioRepository {
     return r ? this.mapear(r) : null;
   }
 
+  async buscarPrimeiro(schema: string): Promise<Usuario | null> {
+    const s = validarSchema(schema);
+    const r = (await this.ds.query(
+      `SELECT id, nome, email, senha_hash, ativo, perfil_id, foto, criado_em
+         FROM "${s}".usuario ORDER BY criado_em ASC LIMIT 1`,
+    ))[0];
+    return r ? this.mapear(r) : null;
+  }
+
+  async atualizarNomeEmail(schema: string, id: string, nome: string, email: string): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(`UPDATE "${s}".usuario SET nome = $2, email = $3 WHERE id = $1`, [id, nome, email]);
+  }
+
   async listar(schema: string): Promise<UsuarioResumo[]> {
     const s = validarSchema(schema);
     const linhas = await this.ds.query(

@@ -176,6 +176,21 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Ajustes do Gui: editar admin inicial da empresa + Lembrar-me (token 30d) + logout confirma.**
+  **(1) Lembrar-me — causa raiz:** o **JWT expirava em 8h** (`JwtGeradorToken`), então a sessão "Lembrar-me"
+  caía no dia seguinte (token expirado → `/me` 401 → logout). Subi a expiração para **30 dias**; com o
+  localStorage (lembrar) a sessão persiste, e sem lembrar o sessionStorage já derruba ao fechar. (Complementa
+  o fix anterior de só deslogar em 401.) **(2) Editar admin inicial pelo super-admin:** ao editar uma empresa,
+  o modal agora carrega e permite editar o **administrador inicial** (usuário mais antigo do tenant): nome,
+  e-mail e **nova senha** (opcional). Backend: `UsuarioRepository.buscarPrimeiro`/`atualizarNomeEmail`;
+  `EmpresaService` ganhou `obterAdmin`/`editarAdmin` (injetados `usuariosRepo`+`hash`; valida nome/e-mail,
+  e-mail duplicado→409, senha curta→400); rotas `GET/PUT /empresas/:codigo/admin` (super-admin). Frontend:
+  seção "Administrador" no modal de editar empresa (prefill via GET, salva cadastro + admin juntos). i18n
+  pt/en/es. **(3) Confirmar logout:** já feito no lote anterior (modal de confirmação) — só não estava no ar
+  por causa do Cloudflare; vai aparecer no deploy. **Validação:** **type-check api+web verde** + **e2e Postgres
+  real (pglite, 7 PASS):** obterAdmin pega o mais antigo, edita nome/email, troca senha (hash), e-mail
+  duplicado→409, e-mail inválido/senha curta→400, empresa inexistente→404. **Sem migration.** **Pendente:**
+  Gui git push.
 - **2026-06-12** — **Cosméticos do mockup: confirmação de logout + tela de Notificações + cadastro de Bancos.**
   Três itens de polimento. **(1) Confirmar logout:** o botão **Sair** abre um modal de confirmação
   (Layout, `sairOpen`) antes de deslogar. **(2) Tela de Notificações:** nova `/notificacoes`

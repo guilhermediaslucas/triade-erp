@@ -114,11 +114,24 @@ function ModalEditar({ empresa, onFechar, onSalvo, onErro }: {
   const [nome, setNome] = useState(empresa.nome);
   const [fantasia, setFantasia] = useState(empresa.fantasia);
   const [ativo, setAtivo] = useState(empresa.ativo);
+  const [adminNome, setAdminNome] = useState('');
+  const [adminEmail, setAdminEmail] = useState('');
+  const [adminSenha, setAdminSenha] = useState('');
   const [salvando, setSalvando] = useState(false);
+
+  useEffect(() => {
+    api.get<{ nome: string; email: string } | null>(`/empresas/${empresa.codigo}/admin`, token!)
+      .then((a) => { if (a) { setAdminNome(a.nome); setAdminEmail(a.email); } }).catch(() => {});
+    /* eslint-disable-next-line */
+  }, []);
 
   async function salvar() {
     setSalvando(true);
-    try { await api.put(`/empresas/${empresa.codigo}`, { nome, fantasia, ativo }, token!); onSalvo(); }
+    try {
+      await api.put(`/empresas/${empresa.codigo}`, { nome, fantasia, ativo }, token!);
+      await api.put(`/empresas/${empresa.codigo}/admin`, { nome: adminNome, email: adminEmail, senha: adminSenha || undefined }, token!);
+      onSalvo();
+    }
     catch (e) { onErro((e as ErroApi).chaveI18n); }
     finally { setSalvando(false); }
   }
@@ -131,6 +144,12 @@ function ModalEditar({ empresa, onFechar, onSalvo, onErro }: {
       <label className="login-lembrar" style={{ marginTop: 8 }}>
         <input type="checkbox" checked={ativo} onChange={(e) => setAtivo(e.target.checked)} /> {t('empresas.ativa')}
       </label>
+      <div className="perm-titulo" style={{ marginTop: 14 }}>{t('empresas.admin')}</div>
+      <label className="campo">{t('usuarios.nome')}<input value={adminNome} onChange={(e) => setAdminNome(e.target.value)} /></label>
+      <div className="cores-grid">
+        <label className="campo">{t('usuarios.email')}<input type="email" value={adminEmail} onChange={(e) => setAdminEmail(e.target.value)} /></label>
+        <label className="campo">{t('empresas.admin_nova_senha')}<input type="password" value={adminSenha} onChange={(e) => setAdminSenha(e.target.value)} placeholder={t('empresas.admin_senha_ph')} /><small className="hint">{t('usuarios.senha_hint')}</small></label>
+      </div>
       <div className="modal-acoes">
         <button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button>
         <button className="btn-primary" disabled={salvando} onClick={salvar}>{t('common.salvar')}</button>

@@ -10,6 +10,8 @@ export interface NovoUsuario {
 
 export interface UsuarioRepository {
   buscarPorEmail(schema: string, email: string): Promise<Usuario | null>;
+  buscarPrimeiro(schema: string): Promise<Usuario | null>;   // admin inicial = usuário mais antigo
+  atualizarNomeEmail(schema: string, id: string, nome: string, email: string): Promise<void>;
   listar(schema: string): Promise<UsuarioResumo[]>;
   buscarPorId(schema: string, id: string): Promise<Usuario | null>;
   emailExiste(schema: string, email: string, excetoId?: string): Promise<boolean>;

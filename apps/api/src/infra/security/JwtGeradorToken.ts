@@ -4,7 +4,9 @@ import type { GeradorToken, TokenPayload } from '../../domain/ports/GeradorToken
 export class JwtGeradorToken implements GeradorToken {
   constructor(
     private readonly segredo: string,
-    private readonly expiraEm: SignOptions['expiresIn'] = '8h',
+    // 30 dias: o "Lembrar-me" (localStorage) precisa sobreviver a dias/semanas.
+    // Sem lembrar, o sessionStorage já derruba a sessão ao fechar o navegador.
+    private readonly expiraEm: SignOptions['expiresIn'] = '30d',
   ) {}
 
   gerar(payload: TokenPayload): string {

@@ -98,7 +98,7 @@ export function montarDependencias() {
     autenticarUsuario: new AutenticarUsuario(empresasRepo, usuariosRepo, hash, tokens, superAdminsRepo),
     usuariosService: new UsuariosService(usuariosRepo, perfisRepo, hash),
     perfisService: new PerfisService(perfisRepo),
-    empresaService: new EmpresaService(empresasRepo, migrador),
+    empresaService: new EmpresaService(empresasRepo, migrador, usuariosRepo, hash),
     provisionarEmpresa: new ProvisionarEmpresa(empresasRepo, migrador, perfisRepo, usuariosRepo, hash),
     categoriasService: new CategoriasService(categoriasRepo),
     marcasService: new MarcasService(marcasRepo),

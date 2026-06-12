@@ -36,6 +36,17 @@ export function rotasEmpresas(deps: Dependencias): Router {
     } catch (e) { tratarErro(res, e); }
   });
 
+  r.get('/empresas/:codigo/admin', autenticar, exigirSuperAdmin, async (req: Request, res: Response) => {
+    try { res.json(await deps.empresaService.obterAdmin(req.params.codigo!)); } catch (e) { tratarErro(res, e); }
+  });
+  r.put('/empresas/:codigo/admin', autenticar, exigirSuperAdmin, async (req: Request, res: Response) => {
+    try {
+      const b = req.body ?? {};
+      await deps.empresaService.editarAdmin(req.params.codigo!, { nome: b.nome, email: b.email, senha: b.senha });
+      res.status(204).end();
+    } catch (e) { tratarErro(res, e); }
+  });
+
   r.delete('/empresas/:codigo', autenticar, exigirSuperAdmin, async (req: Request, res: Response) => {
     try {
       await deps.empresaService.excluir(req.params.codigo!);
