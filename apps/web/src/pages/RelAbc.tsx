@@ -21,18 +21,24 @@ export function RelAbc() {
   const { token } = useAuth(); const { t } = useI18n();
   const [de, setDe] = useState(primeiroDia()); const [ate, setAte] = useState(hoje());
   const [d, setD] = useState<Abc | null>(null); const [erro, setErro] = useState<string | null>(null);
+  const [por, setPor] = useState<'produtos' | 'clientes'>('produtos');
 
   async function gerar() {
     setErro(null);
-    try { setD(await api.get<Abc>(`/relatorios/curva-abc?de=${de}&ate=${ate}`, token!)); }
+    try { setD(await api.get<Abc>(`/relatorios/curva-abc?de=${de}&ate=${ate}&por=${por}`, token!)); }
     catch (e) { setErro((e as ErroApi).chaveI18n); }
   }
-  useEffect(() => { gerar(); /* eslint-disable-next-line */ }, []);
+  useEffect(() => { gerar(); /* eslint-disable-next-line */ }, [por]);
 
   return (
     <div>
-      <div className="crumb">{t('rel.crumb_abc')}</div><h1 className="page-titulo">{t('abc.titulo')}</h1>
+      <div className="crumb">{t('rel.crumb_abc')}</div><h1 className="page-titulo">{t(por === 'clientes' ? 'abc.titulo_clientes' : 'abc.titulo')}</h1>
       <p className="muted" style={{ marginTop: -8 }}>{t('abc.sub')}</p>
+      <div className="toolbar">
+        {(['produtos', 'clientes'] as const).map((m) => (
+          <span key={m} className={'chip-f' + (por === m ? ' on' : '')} onClick={() => setPor(m)}>{t('abc.por_' + m)}</span>
+        ))}
+      </div>
       <div className="rel-filtro">
         <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
         <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
@@ -58,7 +64,7 @@ export function RelAbc() {
             ))}
           </div>
           <div className="card pad0"><table className="tabela">
-            <thead><tr><th>{t('precos.produto')}</th><th>{t('rel.qtd')}</th><th>{t('rel.total')}</th><th>{t('abc.pct')}</th><th>{t('abc.acumulado')}</th><th>{t('abc.classe')}</th></tr></thead>
+            <thead><tr><th>{t(por === 'clientes' ? 'dash.col_cliente' : 'precos.produto')}</th><th>{t(por === 'clientes' ? 'abc.qtd_pedidos' : 'rel.qtd')}</th><th>{t('rel.total')}</th><th>{t('abc.pct')}</th><th>{t('abc.acumulado')}</th><th>{t('abc.classe')}</th></tr></thead>
             <tbody>
               {d.linhas.length === 0 && <tr><td colSpan={6} className="vazio">{t('rel.vazio')}</td></tr>}
               {d.linhas.map((l) => (

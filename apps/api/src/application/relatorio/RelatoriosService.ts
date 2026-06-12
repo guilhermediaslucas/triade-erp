@@ -11,9 +11,11 @@ export class RelatoriosService {
   estoqueParado(schema: string) { return this.repo.estoqueParado(schema); }
   perdasEstoque(schema: string, de: any, ate: any): Promise<LinhaPerda[]> { return this.repo.perdasEstoque(schema, lim(de), lim(ate)); }
 
-  // Curva ABC de produtos: ordenados por receita, classe A (≤80% acumulado), B (≤95%), C (resto).
-  async curvaAbc(schema: string, de: any, ate: any): Promise<RelatorioAbc> {
-    const base = await this.repo.curvaAbcProdutos(schema, lim(de), lim(ate));
+  // Curva ABC: ordenados por receita, classe A (≤80% acumulado), B (≤95%), C (resto). por=produtos|clientes.
+  async curvaAbc(schema: string, de: any, ate: any, por: any): Promise<RelatorioAbc> {
+    const base = por === 'clientes'
+      ? await this.repo.curvaAbcClientes(schema, lim(de), lim(ate))
+      : await this.repo.curvaAbcProdutos(schema, lim(de), lim(ate));
     const totalGeral = r2(base.reduce((a, l) => a + l.total, 0));
     const resumo: Record<ClasseAbc, { itens: number; total: number }> = {
       A: { itens: 0, total: 0 }, B: { itens: 0, total: 0 }, C: { itens: 0, total: 0 },

@@ -154,7 +154,7 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 | Vendas / Produtos mais vendidos | ✅ | |
 | Vendas por categoria | ✅ | |
 | Curva ABC (produtos) | ✅ | |
-| **Curva ABC (clientes)** | ❌ | mockup tem; sistema só produtos |
+| **Curva ABC (clientes)** | ✅ | seletor Produtos/Clientes (e2e 5 PASS) |
 | Validade de lotes / Estoque parado / Perdas / Inventários | ✅ | |
 | DRE simplificada | ✅ | |
 | Aging / projeção | ✅ | |
@@ -212,7 +212,7 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 ## 11. Próximos passos sugeridos (ordem de valor)
 
 1. ✅ **§1 — Fluxo Pix/Boleto → Financeiro → Kanban** (feito; toast fixo c/ botão Abrir = refino).
-2. Curva ABC de clientes (rápido; já temos a de produtos).
+2. ✅ Curva ABC de clientes (feito).
 3. KPIs clicáveis no Dashboard (drill por período).
 4. Coluna Previsto/Efetivo + detalhe do título (duplo-clique).
 5. Foto/avatar de usuário.

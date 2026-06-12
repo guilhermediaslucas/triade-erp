@@ -21,6 +21,7 @@ export interface RelatorioRepository {
   produtosVendidos(schema: string, de: string | null, ate: string | null): Promise<LinhaProduto[]>;
   vendasPorCategoria(schema: string, de: string | null, ate: string | null): Promise<LinhaCategoria[]>;
   curvaAbcProdutos(schema: string, de: string | null, ate: string | null): Promise<LinhaProduto[]>;
+  curvaAbcClientes(schema: string, de: string | null, ate: string | null): Promise<LinhaProduto[]>;
   validadeLotes(schema: string): Promise<LinhaValidadeLote[]>;
   estoqueParado(schema: string): Promise<LinhaEstoqueParado[]>;
   perdasEstoque(schema: string, de: string | null, ate: string | null): Promise<LinhaPerda[]>;

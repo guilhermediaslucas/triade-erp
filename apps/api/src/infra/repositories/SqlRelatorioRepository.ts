@@ -68,6 +68,18 @@ export class SqlRelatorioRepository implements RelatorioRepository {
     return linhas.map((r: any) => ({ nome: r.nome, quantidade: Number(r.q), total: Number(r.total) }));
   }
 
+  async curvaAbcClientes(schema: string, de: string | null, ate: string | null): Promise<LinhaProduto[]> {
+    const s = validarSchema(schema);
+    const linhas = await this.ds.query(
+      `SELECT COALESCE(c.nome, '—') nome, COUNT(*)::numeric q, SUM(p.total)::numeric total
+         FROM "${s}".pedido p LEFT JOIN "${s}".cliente c ON c.id = p.cliente_id
+        WHERE p.${ATIVO}
+          AND ($1::date IS NULL OR p.criado_em::date >= $1)
+          AND ($2::date IS NULL OR p.criado_em::date <= $2)
+        GROUP BY COALESCE(c.nome, '—') ORDER BY total DESC, q DESC`, [de, ate]);
+    return linhas.map((r: any) => ({ nome: r.nome, quantidade: Number(r.q), total: Number(r.total) }));
+  }
+
   async validadeLotes(schema: string): Promise<LinhaValidadeLote[]> {
     const s = validarSchema(schema);
     const linhas = await this.ds.query(
