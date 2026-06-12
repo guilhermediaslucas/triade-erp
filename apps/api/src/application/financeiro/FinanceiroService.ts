@@ -31,10 +31,67 @@ function faixaDe(dias: number): AgingFaixa {
 const r2 = (n: number) => Math.round(n * 100) / 100;
 const lim = (v: any): string | null => (v && /^\d{4}-\d{2}-\d{2}$/.test(String(v)) ? String(v) : null);
 
+// Fluxo de caixa completo: todos os títulos (data de caixa = baixa, ou vencimento se em aberto).
+export interface FluxoLancamento {
+  id: string; tipo: 'entrada' | 'saida'; numero: string; descricao: string; pessoaNome: string | null;
+  conta: string | null; dataCaixa: string; previsto: boolean; situacao: 'baixado' | 'vencido' | 'aberto'; valor: number;
+}
+export interface SemanaFluxo { de: string; ate: string; rotulo: string; entradas: number; saidas: number; }
+export interface RelatorioFluxo { lancamentos: FluxoLancamento[]; entradas: number; saidas: number; semanas: SemanaFluxo[]; }
+
+function segundaDaSemana(isoDate: string): string {
+  const d = new Date(isoDate + 'T00:00:00Z');
+  const dow = d.getUTCDay(); // 0=domingo .. 6=sábado
+  d.setUTCDate(d.getUTCDate() + (dow === 0 ? -6 : 1 - dow)); // recua até a segunda
+  return d.toISOString().slice(0, 10);
+}
+function addDias(iso: string, n: number): string {
+  const d = new Date(iso + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10);
+}
+
 export class FinanceiroService {
   constructor(private readonly repo: TituloRepository, private readonly pedidos?: PedidoRepository) {}
   listar(schema: string, tipo: TipoTitulo): Promise<Titulo[]> { return this.repo.listar(schema, tipo); }
   fluxo(schema: string): Promise<MovimentoFluxo[]> { return this.repo.listarPagos(schema); }
+
+  // Fluxo completo: junta receber (entradas) + pagar (saídas), data de caixa = baixa (se pago)
+  // ou vencimento (se em aberto), filtra por período e monta os totais + as semanas do gráfico.
+  async fluxoCompleto(schema: string, deRaw: any, ateRaw: any): Promise<RelatorioFluxo> {
+    const de = lim(deRaw), ate = lim(ateRaw);
+    const receber = await this.repo.listar(schema, 'receber');
+    const pagar = await this.repo.listar(schema, 'pagar');
+    const hoje = new Date().toISOString().slice(0, 10);
+    const lancamentos: FluxoLancamento[] = [];
+    const add = (t: Titulo, tipo: 'entrada' | 'saida') => {
+      const pago = t.status === 'pago';
+      const dataCaixa = (pago && t.pagoEm ? String(t.pagoEm) : String(t.vencimento)).slice(0, 10);
+      if (de && dataCaixa < de) return;
+      if (ate && dataCaixa > ate) return;
+      const situacao: 'baixado' | 'vencido' | 'aberto' = pago ? 'baixado' : (dataCaixa < hoje ? 'vencido' : 'aberto');
+      lancamentos.push({ id: t.id, tipo, numero: t.numero, descricao: t.descricao, pessoaNome: t.pessoaNome, conta: t.contaCorrenteNome, dataCaixa, previsto: t.previsto, situacao, valor: t.valor });
+    };
+    for (const t of receber) add(t, 'entrada');
+    for (const t of pagar) add(t, 'saida');
+    lancamentos.sort((a, b) => (a.dataCaixa < b.dataCaixa ? -1 : a.dataCaixa > b.dataCaixa ? 1 : 0));
+    const soma = (filtro: (l: FluxoLancamento) => boolean) => r2(lancamentos.filter(filtro).reduce((a, l) => a + l.valor, 0));
+    const entradas = soma((l) => l.tipo === 'entrada');
+    const saidas = soma((l) => l.tipo === 'saida');
+    // Semanas (segunda a domingo) do menor ao maior dataCaixa (ou de..ate), p/ o gráfico.
+    const semanas: SemanaFluxo[] = [];
+    if (lancamentos.length > 0) {
+      const min = de ?? lancamentos[0]!.dataCaixa;
+      const max = ate ?? lancamentos[lancamentos.length - 1]!.dataCaixa;
+      let wk = segundaDaSemana(min); const fim = segundaDaSemana(max); let guard = 0;
+      while (wk <= fim && guard++ < 60) {
+        const wkFim = addDias(wk, 6);
+        const na = (l: FluxoLancamento) => l.dataCaixa >= wk && l.dataCaixa <= wkFim;
+        const [, mm, dd] = wk.split('-');
+        semanas.push({ de: wk, ate: wkFim, rotulo: `${dd}/${mm}`, entradas: soma((l) => l.tipo === 'entrada' && na(l)), saidas: soma((l) => l.tipo === 'saida' && na(l)) });
+        wk = addDias(wk, 7);
+      }
+    }
+    return { lancamentos, entradas, saidas, semanas };
+  }
 
   // Aging: títulos em aberto agrupados por faixa de atraso (relativo a hoje).
   async aging(schema: string, tipo: TipoTitulo): Promise<RelatorioAging> {

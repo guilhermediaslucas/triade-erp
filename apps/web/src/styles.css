@@ -522,6 +522,9 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
 .card.clicavel { cursor: pointer; transition: transform .12s, box-shadow .12s, border-color .12s; }
 .card.clicavel:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(20,20,40,.10); border-color: var(--accent); }
 .kpi-mock.kpi-ativo { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft, #efeafe); }
+.fluxo-lin { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 13px; border-bottom: 1px solid var(--borda); }
+.fluxo-banco { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 13px; cursor: pointer; }
+.fluxo-banco span { display: flex; align-items: center; gap: 8px; }
 .det-linha { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--borda); font-size: 14px; }
 .det-linha:last-of-type { border-bottom: none; }
 .det-rot { color: var(--muted); }

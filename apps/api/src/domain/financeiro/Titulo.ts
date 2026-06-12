@@ -12,6 +12,7 @@ export interface Titulo {
   tipoDocumento: string | null;   // ex.: NF-e, Boleto, Fatura (cadastro Tipos de documento)
   numeroDocumento: string | null; // nº do documento (NF/boleto)
   emissao: string | null;         // data de emissão (ISO YYYY-MM-DD)
+  contaCorrenteNome: string | null; // conta corrente da baixa (quando pago)
   criadoEm: string;
 }
 export interface NovoTitulo {

@@ -188,6 +188,24 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Fluxo de caixa reescrito (rico, igual ao mockup) + Aging e Fluxo projetado removidos.** O Gui
+  pediu pra concentrar tudo na Fluxo de caixa. **Mudança de regra:** antes só mostrava **baixados** (pela data da
+  baixa); agora considera **todos os títulos** com **data de caixa = baixa (se pago) ou vencimento (se em aberto)**.
+  **Backend (sem migration):** `Titulo` += `contaCorrenteNome` (LEFT JOIN `conta_corrente` no `listar`);
+  `FinanceiroService.fluxoCompleto(de,ate)` junta receber(entrada)+pagar(saída), filtra por período, calcula totais e
+  monta **semanas** (segunda–domingo, p/ o gráfico); rota `GET /financeiro/fluxo?de=&ate=` passou a devolver o objeto
+  rico `{lancamentos, entradas, saidas, semanas}` (o `fluxo()` antigo/`listarPagos` ficou inerte). **Frontend
+  (`FluxoCaixa.tsx` reescrito):** filtro de período (Filtrar/Limpar), **gráfico SVG de barras semanais** (entradas
+  verde/saídas vermelha) **clicável** (clicar na semana filtra a lista), painel **Resumo** (Saldo inicial = soma dos
+  bancos marcados via `/contas-correntes/saldos`, Entradas, Saídas, Saldo do período) com **checkbox por banco**, e a
+  tabela **"Lançamentos que compõem o fluxo"** (Tipo, Título, Descrição, Cliente/Fornecedor, Conta, Data de caixa,
+  Previsto/Efetivo, Situação, Valor) + Exportar Excel. CSS `.fluxo-lin/.fluxo-banco`. i18n `fluxo.*` pt/en/es.
+  **Remoções:** tirei **Aging de recebíveis** e **Fluxo projetado** do **menu** (Layout) e das **rotas** (App.tsx);
+  os métodos/rotas de backend (`aging`, `fluxoProjetado`) ficaram **inertes**. **Os arquivos `AgingReceber.tsx` e
+  `RelFluxoProj.tsx` NÃO consegui apagar** (mount nega exclusão) — **o Gui precisa `git rm apps/web/src/pages/
+  AgingReceber.tsx apps/web/src/pages/RelFluxoProj.tsx`** (eles ainda compilam, só estão inacessíveis). **Coluna
+  chooser ("Colunas") do mockup ficou de fora** (2ª passada). **Validação:** **type-check/e2e NÃO rodaram** (sandbox);
+  hand-review. **Pendente:** Gui `npm install` + build + `git rm` dos 2 arquivos + commit+push.
 - **2026-06-12** — **Paridade: Nota de entrada (compra) igualada ao mockup.** A tela estava minimal (forn, produto,
   qtd, custo, NF, total); o mockup é rica. Reescrita (`NotaEntrada.tsx`): grid 2 colunas (**Fornecedor | Produto**
   ambos datalist; **Quantidade | Custo unitário**; **Nº da nota | Série**; **Emissão | 1º vencimento**), **3 KPIs**

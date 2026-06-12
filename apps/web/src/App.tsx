@@ -34,8 +34,6 @@ import { BaixaPerda } from './pages/BaixaPerda.js';
 import { GestaoFretes } from './pages/GestaoFretes.js';
 import { Contas } from './pages/Contas.js';
 import { FluxoCaixa } from './pages/FluxoCaixa.js';
-import { RelFluxoProj } from './pages/RelFluxoProj.js';
-import { AgingReceber } from './pages/AgingReceber.js';
 import { RelDRE } from './pages/RelDRE.js';
 import { NotaEntrada } from './pages/NotaEntrada.js';
 import { Recebimento } from './pages/Recebimento.js';
@@ -93,14 +91,12 @@ export function App() {
                 <Route path="/estoque/inventario" element={<Protegida cap="estoque.inventario.ver"><Inventario /></Protegida>} />
                 <Route path="/logistica/fretes" element={<Protegida cap="logistica.frete.ver"><GestaoFretes /></Protegida>} />
                 <Route path="/financeiro/receber" element={<Protegida cap="financeiro.receber.listar"><Contas tipo="receber" /></Protegida>} />
-                <Route path="/financeiro/aging-receber" element={<Protegida cap="financeiro.receber.listar"><AgingReceber /></Protegida>} />
                 <Route path="/financeiro/dre" element={<Protegida cap="financeiro.fluxo.ver"><RelDRE /></Protegida>} />
                 <Route path="/financeiro/nota" element={<Protegida cap="financeiro.compra.criar"><NotaEntrada /></Protegida>} />
                 <Route path="/estoque/recebimento" element={<Protegida cap="estoque.entrada.criar"><Recebimento /></Protegida>} />
                 <Route path="/financeiro/comissoes" element={<Protegida cap="financeiro.comissao.ver"><Comissoes /></Protegida>} />
                 <Route path="/financeiro/conciliacao" element={<Protegida cap="financeiro.conciliacao.ver"><Conciliacao /></Protegida>} />
                 <Route path="/financeiro/fluxo" element={<Protegida cap="financeiro.fluxo.ver"><FluxoCaixa /></Protegida>} />
-                <Route path="/financeiro/fluxo-projetado" element={<Protegida cap="financeiro.fluxo.ver"><RelFluxoProj /></Protegida>} />
                 <Route path="/financeiro/pagar" element={<Protegida cap="financeiro.pagar.listar"><Contas tipo="pagar" /></Protegida>} />
                 <Route path="/relatorios/vendas" element={<Protegida cap="relatorios.ver"><RelVendas /></Protegida>} />
                 <Route path="/relatorios/pedidos" element={<Protegida cap="relatorios.ver"><RelPedidos /></Protegida>} />

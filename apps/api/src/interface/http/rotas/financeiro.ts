@@ -38,7 +38,7 @@ export function rotasFinanceiro(deps: Dependencias): Router {
   const autF = criarAutenticar(deps.tokens);
   const azF = criarAutorizar(deps.usuariosRepo);
   r.get('/financeiro/fluxo', autF, azF('financeiro.fluxo.ver'), async (req, res) => {
-    try { res.json(await deps.financeiroService.fluxo(req.usuario!.schema)); } catch (e) { tratarErro(res, e); }
+    try { res.json(await deps.financeiroService.fluxoCompleto(req.usuario!.schema, req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
   });
   r.get('/financeiro/aging-receber', autF, azF('financeiro.receber.listar'), async (req, res) => {
     try { res.json(await deps.financeiroService.aging(req.usuario!.schema, 'receber')); } catch (e) { tratarErro(res, e); }

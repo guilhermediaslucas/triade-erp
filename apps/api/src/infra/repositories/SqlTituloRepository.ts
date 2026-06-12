@@ -24,6 +24,7 @@ function map(r: any): Titulo {
     tipoDocumento: r.tipo_documento ?? null,
     numeroDocumento: r.numero_documento ?? null,
     emissao: r.emissao ? dataISO(r.emissao) : null,
+    contaCorrenteNome: r.conta_corrente_nome ?? null,
     criadoEm: iso(r.criado_em)!,
   };
 }
@@ -73,12 +74,13 @@ export class SqlTituloRepository implements TituloRepository {
   async listar(schema: string, tipo: TipoTitulo): Promise<Titulo[]> {
     const s = validarSchema(schema);
     return (await this.ds.query(
-      `SELECT t.*, cf.nome AS categoria_financeira_nome, fv.nome AS favorecido_nome, vd.nome AS vendedor_nome
+      `SELECT t.*, cf.nome AS categoria_financeira_nome, fv.nome AS favorecido_nome, vd.nome AS vendedor_nome, cc.nome AS conta_corrente_nome
          FROM "${s}".titulo t
          LEFT JOIN "${s}".categoria_financeira cf ON cf.id = t.categoria_financeira_id
          LEFT JOIN "${s}".favorecido fv ON fv.id = t.favorecido_id
          LEFT JOIN "${s}".pedido pd ON pd.id = t.pedido_id
          LEFT JOIN "${s}".vendedor vd ON vd.id = pd.vendedor_id
+         LEFT JOIN "${s}".conta_corrente cc ON cc.id = t.conta_corrente_id
         WHERE t.tipo = $1 ORDER BY t.vencimento`, [tipo])).map(map);
   }
   async buscarPorId(schema: string, id: string): Promise<Titulo | null> {
