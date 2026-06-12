@@ -17,15 +17,15 @@ export class PerfisService {
     return this.perfis.listar(schema);
   }
 
-  criar(schema: string, nome: string, capabilities: string[]): Promise<Perfil> {
+  criar(schema: string, nome: string, descricao: string, ativo: boolean, capabilities: string[]): Promise<Perfil> {
     validar(nome, capabilities);
-    return this.perfis.criar(schema, nome.trim(), [...new Set(capabilities)]);
+    return this.perfis.criar(schema, nome.trim(), (descricao ?? '').trim(), ativo !== false, [...new Set(capabilities)]);
   }
 
-  async editar(schema: string, id: string, nome: string, capabilities: string[]): Promise<void> {
+  async editar(schema: string, id: string, nome: string, descricao: string, ativo: boolean, capabilities: string[]): Promise<void> {
     validar(nome, capabilities);
     const existe = await this.perfis.buscarPorId(schema, id);
     if (!existe) throw new ErroAplicacao('perfil.nao_encontrado', 404);
-    await this.perfis.atualizar(schema, id, nome.trim(), [...new Set(capabilities)]);
+    await this.perfis.atualizar(schema, id, nome.trim(), (descricao ?? '').trim(), ativo !== false, [...new Set(capabilities)]);
   }
 }

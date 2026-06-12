@@ -16,16 +16,16 @@ export function rotasPerfis(deps: Dependencias): Router {
 
   r.post('/perfis', autenticar, autorizar('acesso.perfil.gerenciar'), async (req: Request, res: Response) => {
     try {
-      const { nome, capabilities } = req.body ?? {};
-      const p = await deps.perfisService.criar(req.usuario!.schema, nome, Array.isArray(capabilities) ? capabilities : []);
+      const { nome, descricao, ativo, capabilities } = req.body ?? {};
+      const p = await deps.perfisService.criar(req.usuario!.schema, nome, descricao ?? '', ativo !== false, Array.isArray(capabilities) ? capabilities : []);
       res.status(201).json(p);
     } catch (e) { tratarErro(res, e); }
   });
 
   r.put('/perfis/:id', autenticar, autorizar('acesso.perfil.gerenciar'), async (req: Request, res: Response) => {
     try {
-      const { nome, capabilities } = req.body ?? {};
-      await deps.perfisService.editar(req.usuario!.schema, req.params.id!, nome, Array.isArray(capabilities) ? capabilities : []);
+      const { nome, descricao, ativo, capabilities } = req.body ?? {};
+      await deps.perfisService.editar(req.usuario!.schema, req.params.id!, nome, descricao ?? '', ativo !== false, Array.isArray(capabilities) ? capabilities : []);
       res.json({ ok: true });
     } catch (e) { tratarErro(res, e); }
   });

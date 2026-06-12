@@ -4,7 +4,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 
-interface Perfil { id: string; nome: string; capabilities: string[]; }
+interface Perfil { id: string; nome: string; descricao: string; ativo: boolean; capabilities: string[]; }
 
 export function Perfis() {
   const { token, temCapability } = useAuth();
@@ -39,7 +39,7 @@ export function Perfis() {
   }
   useEffect(() => { carregar(); /* eslint-disable-next-line */ }, []);
 
-  function abrirNovo() { setEditando({ id: '', nome: '', capabilities: [] }); setNovo(true); }
+  function abrirNovo() { setEditando({ id: '', nome: '', descricao: '', ativo: true, capabilities: [] }); setNovo(true); }
   function abrirEdicao(p: Perfil) { setEditando({ ...p, capabilities: [...p.capabilities] }); setNovo(false); }
 
   return (
@@ -52,14 +52,15 @@ export function Perfis() {
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="card pad0">
         <table className="tabela">
-          <thead><tr><th>{t('perfis.nome')}</th><th>{t('perfis.modulos')}</th><th>{t('perfis.permissoes')}</th><th></th></tr></thead>
+          <thead><tr><th>{t('perfis.nome')}</th><th>{t('perfis.modulos')}</th><th>{t('perfis.permissoes')}</th><th>{t('usuarios.situacao')}</th><th></th></tr></thead>
           <tbody>
-            {perfis.length === 0 && <tr><td colSpan={4} className="vazio">{t('common.nenhum')}</td></tr>}
+            {perfis.length === 0 && <tr><td colSpan={5} className="vazio">{t('common.nenhum')}</td></tr>}
             {perfis.map((p) => (
               <tr key={p.id}>
-                <td>{p.nome}</td>
+                <td>{p.nome}{p.descricao && <div className="muted" style={{ fontSize: 12 }}>{p.descricao}</div>}</td>
                 <td className="muted">{modulosDe(p.capabilities)}</td>
                 <td>{p.capabilities.length} {t('perfis.qtd_permissoes')}</td>
+                <td><span className={p.ativo ? 'pill-ok' : 'pill-off'}>{p.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
                 <td className="acoes">
                   {podeGerenciar && <button className="btn-link" onClick={() => abrirEdicao(p)}>{t('common.editar')}</button>}
                 </td>
@@ -87,6 +88,8 @@ function ModalPerfil({ perfil, novo, porModulo, onFechar, onSalvo }: {
   const { token } = useAuth();
   const { t } = useI18n();
   const [nome, setNome] = useState(perfil.nome);
+  const [descricao, setDescricao] = useState(perfil.descricao);
+  const [ativo, setAtivo] = useState(perfil.ativo);
   const [caps, setCaps] = useState<string[]>(perfil.capabilities);
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
@@ -94,36 +97,59 @@ function ModalPerfil({ perfil, novo, porModulo, onFechar, onSalvo }: {
   function alternar(id: string) {
     setCaps((c) => (c.includes(id) ? c.filter((x) => x !== id) : [...c, id]));
   }
+  function alternarModulo(lista: Capability[]) {
+    const ids = lista.map((c) => c.id);
+    const todos = ids.every((id) => caps.includes(id));
+    setCaps((c) => (todos ? c.filter((x) => !ids.includes(x)) : [...new Set([...c, ...ids])]));
+  }
 
   async function salvar() {
     setErro(null); setSalvando(true);
     try {
-      if (novo) await api.post('/perfis', { nome, capabilities: caps }, token!);
-      else await api.put('/perfis/' + perfil.id, { nome, capabilities: caps }, token!);
+      const corpo = { nome, descricao, ativo, capabilities: caps };
+      if (novo) await api.post('/perfis', corpo, token!);
+      else await api.put('/perfis/' + perfil.id, corpo, token!);
       onSalvo();
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalvando(false); }
   }
 
   return (
     <div className="modal-fundo">
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+      <div className="modal modal-lg" onClick={(e) => e.stopPropagation()}>
         <h2>{novo ? t('perfis.novo_titulo') : t('perfis.editar_titulo')}</h2>
         <label className="campo">{t('perfis.nome')}
           <input value={nome} onChange={(e) => setNome(e.target.value)} autoFocus />
         </label>
-        <div className="perm-titulo">{t('perfis.permissoes')}</div>
-        <div className="perm-lista">
-          {Object.entries(porModulo).map(([mod, lista]) => (
-            <div key={mod} className="perm-grupo">
-              <div className="perm-modulo">{t(mod)}</div>
-              {lista.map((c) => (
-                <label key={c.id} className="perm-item">
-                  <input type="checkbox" checked={caps.includes(c.id)} onChange={() => alternar(c.id)} />
-                  {t(c.labelChave)}
+        <label className="login-lembrar" style={{ marginTop: 6 }}>
+          <input type="checkbox" checked={ativo} onChange={(e) => setAtivo(e.target.checked)} /> {t('perfis.ativo_label')}
+        </label>
+        <label className="campo">{t('perfis.descricao')}
+          <input value={descricao} onChange={(e) => setDescricao(e.target.value)} placeholder={t('perfis.descricao_ph')} />
+        </label>
+
+        <div className="perm-titulo">{t('perfis.telas_liberadas')}</div>
+        <div className="muted" style={{ fontSize: 12, marginBottom: 8 }}>{t('perfis.telas_hint')}</div>
+        <div className="perm-mods">
+          {Object.entries(porModulo).map(([mod, lista]) => {
+            const ids = lista.map((c) => c.id);
+            const todos = ids.every((id) => caps.includes(id));
+            return (
+              <div key={mod} className="perm-mod">
+                <label className="perm-mod-head">
+                  <input type="checkbox" checked={todos} onChange={() => alternarModulo(lista)} />
+                  {t(mod)}
                 </label>
-              ))}
-            </div>
-          ))}
+                <div className="perm-grid">
+                  {lista.map((c) => (
+                    <label key={c.id} className="perm-item">
+                      <input type="checkbox" checked={caps.includes(c.id)} onChange={() => alternar(c.id)} />
+                      {t(c.labelChave)}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
         {erro && <div className="alerta-erro">{t(erro)}</div>}
         <div className="modal-acoes">

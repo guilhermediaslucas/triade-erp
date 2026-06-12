@@ -55,7 +55,7 @@ export class ProvisionarEmpresa {
     await this.empresas.criar({ codigo, nome: e.nome.trim(), fantasia: e.fantasia.trim(), schemaName: schema });
     await this.migrador.migrarTenant(schema);
 
-    const perfil = await this.perfis.criar(schema, 'Administrador', CAPABILITY_IDS);
+    const perfil = await this.perfis.criar(schema, 'Administrador', 'Acesso total ao sistema', true, CAPABILITY_IDS);
     const senhaHash = await this.hash.gerar(e.adminSenha);
     await this.usuarios.criar(schema, { nome: e.adminNome.trim(), email: adminEmail, senhaHash, perfilId: perfil.id });
 

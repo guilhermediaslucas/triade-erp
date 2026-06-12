@@ -473,4 +473,11 @@ export const tenantMigrations: MigracaoTenant[] = [
       );
     `,
   },
+  {
+    nome: '032_perfil_ativo_descricao',
+    sql: (s) => `
+      ALTER TABLE "${s}".perfil ADD COLUMN IF NOT EXISTS ativo     boolean NOT NULL DEFAULT true;
+      ALTER TABLE "${s}".perfil ADD COLUMN IF NOT EXISTS descricao text NOT NULL DEFAULT '';
+    `,
+  },
 ];

@@ -1585,6 +1585,18 @@ Object.assign(pt, {
   'produtos.crumb': 'Cadastros / Produtos', 'produtos.sub': 'Itens vendidos — preço, lote e validade vêm depois',
   'cc.crumb': 'Cadastros / Contas correntes', 'cc.sub': 'Bancos e saldos usados nas baixas',
 });
+Object.assign(pt, {
+  'perfis.ativo_label': 'Ativo (disponível para vincular a usuários)', 'perfis.descricao': 'Descrição', 'perfis.descricao_ph': 'Ex.: Acesso total ao sistema',
+  'perfis.telas_liberadas': 'Telas liberadas', 'perfis.telas_hint': 'Marque as telas que este perfil pode enxergar. Use o título do grupo para marcar/desmarcar o módulo inteiro.',
+});
+Object.assign(en, {
+  'perfis.ativo_label': 'Active (available to assign to users)', 'perfis.descricao': 'Description', 'perfis.descricao_ph': 'E.g. Full system access',
+  'perfis.telas_liberadas': 'Allowed screens', 'perfis.telas_hint': 'Check the screens this role can see. Use the group title to toggle the whole module.',
+});
+Object.assign(es, {
+  'perfis.ativo_label': 'Activo (disponible para asignar a usuarios)', 'perfis.descricao': 'Descripción', 'perfis.descricao_ph': 'Ej.: Acceso total al sistema',
+  'perfis.telas_liberadas': 'Pantallas habilitadas', 'perfis.telas_hint': 'Marca las pantallas que este perfil puede ver. Usa el título del grupo para marcar/desmarcar el módulo entero.',
+});
 Object.assign(en, {
   'usuarios.crumb': 'Settings / Users', 'usuarios.sub': 'Who accesses the system and their roles',
   'perfis.crumb': 'Settings / Roles', 'perfis.sub': 'Access roles and per-screen permissions',

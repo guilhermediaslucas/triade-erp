@@ -263,6 +263,14 @@ a { text-decoration: none; color: inherit; }
 .emp-cor-hex { font-family: monospace; font-size: 12px; color: var(--muted); background: var(--bg); padding: 5px 10px; border-radius: 7px; }
 @media (max-width: 880px) { .emp-grid { grid-template-columns: 1fr; } }
 
+/* perfil — telas liberadas (cards por módulo, padrão do mockup) */
+.perm-mods { display: flex; flex-direction: column; gap: 12px; }
+.perm-mod { border: 1px solid var(--borda); border-radius: 12px; padding: 12px 14px; }
+.perm-mod-head { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 14px; margin-bottom: 8px; cursor: pointer; }
+.perm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 18px; }
+.perm-grid .perm-item { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
+@media (max-width: 720px) { .perm-grid { grid-template-columns: 1fr; } }
+
 /* estoque */
 .lote-row { background: #f8fafc; font-size: 13px; color: var(--muted); }
 .lote-row td { padding-top: 8px; padding-bottom: 8px; }
