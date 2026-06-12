@@ -176,6 +176,15 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Estoque/Expedição: fidelidade ao mockup (Posição + Expedição).** **Posição de estoque**
+  (`PosicaoEstoque.tsx`) reescrita no padrão do mockup: 4 **KPIs** (SKUs ativos, Estoque baixo, Validade < 90
+  dias, Valor em estoque), botão **Entrada** no cabeçalho, **toolbar** com busca por produto + **chips** de
+  situação (Todos/Em dia/Estoque baixo/Validade próxima, filtro client-side) e nova coluna **Valor** (Σ
+  saldo×custo por produto); badge de situação por linha (verde/laranja/vermelho) e nota "clique para ver os
+  lotes". **Expedição (Kanban)** ganhou cabeçalho no padrão (crumb + subtítulo). i18n pt/en/es das novas
+  chaves (`estoque.kpi_*`, `estoque.buscar`, `estoque.valor`, `estoque.f_validade`, `estoque.btn_entrada`).
+  **Validação:** type-check web verde. **Pendente:** Gui `git push` + conferir no navegador. **Nota:** as demais
+  telas do grupo (Entrada, Recebimento multi-lote, Baixa/perda, Inventário) já estavam com crumb/KPIs alinhados.
 - **2026-06-11** — **Excel .xlsx formatado como relatório (igual ao mockup).** `apps/web/src/lib/excel.ts`
   reescrito: `gerarXlsx(cabecalho, linhas, titulo?)` agora gera um **.xlsx real** com a mesma "cara de
   relatório" do mockup — **título** (linha 1, mesclada, na cor da empresa via `--accent`), **subtítulo**
