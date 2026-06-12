@@ -176,6 +176,13 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Relatórios: KPIs com ícone colorido (padrão do mockup).** Os 7 relatórios com KPIs de
+  card único por linha (Categorias, DRE, Estoque parado, Inventários, Perdas, Validade, Vendas) passaram a
+  combinar `kpi-card kpi-mock` com um **tile de ícone** colorido (tint-gr/or/pp/bl/rd conforme a semântica:
+  💰 valor, 🧾 despesa, ✅ resultado, 📦/🔢 itens, ⚠️/⏰/💸 alertas, 🎯 acuracidade), mantendo rótulos/valores/
+  cores. RelAbc (pills de classe A/B/C) e RelProdutos (ranking com barras) ficaram como estão. Também
+  corrigido bug: a Posição de estoque usava `kpi-mock` sem `card` (sem chrome) → agora `card kpi-mock`.
+  **Validação:** type-check web verde, sem NULs, lock íntegro. **Pendente:** Gui `git push` + conferir.
 - **2026-06-11** — **Estoque/Expedição: fidelidade ao mockup (Posição + Expedição).** **Posição de estoque**
   (`PosicaoEstoque.tsx`) reescrita no padrão do mockup: 4 **KPIs** (SKUs ativos, Estoque baixo, Validade < 90
   dias, Valor em estoque), botão **Entrada** no cabeçalho, **toolbar** com busca por produto + **chips** de
