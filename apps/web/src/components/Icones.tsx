@@ -27,6 +27,8 @@ export function SpriteIcones() {
       <symbol id="i-edit" viewBox="0 0 24 24"><path d="M14.5 5.5l4 4L8 20l-4.5 1 1-4.5z" /><line x1="13" y1="7" x2="17" y2="11" /></symbol>
       <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15.5 14" /></symbol>
       <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.2 21.5 20H2.5z" /><line x1="12" y1="9.5" x2="12" y2="14.5" /><line x1="12" y1="17.4" x2="12.02" y2="17.4" /></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><polyline points="4 7 20 7" /><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" /><path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13" /></symbol>
+      <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" /><circle cx="12" cy="12" r="2.8" /></symbol>
       <symbol id="i-check" viewBox="0 0 24 24"><polyline points="4 12.5 9.5 18 20 6.5" /></symbol>
       <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4" /><polyline points="7 9 12 4 17 9" /><path d="M4 17v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2" /></symbol>
     </svg>

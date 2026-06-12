@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Ic } from '../components/Icones.js';
 
 type Tipo = 'PF' | 'PJ';
 interface Favorecido {
@@ -46,26 +47,24 @@ export function Favorecidos() {
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="toolbar">
-        <div className="busca-box-tb">🔎<input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('favorecidos.buscar')} /></div>
+        <div className="busca-box-tb"><Ic name="i-search" className="sm" /><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('favorecidos.buscar')} /></div>
         {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
       </div>
       <div className="card pad0">
         <table className="tabela">
-          <thead><tr><th>{t('favorecidos.nome')}</th><th>{t('favorecidos.tipo')}</th><th>{t('favorecidos.documento')}</th><th>{t('favorecidos.pix')}</th><th>{t('favorecidos.banco')}</th><th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
+          <thead><tr><th>{t('favorecidos.nome_fantasia')}</th><th>{t('favorecidos.tipo')}</th><th>{t('favorecidos.documento')}</th><th>{t('favorecidos.pix')}</th><th style={{ textAlign: 'right' }}>{t('usuarios.acoes')}</th></tr></thead>
           <tbody>
-            {filtrados.length === 0 && <tr><td colSpan={7} className="vazio">{t('common.nenhum')}</td></tr>}
+            {filtrados.length === 0 && <tr><td colSpan={5} className="vazio">{t('common.nenhum')}</td></tr>}
             {filtrados.map((f) => (
               <tr key={f.id} className={f.ativo ? '' : 'linha-inativa'}>
-                <td>{f.nome}</td>
+                <td><b>{f.nome}</b></td>
                 <td>{f.tipoPessoa}</td>
                 <td>{f.documento ?? '—'}</td>
                 <td>{f.chavePix ?? '—'}</td>
-                <td>{f.banco ?? '—'}</td>
-                <td><span className={f.ativo ? 'pill-ok' : 'pill-off'}>{f.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
-                <td className="acoes">{pode && <>
-                  <button className="btn-link" onClick={() => setEdit({ ...f, documento: f.documento ?? '', chavePix: f.chavePix ?? '', banco: f.banco ?? '', agencia: f.agencia ?? '', conta: f.conta ?? '', observacao: f.observacao ?? '' })}>{t('common.editar')}</button>
-                  <button className="btn-link" onClick={() => alternar(f)}>{f.ativo ? t('usuarios.inativar') : t('usuarios.ativar')}</button>
-                </>}</td>
+                <td style={{ textAlign: 'right' }}><span className="acoes-ic">
+                  <button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...f, documento: f.documento ?? '', chavePix: f.chavePix ?? '', banco: f.banco ?? '', agencia: f.agencia ?? '', conta: f.conta ?? '', observacao: f.observacao ?? '' })}><Ic name="i-edit" className="sm" /></button>
+                  {pode && <button className="acao-ic danger" title={f.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternar(f)}><Ic name="i-trash" className="sm" /></button>}
+                </span></td>
               </tr>
             ))}
           </tbody>

@@ -528,6 +528,10 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
 .rel-link { display: block; padding: 8px 10px; border-radius: 8px; color: var(--ink); text-decoration: none; font-size: 14px; }
 .rel-link:hover { background: var(--bg); color: var(--accent); }
 .rel-link.active { background: var(--accent-soft, #efeafe); color: var(--accent); font-weight: 600; }
+.acoes-ic { display: inline-flex; gap: 6px; }
+.acao-ic { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--borda); background: #fff; border-radius: 8px; color: var(--muted); cursor: pointer; padding: 0; }
+.acao-ic:hover { background: var(--bg); color: var(--ink); border-color: var(--accent); }
+.acao-ic.danger:hover { color: #e1483b; border-color: #e1483b; }
 .det-linha { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--borda); font-size: 14px; }
 .det-linha:last-of-type { border-bottom: none; }
 .det-rot { color: var(--muted); }

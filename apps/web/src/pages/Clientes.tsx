@@ -3,6 +3,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { UFS, buscarMunicipios } from '../lib/br.js';
+import { Ic } from '../components/Icones.js';
 
 type TipoPessoa = 'PJ' | 'PF';
 interface Endereco { cep: string; logradouro: string; numero: string; complemento: string; bairro: string; cidade: string; uf: string; favorito: boolean; }
@@ -56,22 +57,23 @@ export function Clientes() {
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="card pad0"><table className="tabela">
-        <thead><tr><th>{t('clientes.nome')}</th><th>{t('clientes.tipo')}</th><th>{t('pessoa.documento')}</th><th>{t('clientes.limite')}</th><th>{t('clientes.cidade')}</th><th>{t('clientes.em_aberto')}</th><th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
+        <thead><tr><th>{t('clientes.col_cliente')}</th><th>{t('pessoa.documento')}</th><th>{t('clientes.cidade')}</th><th>{t('clientes.em_aberto')}</th><th>{t('fin.status')}</th><th style={{ textAlign: 'right' }}>{t('usuarios.acoes')}</th></tr></thead>
         <tbody>
-          {filtrados.length === 0 && <tr><td colSpan={8} className="vazio">{t('common.nenhum')}</td></tr>}
+          {filtrados.length === 0 && <tr><td colSpan={6} className="vazio">{t('common.nenhum')}</td></tr>}
           {filtrados.map((c) => {
             const fav = c.enderecos.find((e) => e.favorito) ?? c.enderecos[0];
+            const abrir = () => setEdit({ ...c, fantasia: c.fantasia ?? '', email: c.email ?? '', telefone: c.telefone ?? '', enderecos: c.enderecos.map((e) => ({ ...endVazio(), ...e, cep: e.cep ?? '', logradouro: e.logradouro ?? '', numero: e.numero ?? '', complemento: e.complemento ?? '', bairro: e.bairro ?? '', cidade: e.cidade ?? '', uf: e.uf ?? '' })) });
             return (
               <tr key={c.id} className={c.ativo ? '' : 'linha-inativa'}>
-                <td>{c.nome}{c.fantasia ? <span className="muted"> · {c.fantasia}</span> : null}</td>
-                <td>{c.tipoPessoa}</td><td>{c.documento}</td><td>{moeda(c.limiteCredito)}</td>
+                <td><b>{c.nome}</b>{c.fantasia ? <span className="muted"> · {c.fantasia}</span> : null}</td>
+                <td>{c.documento || '—'}</td>
                 <td>{fav ? `${fav.cidade ?? ''}${fav.uf ? '/' + fav.uf : ''}` : '—'}</td>
                 <td>{c.emAberto > 0 ? <b>{moeda(c.emAberto)}</b> : <span className="muted">{moeda(0)}</span>}</td>
                 <td><span className={c.ativo ? 'pill-ok' : 'pill-off'}>{c.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
-                <td className="acoes">{pode && <>
-                  <button className="btn-link" onClick={() => setEdit({ ...c, fantasia: c.fantasia ?? '', email: c.email ?? '', telefone: c.telefone ?? '', enderecos: c.enderecos.map((e) => ({ ...endVazio(), ...e, cep: e.cep ?? '', logradouro: e.logradouro ?? '', numero: e.numero ?? '', complemento: e.complemento ?? '', bairro: e.bairro ?? '', cidade: e.cidade ?? '', uf: e.uf ?? '' })) })}>{t('common.editar')}</button>
-                  <button className="btn-link" onClick={() => alternar(c)}>{c.ativo ? t('usuarios.inativar') : t('usuarios.ativar')}</button>
-                </>}</td>
+                <td style={{ textAlign: 'right' }}><span className="acoes-ic">
+                  <button className="acao-ic" title={t('common.editar')} onClick={abrir}><Ic name="i-edit" className="sm" /></button>
+                  {pode && <button className="acao-ic danger" title={c.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternar(c)}><Ic name="i-trash" className="sm" /></button>}
+                </span></td>
               </tr>
             );
           })}

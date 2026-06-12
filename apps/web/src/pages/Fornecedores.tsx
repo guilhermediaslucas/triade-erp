@@ -3,6 +3,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { mascaraCnpj, mascaraCep, buscarCnpj, buscarCep, UFS, buscarMunicipios } from '../lib/br.js';
+import { Ic } from '../components/Icones.js';
 
 interface Fornecedor { id: string; nome: string; fantasia: string | null; documento: string; email: string | null; telefone: string | null; cep: string | null; cidade: string | null; uf: string | null; ativo: boolean; }
 const vazio = (): Fornecedor => ({ id: '', nome: '', fantasia: '', documento: '', email: '', telefone: '', cep: '', cidade: '', uf: '', ativo: true });
@@ -32,23 +33,23 @@ export function Fornecedores() {
       <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('fornecedores.titulo')}</h1><div className="muted page-sub">{t('fornecedores.sub')}</div></div>
         {pode && <button className="btn-primary" onClick={() => setEdit(vazio())}>+ {t('fornecedores.novo')}</button>}</div>
       <div className="toolbar">
-        <div className="busca-box-tb">🔎<input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('fornecedores.buscar')} /></div>
+        <div className="busca-box-tb"><Ic name="i-search" className="sm" /><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('fornecedores.buscar')} /></div>
         {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="card pad0"><table className="tabela">
-        <thead><tr><th>{t('pessoa.nome')}</th><th>{t('pessoa.documento')}</th><th>{t('clientes.cidade')}</th><th>{t('pessoa.telefone')}</th><th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
+        <thead><tr><th>{t('pessoa.fantasia')}</th><th>{t('pessoa.razao')}</th><th>CNPJ</th><th>{t('forn.cidade_uf')}</th><th>{t('pessoa.telefone')}</th><th style={{ textAlign: 'right' }}>{t('usuarios.acoes')}</th></tr></thead>
         <tbody>
           {filtrados.length === 0 && <tr><td colSpan={6} className="vazio">{t('common.nenhum')}</td></tr>}
           {filtrados.map((f) => (
             <tr key={f.id} className={f.ativo ? '' : 'linha-inativa'}>
-              <td>{f.nome}{f.fantasia ? <span className="muted"> · {f.fantasia}</span> : null}</td>
-              <td>{f.documento}</td><td>{f.cidade ? `${f.cidade}${f.uf ? '/' + f.uf : ''}` : '—'}</td><td>{f.telefone ?? '—'}</td>
-              <td><span className={f.ativo ? 'pill-ok' : 'pill-off'}>{f.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
-              <td className="acoes">{pode && <>
-                <button className="btn-link" onClick={() => setEdit({ ...f, fantasia: f.fantasia ?? '', email: f.email ?? '', telefone: f.telefone ?? '', cep: f.cep ?? '', cidade: f.cidade ?? '', uf: f.uf ?? '' })}>{t('common.editar')}</button>
-                <button className="btn-link" onClick={() => alternar(f)}>{f.ativo ? t('usuarios.inativar') : t('usuarios.ativar')}</button>
-              </>}</td>
+              <td><b>{f.fantasia || f.nome}</b></td>
+              <td>{f.nome}</td>
+              <td>{f.documento || '—'}</td><td>{f.cidade ? `${f.cidade}${f.uf ? '/' + f.uf : ''}` : '—'}</td><td>{f.telefone ?? '—'}</td>
+              <td style={{ textAlign: 'right' }}><span className="acoes-ic">
+                <button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...f, fantasia: f.fantasia ?? '', email: f.email ?? '', telefone: f.telefone ?? '', cep: f.cep ?? '', cidade: f.cidade ?? '', uf: f.uf ?? '' })}><Ic name="i-edit" className="sm" /></button>
+                {pode && <button className="acao-ic danger" title={f.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternar(f)}><Ic name="i-trash" className="sm" /></button>}
+              </span></td>
             </tr>
           ))}
         </tbody>

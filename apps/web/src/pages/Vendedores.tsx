@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Ic } from '../components/Icones.js';
 
 interface Vendedor { id: string; nome: string; email: string | null; telefone: string | null; regiao: string | null; metaMensal: number; comissaoPercentual: number; segueRegraGeral: boolean; ativo: boolean; vendasMes: number; }
 const moeda = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -32,23 +33,24 @@ export function Vendedores() {
       <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('vendedores.titulo')}</h1><div className="muted page-sub">{t('vendedores.sub')}</div></div>
         {pode && <button className="btn-primary" onClick={() => setEdit(vazio())}>+ {t('vendedores.novo')}</button>}</div>
       <div className="toolbar">
-        <div className="busca-box-tb">🔎<input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('vendedores.buscar')} /></div>
+        <div className="busca-box-tb"><Ic name="i-search" className="sm" /><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('vendedores.buscar')} /></div>
         {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="card pad0"><table className="tabela">
-        <thead><tr><th>{t('pessoa.nome')}</th><th>{t('vendedores.regiao')}</th><th>{t('vendedores.vendas_mes')}</th><th>{t('vendedores.meta')}</th><th>{t('vendedores.comissao')}</th><th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
+        <thead><tr><th>{t('vendedores.col_vend')}</th><th>{t('pessoa.email')}</th><th>{t('pessoa.telefone')}</th><th>{t('vendedores.regiao_s')}</th><th>{t('vendedores.vendas_mes')}</th><th>{t('vendedores.meta_s')}</th><th>{t('vendedores.comissao_s')}</th><th>{t('fin.status')}</th><th style={{ textAlign: 'right' }}>{t('usuarios.acoes')}</th></tr></thead>
         <tbody>
-          {filtrados.length === 0 && <tr><td colSpan={7} className="vazio">{t('common.nenhum')}</td></tr>}
+          {filtrados.length === 0 && <tr><td colSpan={9} className="vazio">{t('common.nenhum')}</td></tr>}
           {filtrados.map((v) => (
             <tr key={v.id} className={v.ativo ? '' : 'linha-inativa'}>
-              <td>{v.nome}</td><td>{v.regiao ?? '—'}</td><td>{v.vendasMes > 0 ? <b>{moeda(v.vendasMes)}</b> : <span className="muted">{moeda(0)}</span>}</td><td>{moeda(v.metaMensal)}</td>
+              <td><b>{v.nome}</b></td><td>{v.email || '—'}</td><td>{v.telefone || '—'}</td><td>{v.regiao ?? '—'}</td>
+              <td>{v.vendasMes > 0 ? <b>{moeda(v.vendasMes)}</b> : <span className="muted">{moeda(0)}</span>}</td><td>{moeda(v.metaMensal)}</td>
               <td>{v.segueRegraGeral ? t('vendedores.regra_geral_curta') : v.comissaoPercentual + '%'}</td>
               <td><span className={v.ativo ? 'pill-ok' : 'pill-off'}>{v.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
-              <td className="acoes">{pode && <>
-                <button className="btn-link" onClick={() => setEdit({ ...v, email: v.email ?? '', telefone: v.telefone ?? '', regiao: v.regiao ?? '' })}>{t('common.editar')}</button>
-                <button className="btn-link" onClick={() => alternar(v)}>{v.ativo ? t('usuarios.inativar') : t('usuarios.ativar')}</button>
-              </>}</td>
+              <td style={{ textAlign: 'right' }}><span className="acoes-ic">
+                <button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...v, email: v.email ?? '', telefone: v.telefone ?? '', regiao: v.regiao ?? '' })}><Ic name="i-edit" className="sm" /></button>
+                {pode && <button className="acao-ic danger" title={v.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternar(v)}><Ic name="i-trash" className="sm" /></button>}
+              </span></td>
             </tr>
           ))}
         </tbody>

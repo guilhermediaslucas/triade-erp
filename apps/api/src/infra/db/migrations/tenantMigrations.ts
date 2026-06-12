@@ -510,4 +510,12 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS emissao date;
     `,
   },
+  {
+    // Motoboy: CPF + chave Pix (espelha o cadastro do mockup).
+    nome: '036_motoboy_cpf_pix',
+    sql: (s) => `
+      ALTER TABLE "${s}".motoboy ADD COLUMN IF NOT EXISTS cpf text;
+      ALTER TABLE "${s}".motoboy ADD COLUMN IF NOT EXISTS chave_pix text;
+    `,
+  },
 ];

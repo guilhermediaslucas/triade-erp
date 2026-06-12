@@ -188,6 +188,18 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Paridade: telas de cadastro de Pessoas igualadas ao mockup (lote completo).**
+  "Tudo de uma vez" (escolha do Gui). **Comum:** sprite += `i-trash`/`i-eye`; CSS `.acao-ic`/`.acoes-ic`; todas as
+  listas trocaram botões de texto (Editar/Inativar) por **ícones** (lápis/lixeira); busca usa `<Ic i-search>`.
+  **Por tela:** **Clientes** → "Clientes comerciais", colunas Cliente/CPF-CNPJ/Cidade/Em aberto/Status (tirou Tipo/
+  Limite da lista). **Fornecedores** → crumb "Cadastros / Pessoas / Fornecedores", colunas Fantasia/Razão social/
+  CNPJ/Cidade-UF/Telefone. **Vendedores** → += E-mail/Telefone, headers curtos. **Favorecidos** → Nome-Fantasia/Tipo/
+  CPF-CNPJ/Chave Pix (tirou Banco/Situação). **Motoboys** → **removido o card de Configuração de frete** (foi p/ a
+  Gestão de fretes), colunas += **CPF**/**Chave Pix**. **Backend (Motoboy):** migration tenant **036** (`motoboy` +=
+  `cpf`, `chave_pix`); `Motoboy`/`NovoMotoboy` += cpf/chavePix; `SqlMotoboyRepository`+`MotoboysService` repassam;
+  modal ganhou CPF + Chave Pix. i18n pt/en/es. **Decisão:** mantive chips Todos/Ativos/Inativos e **não** pus o ícone
+  "olho/ver". **Validação:** **type-check NÃO rodou** (sandbox) — hand-review; lote grande. **Pendente:** Gui
+  `npm install` + build + commit+push → Render aplica a migration 036.
 - **2026-06-12** — **Fluxo de caixa reescrito (rico, igual ao mockup) + Aging e Fluxo projetado removidos.** O Gui
   pediu pra concentrar tudo na Fluxo de caixa. **Mudança de regra:** antes só mostrava **baixados** (pela data da
   baixa); agora considera **todos os títulos** com **data de caixa = baixa (se pago) ou vencimento (se em aberto)**.

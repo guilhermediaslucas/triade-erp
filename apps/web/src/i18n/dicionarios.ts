@@ -284,7 +284,7 @@ Object.assign(pt, {
   'cap.cadastros.vendedor.listar': 'Listar vendedores', 'cap.cadastros.vendedor.gerenciar': 'Criar e editar vendedores',
   'pessoa.nome': 'Nome', 'pessoa.razao': 'Razão social', 'pessoa.fantasia': 'Nome fantasia',
   'pessoa.documento': 'CPF/CNPJ', 'pessoa.email': 'E-mail', 'pessoa.telefone': 'Telefone',
-  'clientes.titulo': 'Clientes', 'clientes.novo': 'Novo cliente', 'clientes.nome': 'Nome',
+  'clientes.titulo': 'Clientes comerciais', 'clientes.novo': 'Novo cliente', 'clientes.nome': 'Nome', 'clientes.col_cliente': 'Cliente',
   'clientes.tipo': 'Tipo de pessoa', 'clientes.pj': 'Pessoa jurídica (PJ)', 'clientes.pf': 'Pessoa física (PF)',
   'clientes.nome_completo': 'Nome completo', 'clientes.limite': 'Limite de crédito',
   'fornecedores.titulo': 'Fornecedores', 'fornecedores.novo': 'Novo fornecedor',
@@ -299,7 +299,7 @@ Object.assign(en, {
   'cap.cadastros.vendedor.listar': 'List sales reps', 'cap.cadastros.vendedor.gerenciar': 'Create and edit sales reps',
   'pessoa.nome': 'Name', 'pessoa.razao': 'Legal name', 'pessoa.fantasia': 'Trade name',
   'pessoa.documento': 'Tax ID', 'pessoa.email': 'E-mail', 'pessoa.telefone': 'Phone',
-  'clientes.titulo': 'Customers', 'clientes.novo': 'New customer', 'clientes.nome': 'Name',
+  'clientes.titulo': 'Commercial customers', 'clientes.novo': 'New customer', 'clientes.nome': 'Name', 'clientes.col_cliente': 'Customer',
   'clientes.tipo': 'Entity type', 'clientes.pj': 'Company', 'clientes.pf': 'Individual',
   'clientes.nome_completo': 'Full name', 'clientes.limite': 'Credit limit',
   'fornecedores.titulo': 'Suppliers', 'fornecedores.novo': 'New supplier',
@@ -314,7 +314,7 @@ Object.assign(es, {
   'cap.cadastros.vendedor.listar': 'Listar vendedores', 'cap.cadastros.vendedor.gerenciar': 'Crear y editar vendedores',
   'pessoa.nome': 'Nombre', 'pessoa.razao': 'Razón social', 'pessoa.fantasia': 'Nombre comercial',
   'pessoa.documento': 'CPF/CNPJ', 'pessoa.email': 'Correo', 'pessoa.telefone': 'Teléfono',
-  'clientes.titulo': 'Clientes', 'clientes.novo': 'Nuevo cliente', 'clientes.nome': 'Nombre',
+  'clientes.titulo': 'Clientes comerciales', 'clientes.novo': 'Nuevo cliente', 'clientes.nome': 'Nombre', 'clientes.col_cliente': 'Cliente',
   'clientes.tipo': 'Tipo de persona', 'clientes.pj': 'Persona jurídica', 'clientes.pf': 'Persona física',
   'clientes.nome_completo': 'Nombre completo', 'clientes.limite': 'Límite de crédito',
   'fornecedores.titulo': 'Proveedores', 'fornecedores.novo': 'Nuevo proveedor',
@@ -1045,7 +1045,7 @@ Object.assign(es, {
 Object.assign(pt, {
   'menu.motoboys': 'Motoboys',
   'cap.cadastros.motoboy.listar': 'Listar motoboys', 'cap.cadastros.motoboy.gerenciar': 'Criar e editar motoboys / config. de frete',
-  'motoboys.titulo': 'Motoboys', 'motoboys.novo': 'Novo motoboy', 'motoboys.nome': 'Nome', 'motoboys.telefone': 'Telefone',
+  'motoboys.titulo': 'Motoboys', 'motoboys.novo': 'Novo motoboy', 'motoboys.nome': 'Nome', 'motoboys.telefone': 'Telefone', 'motoboys.chave_pix': 'Chave Pix',
   'motoboys.cfg_titulo': 'Configuração de frete (motoboy)',
   'motoboys.cfg_sub': 'A distância é simulada pelo CEP de entrega. Frete = km × valor por km, respeitando o mínimo.',
   'motoboys.km_rate': 'Valor por km (R$)', 'motoboys.min_motoboy': 'Frete mínimo (R$)', 'motoboys.cfg_ok': 'Configuração de frete salva.',
@@ -1058,7 +1058,7 @@ Object.assign(pt, {
 Object.assign(en, {
   'menu.motoboys': 'Couriers',
   'cap.cadastros.motoboy.listar': 'List couriers', 'cap.cadastros.motoboy.gerenciar': 'Create/edit couriers & freight config',
-  'motoboys.titulo': 'Couriers', 'motoboys.novo': 'New courier', 'motoboys.nome': 'Name', 'motoboys.telefone': 'Phone',
+  'motoboys.titulo': 'Couriers', 'motoboys.novo': 'New courier', 'motoboys.nome': 'Name', 'motoboys.telefone': 'Phone', 'motoboys.chave_pix': 'Pix key',
   'motoboys.cfg_titulo': 'Freight settings (courier)',
   'motoboys.cfg_sub': 'Distance is simulated from the delivery ZIP. Freight = km × per-km rate, respecting the minimum.',
   'motoboys.km_rate': 'Per-km rate ($)', 'motoboys.min_motoboy': 'Minimum freight ($)', 'motoboys.cfg_ok': 'Freight settings saved.',
@@ -1071,7 +1071,7 @@ Object.assign(en, {
 Object.assign(es, {
   'menu.motoboys': 'Motoboys',
   'cap.cadastros.motoboy.listar': 'Listar motoboys', 'cap.cadastros.motoboy.gerenciar': 'Crear/editar motoboys y config. de flete',
-  'motoboys.titulo': 'Motoboys', 'motoboys.novo': 'Nuevo motoboy', 'motoboys.nome': 'Nombre', 'motoboys.telefone': 'Teléfono',
+  'motoboys.titulo': 'Motoboys', 'motoboys.novo': 'Nuevo motoboy', 'motoboys.nome': 'Nombre', 'motoboys.telefone': 'Teléfono', 'motoboys.chave_pix': 'Clave Pix',
   'motoboys.cfg_titulo': 'Configuración de flete (motoboy)',
   'motoboys.cfg_sub': 'La distancia se simula por el CP de entrega. Flete = km × valor por km, respetando el mínimo.',
   'motoboys.km_rate': 'Valor por km ($)', 'motoboys.min_motoboy': 'Flete mínimo ($)', 'motoboys.cfg_ok': 'Configuración de flete guardada.',
@@ -1378,7 +1378,7 @@ Object.assign(pt, {
   'cap.cadastros.favorecido.listar': 'Listar favorecidos', 'cap.cadastros.favorecido.gerenciar': 'Criar e editar favorecidos',
   'favorecido.tipo_invalido': 'Tipo de pessoa inválido.',
   'favorecidos.titulo': 'Favorecidos', 'favorecidos.sub': 'Pessoas e empresas que recebem reembolsos e pagamentos avulsos.',
-  'favorecidos.novo': 'Novo favorecido', 'favorecidos.nome': 'Nome', 'favorecidos.tipo': 'Tipo',
+  'favorecidos.novo': 'Novo favorecido', 'favorecidos.nome': 'Nome', 'favorecidos.nome_fantasia': 'Nome / Fantasia', 'favorecidos.tipo': 'Tipo',
   'favorecidos.pf': 'Pessoa física', 'favorecidos.pj': 'Pessoa jurídica',
   'favorecidos.documento': 'CPF / CNPJ', 'favorecidos.pix': 'Chave PIX',
   'favorecidos.banco': 'Banco', 'favorecidos.agencia': 'Agência', 'favorecidos.conta': 'Conta', 'favorecidos.observacao': 'Observação',
@@ -1388,7 +1388,7 @@ Object.assign(en, {
   'cap.cadastros.favorecido.listar': 'List payees', 'cap.cadastros.favorecido.gerenciar': 'Create and edit payees',
   'favorecido.tipo_invalido': 'Invalid person type.',
   'favorecidos.titulo': 'Payees', 'favorecidos.sub': 'People and companies that receive reimbursements and one-off payments.',
-  'favorecidos.novo': 'New payee', 'favorecidos.nome': 'Name', 'favorecidos.tipo': 'Type',
+  'favorecidos.novo': 'New payee', 'favorecidos.nome': 'Name', 'favorecidos.nome_fantasia': 'Name / Trade name', 'favorecidos.tipo': 'Type',
   'favorecidos.pf': 'Individual', 'favorecidos.pj': 'Company',
   'favorecidos.documento': 'Tax ID', 'favorecidos.pix': 'PIX key',
   'favorecidos.banco': 'Bank', 'favorecidos.agencia': 'Branch', 'favorecidos.conta': 'Account', 'favorecidos.observacao': 'Notes',
@@ -1398,7 +1398,7 @@ Object.assign(es, {
   'cap.cadastros.favorecido.listar': 'Listar beneficiarios', 'cap.cadastros.favorecido.gerenciar': 'Crear y editar beneficiarios',
   'favorecido.tipo_invalido': 'Tipo de persona inválido.',
   'favorecidos.titulo': 'Beneficiarios', 'favorecidos.sub': 'Personas y empresas que reciben reembolsos y pagos puntuales.',
-  'favorecidos.novo': 'Nuevo beneficiario', 'favorecidos.nome': 'Nombre', 'favorecidos.tipo': 'Tipo',
+  'favorecidos.novo': 'Nuevo beneficiario', 'favorecidos.nome': 'Nombre', 'favorecidos.nome_fantasia': 'Nombre / Fantasía', 'favorecidos.tipo': 'Tipo',
   'favorecidos.pf': 'Persona física', 'favorecidos.pj': 'Persona jurídica',
   'favorecidos.documento': 'CPF / CNPJ', 'favorecidos.pix': 'Clave PIX',
   'favorecidos.banco': 'Banco', 'favorecidos.agencia': 'Agencia', 'favorecidos.conta': 'Cuenta', 'favorecidos.observacao': 'Observación',
@@ -1688,24 +1688,27 @@ Object.assign(es, { 'pedidos.crumb': 'Comercial / Pedidos', 'pedidos.data_de': '
 
 // --- Fornecedores / Vendedores (crumb+sub+busca) ---
 Object.assign(pt, {
-  'fornecedores.crumb': 'Cadastros / Fornecedores', 'fornecedores.sub': 'Empresas que fornecem os produtos', 'fornecedores.buscar': 'Buscar fornecedor',
-  'vendedores.crumb': 'Cadastros / Vendedores', 'vendedores.sub': 'Equipe comercial e metas', 'vendedores.buscar': 'Buscar vendedor',
+  'fornecedores.crumb': 'Cadastros / Pessoas / Fornecedores', 'fornecedores.sub': 'Pessoas — fornecedores cadastrados', 'fornecedores.buscar': 'Buscar fornecedor', 'forn.cidade_uf': 'Cidade/UF',
+  'vendedores.crumb': 'Cadastros / Vendedores', 'vendedores.sub': 'Equipe comercial e metas — usados nos pedidos e no cálculo de comissões', 'vendedores.buscar': 'Buscar vendedor',
+  'vendedores.col_vend': 'Vendedor', 'vendedores.regiao_s': 'Região', 'vendedores.meta_s': 'Meta', 'vendedores.comissao_s': 'Comissão',
 });
 Object.assign(en, {
-  'fornecedores.crumb': 'Records / Suppliers', 'fornecedores.sub': 'Companies that supply the products', 'fornecedores.buscar': 'Search supplier',
-  'vendedores.crumb': 'Records / Salespeople', 'vendedores.sub': 'Sales team and targets', 'vendedores.buscar': 'Search salesperson',
+  'fornecedores.crumb': 'Records / People / Suppliers', 'fornecedores.sub': 'People — registered suppliers', 'fornecedores.buscar': 'Search supplier', 'forn.cidade_uf': 'City/State',
+  'vendedores.crumb': 'Records / Salespeople', 'vendedores.sub': 'Sales team and targets — used in orders and commission calc', 'vendedores.buscar': 'Search salesperson',
+  'vendedores.col_vend': 'Salesperson', 'vendedores.regiao_s': 'Region', 'vendedores.meta_s': 'Target', 'vendedores.comissao_s': 'Commission',
 });
 Object.assign(es, {
-  'fornecedores.crumb': 'Registros / Proveedores', 'fornecedores.sub': 'Empresas que proveen los productos', 'fornecedores.buscar': 'Buscar proveedor',
-  'vendedores.crumb': 'Registros / Vendedores', 'vendedores.sub': 'Equipo comercial y metas', 'vendedores.buscar': 'Buscar vendedor',
+  'fornecedores.crumb': 'Registros / Personas / Proveedores', 'fornecedores.sub': 'Personas — proveedores registrados', 'fornecedores.buscar': 'Buscar proveedor', 'forn.cidade_uf': 'Ciudad/UF',
+  'vendedores.crumb': 'Registros / Vendedores', 'vendedores.sub': 'Equipo comercial y metas — usados en pedidos y cálculo de comisiones', 'vendedores.buscar': 'Buscar vendedor',
+  'vendedores.col_vend': 'Vendedor', 'vendedores.regiao_s': 'Región', 'vendedores.meta_s': 'Meta', 'vendedores.comissao_s': 'Comisión',
 });
 
 // --- Cadastros (crumb+sub+busca): Marcas/Categorias/Favorecidos/Motoboys ---
 Object.assign(pt, {
   'marcas.crumb': 'Cadastros / Marcas', 'marcas.sub': 'Marcas usadas no recebimento dos produtos', 'marcas.buscar': 'Buscar marca',
   'categorias.crumb': 'Cadastros / Categorias', 'categorias.sub': 'Categorias dos produtos', 'categorias.buscar': 'Buscar categoria',
-  'favorecidos.buscar': 'Buscar favorecido', 'favorecidos.crumb': 'Cadastros / Favorecidos',
-  'motoboys.crumb': 'Cadastros / Motoboys', 'motoboys.sub': 'Entregadores usados no frete', 'motoboys.buscar': 'Buscar motoboy',
+  'favorecidos.buscar': 'Buscar favorecido', 'favorecidos.crumb': 'Cadastros / Pessoas / Favorecidos',
+  'motoboys.crumb': 'Cadastros / Pessoas / Motoboys', 'motoboys.sub': 'Entregadores que aparecem no seletor de frete do pedido', 'motoboys.buscar': 'Buscar motoboy',
 });
 Object.assign(en, {
   'marcas.crumb': 'Records / Brands', 'marcas.sub': 'Brands used when receiving products', 'marcas.buscar': 'Search brand',
