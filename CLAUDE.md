@@ -176,6 +176,16 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Colunas agregadas do mockup (Clientes/Vendedores) + Configurações.** **(1)** `SqlClienteRepository.listar`
+  passou a trazer **`emAberto`** por cliente (subquery: Σ `titulo.valor` de `tipo='receber' AND status='aberto'`
+  via `pedido.cliente_id`) → nova coluna **Em aberto** na lista de Clientes. **(2)** `SqlVendedorRepository.listar`
+  traz **`vendasMes`** (Σ `pedido.total` do mês corrente, `status NOT IN (orcamento,cancelado)`) → coluna **Vendas (mês)**
+  nos Vendedores. Domínios `Cliente`/`Vendedor` += campo; mapeadores com `?? 0` (buscarPorId segue ok). **(3) Perfis**
+  ganhou a coluna **Módulos liberados** (derivada das capabilities × `moduloChave`; "Todos" quando cobre todos os
+  módulos) e **Usuários** mostra o perfil como **pill**. i18n pt/en/es (`clientes.em_aberto`, `vendedores.vendas_mes`,
+  `perfis.modulos`). **Validação:** type-check api+web verde + **e2e Postgres real (pglite, 3 PASS)**: Belle em aberto=700
+  (pago e a pagar fora), cliente sem títulos=0, Carla vendas mês=1000 (orçamento e mês anterior fora). Sem NULs, lock
+  íntegro. **Pendente:** Gui `git push` + relogar/conferir. **Nota:** colunas são read-only (agregação no SELECT, sem migration).
 - **2026-06-11** — **Cadastros: Produtos no padrão do mockup + grupo conferido.** **Produtos** ganhou
   **toolbar** (busca por nome + **chips** de categoria, incl. "Todas categorias", filtro client-side) e a
   coluna **Categoria** virou **pill colorido** (tint ciclando por categoria). Demais telas do grupo já
