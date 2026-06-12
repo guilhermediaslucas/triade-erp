@@ -1098,15 +1098,15 @@ Object.assign(es, { 'busca.abrir': 'Buscar', 'busca.placeholder': 'Buscar pantal
 // --- Refinamento: Toasts de confirmação ---
 Object.assign(pt, {
   'fin.toast_criado': 'Título lançado.', 'fin.toast_baixado': 'Título baixado.', 'fin.toast_cancelado': 'Baixa cancelada.',
-  'pedido.toast_status': 'Pedido movido para', 'pedido.toast_pix_pendente': 'Pedido aguardando baixa no Financeiro (Pix/Boleto). O setor financeiro foi notificado.', 'sep.toast_ok': 'Separação concluída e estoque baixado.',
+  'pedido.toast_status': 'Pedido movido para', 'pedido.toast_pix_pendente': 'Pedido aguardando baixa no Financeiro (Pix). O setor financeiro foi notificado.', 'sep.toast_ok': 'Separação concluída e estoque baixado.',
 });
 Object.assign(en, {
   'fin.toast_criado': 'Title created.', 'fin.toast_baixado': 'Title settled.', 'fin.toast_cancelado': 'Settlement reverted.',
-  'pedido.toast_status': 'Order moved to', 'pedido.toast_pix_pendente': 'Order awaiting receipt in Finance (Pix/Boleto). Finance has been notified.', 'sep.toast_ok': 'Picking done and stock deducted.',
+  'pedido.toast_status': 'Order moved to', 'pedido.toast_pix_pendente': 'Order awaiting receipt in Finance (Pix). Finance has been notified.', 'sep.toast_ok': 'Picking done and stock deducted.',
 });
 Object.assign(es, {
   'fin.toast_criado': 'Título creado.', 'fin.toast_baixado': 'Título pagado.', 'fin.toast_cancelado': 'Pago cancelado.',
-  'pedido.toast_status': 'Pedido movido a', 'pedido.toast_pix_pendente': 'Pedido esperando cobro en Finanzas (Pix/Boleto). Finanzas fue notificada.', 'sep.toast_ok': 'Preparación hecha y stock descontado.',
+  'pedido.toast_status': 'Pedido movido a', 'pedido.toast_pix_pendente': 'Pedido esperando cobro en Finanzas (Pix). Finanzas fue notificada.', 'sep.toast_ok': 'Preparación hecha y stock descontado.',
 });
 
 // --- Refinamento: Sino de notificações ---
