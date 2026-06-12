@@ -963,7 +963,9 @@ Object.assign(es, {
 Object.assign(pt, {
   'menu.inventario': 'Inventário',
   'cap.estoque.inventario.ver': 'Ver inventários', 'cap.estoque.inventario.gerenciar': 'Fazer inventário',
-  'inv.titulo': 'Inventário por leitor', 'inv.sub': 'Bipe as etiquetas presentes no estoque. O sistema compara com o esperado e aponta os faltantes.',
+  'inv.titulo': 'Inventário por leitor', 'inv.sub': 'Conferência do estoque por leitura de etiqueta, com registro',
+  'inv.iniciar': 'Iniciar inventário', 'inv.data_inv': 'Data do inventário', 'inv.iniciar_btn': 'Iniciar inventário',
+  'inv.realizados': 'Inventários realizados', 'inv.detalhe': 'Detalhe', 'inv.ver_faltantes': 'Ver faltantes',
   'inv.responsavel': 'Responsável', 'inv.bipe': 'Bipe as etiquetas contadas',
   'inv.finalizar': 'Finalizar contagem', 'inv.finalizar_baixar': 'Finalizar e baixar faltantes',
   'inv.resultado': 'Resultado da contagem', 'inv.esperadas': 'Esperadas', 'inv.encontradas': 'Encontradas',
@@ -975,7 +977,9 @@ Object.assign(pt, {
 Object.assign(en, {
   'menu.inventario': 'Inventory count',
   'cap.estoque.inventario.ver': 'View counts', 'cap.estoque.inventario.gerenciar': 'Run inventory count',
-  'inv.titulo': 'Inventory count by scanner', 'inv.sub': 'Scan the labels present in stock. The system compares with expected and flags the missing ones.',
+  'inv.titulo': 'Inventory count by scanner', 'inv.sub': 'Stock check by label scanning, with record',
+  'inv.iniciar': 'Start count', 'inv.data_inv': 'Count date', 'inv.iniciar_btn': 'Start count',
+  'inv.realizados': 'Completed counts', 'inv.detalhe': 'Detail', 'inv.ver_faltantes': 'View missing',
   'inv.responsavel': 'Responsible', 'inv.bipe': 'Scan the counted labels',
   'inv.finalizar': 'Finish count', 'inv.finalizar_baixar': 'Finish and write off missing',
   'inv.resultado': 'Count result', 'inv.esperadas': 'Expected', 'inv.encontradas': 'Found',
@@ -987,7 +991,9 @@ Object.assign(en, {
 Object.assign(es, {
   'menu.inventario': 'Inventario',
   'cap.estoque.inventario.ver': 'Ver inventarios', 'cap.estoque.inventario.gerenciar': 'Hacer inventario',
-  'inv.titulo': 'Inventario por lector', 'inv.sub': 'Escanea las etiquetas presentes en el stock. El sistema compara con lo esperado e indica los faltantes.',
+  'inv.titulo': 'Inventario por lector', 'inv.sub': 'Verificación del stock por lectura de etiqueta, con registro',
+  'inv.iniciar': 'Iniciar inventario', 'inv.data_inv': 'Fecha del inventario', 'inv.iniciar_btn': 'Iniciar inventario',
+  'inv.realizados': 'Inventarios realizados', 'inv.detalhe': 'Detalle', 'inv.ver_faltantes': 'Ver faltantes',
   'inv.responsavel': 'Responsable', 'inv.bipe': 'Escanea las etiquetas contadas',
   'inv.finalizar': 'Finalizar conteo', 'inv.finalizar_baixar': 'Finalizar y dar de baja faltantes',
   'inv.resultado': 'Resultado del conteo', 'inv.esperadas': 'Esperadas', 'inv.encontradas': 'Encontradas',
@@ -1726,7 +1732,7 @@ Object.assign(es, {
 Object.assign(pt, {
   'estoque.crumb': 'Estoque/Expedição / Posição de estoque', 'estoque.sub': 'Saldo por produto, lote, validade e localização',
   'entrada.crumb': 'Estoque/Expedição / Entrada de estoque', 'receb.crumb': 'Estoque/Expedição / Recebimento',
-  'perda.crumb': 'Estoque/Expedição / Baixa · perda de estoque', 'inv.crumb': 'Estoque/Expedição / Inventário',
+  'perda.crumb': 'Estoque/Expedição / Baixa · perda de estoque', 'inv.crumb': 'Estoque/Expedição / Inventário (leitor)',
   'expedicao.crumb': 'Estoque/Expedição / Pedidos',
   'fluxo.crumb': 'Financeiro / Fluxo de caixa', 'nota.crumb': 'Financeiro / Nota de entrada',
   'com.crumb': 'Financeiro / Controle de comissões', 'com.sub': 'Apuração por vendedor e fechamento de competência',
