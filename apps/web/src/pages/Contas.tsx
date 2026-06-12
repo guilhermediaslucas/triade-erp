@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { Link } from 'react-router-dom';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { useToast } from '../components/Toast.js';
-import { moeda } from '../lib/pedido.js';
+import { moeda, abrevMoeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel } from '../lib/excel.js';
 
@@ -12,7 +11,6 @@ type Tipo = 'receber' | 'pagar';
 interface Titulo { id: string; numero: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; vendedorNome: string | null; previsto: boolean; tipoDocumento: string | null; numeroDocumento: string | null; emissao: string | null; criadoEm: string; pagoEm: string | null; }
 interface TipoDoc { id: string; nome: string; ativo: boolean; }
 interface CatFin { id: string; nome: string; tipo: 'receita' | 'despesa'; ativo: boolean; }
-interface Fav { id: string; nome: string; ativo: boolean; }
 
 const hojeISO = () => new Date().toISOString().slice(0, 10);
 function situacao(t: Titulo): 'pago' | 'vencido' | 'aberto' {
@@ -39,6 +37,8 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   const [fSit, setFSit] = useState<'todos' | 'aberto' | 'vencido' | 'pago'>('todos');
   const [fQ, setFQ] = useState(''); const [fCat, setFCat] = useState('');
   const [fPessoa, setFPessoa] = useState('');
+  // Filtro vindo dos KPIs (clicar no card filtra a lista pelos lançamentos que o compõem).
+  const [fKpi, setFKpi] = useState<'' | 'aberto' | 'vence7' | 'vencido' | 'boletos'>('');
   const [fVde, setFVde] = useState(''); const [fVate, setFVate] = useState('');
   const [fMin, setFMin] = useState(''); const [fMax, setFMax] = useState('');
 
@@ -48,7 +48,8 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   const categorias = useMemo(() => Array.from(new Set(itens.map((x) => x.categoriaFinanceiraNome).filter(Boolean))) as string[], [itens]);
   const pessoas = useMemo(() => Array.from(new Set(itens.map((x) => x.pessoaNome).filter(Boolean))) as string[], [itens]);
   // "A vencer" do chip = aberto (situacao). 'aberto' interno é o em aberto não vencido.
-  const filtrados = useMemo(() => itens.filter((x) => {
+  // kpiBase = lista filtrada SEM o filtro de KPI (os KPIs são calculados sobre ela e não se autocolapsam).
+  const kpiBase = useMemo(() => itens.filter((x) => {
     if (fSit !== 'todos' && situacao(x) !== fSit) return false;
     if (fCat && (x.categoriaFinanceiraNome ?? '') !== fCat) return false;
     if (fPessoa && (x.pessoaNome ?? '') !== fPessoa) return false;
@@ -59,8 +60,19 @@ export function Contas({ tipo }: { tipo: Tipo }) {
     if (fQ) { const q = fQ.toLowerCase(); if (!((x.descricao || '').toLowerCase().includes(q) || (x.pessoaNome || '').toLowerCase().includes(q) || (x.numero || '').toLowerCase().includes(q))) return false; }
     return true;
   }), [itens, fSit, fCat, fPessoa, fVde, fVate, fMin, fMax, fQ]);
+  const ate7ISO = useMemo(() => { const d = new Date(); d.setDate(d.getDate() + 7); return d.toISOString().slice(0, 10); }, []);
+  const filtrados = useMemo(() => kpiBase.filter((x) => {
+    if (!fKpi) return true;
+    const h = hojeISO();
+    if (fKpi === 'aberto') return x.status === 'aberto';
+    if (fKpi === 'vence7') return x.status === 'aberto' && x.vencimento >= h && x.vencimento <= ate7ISO;
+    if (fKpi === 'vencido') return x.status === 'aberto' && x.vencimento < h;
+    if (fKpi === 'boletos') return x.status === 'aberto' && (x.tipoDocumento ?? '').toLowerCase().includes('bole');
+    return true;
+  }), [kpiBase, fKpi, ate7ISO]);
   const temFiltro = fSit !== 'todos' || !!fQ || !!fCat || !!fPessoa || !!fVde || !!fVate || !!fMin || !!fMax;
   function limparFiltros() { setFSit('todos'); setFQ(''); setFCat(''); setFPessoa(''); setFVde(''); setFVate(''); setFMin(''); setFMax(''); }
+  const toggleKpi = (k: 'aberto' | 'vence7' | 'vencido' | 'boletos') => setFKpi((cur) => (cur === k ? '' : k));
 
   const HIDEABLE = ['pessoa', 'cat', 'doc', 'emissao', 'venc', 'baixa', 'valor', 'vendedor', 'sit'] as const;
   const [colsAberto, setColsAberto] = useState(false);
@@ -71,7 +83,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   function toggleCol(k: string) {
     setColsOcultas((cur) => { const n = new Set(cur); n.has(k) ? n.delete(k) : n.add(k); try { localStorage.setItem('contas-cols-' + tipo, JSON.stringify([...n])); } catch { /* ignora */ } return n; });
   }
-  const colLabel = (k: string) => k === 'pessoa' ? (tipo === 'receber' ? 'fin.cliente' : 'fin.favorecido_cliente') : k === 'cat' ? 'catfin.titulo_s' : k === 'doc' ? 'fin.documento' : k === 'emissao' ? 'fin.emissao' : k === 'venc' ? 'fin.vencimento' : k === 'baixa' ? 'fin.baixa' : k === 'valor' ? 'fin.valor' : k === 'vendedor' ? 'fin.vendedor' : 'fin.situacao';
+  const colLabel = (k: string) => k === 'pessoa' ? (tipo === 'receber' ? 'fin.cliente' : 'fin.fornecedor') : k === 'cat' ? 'catfin.titulo_s' : k === 'doc' ? 'fin.documento' : k === 'emissao' ? 'fin.emissao' : k === 'venc' ? 'fin.vencimento' : k === 'baixa' ? 'fin.baixa' : k === 'valor' ? 'fin.valor' : k === 'vendedor' ? 'fin.vendedor' : 'fin.situacao';
 
   // Redimensionar colunas por arraste (largura persistida por tipo em localStorage).
   const [larguras, setLarguras] = useState<Record<string, number>>(() => {
@@ -100,16 +112,15 @@ export function Contas({ tipo }: { tipo: Tipo }) {
 
   const kpis = useMemo(() => {
     const h = hojeISO();
-    const d7 = new Date(); d7.setDate(d7.getDate() + 7); const ate7 = d7.toISOString().slice(0, 10);
-    const abertos = filtrados.filter((x) => x.status === 'aberto');
+    const abertos = kpiBase.filter((x) => x.status === 'aberto');
     const total = abertos.reduce((a, x) => a + x.valor, 0);
     const vencidos = abertos.filter((x) => x.vencimento < h);
     const totalVenc = vencidos.reduce((a, x) => a + x.valor, 0);
-    const v7 = abertos.filter((x) => x.vencimento >= h && x.vencimento <= ate7);
+    const v7 = abertos.filter((x) => x.vencimento >= h && x.vencimento <= ate7ISO);
     const totalVence7 = v7.reduce((a, x) => a + x.valor, 0);
     const boletos = abertos.filter((x) => (x.tipoDocumento ?? '').toLowerCase().includes('bole')).length;
     return { total, qtd: abertos.length, totalVenc, qtdVenc: vencidos.length, totalVence7, qtdVence7: v7.length, boletos };
-  }, [filtrados]);
+  }, [kpiBase, ate7ISO]);
 
   function exportar(fmt: 'csv' | 'xlsx') {
     const cab = [t('fin.descricao'), tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor'), t('catfin.titulo_s'), t('fin.vencimento'), t('fin.valor'), t('fin.situacao')];
@@ -150,20 +161,20 @@ export function Contas({ tipo }: { tipo: Tipo }) {
       <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t(tipo === 'receber' ? 'fin.receber' : 'fin.pagar')}</h1><div className="muted page-sub">{t('fin.sub')}</div></div></div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="kpi-row" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
-        <div className="card kpi-mock"><div className="kpi-ic tint-gr">{tipo === 'receber' ? '💰' : '💸'}</div><div className="kpi-body"><div className="kpi-lbl">{t(tipo === 'receber' ? 'fin.aberto_receber' : 'fin.aberto_pagar')}</div><div className="kpi-val">{moeda(kpis.total)}</div><div className="kpi-delta">{kpis.qtd} {t('fin.titulos')}</div></div></div>
-        <div className="card kpi-mock"><div className="kpi-ic tint-or">⏳</div><div className="kpi-body"><div className="kpi-lbl">{t('fin.vence7')}</div><div className="kpi-val">{moeda(kpis.totalVence7)}</div><div className="kpi-delta">{kpis.qtdVence7} {t('fin.titulos')}</div></div></div>
-        <div className="card kpi-mock"><div className="kpi-ic tint-rd">⚠️</div><div className="kpi-body"><div className="kpi-lbl">{t('fin.vencidos')}</div><div className="kpi-val">{moeda(kpis.totalVenc)}</div><div className="kpi-delta alerta">{kpis.qtdVenc} {t('fin.titulos')}</div></div></div>
-        <div className="card kpi-mock"><div className="kpi-ic tint-bl">📄</div><div className="kpi-body"><div className="kpi-lbl">{t('fin.boletos_abertos')}</div><div className="kpi-val">{kpis.boletos}</div><div className="kpi-delta">{t('fin.titulos')}</div></div></div>
+        <div className={'card kpi-mock clicavel' + (fKpi === 'aberto' ? ' kpi-ativo' : '')} role="button" tabIndex={0} onClick={() => toggleKpi('aberto')} onKeyDown={(e) => e.key === 'Enter' && toggleKpi('aberto')}><div className="kpi-ic tint-gr">{tipo === 'receber' ? '💰' : '💸'}</div><div className="kpi-body"><div className="kpi-lbl">{t(tipo === 'receber' ? 'fin.aberto_receber' : 'fin.aberto_pagar')}</div><div className="kpi-val">{abrevMoeda(kpis.total)}</div><div className="kpi-delta">{kpis.qtd} {t('fin.titulos')}</div></div></div>
+        <div className={'card kpi-mock clicavel' + (fKpi === 'vence7' ? ' kpi-ativo' : '')} role="button" tabIndex={0} onClick={() => toggleKpi('vence7')} onKeyDown={(e) => e.key === 'Enter' && toggleKpi('vence7')}><div className="kpi-ic tint-or">⏳</div><div className="kpi-body"><div className="kpi-lbl">{t('fin.vence7')}</div><div className="kpi-val">{abrevMoeda(kpis.totalVence7)}</div><div className="kpi-delta">{kpis.qtdVence7} {t('fin.titulos')}</div></div></div>
+        <div className={'card kpi-mock clicavel' + (fKpi === 'vencido' ? ' kpi-ativo' : '')} role="button" tabIndex={0} onClick={() => toggleKpi('vencido')} onKeyDown={(e) => e.key === 'Enter' && toggleKpi('vencido')}><div className="kpi-ic tint-rd">⚠️</div><div className="kpi-body"><div className="kpi-lbl">{t('fin.vencidos')}</div><div className="kpi-val">{abrevMoeda(kpis.totalVenc)}</div><div className="kpi-delta alerta">{kpis.qtdVenc} {t('fin.titulos')}</div></div></div>
+        <div className={'card kpi-mock clicavel' + (fKpi === 'boletos' ? ' kpi-ativo' : '')} role="button" tabIndex={0} onClick={() => toggleKpi('boletos')} onKeyDown={(e) => e.key === 'Enter' && toggleKpi('boletos')}><div className="kpi-ic tint-bl">📄</div><div className="kpi-body"><div className="kpi-lbl">{t('fin.boletos_abertos')}</div><div className="kpi-val">{kpis.boletos}</div><div className="kpi-delta">{t('fin.titulos')}</div></div></div>
       </div>
 
       <div className="contas-toolbar">
         <span className="busca-box-tb"><span className="lupa">🔎</span><input value={fQ} onChange={(e) => setFQ(e.target.value)} placeholder={t('fin.f_busca')} /></span>
-        <span className="muted" style={{ fontSize: 12 }}>{t('fin.f_situacao')}:</span>
+        <span className="muted" style={{ fontSize: 12 }}>{t('fin.status')}:</span>
         {(['todos', 'aberto', 'vencido', 'pago'] as const).map((s) => (
           <button key={s} className={'chip-f' + (fSit === s ? ' ativo' : '')} onClick={() => setFSit(s)}>{t(s === 'todos' ? 'fin.f_todos' : s === 'aberto' ? 'fin.a_vencer' : 'fin.' + s)}</button>
         ))}
         <select className="chip-sel" value={fPessoa} onChange={(e) => setFPessoa(e.target.value)}>
-          <option value="">{tipo === 'receber' ? t('fin.todos_clientes') : t('fin.todos_favorecidos')}</option>
+          <option value="">{tipo === 'receber' ? t('fin.todos_clientes') : t('fin.todos_fornecedores')}</option>
           {pessoas.map((p) => <option key={p} value={p}>{p}</option>)}
         </select>
         <button className="btn-ghost" onClick={() => setFiltroAberto((v) => !v)}>⚙ {t('fin.filtros')} {temFiltro ? '•' : '0'}</button>
@@ -171,9 +182,9 @@ export function Contas({ tipo }: { tipo: Tipo }) {
       </div>
 
       <div className="contas-acoes">
-        {pode && <button className="btn-primary" onClick={() => setNovo(true)}>+ {t('fin.novo')}</button>}
-        {pode && <button className="btn-acao verde" disabled={abertosSel.length === 0} onClick={() => setBaixaMassa(true)}>✓ {t('bulk.baixar')}{abertosSel.length > 0 ? ` (${abertosSel.length})` : ''}</button>}
-        {pode && <button className="btn-acao vermelho" disabled={sel.size === 0} onClick={excluirMassa}>🗑 {t('bulk.excluir')}</button>}
+        {pode && <button className="btn-primary" onClick={() => setNovo(true)}>+ {t('fin.novo_lanc_btn')}</button>}
+        {pode && <button className="btn-acao verde" disabled={abertosSel.length === 0} onClick={() => setBaixaMassa(true)}>✓ {t('fin.baixar_sel')}{abertosSel.length > 0 ? ` (${abertosSel.length})` : ''}</button>}
+        {pode && <button className="btn-acao vermelho" disabled={sel.size === 0} onClick={excluirMassa}>🗑 {t('fin.excluir_sel')}</button>}
         {pode && <button className="btn-ghost" disabled={!umAberto} onClick={() => umAberto && abrirParcelar(umAberto, 'replicar')}>＋ {t('parcelar.multiplicar')}</button>}
         {pode && <button className="btn-ghost" disabled={!umAberto} onClick={() => umAberto && abrirParcelar(umAberto, 'dividir')}>▤ {t('parcelar.acao')}</button>}
         {filtrados.length > 0 && <button className="btn-acao verde" onClick={() => exportar('xlsx')}>⬇ {t('rel.exportar_xlsx')}</button>}
@@ -221,7 +232,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
       <div className="card pad0"><table className="tabela">
         <thead><tr>
           {pode && <th style={{ width: 34 }}><input type="checkbox" checked={filtrados.length > 0 && sel.size === filtrados.length} onChange={toggleTodos} /></th>}
-          {thR('numero', t('fin.numero'))}{thR('descricao', t('fin.descricao'))}{!oc('cat') && thR('cat', t('catfin.titulo_s'))}{!oc('pessoa') && thR('pessoa', tipo === 'receber' ? t('fin.cliente') : t('fin.favorecido_cliente'))}{!oc('doc') && thR('doc', t('fin.documento'))}{!oc('emissao') && thR('emissao', t('fin.emissao'))}{!oc('venc') && thR('venc', t('fin.vencimento'))}{!oc('baixa') && thR('baixa', t('fin.baixa'))}{!oc('valor') && thR('valor', t('fin.valor'))}{!oc('vendedor') && thR('vendedor', t('fin.vendedor'))}{!oc('sit') && thR('sit', t('fin.situacao'))}<th style={{ textAlign: 'center' }}>{t('fin.previsto')}</th><th>{t('usuarios.acoes')}</th>
+          {thR('numero', t('fin.numero'))}{thR('descricao', t('fin.descricao'))}{!oc('cat') && thR('cat', t('catfin.titulo_s'))}{!oc('pessoa') && thR('pessoa', tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor'))}{!oc('doc') && thR('doc', t('fin.documento'))}{!oc('emissao') && thR('emissao', t('fin.emissao'))}{!oc('venc') && thR('venc', t('fin.vencimento'))}{!oc('baixa') && thR('baixa', t('fin.baixa'))}{!oc('valor') && thR('valor', t('fin.valor'))}{!oc('vendedor') && thR('vendedor', t('fin.vendedor'))}{!oc('sit') && thR('sit', t('fin.situacao'))}<th style={{ textAlign: 'center' }}>{t('fin.previsto')}</th><th>{t('usuarios.acoes')}</th>
         </tr></thead>
         <tbody>
           {filtrados.length === 0 && <tr><td colSpan={(pode ? 1 : 0) + 4 + HIDEABLE.filter((k) => !oc(k)).length} className="vazio">{t('common.nenhum')}</td></tr>}
@@ -296,32 +307,32 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
   const [numeroDoc, setNumeroDoc] = useState('');
   const [categoriaFinanceiraId, setCatId] = useState('');
   const [cats, setCats] = useState<CatFin[]>([]);
-  const [favorecidoId, setFavId] = useState('');
-  const [favs, setFavs] = useState<Fav[]>([]);
+  const [cadNomes, setCadNomes] = useState<string[]>([]);
+  const [novaPessoa, setNovaPessoa] = useState(false);
   const [previsto, setPrevisto] = useState(false);
   const [tipoDoc, setTipoDoc] = useState('');
   const [tiposDoc, setTiposDoc] = useState<TipoDoc[]>([]);
   const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
   const tipoCat = tipo === 'receber' ? 'receita' : 'despesa';
   const pagar = tipo === 'pagar';
+  // Lançamento a pagar puxa do cadastro de Fornecedores; a receber, de Clientes (não de Favorecidos).
+  function carregarCad() {
+    const ep = pagar ? '/fornecedores' : '/clientes';
+    const cap = pagar ? 'cadastros.fornecedor.listar' : 'cadastros.cliente.listar';
+    if (temCapability(cap)) api.get<{ nome: string; ativo?: boolean }[]>(ep, token!).then((l) => setCadNomes(l.filter((x) => x.ativo !== false).map((x) => x.nome))).catch(() => {});
+  }
   useEffect(() => {
     if (temCapability('cadastros.catfin.listar')) api.get<CatFin[]>('/categorias-financeiras', token!).then((l) => setCats(l.filter((c) => c.ativo && c.tipo === tipoCat))).catch(() => {});
-    if (pagar && temCapability('cadastros.favorecido.listar')) api.get<Fav[]>('/favorecidos', token!).then((l) => setFavs(l.filter((f) => f.ativo))).catch(() => {});
     if (temCapability('cadastros.tipodoc.listar')) api.get<TipoDoc[]>('/tipos-documento', token!).then((l) => setTiposDoc(l.filter((x) => x.ativo))).catch(() => {});
+    carregarCad();
     /* eslint-disable-next-line */
   }, []);
-  // Fornecedor/Favorecido: ao digitar/escolher um nome que bate com um favorecido cadastrado, vincula a FK.
-  function setPessoaEFav(nome: string) {
-    setPessoa(nome);
-    const f = favs.find((x) => x.nome.toLowerCase() === nome.trim().toLowerCase());
-    setFavId(f ? f.id : '');
-  }
   async function salvar() {
     setErro(null); setSalv(true);
     try {
       await api.post('/financeiro/' + tipo, {
         descricao, pessoaNome, valor: Number(valor), vencimento, emissao: emissao || null,
-        categoriaFinanceiraId: categoriaFinanceiraId || null, favorecidoId: favorecidoId || null,
+        categoriaFinanceiraId: categoriaFinanceiraId || null, favorecidoId: null,
         previsto, tipoDocumento: tipoDoc || null, numeroDocumento: numeroDoc || null,
       }, token!);
       onSalvo();
@@ -350,11 +361,11 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
       </div>
       <label className="campo">
         <span style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          {pagar ? t('fin.fornecedor_favorecido') : t('fin.cliente')}
-          <Link to={pagar ? '/cadastros/favorecidos' : '/cadastros/clientes'} className="btn-link" style={{ fontSize: 12 }}>+ {t('fin.cadastrar_novo')}</Link>
+          {pagar ? t('fin.fornecedor') : t('fin.cliente')}
+          <button type="button" className="btn-link" style={{ fontSize: 12 }} onClick={() => setNovaPessoa(true)}>+ {t('fin.cadastrar_novo')}</button>
         </span>
-        <input list={pagar ? 'dlFavsLanc' : undefined} value={pessoaNome} onChange={(e) => (pagar ? setPessoaEFav(e.target.value) : setPessoa(e.target.value))} placeholder={t('fin.pessoa_ph')} />
-        {pagar && <datalist id="dlFavsLanc">{favs.map((f) => <option key={f.id} value={f.nome} />)}</datalist>}
+        <input list="dlCadLanc" value={pessoaNome} onChange={(e) => setPessoa(e.target.value)} placeholder={t('fin.pessoa_ph')} />
+        <datalist id="dlCadLanc">{cadNomes.map((n) => <option key={n} value={n} />)}</datalist>
       </label>
       <div className="cores-grid">
         <label className="campo">{t('fin.emissao')}<input type="date" value={emissao} onChange={(e) => setEmissao(e.target.value)} /></label>
@@ -366,6 +377,42 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
       <div className="nota-info" style={{ marginTop: 12 }}>{t('fin.nota_conta')}</div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv} onClick={salvar}>{t('fin.salvar_lancamento')}</button></div>
+      {novaPessoa && <ModalNovaPessoa pagar={pagar} onFechar={() => setNovaPessoa(false)} onCriado={(nome) => { setNovaPessoa(false); setPessoa(nome); carregarCad(); }} />}
+    </div></div>
+  );
+}
+
+// Cadastro rápido de Fornecedor (pagar) ou Cliente (receber) sem sair do lançamento.
+function ModalNovaPessoa({ pagar, onFechar, onCriado }: { pagar: boolean; onFechar: () => void; onCriado: (nome: string) => void; }) {
+  const { token } = useAuth(); const { t } = useI18n();
+  const [nome, setNome] = useState(''); const [tipoPessoa, setTipoPessoa] = useState<'PJ' | 'PF'>('PJ');
+  const [documento, setDoc] = useState(''); const [telefone, setTel] = useState('');
+  const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
+  async function salvar() {
+    setErro(null); setSalv(true);
+    try {
+      const corpo = pagar
+        ? { nome, documento, telefone }
+        : { tipoPessoa, nome, documento, telefone, limiteCredito: 0 };
+      await api.post(pagar ? '/fornecedores' : '/clientes', corpo, token!);
+      onCriado(nome.trim());
+    } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
+  }
+  return (
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 420 }}>
+      <h2>{pagar ? t('fin.novo_fornecedor') : t('fin.novo_cliente')}</h2>
+      {!pagar && <label className="campo">{t('clientes.tipo')}
+        <select value={tipoPessoa} onChange={(e) => setTipoPessoa(e.target.value as 'PJ' | 'PF')}>
+          <option value="PJ">{t('clientes.pj')}</option><option value="PF">{t('clientes.pf')}</option>
+        </select>
+      </label>}
+      <label className="campo">{t('fin.nome')}<input value={nome} onChange={(e) => setNome(e.target.value)} autoFocus /></label>
+      <div className="cores-grid">
+        <label className="campo">{pagar || tipoPessoa === 'PJ' ? 'CNPJ' : 'CPF'}<input value={documento} onChange={(e) => setDoc(e.target.value)} placeholder={t('fin.doc_ph')} /></label>
+        <label className="campo">{t('pessoa.telefone')}<input value={telefone} onChange={(e) => setTel(e.target.value)} /></label>
+      </div>
+      {erro && <div className="alerta-erro">{t(erro)}</div>}
+      <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv || nome.trim().length < 2} onClick={salvar}>{t('common.salvar')}</button></div>
     </div></div>
   );
 }

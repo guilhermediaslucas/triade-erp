@@ -188,6 +188,26 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Lançamento usa Fornecedor (não Favorecido) + cadastro inline; KPIs do Contas clicáveis; base visual 14px.**
+  Pedido do Gui (3 frentes). **(A) Fornecedor no lançamento:** o modal a pagar passou a puxar do cadastro de
+  **Fornecedores** (`/fornecedores`); a receber, de **Clientes** (`/clientes`) — **não mais Favorecidos** (decisão do
+  Gui; o relatório de Reembolsos continua existindo, só não é mais alimentado por esses lançamentos). Campo vira
+  `input list` (datalist dos nomes ativos). O **"+ cadastrar novo"** abre um **mini-modal inline** (`ModalNovaPessoa`)
+  sobre o lançamento — fornecedor exige nome+documento; cliente exige tipo PF/PJ+nome+documento — salva via POST e
+  já seleciona, **sem sair da tela**. `favorecidoId` agora vai `null` no POST. Coluna/cabeçalho **"Favorecido/Cliente"
+  → "Fornecedor"** (pagar); filtro **"Todos favorecidos" → "Todos fornecedores"**. **(B) Paridade Contas:** os 4
+  **KPIs viraram clicáveis** (`fKpi`/`toggleKpi`; novo memo `kpiBase` calcula os KPIs sem se autocolapsar; `filtrados`
+  = `kpiBase` + filtro do KPI) — clicar filtra a lista (A pagar→abertos, Vence 7d, Vencidos, Boletos) e clicar de novo
+  limpa; KPIs com valor **abreviado** (`abrevMoeda`, R$ 4k); rótulos **"Novo lançamento"**, **"Baixar selecionados"**,
+  **"Excluir selecionados"**, **"Status"**. CSS `.kpi-mock.kpi-ativo`. **(C) Visual global:** o mockup define
+  `body{font-size:14px}` e o sistema **não definia** (herdava 16px) — adicionado **`font-size:14px` no body** +
+  `-webkit-font-smoothing`, que reduz a escala de **todas as telas** de uma vez (os demais tokens — cores, raio 14px,
+  fonte, tabela 14px/th 12px — já batiam). i18n `fin.novo_lanc_btn/baixar_sel/excluir_sel/status/todos_fornecedores/
+  nome/novo_fornecedor/novo_cliente/doc_ph` pt/en/es. **Validação:** **type-check/e2e NÃO rodaram** (sandbox);
+  hand-review; mudanças aditivas. **Pendente:** Gui `npm run build -w @triade/web` + commit+push. **ABERTO — varredura
+  visual tela-a-tela:** o Gui pediu fidelidade pixel a pixel em TODAS as telas; apliquei a **base (14px)** mas a
+  passada detalhada por tela precisa ser **iterativa com feedback visual** (não dá p/ renderizar as 40 telas no
+  sandbox) — fazer conforme o Gui apontar cada tela.
 - **2026-06-12** — **Paridade: modal "Novo lançamento financeiro" (Contas a receber/pagar) igual ao mockup.**
   O Gui apontou que a tela de lançamento estava mínima — na verdade os selects (Tipo doc/Categoria/Favorecido)
   só apareciam quando havia cadastro (empresa ISKINS vazia). O Gui escolheu o escopo **completo (com migration)**.
