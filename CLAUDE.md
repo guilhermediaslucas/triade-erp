@@ -176,6 +176,18 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Excel .xlsx formatado como relatório (igual ao mockup).** `apps/web/src/lib/excel.ts`
+  reescrito: `gerarXlsx(cabecalho, linhas, titulo?)` agora gera um **.xlsx real** com a mesma "cara de
+  relatório" do mockup — **título** (linha 1, mesclada, na cor da empresa via `--accent`), **subtítulo**
+  (linha 2, mesclada: "{empresa} · Gerado em {data}", empresa lida de `triade_sessao`), **cabeçalho** com
+  fundo na cor da empresa + texto branco/negrito, **linhas zebradas**, **colunas de valor** detectadas pelo
+  título (valor/total/saldo/preço/comissão/receber/pagar) com formato **`"R$" #,##0.00`** alinhado à direita,
+  e **linha de Total** somando as colunas de valor. `styles.xml` completo (numFmt 164, 5 fontes, fills da
+  paleta, borders, `cellStyles` Normal). `baixarExcel(nome, cab, linhas)` segue **mesma assinatura** — as
+  11+ telas (relatórios + Contas) não mudam; o `nome` vira o título humanizado. **Validação:** type-check
+  web verde + arquivo gerado aberto com **openpyxl** (A1=título, A2=empresa·data, A1:C1/A2:C2 mescladas,
+  header fill = cor da empresa + negrito, célula de valor `"R$"\ #,##0.00`, linha de Total = soma correta,
+  abre sem warning). **Pendente:** Gui `git push` + conferir no navegador (exportar um relatório/Contas).
 - **2026-06-11** — **Excel real (.xlsx) + frete por Google Maps.** **(1) .xlsx:** `apps/web/src/lib/excel.ts`
   reescrito — `gerarXlsx` monta um **OOXML/ZIP real** (método store, CRC32 próprio, partes mínimas +
   styles com cabeçalho em negrito) **sem dependência**; `baixarExcel` baixa `.xlsx` de verdade. As 11
