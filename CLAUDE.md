@@ -176,6 +176,18 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Dashboard reescrito fiel ao mockup + scroll-to-top + menu recolhido por padrão.** **(1)**
+  `ScrollToTop` (useLocation) rola a página ao topo a cada troca de rota — montado no `BrowserRouter`. **(2)** Menu
+  lateral passa a iniciar com **todos os grupos recolhidos** (só os nomes; clicar expande/recolhe). **(3) Dashboard**
+  na ordem/colunas do mockup: **linha c5** (Vendas do dia/semana/mês/ano + Clientes ativos, cada um com variação %
+  vs período anterior), **d2** (Faturamento, Vendas por categoria em donut, Top 5 produtos com valor+qtd), **c2**
+  (Top 5 clientes por valor e por pedidos), **d3** (Avisos+Ações), **d3** (Pedidos recentes + Fluxo de caixa do mês),
+  **d3** (Saldos bancários + Total em contas) e **rodapé** TRÍADE. Backend `SqlDashboardRepository.resumo` ampliado
+  (vendas dia/semana/mês/ano + deltas; clientesAtivos+delta; topProdutos com valor; topClientesValor/Qtd;
+  pedidosRecentes; fluxo do mês entradas/saídas/saldo). CSS do mockup portado (`.dash-row.c5/.c2/.d2/.d3`, `.kpi/.delta`,
+  `.lst/.it`, `.alerts`, `.quick`, `.fstat`, `.dash-footer`). i18n pt/en/es. **Validação:** type-check api+web verde +
+  **e2e Postgres real (pglite, 11 PASS)** das agregações + sem NULs + CSS balanceado (385/385) + lock íntegro.
+  **Pendente:** Gui `git push` + Ctrl+Shift+R. **Nota:** sem migration (tudo agregação no SELECT).
 - **2026-06-11** — **Colunas agregadas do mockup (Clientes/Vendedores) + Configurações.** **(1)** `SqlClienteRepository.listar`
   passou a trazer **`emAberto`** por cliente (subquery: Σ `titulo.valor` de `tipo='receber' AND status='aberto'`
   via `pedido.cliente_id`) → nova coluna **Em aberto** na lista de Clientes. **(2)** `SqlVendedorRepository.listar`
