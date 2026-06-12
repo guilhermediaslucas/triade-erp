@@ -532,20 +532,35 @@ Object.assign(es, {
 // --- Fase 4C: Baixa / perda ---
 Object.assign(pt, {
   'menu.baixa': 'Baixa / perda', 'cap.estoque.baixa.criar': 'Registrar baixa/perda de estoque',
-  'perda.titulo': 'Baixa / perda de estoque', 'perda.sub': 'Retira itens do estoque por vencimento, avaria, furto ou ajuste.',
-  'perda.motivo': 'Motivo', 'perda.confirmar': 'Confirmar baixa', 'perda.ok': 'Baixa registrada.', 'perda.max': 'Máximo',
+  'perda.titulo': 'Baixa / perda de estoque', 'perda.sub': 'Saída sem venda — vencimento, avaria, furto, inventário',
+  'perda.motivo': 'Motivo da perda', 'perda.confirmar': 'Confirmar baixa', 'perda.ok': 'Baixa registrada.', 'perda.max': 'Máximo',
+  'perda.qtd_baixar': 'Quantidade a baixar', 'perda.data_ocorrencia': 'Data da ocorrência', 'perda.responsavel': 'Responsável',
+  'perda.obs': 'Observação (opcional)', 'perda.obs_ph': 'Ex: caixa danificada no transporte interno',
+  'perda.produto_ph': 'Digite ou selecione', 'perda.lote_label': 'Lote (saldo · validade)', 'perda.sem_estoque': 'Produto sem estoque',
+  'perda.custo_un': 'Custo unitário (do lote)', 'perda.valor_perda': 'Valor da perda', 'perda.saldo_apos': 'Saldo do lote após baixa',
+  'perda.nota': 'A baixa reduz o saldo do lote e registra um movimento rastreável no histórico de perdas. Não afeta o financeiro.',
   'estoque.motivo_invalido': 'Informe o motivo da baixa.', 'estoque.lote_invalido': 'Lote não encontrado.',
 });
 Object.assign(en, {
   'menu.baixa': 'Write-off / loss', 'cap.estoque.baixa.criar': 'Register stock write-off/loss',
-  'perda.titulo': 'Stock write-off / loss', 'perda.sub': 'Removes items from stock due to expiry, damage, theft or adjustment.',
-  'perda.motivo': 'Reason', 'perda.confirmar': 'Confirm write-off', 'perda.ok': 'Write-off registered.', 'perda.max': 'Max',
+  'perda.titulo': 'Stock write-off / loss', 'perda.sub': 'Non-sale exit — expiry, damage, theft, inventory',
+  'perda.motivo': 'Loss reason', 'perda.confirmar': 'Confirm write-off', 'perda.ok': 'Write-off registered.', 'perda.max': 'Max',
+  'perda.qtd_baixar': 'Quantity to write off', 'perda.data_ocorrencia': 'Occurrence date', 'perda.responsavel': 'Responsible',
+  'perda.obs': 'Note (optional)', 'perda.obs_ph': 'E.g. box damaged in internal transport',
+  'perda.produto_ph': 'Type or select', 'perda.lote_label': 'Batch (balance · expiry)', 'perda.sem_estoque': 'Product out of stock',
+  'perda.custo_un': 'Unit cost (of batch)', 'perda.valor_perda': 'Loss value', 'perda.saldo_apos': 'Batch balance after write-off',
+  'perda.nota': 'The write-off reduces the batch balance and records a traceable movement in the loss history. Does not affect finance.',
   'estoque.motivo_invalido': 'Provide a reason.', 'estoque.lote_invalido': 'Batch not found.',
 });
 Object.assign(es, {
   'menu.baixa': 'Baja / pérdida', 'cap.estoque.baixa.criar': 'Registrar baja/pérdida de stock',
-  'perda.titulo': 'Baja / pérdida de stock', 'perda.sub': 'Retira ítems del stock por caducidad, avería, robo o ajuste.',
-  'perda.motivo': 'Motivo', 'perda.confirmar': 'Confirmar baja', 'perda.ok': 'Baja registrada.', 'perda.max': 'Máximo',
+  'perda.titulo': 'Baja / pérdida de stock', 'perda.sub': 'Salida sin venta — caducidad, avería, robo, inventario',
+  'perda.motivo': 'Motivo de la pérdida', 'perda.confirmar': 'Confirmar baja', 'perda.ok': 'Baja registrada.', 'perda.max': 'Máximo',
+  'perda.qtd_baixar': 'Cantidad a dar de baja', 'perda.data_ocorrencia': 'Fecha del hecho', 'perda.responsavel': 'Responsable',
+  'perda.obs': 'Observación (opcional)', 'perda.obs_ph': 'Ej: caja dañada en transporte interno',
+  'perda.produto_ph': 'Escribe o selecciona', 'perda.lote_label': 'Lote (saldo · caducidad)', 'perda.sem_estoque': 'Producto sin stock',
+  'perda.custo_un': 'Costo unitario (del lote)', 'perda.valor_perda': 'Valor de la pérdida', 'perda.saldo_apos': 'Saldo del lote tras la baja',
+  'perda.nota': 'La baja reduce el saldo del lote y registra un movimiento rastreable en el historial de pérdidas. No afecta las finanzas.',
   'estoque.motivo_invalido': 'Indica el motivo.', 'estoque.lote_invalido': 'Lote no encontrado.',
 });
 
@@ -1711,7 +1726,7 @@ Object.assign(es, {
 Object.assign(pt, {
   'estoque.crumb': 'Estoque/Expedição / Posição de estoque', 'estoque.sub': 'Saldo por produto, lote, validade e localização',
   'entrada.crumb': 'Estoque/Expedição / Entrada de estoque', 'receb.crumb': 'Estoque/Expedição / Recebimento',
-  'perda.crumb': 'Estoque/Expedição / Baixa / perda', 'inv.crumb': 'Estoque/Expedição / Inventário',
+  'perda.crumb': 'Estoque/Expedição / Baixa · perda de estoque', 'inv.crumb': 'Estoque/Expedição / Inventário',
   'expedicao.crumb': 'Estoque/Expedição / Pedidos',
   'fluxo.crumb': 'Financeiro / Fluxo de caixa', 'nota.crumb': 'Financeiro / Nota de entrada',
   'com.crumb': 'Financeiro / Controle de comissões', 'com.sub': 'Apuração por vendedor e fechamento de competência',
