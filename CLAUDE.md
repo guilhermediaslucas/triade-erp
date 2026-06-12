@@ -176,6 +176,14 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Cadastros: Produtos no padrão do mockup + grupo conferido.** **Produtos** ganhou
+  **toolbar** (busca por nome + **chips** de categoria, incl. "Todas categorias", filtro client-side) e a
+  coluna **Categoria** virou **pill colorido** (tint ciclando por categoria). Demais telas do grupo já
+  estavam alinhadas (crumb + toolbar/chips + colunas certas): Clientes (Cidade), Vendedores (Região/Meta/
+  Comissão), Fornecedores, Favorecidos, Motoboys, Categorias, Marcas, Condições, Cat. financeiras, Contas
+  correntes. **Lacunas restantes = backend** (agregação): coluna **Em aberto** (Clientes, Σ recebíveis em
+  aberto) e **Vendas (mês)** (Vendedores) — ficam como evolução. **Validação:** type-check web verde, sem
+  NULs, lock íntegro. **Pendente:** Gui `git push` + conferir.
 - **2026-06-11** — **Relatórios: KPIs com ícone colorido (padrão do mockup).** Os 7 relatórios com KPIs de
   card único por linha (Categorias, DRE, Estoque parado, Inventários, Perdas, Validade, Vendas) passaram a
   combinar `kpi-card kpi-mock` com um **tile de ícone** colorido (tint-gr/or/pp/bl/rd conforme a semântica:
