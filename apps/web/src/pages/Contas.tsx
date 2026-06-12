@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
@@ -8,7 +9,7 @@ import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel } from '../lib/excel.js';
 
 type Tipo = 'receber' | 'pagar';
-interface Titulo { id: string; numero: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; vendedorNome: string | null; previsto: boolean; tipoDocumento: string | null; criadoEm: string; pagoEm: string | null; }
+interface Titulo { id: string; numero: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; vendedorNome: string | null; previsto: boolean; tipoDocumento: string | null; numeroDocumento: string | null; emissao: string | null; criadoEm: string; pagoEm: string | null; }
 interface TipoDoc { id: string; nome: string; ativo: boolean; }
 interface CatFin { id: string; nome: string; tipo: 'receita' | 'despesa'; ativo: boolean; }
 interface Fav { id: string; nome: string; ativo: boolean; }
@@ -232,7 +233,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
               {!oc('cat') && <td>{tt.categoriaFinanceiraNome ?? '—'}</td>}
               {!oc('pessoa') && <td>{tt.pessoaNome ?? '—'}</td>}
               {!oc('doc') && <td>{tt.tipoDocumento ?? '—'}</td>}
-              {!oc('emissao') && <td>{tt.criadoEm ? new Date(tt.criadoEm).toLocaleDateString('pt-BR') : '—'}</td>}
+              {!oc('emissao') && <td>{(tt.emissao || tt.criadoEm) ? new Date((tt.emissao ? tt.emissao + 'T00:00:00' : tt.criadoEm)).toLocaleDateString('pt-BR') : '—'}</td>}
               {!oc('venc') && <td>{new Date(tt.vencimento + 'T00:00:00').toLocaleDateString('pt-BR')}</td>}
               {!oc('baixa') && <td>{tt.pagoEm ? new Date(tt.pagoEm).toLocaleDateString('pt-BR') : '—'}</td>}
               {!oc('valor') && <td>{moeda(tt.valor)}</td>}
@@ -279,6 +280,8 @@ function ModalVerTitulo({ tipo, titulo, onFechar }: { tipo: Tipo; titulo: Titulo
       {titulo.status === 'pago' && linha(t('pedidos.forma_pgto'), titulo.formaPagamento ?? '—')}
       {linha(t('fin.previsto'), titulo.previsto ? t('common.sim') : t('common.nao'))}
       {titulo.tipoDocumento && linha(t('tipodoc.titulo_s'), titulo.tipoDocumento)}
+      {titulo.numeroDocumento && linha(t('fin.num_documento'), titulo.numeroDocumento)}
+      {titulo.emissao && linha(t('fin.emissao'), fmtData(titulo.emissao))}
       {linha(t('fin.origem'), titulo.origem === 'pedido' ? t('fin.do_pedido') : titulo.origem)}
       <div className="modal-acoes"><button className="btn-primary" onClick={onFechar}>{t('common.fechar')}</button></div>
     </div></div>
@@ -289,6 +292,8 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
   const { token, temCapability } = useAuth(); const { t } = useI18n();
   const [descricao, setDescricao] = useState(''); const [pessoaNome, setPessoa] = useState('');
   const [valor, setValor] = useState(''); const [vencimento, setVenc] = useState('');
+  const [emissao, setEmissao] = useState(hojeISO());
+  const [numeroDoc, setNumeroDoc] = useState('');
   const [categoriaFinanceiraId, setCatId] = useState('');
   const [cats, setCats] = useState<CatFin[]>([]);
   const [favorecidoId, setFavId] = useState('');
@@ -298,46 +303,69 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
   const [tiposDoc, setTiposDoc] = useState<TipoDoc[]>([]);
   const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
   const tipoCat = tipo === 'receber' ? 'receita' : 'despesa';
+  const pagar = tipo === 'pagar';
   useEffect(() => {
     if (temCapability('cadastros.catfin.listar')) api.get<CatFin[]>('/categorias-financeiras', token!).then((l) => setCats(l.filter((c) => c.ativo && c.tipo === tipoCat))).catch(() => {});
-    if (tipo === 'pagar' && temCapability('cadastros.favorecido.listar')) api.get<Fav[]>('/favorecidos', token!).then((l) => setFavs(l.filter((f) => f.ativo))).catch(() => {});
+    if (pagar && temCapability('cadastros.favorecido.listar')) api.get<Fav[]>('/favorecidos', token!).then((l) => setFavs(l.filter((f) => f.ativo))).catch(() => {});
     if (temCapability('cadastros.tipodoc.listar')) api.get<TipoDoc[]>('/tipos-documento', token!).then((l) => setTiposDoc(l.filter((x) => x.ativo))).catch(() => {});
     /* eslint-disable-next-line */
   }, []);
+  // Fornecedor/Favorecido: ao digitar/escolher um nome que bate com um favorecido cadastrado, vincula a FK.
+  function setPessoaEFav(nome: string) {
+    setPessoa(nome);
+    const f = favs.find((x) => x.nome.toLowerCase() === nome.trim().toLowerCase());
+    setFavId(f ? f.id : '');
+  }
   async function salvar() {
     setErro(null); setSalv(true);
-    try { await api.post('/financeiro/' + tipo, { descricao, pessoaNome, valor: Number(valor), vencimento, categoriaFinanceiraId: categoriaFinanceiraId || null, favorecidoId: favorecidoId || null, previsto, tipoDocumento: tipoDoc || null }, token!); onSalvo(); }
+    try {
+      await api.post('/financeiro/' + tipo, {
+        descricao, pessoaNome, valor: Number(valor), vencimento, emissao: emissao || null,
+        categoriaFinanceiraId: categoriaFinanceiraId || null, favorecidoId: favorecidoId || null,
+        previsto, tipoDocumento: tipoDoc || null, numeroDocumento: numeroDoc || null,
+      }, token!);
+      onSalvo();
+    }
     catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
   return (
     <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()}>
-      <h2>{t('fin.novo')}</h2>
-      <label className="campo">{t('fin.descricao')}<input value={descricao} onChange={(e) => setDescricao(e.target.value)} autoFocus /></label>
-      <label className="campo">{tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor')}<input value={pessoaNome} onChange={(e) => setPessoa(e.target.value)} /></label>
-      {favs.length > 0 && <label className="campo">{t('fin.favorecido')}
-        <select value={favorecidoId} onChange={(e) => { const id = e.target.value; setFavId(id); const f = favs.find((x) => x.id === id); if (f && !pessoaNome.trim()) setPessoa(f.nome); }}>
-          <option value="">{t('fin.sem_favorecido')}</option>{favs.map((f) => <option key={f.id} value={f.id}>{f.nome}</option>)}
-        </select>
-      </label>}
-      {cats.length > 0 && <label className="campo">{t('catfin.titulo_s')}
-        <select value={categoriaFinanceiraId} onChange={(e) => setCatId(e.target.value)}>
-          <option value="">{t('catfin.sem')}</option>{cats.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
-        </select>
-      </label>}
-      {tiposDoc.length > 0 && <label className="campo">{t('tipodoc.titulo_s')}
-        <select value={tipoDoc} onChange={(e) => setTipoDoc(e.target.value)}>
-          <option value="">{t('tipodoc.sem')}</option>{tiposDoc.map((d) => <option key={d.id} value={d.nome}>{d.nome}</option>)}
-        </select>
-      </label>}
+      <h2>{t('fin.novo_lancamento')}</h2>
+      <label className="campo">{t('fin.descricao')}<input value={descricao} onChange={(e) => setDescricao(e.target.value)} placeholder={t('fin.descricao_ph')} autoFocus /></label>
       <div className="cores-grid">
-        <label className="campo">{t('fin.valor')}<input type="number" min="0" step="0.01" value={valor} onChange={(e) => setValor(e.target.value)} /></label>
+        <label className="campo">{t('tipodoc.titulo_s')}
+          <select value={tipoDoc} onChange={(e) => setTipoDoc(e.target.value)}>
+            <option value="">{t('tipodoc.sem')}</option>{tiposDoc.map((d) => <option key={d.id} value={d.nome}>{d.nome}</option>)}
+          </select>
+        </label>
+        <label className="campo">{t('fin.num_documento')}<input value={numeroDoc} onChange={(e) => setNumeroDoc(e.target.value)} placeholder={t('fin.num_documento_ph')} /></label>
+      </div>
+      <div className="cores-grid">
+        <label className="campo">{t('catfin.titulo_s')}
+          <select value={categoriaFinanceiraId} onChange={(e) => setCatId(e.target.value)}>
+            <option value="">{t('catfin.sem')}</option>{cats.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
+          </select>
+        </label>
+        <label className="campo">{t('fin.valor')}<input type="number" min="0" step="0.01" value={valor} onChange={(e) => setValor(e.target.value)} placeholder="0,00" /></label>
+      </div>
+      <label className="campo">
+        <span style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          {pagar ? t('fin.fornecedor_favorecido') : t('fin.cliente')}
+          <Link to={pagar ? '/cadastros/favorecidos' : '/cadastros/clientes'} className="btn-link" style={{ fontSize: 12 }}>+ {t('fin.cadastrar_novo')}</Link>
+        </span>
+        <input list={pagar ? 'dlFavsLanc' : undefined} value={pessoaNome} onChange={(e) => (pagar ? setPessoaEFav(e.target.value) : setPessoa(e.target.value))} placeholder={t('fin.pessoa_ph')} />
+        {pagar && <datalist id="dlFavsLanc">{favs.map((f) => <option key={f.id} value={f.nome} />)}</datalist>}
+      </label>
+      <div className="cores-grid">
+        <label className="campo">{t('fin.emissao')}<input type="date" value={emissao} onChange={(e) => setEmissao(e.target.value)} /></label>
         <label className="campo">{t('fin.vencimento')}<input type="date" value={vencimento} onChange={(e) => setVenc(e.target.value)} /></label>
       </div>
       <label className="login-lembrar" style={{ marginTop: 4 }}>
         <input type="checkbox" checked={previsto} onChange={(e) => setPrevisto(e.target.checked)} /> {t('fin.previsto_label')}
       </label>
+      <div className="nota-info" style={{ marginTop: 12 }}>{t('fin.nota_conta')}</div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
-      <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv} onClick={salvar}>{t('common.salvar')}</button></div>
+      <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv} onClick={salvar}>{t('fin.salvar_lancamento')}</button></div>
     </div></div>
   );
 }

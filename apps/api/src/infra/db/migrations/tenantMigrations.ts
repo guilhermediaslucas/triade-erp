@@ -502,4 +502,12 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".preco_cliente ADD COLUMN IF NOT EXISTS ate date;
     `,
   },
+  {
+    // Lançamento financeiro: nº do documento (NF/boleto) + data de emissão (espelha o mockup).
+    nome: '035_titulo_documento_emissao',
+    sql: (s) => `
+      ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS numero_documento text;
+      ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS emissao date;
+    `,
+  },
 ];

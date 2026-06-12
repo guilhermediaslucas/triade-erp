@@ -100,12 +100,16 @@ export class FinanceiroService {
     if (!Number.isFinite(valor) || valor <= 0) throw new ErroAplicacao('financeiro.valor_invalido', 400);
     const vencimento = (e?.vencimento && String(e.vencimento).trim()) || '';
     if (!/^\d{4}-\d{2}-\d{2}$/.test(vencimento)) throw new ErroAplicacao('financeiro.vencimento_invalido', 400);
+    const emissao = (e?.emissao && String(e.emissao).trim()) || null;
+    if (emissao && !/^\d{4}-\d{2}-\d{2}$/.test(emissao)) throw new ErroAplicacao('financeiro.vencimento_invalido', 400);
     return this.repo.criar(schema, {
       tipo, descricao: String(e.descricao).trim(), pessoaNome: (e?.pessoaNome && String(e.pessoaNome).trim()) || null,
       valor, vencimento, categoriaFinanceiraId: (e?.categoriaFinanceiraId && String(e.categoriaFinanceiraId).trim()) || null,
       favorecidoId: (e?.favorecidoId && String(e.favorecidoId).trim()) || null,
       previsto: e?.previsto === true,
       tipoDocumento: (e?.tipoDocumento && String(e.tipoDocumento).trim()) || null,
+      numeroDocumento: (e?.numeroDocumento && String(e.numeroDocumento).trim()) || null,
+      emissao,
     }, 'manual', null);
   }
 

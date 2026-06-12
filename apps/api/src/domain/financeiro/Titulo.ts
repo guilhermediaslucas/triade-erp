@@ -10,6 +10,8 @@ export interface Titulo {
   vendedorNome: string | null;     // vendedor do pedido vinculado (quando origem = pedido)
   previsto: boolean;   // lançamento previsto (provisão): mais claro na lista e NÃO pode ser baixado
   tipoDocumento: string | null;   // ex.: NF-e, Boleto, Fatura (cadastro Tipos de documento)
+  numeroDocumento: string | null; // nº do documento (NF/boleto)
+  emissao: string | null;         // data de emissão (ISO YYYY-MM-DD)
   criadoEm: string;
 }
 export interface NovoTitulo {
@@ -18,6 +20,8 @@ export interface NovoTitulo {
   favorecidoId?: string | null;
   previsto?: boolean;
   tipoDocumento?: string | null;
+  numeroDocumento?: string | null;
+  emissao?: string | null;
 }
 export interface MovimentoFluxo {
   data: string; tipo: 'entrada' | 'saida'; descricao: string; pessoaNome: string | null; valor: number; formaPagamento: string | null;

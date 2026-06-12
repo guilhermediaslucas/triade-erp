@@ -188,6 +188,31 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Paridade: modal "Novo lançamento financeiro" (Contas a receber/pagar) igual ao mockup.**
+  O Gui apontou que a tela de lançamento estava mínima — na verdade os selects (Tipo doc/Categoria/Favorecido)
+  só apareciam quando havia cadastro (empresa ISKINS vazia). O Gui escolheu o escopo **completo (com migration)**.
+  Migration tenant **035** (`titulo` += `numero_documento` text, `emissao` date). **Backend:** `Titulo`/`NovoTitulo`
+  += `numeroDocumento`/`emissao`; `SqlTituloRepository.map` lê os campos e `criar` insere (emissao **default
+  CURRENT_DATE** via COALESCE); `FinanceiroService.criar` valida emissão ISO (opcional) e repassa. **Frontend
+  (`Contas.tsx` `ModalNovo`):** título "Novo lançamento financeiro" + botão "Salvar lançamento"; grid 2 colunas do
+  mockup (**Tipo de documento | Nº do documento**, **Categoria | Valor**, **Emissão | Vencimento**); selects
+  **sempre visíveis** (Categoria e Tipo doc seguem **cadastro-based**, não lista fixa — categoria é FK usada na DRE,
+  trocar quebraria); campo **Fornecedor / Favorecido** com **datalist** de favorecidos (digita ou escolhe → vincula
+  a FK por nome) + link **"+ cadastrar novo"**; **nota** sobre a conta bancária ser definida na baixa; checkbox
+  Previsto mantido. Coluna **Emissão** da lista passou a usar `emissao ?? criadoEm`; detalhe (duplo-clique) mostra
+  Nº documento + Emissão. i18n `fin.novo_lancamento/salvar_lancamento/num_documento/fornecedor_favorecido/
+  cadastrar_novo/nota_conta` pt/en/es. **Decisão:** Tipo doc e Categoria **continuam do cadastro** (não lista fixa
+  como o mockup) p/ não quebrar DRE/relatórios — combinado com o Gui. **Validação:** **type-check/e2e NÃO rodaram**
+  (sandbox) — hand-review; mudança aditiva (colunas nullable, emissao default hoje). **Pendente:** Gui rodar
+  `npm install` (link do shared) + `npm run build -w @triade/web` + commit+push → Render aplica a migration 035 no
+  boot + relogar.
+- **2026-06-12** — **INCIDENTE/LIÇÃO: build local quebrou com `Cannot find module '@triade/shared'` (5×) +
+  cascatas (implicit any no Perfis, "possibly undefined" no I18nContext).** Causa: o `node_modules` (gitignored)
+  ficou **sem o link do workspace** `@triade/shared` → o módulo não resolve → seus exports viram `any`, disparando
+  TS7006/TS2532 em vários arquivos. **Não era erro de código.** **Correção:** `npm install` na raiz recria o link;
+  todos os 7 erros somem juntos. **Regra:** depois de clonar/limpar node_modules, sempre `npm install` na raiz
+  antes de `npm run build -w @triade/web`. O **Cloudflare faz install limpo**, então buildou normal mesmo quando o
+  local falhou. O tsc do sandbox é inútil aqui (mount trunca arquivos → erros falsos de "unterminated string").
 - **2026-06-12** — **Paridade: Tabela de preço — modo "Por cliente" com Categoria + Vigência (Fixo/Período).**
   O Gui apontou divergência; mostrei o comparativo e ele escolheu o escopo **completo (com período)**. O modo
   **base** já estava fiel; faltava o **modo Por cliente** que no mockup tem colunas **Categoria** e **Vigência**

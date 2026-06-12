@@ -22,6 +22,8 @@ function map(r: any): Titulo {
     vendedorNome: r.vendedor_nome ?? null,
     previsto: r.previsto === true,
     tipoDocumento: r.tipo_documento ?? null,
+    numeroDocumento: r.numero_documento ?? null,
+    emissao: r.emissao ? dataISO(r.emissao) : null,
     criadoEm: iso(r.criado_em)!,
   };
 }
@@ -87,9 +89,9 @@ export class SqlTituloRepository implements TituloRepository {
   async criar(schema: string, t: NovoTitulo, origem: string, pedidoId: string | null): Promise<string> {
     const s = validarSchema(schema); const id = randomUUID();
     await this.ds.query(
-      `INSERT INTO "${s}".titulo (id, numero, tipo, descricao, pessoa_nome, valor, vencimento, origem, pedido_id, categoria_financeira_id, favorecido_id, previsto, tipo_documento)
-       VALUES ($1, nextval('"${s}".titulo_numero_seq'), $2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
-      [id, t.tipo, t.descricao, t.pessoaNome, t.valor, t.vencimento, origem, pedidoId, t.categoriaFinanceiraId ?? null, t.favorecidoId ?? null, t.previsto === true, t.tipoDocumento ?? null]);
+      `INSERT INTO "${s}".titulo (id, numero, tipo, descricao, pessoa_nome, valor, vencimento, origem, pedido_id, categoria_financeira_id, favorecido_id, previsto, tipo_documento, numero_documento, emissao)
+       VALUES ($1, nextval('"${s}".titulo_numero_seq'), $2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13, COALESCE($14, CURRENT_DATE))`,
+      [id, t.tipo, t.descricao, t.pessoaNome, t.valor, t.vencimento, origem, pedidoId, t.categoriaFinanceiraId ?? null, t.favorecidoId ?? null, t.previsto === true, t.tipoDocumento ?? null, t.numeroDocumento ?? null, t.emissao ?? null]);
     return id;
   }
   async baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null): Promise<void> {
