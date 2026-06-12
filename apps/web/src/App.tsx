@@ -50,6 +50,7 @@ import { Conciliacao } from './pages/Conciliacao.js';
 import { ContasCorrentes } from './pages/ContasCorrentes.js';
 import { CategoriasFinanceiras } from './pages/CategoriasFinanceiras.js';
 import { Layout } from './components/Layout.js';
+import { ScrollToTop } from './components/ScrollToTop.js';
 import { ProtectedRoute } from './components/ProtectedRoute.js';
 
 function Protegida({ children, cap, soSuper }: { children: ReactNode; cap?: string; soSuper?: boolean }) {
