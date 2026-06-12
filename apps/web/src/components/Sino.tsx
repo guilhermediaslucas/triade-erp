@@ -69,6 +69,7 @@ export function Sino() {
                 <span className="sino-qtd">{g.qtd}</span>
               </button>
             ))}
+            <button className="sino-item sino-todas" onClick={() => ir('/notificacoes')}>{t('sino.ver_todas')} →</button>
           </div>
         </>
       )}

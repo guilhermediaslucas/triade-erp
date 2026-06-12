@@ -296,6 +296,7 @@ a { text-decoration: none; color: inherit; }
 .sino-cab { padding: 12px 14px; font-weight: 700; border-bottom: 1px solid var(--borda, #e2e8f0); font-size: 14px; }
 .sino-vazio { padding: 20px 14px; color: var(--muted, #64748b); text-align: center; font-size: 14px; }
 .sino-item { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: transparent; border: none; padding: 11px 14px; cursor: pointer; font-size: 14px; color: var(--texto, #1e293b); border-bottom: 1px solid var(--borda, #f1f5f9); }
+.sino-todas { justify-content: center; color: var(--accent); font-weight: 600; border-bottom: none; }
 .sino-item:hover { background: #00000008; }
 .sino-ic { width: 22px; text-align: center; }
 .sino-lbl { flex: 1; }

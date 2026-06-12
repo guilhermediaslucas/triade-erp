@@ -1122,9 +1122,9 @@ Object.assign(es, {
 });
 
 // --- Refinamento: Sino de notificações ---
-Object.assign(pt, { 'sino.titulo': 'Notificações', 'sino.vazio': 'Nada pendente. Tudo em dia! 🎉', 'sino.titulos_vencidos': 'Títulos a receber vencidos', 'sino.lotes_vencendo': 'Lotes vencendo (30 d)', 'sino.estoque_baixo': 'Produtos com estoque baixo', 'sino.pendencia_baixa': 'Pedidos aguardando baixa (Pix/Boleto)' });
-Object.assign(en, { 'sino.titulo': 'Notifications', 'sino.vazio': 'Nothing pending. All caught up! 🎉', 'sino.titulos_vencidos': 'Overdue receivables', 'sino.lotes_vencendo': 'Lots expiring (30 d)', 'sino.estoque_baixo': 'Low-stock products', 'sino.pendencia_baixa': 'Orders awaiting receipt (Pix/Boleto)' });
-Object.assign(es, { 'sino.titulo': 'Notificaciones', 'sino.vazio': 'Nada pendiente. ¡Todo al día! 🎉', 'sino.titulos_vencidos': 'Cobranzas vencidas', 'sino.lotes_vencendo': 'Lotes por vencer (30 d)', 'sino.estoque_baixo': 'Productos con stock bajo', 'sino.pendencia_baixa': 'Pedidos esperando cobro (Pix/Boleto)' });
+Object.assign(pt, { 'sino.titulo': 'Notificações', 'sino.vazio': 'Nada pendente. Tudo em dia! 🎉', 'sino.titulos_vencidos': 'Títulos a receber vencidos', 'sino.lotes_vencendo': 'Lotes vencendo (30 d)', 'sino.estoque_baixo': 'Produtos com estoque baixo', 'sino.pendencia_baixa': 'Pedidos aguardando baixa (Pix/Boleto)', 'sino.ver_todas': 'Ver todas', 'notif.crumb': 'Notificações', 'notif.titulo': 'Notificações', 'notif.sub': 'Avisos e pendências da operação', 'notif.vazio': 'Nada pendente. Tudo em dia!' });
+Object.assign(en, { 'sino.titulo': 'Notifications', 'sino.vazio': 'Nothing pending. All caught up! 🎉', 'sino.titulos_vencidos': 'Overdue receivables', 'sino.lotes_vencendo': 'Lots expiring (30 d)', 'sino.estoque_baixo': 'Low-stock products', 'sino.pendencia_baixa': 'Orders awaiting receipt (Pix/Boleto)', 'sino.ver_todas': 'See all', 'notif.crumb': 'Notifications', 'notif.titulo': 'Notifications', 'notif.sub': 'Operation alerts and pending items', 'notif.vazio': 'Nothing pending. All caught up!' });
+Object.assign(es, { 'sino.titulo': 'Notificaciones', 'sino.vazio': 'Nada pendiente. ¡Todo al día! 🎉', 'sino.titulos_vencidos': 'Cobranzas vencidas', 'sino.lotes_vencendo': 'Lotes por vencer (30 d)', 'sino.estoque_baixo': 'Productos con stock bajo', 'sino.pendencia_baixa': 'Pedidos esperando cobro (Pix/Boleto)', 'sino.ver_todas': 'Ver todas', 'notif.crumb': 'Notificaciones', 'notif.titulo': 'Notificaciones', 'notif.sub': 'Avisos y pendientes de la operación', 'notif.vazio': '¡Nada pendiente. Todo al día!' });
 
 // --- Refinamento: Ações em massa ---
 Object.assign(pt, {
@@ -1789,6 +1789,10 @@ Object.assign(pt, {
   'menu.rel_pedidos': 'Pedidos', 'relped.crumb': 'Relatórios / Pedidos', 'relped.titulo': 'Relatório de pedidos',
   'relped.sub': 'Todos os pedidos do sistema, com filtro de data e status', 'relped.todos': 'Todos os status', 'relped.qtd': 'Pedidos', 'relped.total': 'Valor total',
   'menu.suporte': 'Suporte', 'menu.suporte_sub': 'Central de ajuda',
+  'logout.titulo': 'Sair do sistema?', 'logout.msg': 'Você precisará entrar novamente para acessar.',
+  'menu.bancos': 'Bancos', 'cap.cadastros.banco.listar': 'Listar bancos', 'cap.cadastros.banco.gerenciar': 'Criar e editar bancos',
+  'bancos.crumb': 'Cadastros / Financeiro / Bancos', 'bancos.titulo': 'Bancos', 'bancos.sub': 'Instituições usadas nas contas correntes e conciliação',
+  'bancos.novo': 'Novo banco', 'bancos.buscar': 'Buscar banco', 'bancos.nome': 'Banco', 'bancos.nome_ph': 'Ex.: Itaú, Bradesco, Nubank',
   'menu.rel_reembolsos': 'Reembolsos', 'relfav.crumb': 'Relatórios / Reembolsos a favorecidos', 'relfav.titulo': 'Reembolsos a favorecidos',
   'relfav.sub': 'Títulos a pagar vinculados a favorecidos (reembolso de despesas)', 'relfav.favorecido': 'Favorecido', 'relfav.pago_em': 'Pago em', 'relfav.qtd': 'Lançamentos', 'relfav.total': 'Total',
   'menu.fluxo_proj': 'Fluxo projetado', 'fluxoproj.crumb': 'Financeiro / Fluxo de caixa projetado', 'fluxoproj.titulo': 'Fluxo de caixa projetado',
@@ -1818,6 +1822,10 @@ Object.assign(en, {
   'menu.rel_pedidos': 'Orders', 'relped.crumb': 'Reports / Orders', 'relped.titulo': 'Orders report',
   'relped.sub': 'All orders in the system, with date and status filters', 'relped.todos': 'All statuses', 'relped.qtd': 'Orders', 'relped.total': 'Total value',
   'menu.suporte': 'Support', 'menu.suporte_sub': 'Help center',
+  'logout.titulo': 'Sign out?', 'logout.msg': 'You will need to sign in again to access.',
+  'menu.bancos': 'Banks', 'cap.cadastros.banco.listar': 'List banks', 'cap.cadastros.banco.gerenciar': 'Create and edit banks',
+  'bancos.crumb': 'Records / Finance / Banks', 'bancos.titulo': 'Banks', 'bancos.sub': 'Institutions used in checking accounts and reconciliation',
+  'bancos.novo': 'New bank', 'bancos.buscar': 'Search bank', 'bancos.nome': 'Bank', 'bancos.nome_ph': 'e.g. Itaú, Bradesco, Nubank',
   'menu.rel_reembolsos': 'Reimbursements', 'relfav.crumb': 'Reports / Reimbursements', 'relfav.titulo': 'Reimbursements to payees',
   'relfav.sub': 'Payables linked to payees (expense reimbursement)', 'relfav.favorecido': 'Payee', 'relfav.pago_em': 'Paid on', 'relfav.qtd': 'Entries', 'relfav.total': 'Total',
   'menu.fluxo_proj': 'Projected cash flow', 'fluxoproj.crumb': 'Finance / Projected cash flow', 'fluxoproj.titulo': 'Projected cash flow',
@@ -1847,6 +1855,10 @@ Object.assign(es, {
   'menu.rel_pedidos': 'Pedidos', 'relped.crumb': 'Informes / Pedidos', 'relped.titulo': 'Informe de pedidos',
   'relped.sub': 'Todos los pedidos del sistema, con filtro de fecha y estado', 'relped.todos': 'Todos los estados', 'relped.qtd': 'Pedidos', 'relped.total': 'Valor total',
   'menu.suporte': 'Soporte', 'menu.suporte_sub': 'Centro de ayuda',
+  'logout.titulo': '¿Salir del sistema?', 'logout.msg': 'Tendrás que iniciar sesión de nuevo para acceder.',
+  'menu.bancos': 'Bancos', 'cap.cadastros.banco.listar': 'Listar bancos', 'cap.cadastros.banco.gerenciar': 'Crear y editar bancos',
+  'bancos.crumb': 'Registros / Finanzas / Bancos', 'bancos.titulo': 'Bancos', 'bancos.sub': 'Instituciones usadas en las cuentas corrientes y conciliación',
+  'bancos.novo': 'Nuevo banco', 'bancos.buscar': 'Buscar banco', 'bancos.nome': 'Banco', 'bancos.nome_ph': 'Ej.: Itaú, Bradesco, Nubank',
   'menu.rel_reembolsos': 'Reembolsos', 'relfav.crumb': 'Informes / Reembolsos a favorecidos', 'relfav.titulo': 'Reembolsos a favorecidos',
   'relfav.sub': 'Títulos a pagar vinculados a favorecidos (reembolso de gastos)', 'relfav.favorecido': 'Favorecido', 'relfav.pago_em': 'Pagado el', 'relfav.qtd': 'Asientos', 'relfav.total': 'Total',
   'menu.fluxo_proj': 'Flujo proyectado', 'fluxoproj.crumb': 'Finanzas / Flujo de caja proyectado', 'fluxoproj.titulo': 'Flujo de caja proyectado',

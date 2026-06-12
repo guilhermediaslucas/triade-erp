@@ -27,6 +27,8 @@ export const CAPABILITIES: Capability[] = [
   { id: 'cadastros.forma_entrega.gerenciar', moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.forma_entrega.gerenciar' },
   { id: 'cadastros.tipodoc.listar',          moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.tipodoc.listar' },
   { id: 'cadastros.tipodoc.gerenciar',       moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.tipodoc.gerenciar' },
+  { id: 'cadastros.banco.listar',            moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.banco.listar' },
+  { id: 'cadastros.banco.gerenciar',         moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.banco.gerenciar' },
   { id: 'cadastros.motoboy.listar',      moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.motoboy.listar' },
   { id: 'cadastros.motoboy.gerenciar',   moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.motoboy.gerenciar' },
   { id: 'cadastros.favorecido.listar',    moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.favorecido.listar' },

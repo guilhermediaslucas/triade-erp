@@ -462,4 +462,15 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS entregue_em date;
     `,
   },
+  {
+    nome: '031_banco',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".banco (
+        id        uuid PRIMARY KEY,
+        nome      text NOT NULL,
+        ativo     boolean NOT NULL DEFAULT true,
+        criado_em timestamptz NOT NULL DEFAULT now()
+      );
+    `,
+  },
 ];

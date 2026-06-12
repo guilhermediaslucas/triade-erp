@@ -22,6 +22,8 @@ import { SqlFormaEntregaRepository } from '../infra/repositories/SqlFormaEntrega
 import { FormasEntregaService } from '../application/cadastro/FormasEntregaService.js';
 import { SqlTipoDocumentoRepository } from '../infra/repositories/SqlTipoDocumentoRepository.js';
 import { TiposDocumentoService } from '../application/cadastro/TiposDocumentoService.js';
+import { SqlBancoRepository } from '../infra/repositories/SqlBancoRepository.js';
+import { BancosService } from '../application/cadastro/BancosService.js';
 import { SqlFavorecidoRepository } from '../infra/repositories/SqlFavorecidoRepository.js';
 import { FavorecidosService } from '../application/cadastro/FavorecidosService.js';
 import { SqlClienteRepository } from '../infra/repositories/SqlClienteRepository.js';
@@ -102,6 +104,7 @@ export function montarDependencias() {
     marcasService: new MarcasService(marcasRepo),
     formasEntregaService: new FormasEntregaService(new SqlFormaEntregaRepository(AppDataSource)),
     tiposDocumentoService: new TiposDocumentoService(new SqlTipoDocumentoRepository(AppDataSource)),
+    bancosService: new BancosService(new SqlBancoRepository(AppDataSource)),
     favorecidosService: new FavorecidosService(favorecidosRepo),
     produtosService: new ProdutosService(produtosRepo, categoriasRepo),
     clientesService: new ClientesService(clientesRepo),

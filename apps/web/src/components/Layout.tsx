@@ -105,6 +105,7 @@ const GRUPOS: Grupo[] = [
           { rotulo: 'menu.contas_correntes', icone: '🏦', to: '/cadastros/contas-correntes', cap: 'cadastros.conta.listar' },
           { rotulo: 'menu.catfin', icone: '🗂️', to: '/cadastros/categorias-financeiras', cap: 'cadastros.catfin.listar' },
           { rotulo: 'menu.tipodoc', icone: '📄', to: '/cadastros/tipos-documento', cap: 'cadastros.tipodoc.listar' },
+          { rotulo: 'menu.bancos', icone: '🏦', to: '/cadastros/bancos', cap: 'cadastros.banco.listar' },
         ],
       },
     ],
@@ -134,6 +135,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const visivel = (it: Item) => it.soSuperAdmin ? superAdmin : (!it.cap || temCapability(it.cap));
   // Inicia com todos os grupos recolhidos — só os nomes aparecem; clicar expande.
   const [abertos, setAbertos] = useState<Set<number>>(() => new Set());
+  const [sairOpen, setSairOpen] = useState(false);
   const toggleGrupo = (gi: number) => setAbertos((cur) => { const n = new Set(cur); n.has(gi) ? n.delete(gi) : n.add(gi); return n; });
 
   return (
@@ -196,11 +198,21 @@ export function Layout({ children }: { children: ReactNode }) {
               <Avatar nome={usuario?.nome ?? ''} foto={usuario?.foto ?? null} />
               {usuario?.nome}
             </span>
-            <button className="btn-sair" onClick={logout}>{t('topbar.sair')}</button>
+            <button className="btn-sair" onClick={() => setSairOpen(true)}>{t('topbar.sair')}</button>
           </div>
         </header>
         <main className="conteudo">{children}</main>
       </div>
+      {sairOpen && (
+        <div className="modal-fundo" onClick={() => setSairOpen(false)}><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 380 }}>
+          <h2>{t('logout.titulo')}</h2>
+          <p className="muted">{t('logout.msg')}</p>
+          <div className="modal-acoes">
+            <button className="btn-ghost" onClick={() => setSairOpen(false)}>{t('common.cancelar')}</button>
+            <button className="btn-primary" onClick={logout}>{t('topbar.sair')}</button>
+          </div>
+        </div></div>
+      )}
     </div>
   );
 }

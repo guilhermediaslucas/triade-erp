@@ -176,6 +176,20 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Cosméticos do mockup: confirmação de logout + tela de Notificações + cadastro de Bancos.**
+  Três itens de polimento. **(1) Confirmar logout:** o botão **Sair** abre um modal de confirmação
+  (Layout, `sairOpen`) antes de deslogar. **(2) Tela de Notificações:** nova `/notificacoes`
+  (`Notificacoes.tsx`) que reusa a mesma agregação do **Sino** (títulos vencidos, pendência de baixa Pix/
+  Boleto, lotes vencendo 30d, estoque baixo) renderizada como cards; o Sino ganhou link **"Ver todas"** →
+  `/notificacoes`. **(3) Cadastro de Bancos:** **Cadastros › Financeiro › Bancos** (CRUD simples nome+ativo,
+  clone do Tipos de documento). Migration tenant **031** (`banco`); caps `cadastros.banco.listar/gerenciar`
+  (auto-sync no boot); backend hexagonal `Banco`/repo/`BancosService`/rota `/bancos`. **Ligação:** o campo
+  **Banco** da Conta corrente virou `input list` com **datalist** dos bancos ativos (não muda o modelo — banco
+  segue texto na conta). i18n pt/en/es. **Validação:** **type-check api+web verde** + **e2e Postgres real
+  (pglite, 5 PASS)** do CRUD de banco (cria/lista, nome curto→400, editar/inativar, inexistente→404).
+  **Pendente:** Gui git commit+push (Windows) → boot do Render aplica a migration 031 + caps; relogar.
+  **Decisão:** **Hub de Relatórios** e **Relatório dedicado de Contas a receber/pagar** ficam de fora — são
+  redundantes (o menu já lista todos os relatórios; a tela de Contas já filtra e exporta).
 - **2026-06-12** — **Paridade §6: Reembolsos a favorecidos (relatório).** Novo relatório **Relatórios ›
   Reembolsos** — lista os **títulos a pagar vinculados a um favorecido** (favorecidoId não nulo), com filtro
   de período (vencimento) e situação + export CSV/Excel. **Frontend puro** (`RelFavorecidos.tsx`): reusa o

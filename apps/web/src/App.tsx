@@ -49,12 +49,14 @@ import { RelPerdas } from './pages/RelPerdas.js';
 import { RelInventarios } from './pages/RelInventarios.js';
 import { RelPedidos } from './pages/RelPedidos.js';
 import { RelFavorecidos } from './pages/RelFavorecidos.js';
+import { Notificacoes } from './pages/Notificacoes.js';
 import { Condicoes } from './pages/Condicoes.js';
 import { Comissoes } from './pages/Comissoes.js';
 import { Conciliacao } from './pages/Conciliacao.js';
 import { ContasCorrentes } from './pages/ContasCorrentes.js';
 import { CategoriasFinanceiras } from './pages/CategoriasFinanceiras.js';
 import { TiposDocumento } from './pages/TiposDocumento.js';
+import { Bancos } from './pages/Bancos.js';
 import { Layout } from './components/Layout.js';
 import { ScrollToTop } from './components/ScrollToTop.js';
 import { ProtectedRoute } from './components/ProtectedRoute.js';
@@ -75,6 +77,7 @@ export function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/" element={<Protegida><Dashboard /></Protegida>} />
                 <Route path="/dashboard/serie/:tipo" element={<Protegida cap="dashboard.ver"><DashboardSerie /></Protegida>} />
+                <Route path="/notificacoes" element={<Protegida><Notificacoes /></Protegida>} />
                 <Route path="/acesso/usuarios" element={<Protegida cap="acesso.usuario.listar"><Usuarios /></Protegida>} />
                 <Route path="/acesso/perfis" element={<Protegida cap="acesso.perfil.listar"><Perfis /></Protegida>} />
                 <Route path="/config/empresa" element={<Protegida cap="acesso.empresa.editar"><DadosEmpresa /></Protegida>} />
@@ -112,6 +115,7 @@ export function App() {
                 <Route path="/cadastros/contas-correntes" element={<Protegida cap="cadastros.conta.listar"><ContasCorrentes /></Protegida>} />
                 <Route path="/cadastros/categorias-financeiras" element={<Protegida cap="cadastros.catfin.listar"><CategoriasFinanceiras /></Protegida>} />
                 <Route path="/cadastros/tipos-documento" element={<Protegida cap="cadastros.tipodoc.listar"><TiposDocumento /></Protegida>} />
+                <Route path="/cadastros/bancos" element={<Protegida cap="cadastros.banco.listar"><Bancos /></Protegida>} />
                 <Route path="/cadastros/condicoes" element={<Protegida cap="cadastros.condicao.listar"><Condicoes /></Protegida>} />
                 <Route path="/cadastros/clientes" element={<Protegida cap="cadastros.cliente.listar"><Clientes /></Protegida>} />
                 <Route path="/cadastros/fornecedores" element={<Protegida cap="cadastros.fornecedor.listar"><Fornecedores /></Protegida>} />

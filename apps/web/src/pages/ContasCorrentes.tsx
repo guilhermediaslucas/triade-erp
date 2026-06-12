@@ -40,9 +40,11 @@ export function ContasCorrentes() {
 }
 
 function ModalConta({ c, onFechar, onSalvo }: { c: Conta; onFechar: () => void; onSalvo: () => void; }) {
-  const { token } = useAuth(); const { t } = useI18n();
+  const { token, temCapability } = useAuth(); const { t } = useI18n();
   const novo = !c.id; const [v, setV] = useState(c);
   const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
+  const [bancos, setBancos] = useState<string[]>([]);
+  useEffect(() => { if (temCapability('cadastros.banco.listar')) api.get<{ nome: string; ativo: boolean }[]>('/bancos', token!).then((l) => setBancos(l.filter((b) => b.ativo).map((b) => b.nome))).catch(() => {}); /* eslint-disable-next-line */ }, []);
   const set = (k: keyof Conta, val: any) => setV({ ...v, [k]: val });
   async function salvar() {
     setErro(null); setSalv(true);
@@ -55,7 +57,7 @@ function ModalConta({ c, onFechar, onSalvo }: { c: Conta; onFechar: () => void; 
       <h2>{novo ? t('cc.nova') : t('common.editar')}</h2>
       <label className="campo">{t('categorias.nome')}<input value={v.nome} onChange={(e) => set('nome', e.target.value)} placeholder="Ex.: Itaú Movimento" autoFocus /></label>
       <div className="cores-grid">
-        <label className="campo">{t('cc.banco')}<input value={v.banco ?? ''} onChange={(e) => set('banco', e.target.value)} /></label>
+        <label className="campo">{t('cc.banco')}<input list="cc-bancos" value={v.banco ?? ''} onChange={(e) => set('banco', e.target.value)} /><datalist id="cc-bancos">{bancos.map((b) => <option key={b} value={b} />)}</datalist></label>
         <label className="campo">{t('cc.saldo_inicial')}<input type="number" step="0.01" value={v.saldoInicial} onChange={(e) => set('saldoInicial', e.target.value)} /></label>
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
