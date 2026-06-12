@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
@@ -9,6 +9,7 @@ interface Produto {
   unidade: string; estoqueMinimo: number; localizacao: string | null; registroAnvisa: string | null; ativo: boolean;
 }
 const UNIDADES = ['UN', 'CX', 'ML', 'G', 'KG', 'FR', 'AMP'];
+const TINTS = ['tint-pp', 'tint-bl', 'tint-or', 'tint-gr', 'tint-in', 'tint-rd'];
 const vazio = (): Produto => ({ id: '', nome: '', categoriaId: '', categoriaNome: null, unidade: 'UN', estoqueMinimo: 0, localizacao: '', registroAnvisa: '', ativo: true });
 
 export function Produtos() {
@@ -19,6 +20,8 @@ export function Produtos() {
   const [cats, setCats] = useState<Categoria[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [edit, setEdit] = useState<Produto | null>(null);
+  const [busca, setBusca] = useState('');
+  const [catFiltro, setCatFiltro] = useState('');
 
   async function carregar() {
     try {
@@ -29,6 +32,19 @@ export function Produtos() {
   useEffect(() => { carregar(); /* eslint-disable-next-line */ }, []);
   async function alternar(p: Produto) { try { await api.patch('/produtos/' + p.id + '/ativo', { ativo: !p.ativo }, token!); carregar(); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
 
+  const tintDe = (catId: string | null) => {
+    const i = cats.findIndex((c) => c.id === catId);
+    return i < 0 ? 'tint-bl' : TINTS[i % TINTS.length];
+  };
+  const lista = useMemo(() => {
+    const q = busca.trim().toLowerCase();
+    return itens.filter((p) => {
+      if (q && !p.nome.toLowerCase().includes(q)) return false;
+      if (catFiltro && p.categoriaId !== catFiltro) return false;
+      return true;
+    });
+  }, [itens, busca, catFiltro]);
+
   // Formulário em página inteira (espelha o mockup) — substitui a lista enquanto edita.
   if (edit) return <FormProduto prod={edit} cats={cats} onFechar={() => setEdit(null)} onSalvo={() => { setEdit(null); carregar(); }} />;
 
@@ -38,13 +54,24 @@ export function Produtos() {
       <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('produtos.titulo')}</h1><div className="muted page-sub">{t('produtos.sub')}</div></div>
         {pode && <button className="btn-primary" onClick={() => setEdit(vazio())}>+ {t('produtos.novo')}</button>}</div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
+
+      <div className="toolbar">
+        <div className="busca-box-tb"><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('produtos.buscar')} /></div>
+        <span className={'chip-f' + (catFiltro === '' ? ' on' : '')} onClick={() => setCatFiltro('')}>{t('produtos.todas_cat')}</span>
+        {cats.map((c) => (
+          <span key={c.id} className={'chip-f' + (catFiltro === c.id ? ' on' : '')} onClick={() => setCatFiltro(c.id)}>{c.nome}</span>
+        ))}
+      </div>
+
       <div className="card pad0"><table className="tabela">
         <thead><tr><th>{t('produtos.nome')}</th><th>{t('produtos.categoria')}</th><th>{t('produtos.unidade')}</th><th>{t('produtos.minimo')}</th><th>{t('produtos.local')}</th><th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
         <tbody>
-          {itens.length === 0 && <tr><td colSpan={7} className="vazio">{t('common.nenhum')}</td></tr>}
-          {itens.map((p) => (
+          {lista.length === 0 && <tr><td colSpan={7} className="vazio">{t('common.nenhum')}</td></tr>}
+          {lista.map((p) => (
             <tr key={p.id} className={p.ativo ? '' : 'linha-inativa'}>
-              <td>{p.nome}</td><td>{p.categoriaNome ?? '—'}</td><td>{p.unidade}</td><td>{p.estoqueMinimo}</td><td>{p.localizacao ?? '—'}</td>
+              <td>{p.nome}</td>
+              <td>{p.categoriaNome ? <span className={'pill ' + tintDe(p.categoriaId)}>{p.categoriaNome}</span> : '—'}</td>
+              <td>{p.unidade}</td><td>{p.estoqueMinimo}</td><td>{p.localizacao ?? '—'}</td>
               <td><span className={p.ativo ? 'pill-ok' : 'pill-off'}>{p.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
               <td className="acoes">{pode && <>
                 <button className="btn-link" onClick={() => setEdit({ ...p, categoriaId: p.categoriaId ?? '', localizacao: p.localizacao ?? '', registroAnvisa: p.registroAnvisa ?? '' })}>{t('common.editar')}</button>
