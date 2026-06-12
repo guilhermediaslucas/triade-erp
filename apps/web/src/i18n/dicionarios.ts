@@ -640,7 +640,7 @@ Object.assign(pt, {
   'fluxo.entradas_saidas': 'Entradas e saídas', 'fluxo.resumo': 'Resumo', 'fluxo.saldo_inicial': 'Saldo inicial (bancos)',
   'fluxo.saldo_periodo': 'Saldo do período', 'fluxo.saldos_banco': 'Saldos por banco (marque os que entram no saldo inicial)',
   'fluxo.sem_contas': 'Sem contas cadastradas.', 'fluxo.lancamentos': 'Lançamentos que compõem o fluxo (período)',
-  'fluxo.tipo': 'Tipo', 'fluxo.conta': 'Conta', 'fluxo.data_caixa': 'Data de caixa', 'fluxo.prev_efet': 'Previsto/Efetivo',
+  'fluxo.tipo': 'Tipo', 'fluxo.conta': 'Conta', 'fluxo.data_caixa': 'Data de caixa', 'fluxo.prev_efet': 'Previsto/Efetivo', 'fluxo.cli_forn': 'Cliente / Fornecedor',
   'fluxo.clique_barras': 'Clique nas barras para ver os títulos da semana', 'fluxo.previsto': 'Previsto', 'fluxo.efetivo': 'Efetivo',
   'fluxo.baixado': 'Baixado', 'fluxo.aberto': 'Em aberto', 'fluxo.vencido': 'Vencido', 'fluxo.saldo_sel': 'Saldo do período (selecionados)',
 });
@@ -654,7 +654,7 @@ Object.assign(en, {
   'fluxo.entradas_saidas': 'Inflows and outflows', 'fluxo.resumo': 'Summary', 'fluxo.saldo_inicial': 'Initial balance (banks)',
   'fluxo.saldo_periodo': 'Period balance', 'fluxo.saldos_banco': 'Bank balances (check those included in the initial balance)',
   'fluxo.sem_contas': 'No accounts registered.', 'fluxo.lancamentos': 'Entries in the cash flow (period)',
-  'fluxo.tipo': 'Type', 'fluxo.conta': 'Account', 'fluxo.data_caixa': 'Cash date', 'fluxo.prev_efet': 'Forecast/Actual',
+  'fluxo.tipo': 'Type', 'fluxo.conta': 'Account', 'fluxo.data_caixa': 'Cash date', 'fluxo.prev_efet': 'Forecast/Actual', 'fluxo.cli_forn': 'Customer / Supplier',
   'fluxo.clique_barras': 'Click the bars to see the week’s entries', 'fluxo.previsto': 'Forecast', 'fluxo.efetivo': 'Actual',
   'fluxo.baixado': 'Settled', 'fluxo.aberto': 'Open', 'fluxo.vencido': 'Overdue', 'fluxo.saldo_sel': 'Period balance (selected)',
 });
@@ -668,7 +668,7 @@ Object.assign(es, {
   'fluxo.entradas_saidas': 'Entradas y salidas', 'fluxo.resumo': 'Resumen', 'fluxo.saldo_inicial': 'Saldo inicial (bancos)',
   'fluxo.saldo_periodo': 'Saldo del período', 'fluxo.saldos_banco': 'Saldos por banco (marca los que entran en el saldo inicial)',
   'fluxo.sem_contas': 'Sin cuentas registradas.', 'fluxo.lancamentos': 'Asientos que componen el flujo (período)',
-  'fluxo.tipo': 'Tipo', 'fluxo.conta': 'Cuenta', 'fluxo.data_caixa': 'Fecha de caja', 'fluxo.prev_efet': 'Previsto/Efectivo',
+  'fluxo.tipo': 'Tipo', 'fluxo.conta': 'Cuenta', 'fluxo.data_caixa': 'Fecha de caja', 'fluxo.prev_efet': 'Previsto/Efectivo', 'fluxo.cli_forn': 'Cliente / Proveedor',
   'fluxo.clique_barras': 'Haz clic en las barras para ver los títulos de la semana', 'fluxo.previsto': 'Previsto', 'fluxo.efetivo': 'Efectivo',
   'fluxo.baixado': 'Pagado', 'fluxo.aberto': 'Abierto', 'fluxo.vencido': 'Vencido', 'fluxo.saldo_sel': 'Saldo del período (seleccionados)',
 });

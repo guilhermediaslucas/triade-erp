@@ -20,11 +20,12 @@ export function FluxoCaixa() {
   const [contas, setContas] = useState<Conta[]>([]);
   const [bancosSel, setBancosSel] = useState<Set<string>>(new Set());
   const [semanaSel, setSemanaSel] = useState<number | null>(null);
+  const [sel, setSel] = useState<Set<string>>(new Set());
   const [erro, setErro] = useState<string | null>(null);
 
   function carregar(d = de, a = ate) {
     const qs = [d ? 'de=' + d : '', a ? 'ate=' + a : ''].filter(Boolean).join('&');
-    api.get<Fluxo>('/financeiro/fluxo' + (qs ? '?' + qs : ''), token!).then((r) => { setDados(r); setSemanaSel(null); }).catch((e) => setErro((e as ErroApi).chaveI18n));
+    api.get<Fluxo>('/financeiro/fluxo' + (qs ? '?' + qs : ''), token!).then((r) => { setDados(r); setSemanaSel(null); setSel(new Set(r.lancamentos.map((l) => l.id))); }).catch((e) => setErro((e as ErroApi).chaveI18n));
   }
   useEffect(() => {
     carregar();
@@ -42,7 +43,10 @@ export function FluxoCaixa() {
     if (!w) return dados.lancamentos;
     return dados.lancamentos.filter((l) => l.dataCaixa >= w.de && l.dataCaixa <= w.ate);
   }, [dados, semanaSel]);
-  const totalMostrado = useMemo(() => mostrados.reduce((a, l) => a + (l.tipo === 'entrada' ? l.valor : -l.valor), 0), [mostrados]);
+  const totalSel = useMemo(() => mostrados.filter((l) => sel.has(l.id)).reduce((a, l) => a + (l.tipo === 'entrada' ? l.valor : -l.valor), 0), [mostrados, sel]);
+  const todosMarcados = mostrados.length > 0 && mostrados.every((l) => sel.has(l.id));
+  function toggle(id: string) { setSel((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; }); }
+  function toggleTodos() { setSel((s) => { const n = new Set(s); mostrados.forEach((l) => (todosMarcados ? n.delete(l.id) : n.add(l.id))); return n; }); }
 
   function exportar() {
     const cab = [t('fluxo.tipo'), t('fin.numero'), t('fin.descricao'), t('fin.fornecedor'), t('fluxo.conta'), t('fluxo.data_caixa'), t('fin.situacao'), t('fin.valor')];
@@ -123,11 +127,12 @@ export function FluxoCaixa() {
           {mostrados.length > 0 && <button className="btn-acao verde" onClick={exportar}>⬇ {t('rel.exportar_xlsx')}</button>}
         </div>
         <table className="tabela">
-          <thead><tr><th>{t('fluxo.tipo')}</th><th>{t('fin.numero')}</th><th>{t('fin.descricao')}</th><th>{t('fin.fornecedor')}</th><th>{t('fluxo.conta')}</th><th>{t('fluxo.data_caixa')}</th><th>{t('fluxo.prev_efet')}</th><th>{t('fin.situacao')}</th><th style={{ textAlign: 'right' }}>{t('fin.valor')}</th></tr></thead>
+          <thead><tr><th style={{ width: 34 }}><input type="checkbox" checked={todosMarcados} onChange={toggleTodos} /></th><th>{t('fluxo.tipo')}</th><th>{t('fin.numero')}</th><th>{t('fin.descricao')}</th><th>{t('fluxo.cli_forn')}</th><th>{t('fluxo.conta')}</th><th>{t('fluxo.data_caixa')}</th><th>{t('fluxo.prev_efet')}</th><th>{t('fin.situacao')}</th><th style={{ textAlign: 'right' }}>{t('fin.valor')}</th></tr></thead>
           <tbody>
-            {mostrados.length === 0 && <tr><td colSpan={9} className="vazio">{t('fluxo.vazio')}</td></tr>}
+            {mostrados.length === 0 && <tr><td colSpan={10} className="vazio">{t('fluxo.vazio')}</td></tr>}
             {mostrados.map((l) => (
-              <tr key={l.id}>
+              <tr key={l.id} className={sel.has(l.id) ? 'linha-sel' : ''}>
+                <td><input type="checkbox" checked={sel.has(l.id)} onChange={() => toggle(l.id)} /></td>
                 <td><span className={'pill ' + (l.tipo === 'entrada' ? 'st-verde' : 'st-vermelho')}>{t('fluxo.' + l.tipo)}</span></td>
                 <td style={{ fontWeight: 700 }}>{l.numero}</td>
                 <td>{l.descricao}</td>
@@ -140,7 +145,7 @@ export function FluxoCaixa() {
               </tr>
             ))}
           </tbody>
-          {mostrados.length > 0 && <tfoot><tr><td colSpan={8} style={{ textAlign: 'right', fontWeight: 700 }}>{t('fluxo.saldo_sel')}</td><td style={{ textAlign: 'right', fontWeight: 700 }}>{moeda(totalMostrado)}</td></tr></tfoot>}
+          {mostrados.length > 0 && <tfoot><tr><td colSpan={9} style={{ textAlign: 'right', fontWeight: 700 }}>{t('fluxo.saldo_sel')}</td><td style={{ textAlign: 'right', fontWeight: 700 }}>{moeda(totalSel)}</td></tr></tfoot>}
         </table>
       </div>
     </div>
