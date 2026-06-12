@@ -406,3 +406,8 @@ body.theme-dark .nota-info { background: #14233a; color: #93c5fd; border-color: 
 .wf-lbl.off { color: var(--muted); font-weight: 400; }
 .wf-line { flex: .5; height: 2px; background: var(--borda); min-width: 18px; margin-top: 22px; }
 .wf-line.on { background: var(--accent, #7b61ff); }
+
+/* ===== Menu recolhível (grupos) ===== */
+.nav-grupo-head { display: flex; align-items: center; justify-content: space-between; width: 100%; background: none; border: 0; cursor: pointer; color: var(--side-fg); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; opacity: .6; padding: 12px 22px 6px; font-family: inherit; }
+.nav-grupo-head:hover { opacity: .95; }
+.nav-chev { font-size: 10px; opacity: .7; }

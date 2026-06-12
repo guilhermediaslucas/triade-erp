@@ -1,5 +1,5 @@
-import type { ReactNode } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useState, type ReactNode } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { useBranding } from '../branding/BrandingContext.js';
@@ -127,6 +127,10 @@ export function Layout({ children }: { children: ReactNode }) {
   const { t } = useI18n();
   const fantasia = branding?.fantasia ?? empresaFantasia;
   const visivel = (it: Item) => it.soSuperAdmin ? superAdmin : (!it.cap || temCapability(it.cap));
+  const location = useLocation();
+  const grupoAtivo = GRUPOS.findIndex((g) => !!g.rotulo && g.secoes.some((se) => se.itens.some((it) => visivel(it) && it.to !== '/' && location.pathname.startsWith(it.to))));
+  const [abertos, setAbertos] = useState<Set<number>>(() => new Set(grupoAtivo >= 0 ? [grupoAtivo] : []));
+  const toggleGrupo = (gi: number) => setAbertos((cur) => { const n = new Set(cur); n.has(gi) ? n.delete(gi) : n.add(gi); return n; });
 
   return (
     <div className="app-shell">
@@ -139,26 +143,32 @@ export function Layout({ children }: { children: ReactNode }) {
         </div>
         <nav>
           {GRUPOS.map((g, gi) => {
-            const totalVisiveis = g.secoes.reduce((n, s) => n + s.itens.filter(visivel).length, 0);
+            const totalVisiveis = g.secoes.reduce((n, se) => n + se.itens.filter(visivel).length, 0);
             if (totalVisiveis === 0) return null;
+            const corpo = g.secoes.map((se, si) => {
+              const itens = se.itens.filter(visivel);
+              if (itens.length === 0) return null;
+              return (
+                <div key={si} className="nav-secao">
+                  {se.sublabel && <div className="nav-sublabel">{t(se.sublabel)}</div>}
+                  {itens.map((it) => (
+                    <NavLink key={it.to} to={it.to} end={it.to === '/'}
+                      className={({ isActive }) => (isActive ? 'nav-item ativo' : 'nav-item')}>
+                      <span className="nav-ic">{it.icone}</span>{t(it.rotulo)}
+                    </NavLink>
+                  ))}
+                </div>
+              );
+            });
+            if (!g.rotulo) return <div key={gi} className="nav-grupo">{corpo}</div>;
+            const aberto = abertos.has(gi);
             return (
-              <div key={gi} className="nav-grupo">
-                {g.rotulo && <div className="nav-grupo-rotulo">{t(g.rotulo)}</div>}
-                {g.secoes.map((s, si) => {
-                  const itens = s.itens.filter(visivel);
-                  if (itens.length === 0) return null;
-                  return (
-                    <div key={si} className="nav-secao">
-                      {s.sublabel && <div className="nav-sublabel">{t(s.sublabel)}</div>}
-                      {itens.map((it) => (
-                        <NavLink key={it.to} to={it.to} end={it.to === '/'}
-                          className={({ isActive }) => (isActive ? 'nav-item ativo' : 'nav-item')}>
-                          <span className="nav-ic">{it.icone}</span>{t(it.rotulo)}
-                        </NavLink>
-                      ))}
-                    </div>
-                  );
-                })}
+              <div key={gi} className={'nav-grupo' + (aberto ? ' aberto' : '')}>
+                <button type="button" className="nav-grupo-head" onClick={() => toggleGrupo(gi)}>
+                  <span>{t(g.rotulo)}</span>
+                  <span className="nav-chev">{aberto ? '\u25be' : '\u25b8'}</span>
+                </button>
+                {aberto && corpo}
               </div>
             );
           })}
