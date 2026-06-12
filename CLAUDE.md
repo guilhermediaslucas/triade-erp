@@ -176,6 +176,13 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Ajuste toast Pix-only + Curva ABC de clientes.** (1) O toast de *pendência de baixa* passou a
+  disparar **só para Pix** (Boleto/Cartão/Dinheiro usam o toast normal de status); o gate de separação segue como no
+  mockup. (2) **Curva ABC de clientes**: `RelatorioRepository.curvaAbcClientes` (Σ total e nº de pedidos por cliente,
+  pedidos não orçamento/cancelado) + `curvaAbc(...,por)` no serviço/rota; tela `RelAbc` ganhou seletor **Produtos/
+  Clientes** (chips) com título/colunas dinâmicos. i18n pt/en/es. **Validação:** type-check api+web verde + **e2e
+  Postgres real (pglite, 5 PASS)**: total 1000 (orçamento fora), Belle 800=A, Harmonize 2 pedidos=C. **Pendente:**
+  Gui `git push`. **Próximo na paridade (§11):** KPIs clicáveis no dashboard (drill por período).
 - **2026-06-11** — **Paridade mockup→sistema (doc) + §1 fluxo Pix/Boleto.** Criado `Info/PARIDADE-MOCKUP.md`:
   inventário de tudo que o mockup faz (68 telas, 40 modais, ~60 blocos de JS) com status ✅/⚠️/❌ por módulo —
   fonte de verdade/checklist p/ deixar o sistema idêntico. **Implementado o §1** (o exemplo do Gui): **gate por
