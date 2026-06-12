@@ -20,9 +20,22 @@ const GRUPOS: Grupo[] = [
   {
     rotulo: 'menu.comercial',
     secoes: [{ itens: [
+      { rotulo: 'menu.precos', icone: '🏷️', to: '/comercial/precos', cap: 'comercial.preco.listar' },
       { rotulo: 'menu.pedidos', icone: '🧾', to: '/comercial/pedidos', cap: 'comercial.pedido.listar' },
       { rotulo: 'menu.novo_pedido', icone: '➕', to: '/comercial/pedidos/novo', cap: 'comercial.pedido.criar' },
-      { rotulo: 'menu.precos', icone: '🏷️', to: '/comercial/precos', cap: 'comercial.preco.listar' },
+    ] }],
+  },
+  {
+    rotulo: 'menu.financeiro',
+    secoes: [{ itens: [
+      { rotulo: 'menu.receber', icone: '💰', to: '/financeiro/receber', cap: 'financeiro.receber.listar' },
+      { rotulo: 'menu.pagar', icone: '💸', to: '/financeiro/pagar', cap: 'financeiro.pagar.listar' },
+      { rotulo: 'menu.nota', icone: '🧾', to: '/financeiro/nota', cap: 'financeiro.compra.criar' },
+      { rotulo: 'menu.fluxo', icone: '📊', to: '/financeiro/fluxo', cap: 'financeiro.fluxo.ver' },
+      { rotulo: 'menu.conciliacao', icone: '🏦', to: '/financeiro/conciliacao', cap: 'financeiro.conciliacao.ver' },
+      { rotulo: 'menu.comissoes', icone: '🧮', to: '/financeiro/comissoes', cap: 'financeiro.comissao.ver' },
+      { rotulo: 'menu.aging', icone: '📅', to: '/financeiro/aging-receber', cap: 'financeiro.receber.listar' },
+      { rotulo: 'menu.dre', icone: '📋', to: '/financeiro/dre', cap: 'financeiro.fluxo.ver' },
     ] }],
   },
   {
@@ -40,19 +53,6 @@ const GRUPOS: Grupo[] = [
     rotulo: 'menu.logistica',
     secoes: [{ itens: [
       { rotulo: 'menu.gestao_fretes', icone: '🛣️', to: '/logistica/fretes', cap: 'logistica.frete.ver' },
-    ] }],
-  },
-  {
-    rotulo: 'menu.financeiro',
-    secoes: [{ itens: [
-      { rotulo: 'menu.receber', icone: '💰', to: '/financeiro/receber', cap: 'financeiro.receber.listar' },
-      { rotulo: 'menu.pagar', icone: '💸', to: '/financeiro/pagar', cap: 'financeiro.pagar.listar' },
-      { rotulo: 'menu.aging', icone: '📅', to: '/financeiro/aging-receber', cap: 'financeiro.receber.listar' },
-      { rotulo: 'menu.fluxo', icone: '📊', to: '/financeiro/fluxo', cap: 'financeiro.fluxo.ver' },
-      { rotulo: 'menu.dre', icone: '📋', to: '/financeiro/dre', cap: 'financeiro.fluxo.ver' },
-      { rotulo: 'menu.nota', icone: '🧾', to: '/financeiro/nota', cap: 'financeiro.compra.criar' },
-      { rotulo: 'menu.comissoes', icone: '🧮', to: '/financeiro/comissoes', cap: 'financeiro.comissao.ver' },
-      { rotulo: 'menu.conciliacao', icone: '🏦', to: '/financeiro/conciliacao', cap: 'financeiro.conciliacao.ver' },
     ] }],
   },
   {
@@ -81,8 +81,8 @@ const GRUPOS: Grupo[] = [
         sublabel: 'menu.sub.pessoas',
         itens: [
           { rotulo: 'menu.clientes', icone: '🧑‍⚕️', to: '/cadastros/clientes', cap: 'cadastros.cliente.listar' },
-          { rotulo: 'menu.fornecedores', icone: '🏭', to: '/cadastros/fornecedores', cap: 'cadastros.fornecedor.listar' },
           { rotulo: 'menu.vendedores', icone: '💼', to: '/cadastros/vendedores', cap: 'cadastros.vendedor.listar' },
+          { rotulo: 'menu.fornecedores', icone: '🏭', to: '/cadastros/fornecedores', cap: 'cadastros.fornecedor.listar' },
           { rotulo: 'menu.motoboys', icone: '🛵', to: '/cadastros/motoboys', cap: 'cadastros.motoboy.listar' },
           { rotulo: 'menu.favorecidos', icone: '🧾', to: '/cadastros/favorecidos', cap: 'cadastros.favorecido.listar' },
         ],
