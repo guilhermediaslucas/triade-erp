@@ -176,6 +176,18 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Paridade §3: Tipos de documento (cadastro + uso no título).** Novo cadastro **Cadastros ›
+  Financeiro › Tipos de documento** (só nome + ativo; ex.: NF-e, Boleto, Fatura, Recibo). Migration tenant
+  **028** (`tipo_documento` + `titulo.tipo_documento text`). Caps `cadastros.tipodoc.listar/gerenciar`
+  (auto-sync no boot). **Backend (hexagonal):** domínio `TipoDocumento` + repo; `SqlTipoDocumentoRepository`;
+  `TiposDocumentoService` (valida nome ≥2); rota `/tipos-documento`. **Uso no título:** `Titulo.tipoDocumento`/
+  `NovoTitulo.tipoDocumento` (snapshot **texto**, não FK — não quebra ao renomear/excluir o cadastro);
+  `SqlTituloRepository` grava/lê; `FinanceiroService.criar` repassa e o `parcelar` preserva. **Frontend:** tela
+  de cadastro (padrão simples); **Novo título** (Contas) ganhou o select **Tipo de documento** (opcional, só
+  ativos); aparece no detalhe (duplo-clique); menu Cadastros › Financeiro; i18n pt/en/es. **Validação:**
+  **type-check api+web verde** + **e2e Postgres real (pglite, 6 PASS):** cadastro cria/lista/edita/inativa,
+  nome curto→400, **título salva o tipoDocumento** e sem ele fica null. **Pendente:** Gui `git commit`+push
+  (Windows) → boot do Render aplica a migration 028 + caps; relogar.
 - **2026-06-12** — **Paridade §3/§10: redimensionar colunas por arraste (Contas).** Frontend puro. Cada
   cabeçalho redimensionável (descrição, pessoa, categoria, vencimento, valor, situação) ganhou uma **alça**
   (`.col-resize` na borda direita, cursor `col-resize`); arrastar ajusta a largura da coluna (mín. 60px) via

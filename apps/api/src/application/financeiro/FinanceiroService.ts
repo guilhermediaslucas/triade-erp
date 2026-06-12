@@ -78,6 +78,7 @@ export class FinanceiroService {
       valor, vencimento, categoriaFinanceiraId: (e?.categoriaFinanceiraId && String(e.categoriaFinanceiraId).trim()) || null,
       favorecidoId: (e?.favorecidoId && String(e.favorecidoId).trim()) || null,
       previsto: e?.previsto === true,
+      tipoDocumento: (e?.tipoDocumento && String(e.tipoDocumento).trim()) || null,
     }, 'manual', null);
   }
 
@@ -165,6 +166,7 @@ export class FinanceiroService {
         tipo: t.tipo, descricao: `${t.descricao} (${i}/${n})`, pessoaNome: t.pessoaNome,
         valor, vencimento: addDias(t.vencimento, (i - 1) * intervalo),
         categoriaFinanceiraId: t.categoriaFinanceiraId, favorecidoId: t.favorecidoId,
+        previsto: t.previsto, tipoDocumento: t.tipoDocumento,
       }, t.origem, t.pedidoId);
     }
     await this.repo.excluir(schema, id);

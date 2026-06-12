@@ -8,6 +8,7 @@ export interface Titulo {
   categoriaFinanceiraId: string | null; categoriaFinanceiraNome: string | null;
   favorecidoId: string | null; favorecidoNome: string | null;
   previsto: boolean;   // lançamento previsto (provisão): mais claro na lista e NÃO pode ser baixado
+  tipoDocumento: string | null;   // ex.: NF-e, Boleto, Fatura (cadastro Tipos de documento)
   criadoEm: string;
 }
 export interface NovoTitulo {
@@ -15,6 +16,7 @@ export interface NovoTitulo {
   categoriaFinanceiraId?: string | null;
   favorecidoId?: string | null;
   previsto?: boolean;
+  tipoDocumento?: string | null;
 }
 export interface MovimentoFluxo {
   data: string; tipo: 'entrada' | 'saida'; descricao: string; pessoaNome: string | null; valor: number; formaPagamento: string | null;

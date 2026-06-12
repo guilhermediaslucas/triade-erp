@@ -427,4 +427,16 @@ export const tenantMigrations: MigracaoTenant[] = [
       );
     `,
   },
+  {
+    nome: '028_tipo_documento',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".tipo_documento (
+        id        uuid PRIMARY KEY,
+        nome      text NOT NULL,
+        ativo     boolean NOT NULL DEFAULT true,
+        criado_em timestamptz NOT NULL DEFAULT now()
+      );
+      ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS tipo_documento text;
+    `,
+  },
 ];

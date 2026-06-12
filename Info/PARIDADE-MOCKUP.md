@@ -116,7 +116,7 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 | Contas correntes | ✅ | |
 | Categorias financeiras | ✅ | |
 | Favorecidos / Credores (reembolso) | ✅ | |
-| Tipos de documento (cadastro) | ❌ | cadastro simples do mockup |
+| Tipos de documento (cadastro) | ✅ | Cadastros › Financeiro › Tipos de documento; usado no Novo título (campo Tipo de documento); migration 028; e2e 6 PASS |
 
 ## 4. Estoque / Expedição
 

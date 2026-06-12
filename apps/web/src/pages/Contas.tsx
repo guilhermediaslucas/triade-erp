@@ -8,7 +8,8 @@ import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel } from '../lib/excel.js';
 
 type Tipo = 'receber' | 'pagar';
-interface Titulo { id: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; previsto: boolean; }
+interface Titulo { id: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; previsto: boolean; tipoDocumento: string | null; }
+interface TipoDoc { id: string; nome: string; ativo: boolean; }
 interface CatFin { id: string; nome: string; tipo: 'receita' | 'despesa'; ativo: boolean; }
 interface Fav { id: string; nome: string; ativo: boolean; }
 
@@ -254,6 +255,7 @@ function ModalVerTitulo({ tipo, titulo, onFechar }: { tipo: Tipo; titulo: Titulo
       {linha(t('fin.situacao'), <span className={'pill ' + (sit === 'pago' ? 'st-verde' : sit === 'vencido' ? 'st-vermelho' : 'st-laranja')}>{t('fin.' + sit)}</span>)}
       {titulo.status === 'pago' && linha(t('pedidos.forma_pgto'), titulo.formaPagamento ?? '—')}
       {linha(t('fin.previsto'), titulo.previsto ? t('common.sim') : t('common.nao'))}
+      {titulo.tipoDocumento && linha(t('tipodoc.titulo_s'), titulo.tipoDocumento)}
       {linha(t('fin.origem'), titulo.origem === 'pedido' ? t('fin.do_pedido') : titulo.origem)}
       <div className="modal-acoes"><button className="btn-primary" onClick={onFechar}>{t('common.fechar')}</button></div>
     </div></div>
@@ -269,16 +271,19 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
   const [favorecidoId, setFavId] = useState('');
   const [favs, setFavs] = useState<Fav[]>([]);
   const [previsto, setPrevisto] = useState(false);
+  const [tipoDoc, setTipoDoc] = useState('');
+  const [tiposDoc, setTiposDoc] = useState<TipoDoc[]>([]);
   const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
   const tipoCat = tipo === 'receber' ? 'receita' : 'despesa';
   useEffect(() => {
     if (temCapability('cadastros.catfin.listar')) api.get<CatFin[]>('/categorias-financeiras', token!).then((l) => setCats(l.filter((c) => c.ativo && c.tipo === tipoCat))).catch(() => {});
     if (tipo === 'pagar' && temCapability('cadastros.favorecido.listar')) api.get<Fav[]>('/favorecidos', token!).then((l) => setFavs(l.filter((f) => f.ativo))).catch(() => {});
+    if (temCapability('cadastros.tipodoc.listar')) api.get<TipoDoc[]>('/tipos-documento', token!).then((l) => setTiposDoc(l.filter((x) => x.ativo))).catch(() => {});
     /* eslint-disable-next-line */
   }, []);
   async function salvar() {
     setErro(null); setSalv(true);
-    try { await api.post('/financeiro/' + tipo, { descricao, pessoaNome, valor: Number(valor), vencimento, categoriaFinanceiraId: categoriaFinanceiraId || null, favorecidoId: favorecidoId || null, previsto }, token!); onSalvo(); }
+    try { await api.post('/financeiro/' + tipo, { descricao, pessoaNome, valor: Number(valor), vencimento, categoriaFinanceiraId: categoriaFinanceiraId || null, favorecidoId: favorecidoId || null, previsto, tipoDocumento: tipoDoc || null }, token!); onSalvo(); }
     catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
   return (
@@ -294,6 +299,11 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
       {cats.length > 0 && <label className="campo">{t('catfin.titulo_s')}
         <select value={categoriaFinanceiraId} onChange={(e) => setCatId(e.target.value)}>
           <option value="">{t('catfin.sem')}</option>{cats.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
+        </select>
+      </label>}
+      {tiposDoc.length > 0 && <label className="campo">{t('tipodoc.titulo_s')}
+        <select value={tipoDoc} onChange={(e) => setTipoDoc(e.target.value)}>
+          <option value="">{t('tipodoc.sem')}</option>{tiposDoc.map((d) => <option key={d.id} value={d.nome}>{d.nome}</option>)}
         </select>
       </label>}
       <div className="cores-grid">

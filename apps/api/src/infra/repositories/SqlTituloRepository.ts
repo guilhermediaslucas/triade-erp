@@ -15,6 +15,7 @@ function map(r: any): Titulo {
     categoriaFinanceiraId: r.categoria_financeira_id ?? null, categoriaFinanceiraNome: r.categoria_financeira_nome ?? null,
     favorecidoId: r.favorecido_id ?? null, favorecidoNome: r.favorecido_nome ?? null,
     previsto: r.previsto === true,
+    tipoDocumento: r.tipo_documento ?? null,
     criadoEm: iso(r.criado_em)!,
   };
 }
@@ -78,9 +79,9 @@ export class SqlTituloRepository implements TituloRepository {
   async criar(schema: string, t: NovoTitulo, origem: string, pedidoId: string | null): Promise<string> {
     const s = validarSchema(schema); const id = randomUUID();
     await this.ds.query(
-      `INSERT INTO "${s}".titulo (id, tipo, descricao, pessoa_nome, valor, vencimento, origem, pedido_id, categoria_financeira_id, favorecido_id, previsto)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
-      [id, t.tipo, t.descricao, t.pessoaNome, t.valor, t.vencimento, origem, pedidoId, t.categoriaFinanceiraId ?? null, t.favorecidoId ?? null, t.previsto === true]);
+      `INSERT INTO "${s}".titulo (id, tipo, descricao, pessoa_nome, valor, vencimento, origem, pedido_id, categoria_financeira_id, favorecido_id, previsto, tipo_documento)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+      [id, t.tipo, t.descricao, t.pessoaNome, t.valor, t.vencimento, origem, pedidoId, t.categoriaFinanceiraId ?? null, t.favorecidoId ?? null, t.previsto === true, t.tipoDocumento ?? null]);
     return id;
   }
   async baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null): Promise<void> {

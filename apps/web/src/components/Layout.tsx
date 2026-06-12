@@ -101,6 +101,7 @@ const GRUPOS: Grupo[] = [
         itens: [
           { rotulo: 'menu.contas_correntes', icone: '🏦', to: '/cadastros/contas-correntes', cap: 'cadastros.conta.listar' },
           { rotulo: 'menu.catfin', icone: '🗂️', to: '/cadastros/categorias-financeiras', cap: 'cadastros.catfin.listar' },
+          { rotulo: 'menu.tipodoc', icone: '📄', to: '/cadastros/tipos-documento', cap: 'cadastros.tipodoc.listar' },
         ],
       },
     ],

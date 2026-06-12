@@ -12,6 +12,7 @@ import { rotasEmpresas } from './rotas/empresas.js';
 import { rotasCategorias } from './rotas/categorias.js';
 import { rotasMarcas } from './rotas/marcas.js';
 import { rotasFormasEntrega } from './rotas/formasEntrega.js';
+import { rotasTiposDocumento } from './rotas/tiposDocumento.js';
 import { rotasFavorecidos } from './rotas/favorecidos.js';
 import { rotasProdutos } from './rotas/produtos.js';
 import { rotasPessoas } from './rotas/pessoas.js';
@@ -65,6 +66,7 @@ export function criarServidor(): Express {
   app.use(rotasCategorias(deps));
   app.use(rotasMarcas(deps));
   app.use(rotasFormasEntrega(deps));
+  app.use(rotasTiposDocumento(deps));
   app.use(rotasFavorecidos(deps));
   app.use(rotasProdutos(deps));
   app.use(rotasPessoas(deps));

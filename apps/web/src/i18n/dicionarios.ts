@@ -1763,3 +1763,25 @@ Object.assign(es, {
   'forma_entrega.tipo_motoboy': 'Mensajero', 'forma_entrega.tipo_correios': 'Correos', 'forma_entrega.tipo_retirada': 'Retiro en tienda', 'forma_entrega.tipo_transportadora': 'Transportista', 'forma_entrega.tipo_propria': 'Entrega propia',
   'forma_entrega.tipo_invalido': 'Tipo de forma de entrega inválido.',
 });
+
+Object.assign(pt, {
+  'menu.tipodoc': 'Tipos de documento',
+  'cap.cadastros.tipodoc.listar': 'Listar tipos de documento', 'cap.cadastros.tipodoc.gerenciar': 'Criar e editar tipos de documento',
+  'tipodoc.crumb': 'Cadastros / Financeiro / Tipos de documento', 'tipodoc.titulo': 'Tipos de documento', 'tipodoc.titulo_s': 'Tipo de documento',
+  'tipodoc.sub': 'Usados no campo Tipo de documento ao lançar um título', 'tipodoc.novo': 'Novo tipo de documento', 'tipodoc.buscar': 'Buscar tipo de documento',
+  'tipodoc.nome': 'Tipo de documento', 'tipodoc.nome_ph': 'Ex.: NF-e, Boleto, Fatura, Recibo', 'tipodoc.sem': 'Nenhum',
+});
+Object.assign(en, {
+  'menu.tipodoc': 'Document types',
+  'cap.cadastros.tipodoc.listar': 'List document types', 'cap.cadastros.tipodoc.gerenciar': 'Create and edit document types',
+  'tipodoc.crumb': 'Records / Finance / Document types', 'tipodoc.titulo': 'Document types', 'tipodoc.titulo_s': 'Document type',
+  'tipodoc.sub': 'Used in the Document type field when posting a title', 'tipodoc.novo': 'New document type', 'tipodoc.buscar': 'Search document type',
+  'tipodoc.nome': 'Document type', 'tipodoc.nome_ph': 'e.g. Invoice, Bill, Receipt', 'tipodoc.sem': 'None',
+});
+Object.assign(es, {
+  'menu.tipodoc': 'Tipos de documento',
+  'cap.cadastros.tipodoc.listar': 'Listar tipos de documento', 'cap.cadastros.tipodoc.gerenciar': 'Crear y editar tipos de documento',
+  'tipodoc.crumb': 'Registros / Finanzas / Tipos de documento', 'tipodoc.titulo': 'Tipos de documento', 'tipodoc.titulo_s': 'Tipo de documento',
+  'tipodoc.sub': 'Usados en el campo Tipo de documento al registrar un título', 'tipodoc.novo': 'Nuevo tipo de documento', 'tipodoc.buscar': 'Buscar tipo de documento',
+  'tipodoc.nome': 'Tipo de documento', 'tipodoc.nome_ph': 'Ej.: Factura, Boleta, Recibo', 'tipodoc.sem': 'Ninguno',
+});
