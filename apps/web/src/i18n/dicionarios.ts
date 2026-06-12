@@ -688,8 +688,9 @@ Object.assign(pt, {
   'nota.serie': 'Série', 'nota.serie_ph': 'Série', 'nota.nf_ph': 'NF nº', 'nota.produto_ph': 'Digite ou selecione',
   'nota.venc1': '1º vencimento (Contas a pagar)', 'nota.valor_total': 'Valor total',
   'nota.gera_full': 'Ao lançar, é criado um título no Contas a pagar (fornecedor, valor total) e uma pendência de recebimento que o Estoque abre para bipar as etiquetas e distribuir por lote/validade.',
-  'receb.titulo': 'Recebimento', 'receb.sub': 'Pendências de recebimento das notas de entrada. Receber dá entrada no estoque.',
-  'receb.vazio': 'Nenhuma pendência de recebimento.', 'receb.receber': 'Receber', 'receb.confirmar': 'Confirmar recebimento', 'receb.un': 'un',
+  'receb.titulo': 'Recebimento de mercadoria', 'receb.sub': 'Receba as notas lançadas pelo Financeiro: informe a marca e bipe as etiquetas por lote/validade',
+  'receb.pendencias': 'Pendências de recebimento', 'receb.custo_un': 'Custo un.', 'receb.lancada_em': 'Lançada em',
+  'receb.vazio': 'Nenhuma pendência. As notas lançadas no Financeiro aparecem aqui.', 'receb.receber': 'Receber', 'receb.confirmar': 'Confirmar recebimento', 'receb.un': 'un',
   'recebimento.nao_encontrado': 'Pendência não encontrada.',
 });
 Object.assign(en, {
@@ -700,8 +701,9 @@ Object.assign(en, {
   'nota.serie': 'Series', 'nota.serie_ph': 'Series', 'nota.nf_ph': 'Invoice #', 'nota.produto_ph': 'Type or select',
   'nota.venc1': 'First due date (Payables)', 'nota.valor_total': 'Total value',
   'nota.gera_full': 'On submit, a payable is created (supplier, total) and a pending receipt that Inventory opens to scan labels and split by batch/expiry.',
-  'receb.titulo': 'Receiving', 'receb.sub': 'Pending receipts from purchase entries. Receiving adds to stock.',
-  'receb.vazio': 'No pending receipts.', 'receb.receber': 'Receive', 'receb.confirmar': 'Confirm receipt', 'receb.un': 'un',
+  'receb.titulo': 'Goods receiving', 'receb.sub': 'Receive the entries posted by Finance: set the brand and scan the labels per batch/expiry',
+  'receb.pendencias': 'Pending receipts', 'receb.custo_un': 'Unit cost', 'receb.lancada_em': 'Posted on',
+  'receb.vazio': 'No pending receipts. Entries posted in Finance show up here.', 'receb.receber': 'Receive', 'receb.confirmar': 'Confirm receipt', 'receb.un': 'un',
   'recebimento.nao_encontrado': 'Pending receipt not found.',
 });
 Object.assign(es, {
@@ -712,8 +714,9 @@ Object.assign(es, {
   'nota.serie': 'Serie', 'nota.serie_ph': 'Serie', 'nota.nf_ph': 'Factura nº', 'nota.produto_ph': 'Escribe o selecciona',
   'nota.venc1': '1º vencimiento (Cuentas a pagar)', 'nota.valor_total': 'Valor total',
   'nota.gera_full': 'Al registrar, se crea una cuenta a pagar (proveedor, total) y una pendencia de recepción que el Stock abre para escanear etiquetas y distribuir por lote/caducidad.',
-  'receb.titulo': 'Recepción', 'receb.sub': 'Pendencias de recepción de las notas de entrada. Recibir da entrada al stock.',
-  'receb.vazio': 'Sin pendencias de recepción.', 'receb.receber': 'Recibir', 'receb.confirmar': 'Confirmar recepción', 'receb.un': 'un',
+  'receb.titulo': 'Recepción de mercancía', 'receb.sub': 'Recibe las notas registradas por Finanzas: indica la marca y escanea las etiquetas por lote/caducidad',
+  'receb.pendencias': 'Pendencias de recepción', 'receb.custo_un': 'Costo un.', 'receb.lancada_em': 'Registrada el',
+  'receb.vazio': 'Sin pendencias. Las notas registradas en Finanzas aparecen aquí.', 'receb.receber': 'Recibir', 'receb.confirmar': 'Confirmar recepción', 'receb.un': 'un',
   'recebimento.nao_encontrado': 'Pendencia no encontrada.',
 });
 

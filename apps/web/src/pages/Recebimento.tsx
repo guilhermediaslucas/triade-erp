@@ -22,21 +22,25 @@ export function Recebimento() {
 
   return (
     <div>
-      <div className="crumb">{t('receb.crumb')}</div><h1 className="page-titulo">{t('receb.titulo')}</h1>
-      <p className="muted" style={{ marginTop: -8 }}>{t('receb.sub')}</p>
+      <div className="crumb">{t('receb.crumb')}</div>
+      <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('receb.titulo')}</h1><div className="muted page-sub">{t('receb.sub')}</div></div></div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
-      <div className="card pad0"><table className="tabela">
-        <thead><tr><th>{t('fin.fornecedor')}</th><th>{t('precos.produto')}</th><th>{t('entrada.quantidade')}</th><th>{t('nota.nf')}</th><th>{t('fin.valor')}</th><th></th></tr></thead>
-        <tbody>
-          {itens.length === 0 && <tr><td colSpan={6} className="vazio">{t('receb.vazio')}</td></tr>}
-          {itens.map((p) => (
-            <tr key={p.id}>
-              <td>{p.fornecedorNome ?? '—'}</td><td>{p.produtoNome}</td><td>{p.quantidade}</td><td>{p.nf ?? '—'}</td><td>{moeda(p.total)}</td>
-              <td className="acoes"><button className="btn-primary btn-mini" onClick={() => setReceber(p)}>{t('receb.receber')}</button></td>
-            </tr>
-          ))}
-        </tbody>
-      </table></div>
+      <div className="card pad0">
+        <div className="card-head" style={{ padding: '16px 18px 4px' }}><h3>{t('receb.pendencias')}</h3></div>
+        <table className="tabela">
+          <thead><tr><th>{t('fin.fornecedor')}</th><th>{t('precos.produto')}</th><th>{t('entrada.quantidade')}</th><th>{t('receb.custo_un')}</th><th>{t('nota.nf')}</th><th>{t('receb.lancada_em')}</th><th style={{ textAlign: 'right' }}>{t('usuarios.acoes')}</th></tr></thead>
+          <tbody>
+            {itens.length === 0 && <tr><td colSpan={7} className="vazio">{t('receb.vazio')}</td></tr>}
+            {itens.map((p) => (
+              <tr key={p.id}>
+                <td>{p.fornecedorNome ?? '—'}</td><td>{p.produtoNome}</td><td>{p.quantidade}</td><td>{moeda(p.custoUnitario)}</td><td>{p.nf ?? '—'}</td>
+                <td>{p.criadoEm ? new Date(p.criadoEm).toLocaleDateString('pt-BR') : '—'}</td>
+                <td className="acoes" style={{ textAlign: 'right' }}><button className="btn-primary btn-mini" onClick={() => setReceber(p)}>{t('receb.receber')}</button></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {receber && <ModalReceber p={receber} onFechar={() => setReceber(null)} onSalvo={() => { setReceber(null); carregar(); }} />}
     </div>
   );
