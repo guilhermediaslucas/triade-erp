@@ -46,7 +46,8 @@ export function TabelaPreco() {
 
   return (
     <div>
-      <div className="crumb">{t('precos.crumb')}</div><h1 className="page-titulo">{t('precos.titulo')}</h1>
+      <div className="crumb">{t('precos.crumb')}</div>
+      <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('precos.titulo')}</h1><div className="muted page-sub">{modo === 'base' ? t('precos.sub') : t('precos.sub_cliente')}</div></div></div>
       <div className="rel-filtro">
         <label className="campo">{t('precos.modo')}
           <select value={modo} onChange={(e) => { const m = e.target.value as any; setModo(m); if (m === 'base') setValores(Object.fromEntries(base.map((p) => [p.produtoId, String(p.preco)]))); else { setCli([]); setClienteId(''); } }}>
@@ -57,7 +58,6 @@ export function TabelaPreco() {
           <select value={clienteId} onChange={(e) => carregarCliente(e.target.value)}><option value="">—</option>{clientes.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}</select>
         </label>}
       </div>
-      <p className="muted" style={{ marginTop: -8 }}>{modo === 'base' ? t('precos.sub') : t('precos.sub_cliente')}</p>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
 
       {modo === 'base' ? (
@@ -88,6 +88,7 @@ export function TabelaPreco() {
           </tbody>
         </table></div>
       )}
+      <div className="nota-info" style={{ marginTop: 12 }}>{t('precos.nota')}</div>
       {campProduto && <ModalCampanhas produto={campProduto} pode={pode} onFechar={() => setCampProduto(null)} />}
     </div>
   );
