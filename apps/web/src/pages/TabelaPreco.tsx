@@ -5,9 +5,11 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
 import { Ic } from '../components/Icones.js';
 
-interface PrecoProduto { produtoId: string; produtoNome: string; categoriaNome: string | null; unidade: string; ativo: boolean; preco: number; campanhasCount: number; precoVigente: number | null; }
+interface PrecoProduto { produtoId: string; produtoNome: string; categoriaNome: string | null; unidade: string; ativo: boolean; preco: number; campanhasCount: number; precoVigente: number | null; precoVigenteMotivo: string | null; }
 interface Cliente { id: string; nome: string; }
-interface LinhaCli { produtoId: string; produtoNome: string; precoBase: number; precoCliente: number | null; }
+type TipoCli = 'fixo' | 'periodo';
+interface LinhaCli { produtoId: string; produtoNome: string; categoriaNome: string | null; precoBase: number; precoCliente: number | null; tipo: TipoCli; de: string | null; ate: string | null; }
+interface MetaCli { tipo: TipoCli; de: string; ate: string; }
 
 export function TabelaPreco() {
   const { token, temCapability } = useAuth();
@@ -19,6 +21,7 @@ export function TabelaPreco() {
   const [base, setBase] = useState<PrecoProduto[]>([]);
   const [cli, setCli] = useState<LinhaCli[]>([]);
   const [valores, setValores] = useState<Record<string, string>>({});
+  const [cliMeta, setCliMeta] = useState<Record<string, MetaCli>>({});
   const [salvo, setSalvo] = useState(false);
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -37,8 +40,15 @@ export function TabelaPreco() {
 
   async function carregarCliente(id: string) {
     setClienteId(id); if (!id) { setCli([]); return; }
-    try { const l = await api.get<LinhaCli[]>('/precos/cliente/' + id, token!); setCli(l); setValores(Object.fromEntries(l.map((x) => [x.produtoId, x.precoCliente != null ? String(x.precoCliente) : '']))); }
+    try {
+      const l = await api.get<LinhaCli[]>('/precos/cliente/' + id, token!); setCli(l);
+      setValores(Object.fromEntries(l.map((x) => [x.produtoId, x.precoCliente != null ? String(x.precoCliente) : ''])));
+      setCliMeta(Object.fromEntries(l.map((x) => [x.produtoId, { tipo: x.tipo, de: x.de ?? '', ate: x.ate ?? '' }])));
+    }
     catch (e) { setErro((e as ErroApi).chaveI18n); }
+  }
+  function setMeta(pid: string, patch: Partial<MetaCli>) {
+    setCliMeta((m) => ({ ...m, [pid]: { ...(m[pid] ?? { tipo: 'fixo', de: '', ate: '' }), ...patch } }));
   }
 
   // Salva, de uma vez, só as linhas que mudaram (padrão "Salvar tabela" do mockup).
@@ -54,8 +64,11 @@ export function TabelaPreco() {
       } else if (clienteId) {
         for (const p of cli) {
           const v = valores[p.produtoId] ?? '';
-          const orig = p.precoCliente != null ? String(p.precoCliente) : '';
-          if (v !== orig) await api.put('/precos/cliente/' + clienteId + '/' + p.produtoId, { preco: Number(v || 0) }, token!);
+          const m = cliMeta[p.produtoId] ?? { tipo: 'fixo' as TipoCli, de: '', ate: '' };
+          const origPreco = p.precoCliente != null ? String(p.precoCliente) : '';
+          const mudou = v !== origPreco || m.tipo !== p.tipo || m.de !== (p.de ?? '') || m.ate !== (p.ate ?? '');
+          if (mudou) await api.put('/precos/cliente/' + clienteId + '/' + p.produtoId,
+            { preco: Number(v || 0), tipo: m.tipo, de: m.de || null, ate: m.ate || null }, token!);
         }
         await carregarCliente(clienteId);
       }
@@ -67,7 +80,7 @@ export function TabelaPreco() {
   function trocarModo(m: 'base' | 'cliente') {
     setModo(m); setSalvo(false);
     if (m === 'base') setValores(Object.fromEntries(base.map((p) => [p.produtoId, String(p.preco)])));
-    else { setCli([]); setClienteId(''); setValores({}); }
+    else { setCli([]); setClienteId(''); setValores({}); setCliMeta({}); }
   }
 
   return (
@@ -98,7 +111,7 @@ export function TabelaPreco() {
                 <tr key={p.produtoId} className={p.ativo ? '' : 'linha-inativa'}>
                   <td>{p.produtoNome}</td><td>{p.categoriaNome ?? '—'}</td>
                   <td>{pode ? <input type="number" step="0.01" min="0" className="preco-inp" value={valores[p.produtoId] ?? ''} onChange={(e) => setValores({ ...valores, [p.produtoId]: e.target.value })} /> : moeda(p.preco)}</td>
-                  <td>{p.precoVigente != null ? <span className="pill st-verde">{moeda(p.precoVigente)}</span> : <span className="muted">{t('precos.usa_fixo')}</span>}</td>
+                  <td>{p.precoVigente != null ? <span className="pill st-verde">{p.precoVigenteMotivo ? p.precoVigenteMotivo + ' · ' : ''}{moeda(p.precoVigente)}</span> : <span className="muted">{t('precos.usa_fixo')}</span>}</td>
                   <td style={{ textAlign: 'right' }}><button className="camp-btn" onClick={() => setCampProduto(p)}><Ic name="i-clock" className="sm" />{t('camp.titulo')} ({p.campanhasCount})</button></td>
                 </tr>
               ))}
@@ -107,14 +120,30 @@ export function TabelaPreco() {
         ) : (
           !clienteId ? <div className="vazio" style={{ padding: 24 }}>{t('precos.escolha_cliente')}</div> :
           <table className="tabela">
-            <thead><tr><th>{t('precos.produto')}</th><th>{t('precos.preco_base')}</th><th style={{ width: 220 }}>{t('precos.preco_cliente')}</th></tr></thead>
+            <thead><tr><th>{t('precos.produto')}</th><th>{t('produtos.categoria')}</th><th>{t('precos.preco_base')}</th><th style={{ width: 160 }}>{t('precos.preco_cliente')}</th><th style={{ width: 300 }}>{t('precos.vigencia')}</th></tr></thead>
             <tbody>
-              {cli.map((p) => (
-                <tr key={p.produtoId}>
-                  <td>{p.produtoNome}</td><td className="muted">{moeda(p.precoBase)}</td>
-                  <td>{pode ? <input type="number" step="0.01" min="0" className="preco-inp" placeholder={t('precos.usa_base')} value={valores[p.produtoId] ?? ''} onChange={(e) => setValores({ ...valores, [p.produtoId]: e.target.value })} /> : (p.precoCliente != null ? moeda(p.precoCliente) : '—')}</td>
-                </tr>
-              ))}
+              {cli.length === 0 && <tr><td colSpan={5} className="vazio">{t('precos.sem_produtos')}</td></tr>}
+              {cli.map((p) => {
+                const meta = cliMeta[p.produtoId] ?? { tipo: 'fixo' as TipoCli, de: '', ate: '' };
+                const periodo = meta.tipo === 'periodo';
+                return (
+                  <tr key={p.produtoId}>
+                    <td>{p.produtoNome}</td><td>{p.categoriaNome ?? '—'}</td><td className="muted">{moeda(p.precoBase)}</td>
+                    <td>{pode ? <input type="number" step="0.01" min="0" className="preco-inp" placeholder={t('precos.usa_base')} value={valores[p.produtoId] ?? ''} onChange={(e) => setValores({ ...valores, [p.produtoId]: e.target.value })} /> : (p.precoCliente != null ? moeda(p.precoCliente) : '—')}</td>
+                    <td>
+                      {pode ? (
+                        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+                          <select value={meta.tipo} onChange={(e) => setMeta(p.produtoId, { tipo: e.target.value as TipoCli })} style={{ maxWidth: 110 }}>
+                            <option value="fixo">{t('precos.tipo_fixo')}</option><option value="periodo">{t('precos.tipo_periodo')}</option>
+                          </select>
+                          <input type="date" value={meta.de} disabled={!periodo} onChange={(e) => setMeta(p.produtoId, { de: e.target.value })} style={{ maxWidth: 140, opacity: periodo ? 1 : 0.5 }} />
+                          <input type="date" value={meta.ate} disabled={!periodo} onChange={(e) => setMeta(p.produtoId, { ate: e.target.value })} style={{ maxWidth: 140, opacity: periodo ? 1 : 0.5 }} />
+                        </div>
+                      ) : (periodo ? (p.de + ' – ' + p.ate) : t('precos.tipo_fixo'))}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}

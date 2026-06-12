@@ -693,16 +693,19 @@ Object.assign(pt, {
   'precos.modo': 'Modo', 'precos.modo_base': 'Preço base (geral)', 'precos.modo_cliente': 'Por cliente',
   'precos.preco_cliente': 'Preço do cliente (R$)', 'precos.sub_cliente': 'Preço negociado por cliente — sobrepõe o preço base no pedido. Em branco = usa o base.',
   'precos.escolha_cliente': 'Escolha um cliente para definir os preços negociados.', 'precos.usa_base': 'usa o base',
+  'precos.vigencia': 'Vigência', 'precos.tipo_fixo': 'Fixo', 'precos.tipo_periodo': 'Período',
 });
 Object.assign(en, {
   'precos.modo': 'Mode', 'precos.modo_base': 'Base price (general)', 'precos.modo_cliente': 'Per customer',
   'precos.preco_cliente': 'Customer price (R$)', 'precos.sub_cliente': 'Negotiated price per customer — overrides the base price in orders. Blank = uses base.',
   'precos.escolha_cliente': 'Choose a customer to set negotiated prices.', 'precos.usa_base': 'uses base',
+  'precos.vigencia': 'Validity', 'precos.tipo_fixo': 'Fixed', 'precos.tipo_periodo': 'Period',
 });
 Object.assign(es, {
   'precos.modo': 'Modo', 'precos.modo_base': 'Precio base (general)', 'precos.modo_cliente': 'Por cliente',
   'precos.preco_cliente': 'Precio del cliente (R$)', 'precos.sub_cliente': 'Precio negociado por cliente — sustituye el base en el pedido. Vacío = usa el base.',
   'precos.escolha_cliente': 'Elige un cliente para definir los precios negociados.', 'precos.usa_base': 'usa el base',
+  'precos.vigencia': 'Vigencia', 'precos.tipo_fixo': 'Fijo', 'precos.tipo_periodo': 'Período',
 });
 
 // --- Refinamento: campanhas de preço ---
@@ -1708,23 +1711,41 @@ Object.assign(pt, {
   'pedidos.card_dados': 'Dados do pedido', 'pedidos.card_endereco': 'Endereço de entrega',
   'pedidos.escolha_cliente': 'Digite ou selecione um cliente', 'pedidos.obs_ph': 'Notas internas do pedido',
   'pedidos.preco_un': 'Preço un.', 'pedidos.sem_itens': 'Nenhum item adicionado. Clique em Adicionar item.', 'pedidos.criar': 'Criar pedido',
+  'pedidos.cliente_comercial': 'Cliente comercial', 'pedidos.cadastrar_cliente': 'cadastrar novo',
+  'pedidos.pix_avista': 'Pix é somente à vista.', 'pedidos.salvar_orcamento': 'Salvar como orçamento',
+  'pedidos.end_cliente': 'Endereço do cliente', 'pedidos.end_selecione_cliente': '— selecione um cliente para visualizar —',
+  'pedidos.end_novo': 'Informar um novo endereço', 'pedidos.end_salvar': 'Salvar este endereço no cadastro do cliente',
+  'pedidos.complemento': 'Complemento', 'pedidos.complemento_ph': 'Sala, andar...',
+  'pedidos.excluir_sel': 'Excluir selecionados', 'pedidos.itens_sel': 'item(ns) selecionado(s)', 'pedidos.total_sel': 'Total selecionado',
 });
 Object.assign(en, {
   'pedidos.crumb_novo': 'Sales / Orders / New', 'pedidos.sub_novo': 'Customer, items and payment',
   'pedidos.card_dados': 'Order details', 'pedidos.card_endereco': 'Delivery address',
   'pedidos.escolha_cliente': 'Type or select a customer', 'pedidos.obs_ph': 'Internal order notes',
   'pedidos.preco_un': 'Unit price', 'pedidos.sem_itens': 'No items added. Click Add item.', 'pedidos.criar': 'Create order',
+  'pedidos.cliente_comercial': 'Commercial customer', 'pedidos.cadastrar_cliente': 'add new',
+  'pedidos.pix_avista': 'Pix is cash only.', 'pedidos.salvar_orcamento': 'Save as quote',
+  'pedidos.end_cliente': 'Customer address', 'pedidos.end_selecione_cliente': '— select a customer to view —',
+  'pedidos.end_novo': 'Enter a new address', 'pedidos.end_salvar': 'Save this address to the customer record',
+  'pedidos.complemento': 'Complement', 'pedidos.complemento_ph': 'Suite, floor...',
+  'pedidos.excluir_sel': 'Delete selected', 'pedidos.itens_sel': 'item(s) selected', 'pedidos.total_sel': 'Selected total',
 });
 Object.assign(es, {
   'pedidos.crumb_novo': 'Comercial / Pedidos / Nuevo', 'pedidos.sub_novo': 'Cliente, ítems y forma de pago',
   'pedidos.card_dados': 'Datos del pedido', 'pedidos.card_endereco': 'Dirección de entrega',
   'pedidos.escolha_cliente': 'Escribe o selecciona un cliente', 'pedidos.obs_ph': 'Notas internas del pedido',
   'pedidos.preco_un': 'Precio un.', 'pedidos.sem_itens': 'Ningún ítem agregado. Clic en Agregar ítem.', 'pedidos.criar': 'Crear pedido',
+  'pedidos.cliente_comercial': 'Cliente comercial', 'pedidos.cadastrar_cliente': 'registrar nuevo',
+  'pedidos.pix_avista': 'Pix es solo al contado.', 'pedidos.salvar_orcamento': 'Guardar como presupuesto',
+  'pedidos.end_cliente': 'Dirección del cliente', 'pedidos.end_selecione_cliente': '— selecciona un cliente para ver —',
+  'pedidos.end_novo': 'Informar una nueva dirección', 'pedidos.end_salvar': 'Guardar esta dirección en el registro del cliente',
+  'pedidos.complemento': 'Complemento', 'pedidos.complemento_ph': 'Sala, piso...',
+  'pedidos.excluir_sel': 'Eliminar seleccionados', 'pedidos.itens_sel': 'ítem(s) seleccionado(s)', 'pedidos.total_sel': 'Total seleccionado',
 });
 
-Object.assign(pt, { 'pedido.workflow': 'Workflow', 'pedido.titulo': 'Pedido' });
-Object.assign(en, { 'pedido.workflow': 'Workflow', 'pedido.titulo': 'Order' });
-Object.assign(es, { 'pedido.workflow': 'Flujo', 'pedido.titulo': 'Pedido' });
+Object.assign(pt, { 'pedido.workflow': 'Workflow', 'pedido.titulo': 'Pedido', 'pedido.lote': 'Lote', 'pedido.validade': 'Validade' });
+Object.assign(en, { 'pedido.workflow': 'Workflow', 'pedido.titulo': 'Order', 'pedido.lote': 'Batch', 'pedido.validade': 'Expiry' });
+Object.assign(es, { 'pedido.workflow': 'Flujo', 'pedido.titulo': 'Pedido', 'pedido.lote': 'Lote', 'pedido.validade': 'Validez' });
 
 Object.assign(pt, { 'entrada.card': 'Dados da entrada', 'nota.card': 'Dados da nota', 'perda.card': 'Dados da baixa' });
 Object.assign(en, { 'entrada.card': 'Entry details', 'nota.card': 'Note details', 'perda.card': 'Write-off details' });

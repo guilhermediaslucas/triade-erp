@@ -14,7 +14,10 @@ export class SqlPrecoBaseRepository implements PrecoBaseRepository {
               (SELECT count(*) FROM "${s}".preco_campanha pc WHERE pc.produto_id = p.id) AS campanhas_count,
               (SELECT pc.preco FROM "${s}".preco_campanha pc
                  WHERE pc.produto_id = p.id AND CURRENT_DATE BETWEEN pc.de AND pc.ate
-                 ORDER BY pc.de DESC LIMIT 1) AS preco_vigente
+                 ORDER BY pc.de DESC LIMIT 1) AS preco_vigente,
+              (SELECT pc.motivo FROM "${s}".preco_campanha pc
+                 WHERE pc.produto_id = p.id AND CURRENT_DATE BETWEEN pc.de AND pc.ate
+                 ORDER BY pc.de DESC LIMIT 1) AS preco_vigente_motivo
          FROM "${s}".produto p
          LEFT JOIN "${s}".categoria c ON c.id = p.categoria_id
          LEFT JOIN "${s}".preco_base pb ON pb.produto_id = p.id
@@ -24,6 +27,7 @@ export class SqlPrecoBaseRepository implements PrecoBaseRepository {
       unidade: r.unidade, ativo: r.ativo, preco: Number(r.preco),
       campanhasCount: Number(r.campanhas_count ?? 0),
       precoVigente: r.preco_vigente != null ? Number(r.preco_vigente) : null,
+      precoVigenteMotivo: r.preco_vigente_motivo ?? null,
     }));
   }
 

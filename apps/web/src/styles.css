@@ -384,6 +384,8 @@ a { text-decoration: none; color: inherit; }
 .bulk-acoes { display: flex; align-items: center; gap: 8px; }
 .bulk-acoes .btn-link { color: var(--accent-fg, #fff); text-decoration: underline; }
 .linha-sel { background: var(--accent-soft, #f3effe); }
+.sumbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--bg, #f4f5fa); border: 1px solid var(--borda, #ececf2); padding: 8px 14px; border-radius: 10px; font-size: 13px; color: var(--muted, #8a90a2); }
+.sumbar b { color: var(--ink, #1f2430); }
 
 .form-linha { display:flex; gap:10px; flex-wrap:wrap; }
 .form-linha .campo { flex:1; min-width:120px; }

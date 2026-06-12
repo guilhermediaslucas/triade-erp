@@ -59,6 +59,24 @@ export class SqlPedidoRepository implements PedidoRepository {
         WHERE p.id = $1`, [id]))[0];
     if (!r) return null;
     const itens = await this.ds.query(`SELECT * FROM "${s}".pedido_item WHERE pedido_id = $1`, [id]);
+
+    // Lotes consumidos na separação (rastreabilidade): movimentos de saída deste pedido,
+    // identificados pela observação = ref do pedido. Agrupa lote+validade por produto.
+    const ref = 'Pedido PE-' + String(r.numero).padStart(6, '0');
+    const movs = await this.ds.query(
+      `SELECT m.produto_id, l.lote, l.validade
+         FROM "${s}".estoque_movimento m
+         JOIN "${s}".estoque_lote l ON l.id = m.lote_id
+        WHERE m.tipo = 'saida' AND m.observacao = $1
+        GROUP BY m.produto_id, l.lote, l.validade
+        ORDER BY l.validade NULLS LAST`, [ref]);
+    const lotesPorProduto = new Map<string, { lote: string; validade: string | null }[]>();
+    for (const m of movs) {
+      const lista = lotesPorProduto.get(m.produto_id) ?? [];
+      lista.push({ lote: m.lote, validade: m.validade ? new Date(m.validade).toISOString().slice(0, 10) : null });
+      lotesPorProduto.set(m.produto_id, lista);
+    }
+
     return {
       id: r.id, numero: r.numero, clienteId: r.cliente_id ?? null, clienteNome: r.cliente_nome ?? null,
       vendedorId: r.vendedor_id ?? null, vendedorNome: r.vendedor_nome ?? null, status: r.status,
@@ -72,6 +90,7 @@ export class SqlPedidoRepository implements PedidoRepository {
       itens: itens.map((i: any) => ({
         id: i.id, produtoId: i.produto_id ?? null, produtoNome: i.produto_nome,
         quantidade: Number(i.quantidade), precoUnitario: Number(i.preco_unitario), subtotal: Number(i.subtotal),
+        lotes: i.produto_id ? (lotesPorProduto.get(i.produto_id) ?? []) : [],
       })),
     };
   }

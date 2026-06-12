@@ -188,6 +188,55 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Paridade: Tabela de preço — modo "Por cliente" com Categoria + Vigência (Fixo/Período).**
+  O Gui apontou divergência; mostrei o comparativo e ele escolheu o escopo **completo (com período)**. O modo
+  **base** já estava fiel; faltava o **modo Por cliente** que no mockup tem colunas **Categoria** e **Vigência**
+  (o preço negociado pode ser **Fixo** ou **Período** com datas de/até). Migration tenant **034** (`preco_cliente`
+  += `tipo` default `fixo`, `de` date, `ate` date). **Backend:** `PrecoClienteLinha` += categoria/tipo/de/ate +
+  `PrecoClienteEntrada`; `SqlPrecoClienteRepository.listarPorCliente` (JOIN categoria + tipo/de/ate),
+  `definir({preco,tipo,de,ate})` (upsert; preço≤0 remove), **`precoDe` resolve o período** (tipo `periodo` só
+  vale se `CURRENT_DATE BETWEEN de AND ate`; senão null → cai no base/campanha). `PrecosService.definirCliente`
+  valida tipo + datas ISO + ate≥de. Rota PUT `/precos/cliente/:c/:p` passa o corpo inteiro. **Cadeia de preço no
+  pedido agora:** preço do cliente (fixo OU período vigente) → campanha vigente → preço fixo base. **Badge de
+  campanha vigente (modo base):** agora mostra **motivo + valor** (ex.: "Black Friday · R$ 500,00") — `PrecoProduto`
+  += `precoVigenteMotivo`; `SqlPrecoBaseRepository.listar` traz o motivo da campanha vigente. **Frontend
+  (`TabelaPreco.tsx`):** modo cliente ganhou colunas Categoria + Vigência (select Fixo/Período + 2 date inputs,
+  datas habilitadas só no Período), estado `cliMeta` por produto, salvar envia `{preco,tipo,de,ate}` só do que
+  mudou. i18n `precos.vigencia/tipo_fixo/tipo_periodo` pt/en/es. **Validação:** **type-check/e2e NÃO rodaram**
+  (sandbox trunca leituras grandes + embedded-postgres incompleto) — hand-review feito; mudança é aditiva
+  (coluna com default, `precoDe` degrada p/ base). **Pendente:** Gui commit+push → Render aplica a migration 034
+  no boot (AUTO_MIGRATE) + relogar. **Sugiro e2e ao aplicar:** preço cliente período vigente sobrepõe base;
+  fora do período cai no base; fixo sempre vale; preço 0 remove.
+- **2026-06-12** — **Paridade: tela Novo pedido alinhada ao mockup.** Só frontend (`NovoPedido.tsx` +
+  i18n + CSS), sem backend/migration. **(1) Endereço de entrega** virou o padrão do mockup: **select dos
+  endereços salvos do cliente** (favorito no topo, rotulado) + opção **"➕ Informar um novo endereço"** que
+  revela o form (logradouro, número, complemento, bairro, **CEP com busca ViaCEP**, cidade, **UF select**) +
+  checkbox **"Salvar este endereço no cadastro do cliente"** (best-effort: faz PUT `/clientes/:id` anexando o
+  endereço; favorito se for o 1º). O texto consolidado vai em `enderecoEntrega`; o CEP efetivo alimenta o
+  cálculo de frete. **(2) Itens** ganharam **checkbox por linha + selecionar todos**, botão **"Excluir
+  selecionados"** e a **sumbar** (contagem + total selecionado), espelhando o mockup. **(3) Pix trava condição
+  à vista** (seletor desabilitado + reset). **(4) Label "Cliente comercial"** + link **"+ cadastrar novo"**
+  (→ `/cadastros/clientes`). **(5) Dois botões:** **"Criar pedido"** cria e **confirma** (PATCH status
+  →`aguardando_pagamento`, que aplica o gate de forma de pagamento + limite de crédito) e vai ao **detalhe**;
+  **"Salvar como orçamento"** só cria (fica em orçamento) e vai ao detalhe. **Importante:** a rota de status
+  exige cap `comercial.pedido.gerenciar` (a tela é liberada por `comercial.pedido.criar`) — por isso o confirm
+  é **best-effort silencioso**: sem a permissão (ou estourando o limite), o pedido fica como orçamento e a
+  confirmação acontece na tela de detalhe com o feedback certo. i18n pt/en/es (`pedidos.cliente_comercial`,
+  `pedidos.end_*`, `pedidos.excluir_sel`, `pedidos.salvar_orcamento`, etc.); CSS `.sumbar`. **Validação:**
+  **type-check NÃO rodou** (mount do sandbox trunca leituras de arquivos grandes) — hand-review feito; confiar
+  no build Cloudflare/Render (tsc). **Pendente:** Gui commit+push.
+  **Addendum (mesma sessão) — Detalhe do pedido: colunas Lote/Validade (rastreabilidade).** Conferido: o
+  detalhe já estava fiel ao mockup (workflow visual, grid de dados, separação por bipagem, modais de
+  expedição) e o Kanban Comercial já tinha filtro de data — a única diferença era **Lote/Validade por item**.
+  Implementado **sem migration** (query read-only sobre tabelas existentes): `SqlPedidoRepository.buscarPorId`
+  agora busca os **lotes consumidos na separação** (`estoque_movimento` tipo `saida` cuja `observacao` = ref do
+  pedido `Pedido PE-000000`, JOIN `estoque_lote`), agrupa lote+validade por `produto_id` e anexa em
+  `PedidoItem.lotes` (novo campo opcional no domínio + tipo `ItemLote`). Pega tanto a baixa **FIFO** automática
+  quanto a **bipagem** (ambas gravam `observacao=ref`); perdas/inventário não casam (observacao=motivo).
+  Frontend (`PedidoDetalhe.tsx`): tabela de itens ganhou colunas **Lote** e **Validade** (lotes/validades
+  juntados por vírgula; `—` antes de separar; validade formatada MM/AAAA). i18n `pedido.lote`/`pedido.validade`
+  pt/en/es. **Prod roda via tsx (src), dist não usado.** **Validação:** hand-review (sandbox não roda tsc/e2e);
+  confiar no build. **Pendente:** Gui commit+push.
 - **2026-06-12** — **Paridade: Perfil (cards por módulo) + Contas a receber/pagar (numeração + colunas).**
   **(1) Perfil** — migration tenant **032** (`perfil` += `ativo`, `descricao`). Editor virou o padrão do mockup:
   Nome + **Ativo** + **Descrição** + **"Telas liberadas"** com **cards por módulo** (toggle no título marca/desmarca o

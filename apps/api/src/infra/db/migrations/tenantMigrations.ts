@@ -493,4 +493,13 @@ export const tenantMigrations: MigracaoTenant[] = [
         (SELECT COALESCE(MAX(numero), 0) FROM "${s}".titulo) > 0);
     `,
   },
+  {
+    // Preço negociado por cliente pode ter vigência: 'fixo' (sempre) ou 'periodo' (entre de/ate).
+    nome: '034_preco_cliente_periodo',
+    sql: (s) => `
+      ALTER TABLE "${s}".preco_cliente ADD COLUMN IF NOT EXISTS tipo text NOT NULL DEFAULT 'fixo';
+      ALTER TABLE "${s}".preco_cliente ADD COLUMN IF NOT EXISTS de  date;
+      ALTER TABLE "${s}".preco_cliente ADD COLUMN IF NOT EXISTS ate date;
+    `,
+  },
 ];

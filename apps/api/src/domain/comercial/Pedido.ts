@@ -1,6 +1,11 @@
 export type StatusPedido =
   | 'orcamento' | 'aguardando_pagamento' | 'aprovado' | 'separacao' | 'expedido' | 'entregue' | 'cancelado';
 
+export interface ItemLote {
+  lote: string;
+  validade: string | null; // ISO YYYY-MM-DD
+}
+
 export interface PedidoItem {
   id?: string;
   produtoId: string | null;
@@ -8,6 +13,7 @@ export interface PedidoItem {
   quantidade: number;
   precoUnitario: number;
   subtotal: number;
+  lotes?: ItemLote[]; // lotes consumidos na separação (rastreabilidade); vazio antes de separar
 }
 
 export interface Pedido {

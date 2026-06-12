@@ -7,7 +7,14 @@ import { useToast } from '../components/Toast.js';
 import { corStatus, moeda, numeroPedido, PROXIMOS, type StatusPedido } from '../lib/pedido.js';
 import { ModalDataEntrega, ModalFormaEnvio } from '../components/ExpedicaoModais.js';
 
-interface Item { produtoNome: string; quantidade: number; precoUnitario: number; subtotal: number; }
+interface ItemLote { lote: string; validade: string | null; }
+interface Item { produtoNome: string; quantidade: number; precoUnitario: number; subtotal: number; lotes?: ItemLote[]; }
+
+function fmtValidade(v: string | null): string {
+  if (!v) return '—';
+  const d = new Date(v + 'T00:00:00');
+  return isNaN(d.getTime()) ? '—' : d.toLocaleDateString('pt-BR', { month: '2-digit', year: 'numeric' });
+}
 interface Pedido {
   id: string; numero: number; clienteNome: string | null; vendedorNome: string | null; status: StatusPedido;
   formaPagamento: string | null; observacao: string | null; enderecoEntrega: string | null;
@@ -131,11 +138,19 @@ export function PedidoDetalhe() {
       </div>
 
       <div className="card pad0" style={{ maxWidth: 820, marginBottom: 16 }}><table className="tabela">
-        <thead><tr><th>{t('precos.produto')}</th><th>{t('pedidos.qtd')}</th><th>{t('pedidos.preco_unit')}</th><th>{t('pedidos.subtotal')}</th></tr></thead>
+        <thead><tr><th>{t('precos.produto')}</th><th>{t('pedido.lote')}</th><th>{t('pedido.validade')}</th><th>{t('pedidos.qtd')}</th><th>{t('pedidos.preco_unit')}</th><th>{t('pedidos.subtotal')}</th></tr></thead>
         <tbody>
-          {p.itens.map((it, i) => (
-            <tr key={i}><td>{it.produtoNome}</td><td>{it.quantidade}</td><td>{moeda(it.precoUnitario)}</td><td>{moeda(it.subtotal)}</td></tr>
-          ))}
+          {p.itens.map((it, i) => {
+            const lotes = it.lotes ?? [];
+            return (
+              <tr key={i}>
+                <td>{it.produtoNome}</td>
+                <td>{lotes.length ? lotes.map((l) => l.lote).join(', ') : '—'}</td>
+                <td>{lotes.length ? lotes.map((l) => fmtValidade(l.validade)).join(', ') : '—'}</td>
+                <td>{it.quantidade}</td><td>{moeda(it.precoUnitario)}</td><td>{moeda(it.subtotal)}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table></div>
 
