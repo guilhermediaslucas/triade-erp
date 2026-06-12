@@ -5,6 +5,8 @@ export interface PrecoProduto {
   unidade: string;
   ativo: boolean;
   preco: number; // 0 quando ainda não definido
+  campanhasCount: number;       // nº de campanhas cadastradas no produto
+  precoVigente: number | null;  // preço da campanha vigente hoje (null = usa o fixo)
 }
 export interface Campanha {
   id: string; produtoId: string; preco: number; motivo: string | null; de: string; ate: string; vigente: boolean;

@@ -24,6 +24,9 @@ export function SpriteIcones() {
       <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.6" y2="16.6" /></symbol>
       <symbol id="i-chev" viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18" /></symbol>
       <symbol id="i-shop" viewBox="0 0 24 24"><path d="M4 9h16l-1 11H5z" /><path d="M8 9V6a4 4 0 0 1 8 0v3" /></symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24"><path d="M14.5 5.5l4 4L8 20l-4.5 1 1-4.5z" /><line x1="13" y1="7" x2="17" y2="11" /></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15.5 14" /></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><polyline points="4 12.5 9.5 18 20 6.5" /></symbol>
     </svg>
   );
 }

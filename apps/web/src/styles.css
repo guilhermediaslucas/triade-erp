@@ -211,6 +211,35 @@ a { text-decoration: none; color: inherit; }
 .kb-card-meta { font-size: 11px; color: var(--muted); margin-top: 4px; }
 .kb-vazio { color: #cbd5e1; text-align: center; font-size: 13px; padding: 8px 0; }
 
+/* kanban comercial (padrão do mockup) — colunas com borda colorida + ícone */
+.pk-board { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 8px; align-items: flex-start; }
+.pk-col { background: var(--card); border: 1px solid var(--borda); border-top: 3px solid var(--borda); border-radius: 12px; padding: 12px; min-width: 175px; width: 175px; min-height: 300px; flex: none; }
+.pk-h { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 10px; }
+.pk-nm { font-size: 11px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; line-height: 1.2; }
+.pk-nm .ic { flex: none; }
+.pk-ct { font-size: 11px; font-weight: 700; background: var(--bg); border-radius: 9px; padding: 2px 8px; min-width: 22px; text-align: center; color: var(--ink); }
+.pk-body { display: flex; flex-direction: column; gap: 8px; min-height: 240px; }
+.pk-card { background: #fff; border: 1px solid var(--borda); border-radius: 10px; padding: 10px 12px; cursor: pointer; transition: box-shadow .12s, border-color .12s; }
+.pk-card:hover { border-color: var(--accent); box-shadow: 0 4px 12px rgba(20,20,40,.08); }
+.pk-card-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+.pk-num { font-size: 13px; font-weight: 800; color: var(--ink); }
+.pk-data { font-size: 11px; color: var(--muted); }
+.pk-cli { font-size: 12px; color: var(--muted); margin: 3px 0; }
+.pk-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+.pk-tot { font-size: 14px; font-weight: 800; color: var(--accent2, var(--accent)); }
+.pk-pill { display: inline-block; padding: 2px 8px; border-radius: 9px; font-size: 10px; font-weight: 700; background: var(--bg); color: var(--muted); text-transform: capitalize; }
+.pk-pill.pix { background: #f3f0ff; color: #5b21b6; }
+.pk-pill.boleto { background: #e6effd; color: #1e3a8a; }
+.pk-pill.cartao { background: #fee2e2; color: #991b1b; }
+
+/* tabela de preço (cabeçalho do card + controles) */
+.tab-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--borda); flex-wrap: wrap; }
+.tab-head h3 { margin: 0; font-size: 15px; font-weight: 800; }
+.tab-head-acoes { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.preco-inp { width: 130px; border: 1px solid #d7d9e3; border-radius: 8px; padding: 7px 10px; font-size: 14px; }
+.camp-btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--borda); border-radius: 9px; padding: 7px 12px; font-size: 12px; background: var(--card); color: var(--muted); cursor: pointer; }
+.camp-btn:hover { border-color: var(--accent); color: var(--ink); }
+
 /* estoque */
 .lote-row { background: #f8fafc; font-size: 13px; color: var(--muted); }
 .lote-row td { padding-top: 8px; padding-bottom: 8px; }

@@ -367,6 +367,9 @@ Object.assign(pt, {
   'cap.comercial.preco.listar': 'Ver tabela de preço', 'cap.comercial.preco.gerenciar': 'Editar preços',
   'precos.titulo': 'Tabela de preço', 'precos.sub': 'Preço base de venda por produto (usado nos pedidos).',
   'precos.produto': 'Produto', 'precos.preco_base': 'Preço base (R$)', 'precos.sem_produtos': 'Cadastre produtos primeiro.',
+  'precos.sub_full': 'Preço base do produto (fixo + campanha/período) e preços negociados por cliente',
+  'precos.tabela': 'Tabela', 'precos.salvar_tabela': 'Salvar tabela', 'precos.salvo_tabela': 'Tabela salva.',
+  'precos.preco_fixo': 'Preço fixo (R$)', 'precos.camp_vigente': 'Campanha vigente', 'precos.usa_fixo': '— (usa preço fixo)',
 });
 Object.assign(en, {
   'menu.comercial': 'Sales', 'menu.precos': 'Price table',
@@ -374,6 +377,9 @@ Object.assign(en, {
   'cap.comercial.preco.listar': 'View price table', 'cap.comercial.preco.gerenciar': 'Edit prices',
   'precos.titulo': 'Price table', 'precos.sub': 'Base sale price per product (used in orders).',
   'precos.produto': 'Product', 'precos.preco_base': 'Base price (R$)', 'precos.sem_produtos': 'Create products first.',
+  'precos.sub_full': 'Product base price (fixed + campaign/period) and per-customer negotiated prices',
+  'precos.tabela': 'Table', 'precos.salvar_tabela': 'Save table', 'precos.salvo_tabela': 'Table saved.',
+  'precos.preco_fixo': 'Fixed price (R$)', 'precos.camp_vigente': 'Active campaign', 'precos.usa_fixo': '— (uses fixed price)',
 });
 Object.assign(es, {
   'menu.comercial': 'Comercial', 'menu.precos': 'Tabla de precios',
@@ -381,13 +387,16 @@ Object.assign(es, {
   'cap.comercial.preco.listar': 'Ver tabla de precios', 'cap.comercial.preco.gerenciar': 'Editar precios',
   'precos.titulo': 'Tabla de precios', 'precos.sub': 'Precio base de venta por producto (usado en los pedidos).',
   'precos.produto': 'Producto', 'precos.preco_base': 'Precio base (R$)', 'precos.sem_produtos': 'Crea productos primero.',
+  'precos.sub_full': 'Precio base del producto (fijo + campaña/período) y precios negociados por cliente',
+  'precos.tabela': 'Tabla', 'precos.salvar_tabela': 'Guardar tabla', 'precos.salvo_tabela': 'Tabla guardada.',
+  'precos.preco_fixo': 'Precio fijo (R$)', 'precos.camp_vigente': 'Campaña vigente', 'precos.usa_fixo': '— (usa precio fijo)',
 });
 
 // --- Fase 3B: Pedidos ---
 Object.assign(pt, {
   'menu.pedidos': 'Pedidos', 'menu.novo_pedido': 'Novo pedido',
   'cap.comercial.pedido.listar': 'Listar pedidos', 'cap.comercial.pedido.criar': 'Criar pedidos', 'cap.comercial.pedido.gerenciar': 'Gerenciar status dos pedidos',
-  'pedidos.titulo': 'Pedidos', 'pedidos.novo': 'Novo pedido', 'pedidos.numero': 'Número', 'pedidos.data': 'Data',
+  'pedidos.titulo': 'Pedidos - Comercial', 'pedidos.novo': 'Novo pedido', 'pedidos.numero': 'Número', 'pedidos.data': 'Data',
   'pedidos.cliente': 'Cliente', 'pedidos.vendedor': 'Vendedor', 'pedidos.status': 'Status', 'pedidos.total': 'Total',
   'pedidos.forma_pgto': 'Forma de pagamento', 'pedidos.endereco': 'Endereço de entrega', 'pedidos.endereco_ph': 'Preenchido pelo favorito do cliente (editável)',
   'pedidos.itens': 'Itens', 'pedidos.add_item': 'Adicionar item', 'pedidos.escolha_produto': 'Escolha o produto',
@@ -406,7 +415,7 @@ Object.assign(pt, {
 Object.assign(en, {
   'menu.pedidos': 'Orders', 'menu.novo_pedido': 'New order',
   'cap.comercial.pedido.listar': 'List orders', 'cap.comercial.pedido.criar': 'Create orders', 'cap.comercial.pedido.gerenciar': 'Manage order status',
-  'pedidos.titulo': 'Orders', 'pedidos.novo': 'New order', 'pedidos.numero': 'Number', 'pedidos.data': 'Date',
+  'pedidos.titulo': 'Orders - Sales', 'pedidos.novo': 'New order', 'pedidos.numero': 'Number', 'pedidos.data': 'Date',
   'pedidos.cliente': 'Customer', 'pedidos.vendedor': 'Sales rep', 'pedidos.status': 'Status', 'pedidos.total': 'Total',
   'pedidos.forma_pgto': 'Payment method', 'pedidos.endereco': 'Delivery address', 'pedidos.endereco_ph': 'Filled from customer favorite (editable)',
   'pedidos.itens': 'Items', 'pedidos.add_item': 'Add item', 'pedidos.escolha_produto': 'Choose product',
@@ -425,7 +434,7 @@ Object.assign(en, {
 Object.assign(es, {
   'menu.pedidos': 'Pedidos', 'menu.novo_pedido': 'Nuevo pedido',
   'cap.comercial.pedido.listar': 'Listar pedidos', 'cap.comercial.pedido.criar': 'Crear pedidos', 'cap.comercial.pedido.gerenciar': 'Gestionar estado de pedidos',
-  'pedidos.titulo': 'Pedidos', 'pedidos.novo': 'Nuevo pedido', 'pedidos.numero': 'Número', 'pedidos.data': 'Fecha',
+  'pedidos.titulo': 'Pedidos - Comercial', 'pedidos.novo': 'Nuevo pedido', 'pedidos.numero': 'Número', 'pedidos.data': 'Fecha',
   'pedidos.cliente': 'Cliente', 'pedidos.vendedor': 'Vendedor', 'pedidos.status': 'Estado', 'pedidos.total': 'Total',
   'pedidos.forma_pgto': 'Forma de pago', 'pedidos.endereco': 'Dirección de entrega', 'pedidos.endereco_ph': 'Rellenado por la favorita del cliente (editable)',
   'pedidos.itens': 'Ítems', 'pedidos.add_item': 'Agregar ítem', 'pedidos.escolha_produto': 'Elige el producto',
@@ -443,9 +452,9 @@ Object.assign(es, {
 });
 
 // --- Kanban de pedidos ---
-Object.assign(pt, { 'pedidos.kanban_sub': 'Quadro por status — clique num card para ver e avançar o pedido', 'pedidos.cancelados_ocultos': 'pedido(s) cancelado(s) não exibidos no quadro.' });
-Object.assign(en, { 'pedidos.kanban_sub': 'Board by status — click a card to view and advance the order', 'pedidos.cancelados_ocultos': 'canceled order(s) not shown on the board.' });
-Object.assign(es, { 'pedidos.kanban_sub': 'Tablero por estado — haz clic en una tarjeta para ver y avanzar el pedido', 'pedidos.cancelados_ocultos': 'pedido(s) cancelado(s) no mostrados en el tablero.' });
+Object.assign(pt, { 'pedidos.kanban_sub': 'Visão Kanban (somente leitura — movimentação fica em Estoque/Expedição)', 'pedidos.cancelados_ocultos': 'pedido(s) cancelado(s) não exibidos no quadro.' });
+Object.assign(en, { 'pedidos.kanban_sub': 'Kanban view (read-only — movement happens in Stock/Shipping)', 'pedidos.cancelados_ocultos': 'canceled order(s) not shown on the board.' });
+Object.assign(es, { 'pedidos.kanban_sub': 'Vista Kanban (solo lectura — el movimiento ocurre en Stock/Expedición)', 'pedidos.cancelados_ocultos': 'pedido(s) cancelado(s) no mostrados en el tablero.' });
 
 // --- Fase 4A: Estoque ---
 Object.assign(pt, {
@@ -1529,9 +1538,9 @@ Object.assign(es, { 'common.todos': 'Todos', 'common.ativos': 'Activos', 'common
   'clientes.crumb': 'Registros / Clientes', 'clientes.sub': 'Clínicas e institutos compradores', 'clientes.buscar': 'Buscar cliente' });
 
 // --- Pedidos (crumb + filtro de data) ---
-Object.assign(pt, { 'pedidos.crumb': 'Comercial / Pedidos', 'pedidos.data_de': 'Data início', 'pedidos.data_ate': 'Data fim', 'pedidos.filtro_dica': 'Filtra os pedidos pela data de criação.' });
-Object.assign(en, { 'pedidos.crumb': 'Sales / Orders', 'pedidos.data_de': 'Start date', 'pedidos.data_ate': 'End date', 'pedidos.filtro_dica': 'Filters orders by creation date.' });
-Object.assign(es, { 'pedidos.crumb': 'Comercial / Pedidos', 'pedidos.data_de': 'Fecha inicio', 'pedidos.data_ate': 'Fecha fin', 'pedidos.filtro_dica': 'Filtra los pedidos por fecha de creación.' });
+Object.assign(pt, { 'pedidos.crumb': 'Comercial / Pedidos', 'pedidos.data_de': 'Data início', 'pedidos.data_ate': 'Data fim', 'pedidos.filtro_dica': 'Filtra os pedidos pela data de criação.', 'pedidos.filtrar': 'Filtrar', 'pedidos.col_retirada': 'Aguardando retirada' });
+Object.assign(en, { 'pedidos.crumb': 'Sales / Orders', 'pedidos.data_de': 'Start date', 'pedidos.data_ate': 'End date', 'pedidos.filtro_dica': 'Filters orders by creation date.', 'pedidos.filtrar': 'Filter', 'pedidos.col_retirada': 'Awaiting pickup' });
+Object.assign(es, { 'pedidos.crumb': 'Comercial / Pedidos', 'pedidos.data_de': 'Fecha inicio', 'pedidos.data_ate': 'Fecha fin', 'pedidos.filtro_dica': 'Filtra los pedidos por fecha de creación.', 'pedidos.filtrar': 'Filtrar', 'pedidos.col_retirada': 'Esperando retiro' });
 
 // --- Fornecedores / Vendedores (crumb+sub+busca) ---
 Object.assign(pt, {

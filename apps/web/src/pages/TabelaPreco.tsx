@@ -3,8 +3,9 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
+import { Ic } from '../components/Icones.js';
 
-interface PrecoProduto { produtoId: string; produtoNome: string; categoriaNome: string | null; unidade: string; ativo: boolean; preco: number; }
+interface PrecoProduto { produtoId: string; produtoNome: string; categoriaNome: string | null; unidade: string; ativo: boolean; preco: number; campanhasCount: number; precoVigente: number | null; }
 interface Cliente { id: string; nome: string; }
 interface LinhaCli { produtoId: string; produtoNome: string; precoBase: number; precoCliente: number | null; }
 
@@ -18,12 +19,18 @@ export function TabelaPreco() {
   const [base, setBase] = useState<PrecoProduto[]>([]);
   const [cli, setCli] = useState<LinhaCli[]>([]);
   const [valores, setValores] = useState<Record<string, string>>({});
-  const [salvo, setSalvo] = useState<string | null>(null);
+  const [salvo, setSalvo] = useState(false);
+  const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [campProduto, setCampProduto] = useState<PrecoProduto | null>(null);
 
+  async function carregarBase() {
+    const l = await api.get<PrecoProduto[]>('/precos', token!);
+    setBase(l);
+    if (modo === 'base') setValores(Object.fromEntries(l.map((p) => [p.produtoId, String(p.preco)])));
+  }
   useEffect(() => {
-    api.get<PrecoProduto[]>('/precos', token!).then((l) => { setBase(l); if (modo === 'base') setValores(Object.fromEntries(l.map((p) => [p.produtoId, String(p.preco)]))); }).catch((e) => setErro((e as ErroApi).chaveI18n));
+    carregarBase().catch((e) => setErro((e as ErroApi).chaveI18n));
     if (temCapability('cadastros.cliente.listar')) api.get<Cliente[]>('/clientes', token!).then(setClientes).catch(() => {});
     /* eslint-disable-next-line */
   }, []);
@@ -34,62 +41,86 @@ export function TabelaPreco() {
     catch (e) { setErro((e as ErroApi).chaveI18n); }
   }
 
-  async function salvarBase(id: string) {
-    setErro(null); setSalvo(null);
-    try { await api.put('/precos/' + id, { preco: Number(valores[id]) }, token!); flash(id); } catch (e) { setErro((e as ErroApi).chaveI18n); }
+  // Salva, de uma vez, só as linhas que mudaram (padrão "Salvar tabela" do mockup).
+  async function salvarTabela() {
+    setErro(null); setSalvo(false); setSalvando(true);
+    try {
+      if (modo === 'base') {
+        for (const p of base) {
+          const v = valores[p.produtoId] ?? '';
+          if (v !== String(p.preco)) await api.put('/precos/' + p.produtoId, { preco: Number(v) }, token!);
+        }
+        await carregarBase();
+      } else if (clienteId) {
+        for (const p of cli) {
+          const v = valores[p.produtoId] ?? '';
+          const orig = p.precoCliente != null ? String(p.precoCliente) : '';
+          if (v !== orig) await api.put('/precos/cliente/' + clienteId + '/' + p.produtoId, { preco: Number(v || 0) }, token!);
+        }
+        await carregarCliente(clienteId);
+      }
+      setSalvo(true); setTimeout(() => setSalvo(false), 2500);
+    } catch (e) { setErro((e as ErroApi).chaveI18n); }
+    finally { setSalvando(false); }
   }
-  async function salvarCliente(id: string) {
-    setErro(null); setSalvo(null);
-    try { await api.put('/precos/cliente/' + clienteId + '/' + id, { preco: Number(valores[id] || 0) }, token!); flash(id); } catch (e) { setErro((e as ErroApi).chaveI18n); }
+
+  function trocarModo(m: 'base' | 'cliente') {
+    setModo(m); setSalvo(false);
+    if (m === 'base') setValores(Object.fromEntries(base.map((p) => [p.produtoId, String(p.preco)])));
+    else { setCli([]); setClienteId(''); setValores({}); }
   }
-  function flash(id: string) { setSalvo(id); setTimeout(() => setSalvo((x) => (x === id ? null : x)), 1500); }
 
   return (
     <div>
       <div className="crumb">{t('precos.crumb')}</div>
-      <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('precos.titulo')}</h1><div className="muted page-sub">{modo === 'base' ? t('precos.sub') : t('precos.sub_cliente')}</div></div></div>
-      <div className="rel-filtro">
-        <label className="campo">{t('precos.modo')}
-          <select value={modo} onChange={(e) => { const m = e.target.value as any; setModo(m); if (m === 'base') setValores(Object.fromEntries(base.map((p) => [p.produtoId, String(p.preco)]))); else { setCli([]); setClienteId(''); } }}>
-            <option value="base">{t('precos.modo_base')}</option><option value="cliente">{t('precos.modo_cliente')}</option>
-          </select>
-        </label>
-        {modo === 'cliente' && <label className="campo">{t('pedidos.cliente')}
-          <select value={clienteId} onChange={(e) => carregarCliente(e.target.value)}><option value="">—</option>{clientes.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}</select>
-        </label>}
-      </div>
+      <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('precos.titulo')}</h1><div className="muted page-sub">{t('precos.sub_full')}</div></div></div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
+      {salvo && <div className="alerta-ok">{t('precos.salvo_tabela')}</div>}
 
-      {modo === 'base' ? (
-        <div className="card pad0"><table className="tabela">
-          <thead><tr><th>{t('precos.produto')}</th><th>{t('produtos.categoria')}</th><th style={{ width: 220 }}>{t('precos.preco_base')}</th><th>{t('camp.titulo')}</th></tr></thead>
-          <tbody>
-            {base.length === 0 && <tr><td colSpan={4} className="vazio">{t('precos.sem_produtos')}</td></tr>}
-            {base.map((p) => (
-              <tr key={p.produtoId} className={p.ativo ? '' : 'linha-inativa'}>
-                <td>{p.produtoNome}</td><td>{p.categoriaNome ?? '—'}</td>
-                <td>{pode ? <div className="preco-edit"><input type="number" step="0.01" min="0" value={valores[p.produtoId] ?? ''} onChange={(e) => setValores({ ...valores, [p.produtoId]: e.target.value })} /><button className="btn-ghost btn-mini" onClick={() => salvarBase(p.produtoId)}>{t('common.salvar')}</button>{salvo === p.produtoId && <span className="salvo-ok">✓</span>}</div> : moeda(p.preco)}</td>
-                <td><button className="btn-link" onClick={() => setCampProduto(p)}>{t('camp.gerenciar')}</button></td>
-              </tr>
-            ))}
-          </tbody>
-        </table></div>
-      ) : (
-        !clienteId ? <div className="muted">{t('precos.escolha_cliente')}</div> :
-        <div className="card pad0"><table className="tabela">
-          <thead><tr><th>{t('precos.produto')}</th><th>{t('precos.preco_base')}</th><th style={{ width: 240 }}>{t('precos.preco_cliente')}</th></tr></thead>
-          <tbody>
-            {cli.map((p) => (
-              <tr key={p.produtoId}>
-                <td>{p.produtoNome}</td><td className="muted">{moeda(p.precoBase)}</td>
-                <td>{pode ? <div className="preco-edit"><input type="number" step="0.01" min="0" placeholder={t('precos.usa_base')} value={valores[p.produtoId] ?? ''} onChange={(e) => setValores({ ...valores, [p.produtoId]: e.target.value })} /><button className="btn-ghost btn-mini" onClick={() => salvarCliente(p.produtoId)}>{t('common.salvar')}</button>{salvo === p.produtoId && <span className="salvo-ok">✓</span>}</div> : (p.precoCliente != null ? moeda(p.precoCliente) : '—')}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table></div>
-      )}
-      <div className="nota-info" style={{ marginTop: 12 }}>{t('precos.nota')}</div>
-      {campProduto && <ModalCampanhas produto={campProduto} pode={pode} onFechar={() => setCampProduto(null)} />}
+      <div className="card pad0">
+        <div className="tab-head">
+          <h3>{t('precos.tabela')}</h3>
+          <div className="tab-head-acoes">
+            <select value={modo} onChange={(e) => trocarModo(e.target.value as 'base' | 'cliente')}>
+              <option value="base">{t('precos.modo_base')}</option><option value="cliente">{t('precos.modo_cliente')}</option>
+            </select>
+            {modo === 'cliente' && <select value={clienteId} onChange={(e) => carregarCliente(e.target.value)}><option value="">{t('precos.escolha_cliente')}</option>{clientes.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}</select>}
+            {pode && <button className="btn-primary" disabled={salvando} onClick={salvarTabela}><Ic name="i-check" className="sm" /> {t('precos.salvar_tabela')}</button>}
+          </div>
+        </div>
+
+        {modo === 'base' ? (
+          <table className="tabela">
+            <thead><tr><th>{t('precos.produto')}</th><th>{t('produtos.categoria')}</th><th style={{ width: 180 }}>{t('precos.preco_fixo')}</th><th>{t('precos.camp_vigente')}</th><th style={{ textAlign: 'right' }}>{t('camp.titulo')}</th></tr></thead>
+            <tbody>
+              {base.length === 0 && <tr><td colSpan={5} className="vazio">{t('precos.sem_produtos')}</td></tr>}
+              {base.map((p) => (
+                <tr key={p.produtoId} className={p.ativo ? '' : 'linha-inativa'}>
+                  <td>{p.produtoNome}</td><td>{p.categoriaNome ?? '—'}</td>
+                  <td>{pode ? <input type="number" step="0.01" min="0" className="preco-inp" value={valores[p.produtoId] ?? ''} onChange={(e) => setValores({ ...valores, [p.produtoId]: e.target.value })} /> : moeda(p.preco)}</td>
+                  <td>{p.precoVigente != null ? <span className="pill st-verde">{moeda(p.precoVigente)}</span> : <span className="muted">{t('precos.usa_fixo')}</span>}</td>
+                  <td style={{ textAlign: 'right' }}><button className="camp-btn" onClick={() => setCampProduto(p)}><Ic name="i-clock" className="sm" />{t('camp.titulo')} ({p.campanhasCount})</button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          !clienteId ? <div className="vazio" style={{ padding: 24 }}>{t('precos.escolha_cliente')}</div> :
+          <table className="tabela">
+            <thead><tr><th>{t('precos.produto')}</th><th>{t('precos.preco_base')}</th><th style={{ width: 220 }}>{t('precos.preco_cliente')}</th></tr></thead>
+            <tbody>
+              {cli.map((p) => (
+                <tr key={p.produtoId}>
+                  <td>{p.produtoNome}</td><td className="muted">{moeda(p.precoBase)}</td>
+                  <td>{pode ? <input type="number" step="0.01" min="0" className="preco-inp" placeholder={t('precos.usa_base')} value={valores[p.produtoId] ?? ''} onChange={(e) => setValores({ ...valores, [p.produtoId]: e.target.value })} /> : (p.precoCliente != null ? moeda(p.precoCliente) : '—')}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <div className="nota-info" style={{ margin: 14 }}><Ic name="i-help" className="sm" /> <span>{t('precos.nota')}</span></div>
+      </div>
+      {campProduto && <ModalCampanhas produto={campProduto} pode={pode} onFechar={() => { setCampProduto(null); carregarBase().catch(() => {}); }} />}
     </div>
   );
 }
