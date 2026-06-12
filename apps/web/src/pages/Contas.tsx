@@ -4,6 +4,8 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { useToast } from '../components/Toast.js';
 import { moeda } from '../lib/pedido.js';
+import { baixarCsv } from '../lib/csv.js';
+import { baixarExcel } from '../lib/excel.js';
 
 type Tipo = 'receber' | 'pagar';
 interface Titulo { id: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; }
@@ -64,12 +66,22 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   const colLabel = (k: string) => k === 'pessoa' ? (tipo === 'receber' ? 'fin.cliente' : 'fin.fornecedor') : k === 'cat' ? 'catfin.titulo_s' : k === 'venc' ? 'fin.vencimento' : k === 'valor' ? 'fin.valor' : 'fin.situacao';
 
   const kpis = useMemo(() => {
+    const h = hojeISO();
+    const d7 = new Date(); d7.setDate(d7.getDate() + 7); const ate7 = d7.toISOString().slice(0, 10);
     const abertos = filtrados.filter((x) => x.status === 'aberto');
     const total = abertos.reduce((a, x) => a + x.valor, 0);
-    const vencidos = abertos.filter((x) => x.vencimento < hojeISO());
+    const vencidos = abertos.filter((x) => x.vencimento < h);
     const totalVenc = vencidos.reduce((a, x) => a + x.valor, 0);
-    return { total, qtd: abertos.length, totalVenc, qtdVenc: vencidos.length };
+    const v7 = abertos.filter((x) => x.vencimento >= h && x.vencimento <= ate7);
+    const totalVence7 = v7.reduce((a, x) => a + x.valor, 0);
+    return { total, qtd: abertos.length, totalVenc, qtdVenc: vencidos.length, totalVence7, qtdVence7: v7.length };
   }, [filtrados]);
+
+  function exportar(fmt: 'csv' | 'xlsx') {
+    const cab = [t('fin.descricao'), tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor'), t('catfin.titulo_s'), t('fin.vencimento'), t('fin.valor'), t('fin.situacao')];
+    const linhas = filtrados.map((x) => [x.descricao, x.pessoaNome ?? '', x.categoriaFinanceiraNome ?? '', x.vencimento, x.valor, t('fin.' + situacao(x))]);
+    (fmt === 'xlsx' ? baixarExcel : baixarCsv)((tipo === 'receber' ? 'contas_receber' : 'contas_pagar'), cab, linhas);
+  }
 
   function toggle(id: string) { setSel((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; }); }
   function toggleTodos() { setSel((s) => (s.size === filtrados.length ? new Set() : new Set(filtrados.map((x) => x.id)))); }
@@ -96,12 +108,14 @@ export function Contas({ tipo }: { tipo: Tipo }) {
         <div style={{ display: 'flex', gap: 8 }}>
           <button className="btn-ghost" onClick={() => setFiltroAberto((v) => !v)}>{t('fin.filtros')}{temFiltro ? ' •' : ''}</button>
           <button className="btn-ghost" onClick={() => setColsAberto((v) => !v)}>{t('fin.colunas')}</button>
+          {filtrados.length > 0 && <button className="btn-ghost" onClick={() => exportar('xlsx')}>{t('rel.exportar_xlsx')}</button>}
           {pode && <button className="btn-primary" onClick={() => setNovo(true)}>+ {t('fin.novo')}</button>}
         </div></div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
-      <div className="kpis">
-        <div className="kpi-card"><div className="kpi-l">{t(tipo === 'receber' ? 'fin.aberto_receber' : 'fin.aberto_pagar')}</div><div className="kpi-v">{moeda(kpis.total)}</div><div className="kpi-s">{kpis.qtd} {t('fin.titulos')}</div></div>
-        <div className="kpi-card kpi-vermelho"><div className="kpi-l">{t('fin.vencidos')}</div><div className="kpi-v">{moeda(kpis.totalVenc)}</div><div className="kpi-s">{kpis.qtdVenc} {t('fin.titulos')}</div></div>
+      <div className="kpi-row" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+        <div className="card kpi-mock"><div className="kpi-ic tint-gr">{tipo === 'receber' ? '💰' : '💸'}</div><div className="kpi-body"><div className="kpi-lbl">{t(tipo === 'receber' ? 'fin.aberto_receber' : 'fin.aberto_pagar')}</div><div className="kpi-val">{moeda(kpis.total)}</div><div className="kpi-delta">{kpis.qtd} {t('fin.titulos')}</div></div></div>
+        <div className="card kpi-mock"><div className="kpi-ic tint-or">⏳</div><div className="kpi-body"><div className="kpi-lbl">{t('fin.vence7')}</div><div className="kpi-val">{moeda(kpis.totalVence7)}</div><div className="kpi-delta">{kpis.qtdVence7} {t('fin.titulos')}</div></div></div>
+        <div className="card kpi-mock"><div className="kpi-ic tint-rd">⚠️</div><div className="kpi-body"><div className="kpi-lbl">{t('fin.vencidos')}</div><div className="kpi-val">{moeda(kpis.totalVenc)}</div><div className="kpi-delta alerta">{kpis.qtdVenc} {t('fin.titulos')}</div></div></div>
       </div>
 
       {filtroAberto && (

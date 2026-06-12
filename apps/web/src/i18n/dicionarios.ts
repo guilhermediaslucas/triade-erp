@@ -1629,3 +1629,7 @@ Object.assign(es, { 'empresa.card': 'Identidad y preferencias' });
 Object.assign(pt, { 'precos.nota': 'No preço base você define o preço fixo de cada produto e gerencia o histórico de campanhas (botão Campanhas). A campanha vigente na data sobrepõe o fixo; por cliente, o preço negociado sobrepõe o base.' });
 Object.assign(en, { 'precos.nota': 'In base price you set each product’s fixed price and manage the campaign history (Campaigns button). The active campaign overrides the fixed price; per customer, the negotiated price overrides the base.' });
 Object.assign(es, { 'precos.nota': 'En el precio base defines el precio fijo de cada producto y gestionas el historial de campañas (botón Campañas). La campaña vigente sobrepone el fijo; por cliente, el precio negociado sobrepone el base.' });
+
+Object.assign(pt, { 'fin.vence7': 'Vence em 7 dias' });
+Object.assign(en, { 'fin.vence7': 'Due in 7 days' });
+Object.assign(es, { 'fin.vence7': 'Vence en 7 días' });
