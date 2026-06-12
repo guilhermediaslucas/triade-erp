@@ -4,7 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
 
-interface Pend { id: string; fornecedorNome: string | null; produtoNome: string; quantidade: number; custoUnitario: number; total: number; nf: string | null; }
+interface Pend { id: string; fornecedorNome: string | null; produtoNome: string; quantidade: number; custoUnitario: number; total: number; nf: string | null; criadoEm: string; }
 interface Marca { id: string; nome: string; ativo: boolean; }
 interface Bloco { lote: string; validade: string; marcaId: string; codigos: string[]; }
 
