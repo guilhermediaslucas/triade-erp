@@ -176,6 +176,25 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Paridade §5: UF + municípios IBGE no endereço.** Nos endereços (Clientes multi-endereço
+  e Fornecedores), o campo **UF** virou **select** (27 siglas, `UFS` em `lib/br.ts`) e a **cidade** ganhou um
+  **datalist** com os municípios da UF buscados na **API do IBGE** (`buscarMunicipios`, cache por UF). É
+  `<input list>` (não select estrito) — preserva o auto-preenchimento por **CEP/ViaCEP** e aceita digitação
+  livre, só sugerindo os municípios oficiais. Sem backend/migration (frontend puro + API pública do IBGE).
+  **Validação:** **type-check web verde** (o fetch ao IBGE é runtime, sem e2e). **Pendente:** Gui git push.
+- **2026-06-12** — **Paridade §5: Formas de entrega como CRUD.** Novo cadastro **Cadastros › Estoque ›
+  Formas de entrega** (espelha o `modalFormaEntrega` do mockup): nome, **tipo** (motoboy/correios/retirada/
+  transportadora/própria), prazo estimado, observação, ativo. Migration tenant **027** (`forma_entrega`).
+  Caps `cadastros.forma_entrega.listar/gerenciar` (auto-sync no boot via `CAPABILITY_IDS`). **Backend
+  (hexagonal):** domínio `FormaEntrega`/`TIPOS_FORMA_ENTREGA` + repo; `SqlFormaEntregaRepository`;
+  `FormasEntregaService` (valida nome ≥2 e tipo na whitelist → 400 `forma_entrega.tipo_invalido`); rota
+  `/formas-entrega` (GET/POST/PUT/PATCH ativo). **Importante:** é só o **catálogo** — NÃO mexe na lógica de
+  frete do pedido (retirada/motoboy/correios continua igual), exatamente como no mockup (o cadastro alimenta
+  a expedição). **Frontend:** tela clonada do padrão Marcas (busca + chips + modal com select de tipo),
+  menu + rota; i18n pt/en/es (tipos via `forma_entrega.tipo_*`). **Validação:** **type-check api+web verde**
+  + **e2e Postgres real (pglite, 7 PASS):** cria/lista, tipo inválido→400, nome curto→400, opcionais→null,
+  editar reflete, inativar, editar inexistente→404. **Pendente:** Gui `git commit`+push (Windows) → boot do
+  Render aplica a migration 027 + sincroniza as caps; relogar.
 - **2026-06-12** — **Paridade §3: Previsto/Efetivo nos títulos (decisão do Gui).** Cada título de Contas a
   receber/pagar tem um **check "Previsto"** (provisão). Migration tenant **026** (`titulo.previsto bool default
   false`). **Regra:** título **previsto não pode ser baixado** (`FinanceiroService.baixar` → 400

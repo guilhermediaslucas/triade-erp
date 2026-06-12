@@ -413,4 +413,18 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS previsto boolean NOT NULL DEFAULT false;
     `,
   },
+  {
+    nome: '027_forma_entrega',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".forma_entrega (
+        id         uuid PRIMARY KEY,
+        nome       text NOT NULL,
+        tipo       text NOT NULL,
+        prazo      text,
+        observacao text,
+        ativo      boolean NOT NULL DEFAULT true,
+        criado_em  timestamptz NOT NULL DEFAULT now()
+      );
+    `,
+  },
 ];

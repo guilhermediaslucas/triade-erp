@@ -93,6 +93,7 @@ const GRUPOS: Grupo[] = [
           { rotulo: 'menu.produtos', icone: '📦', to: '/cadastros/produtos', cap: 'cadastros.produto.listar' },
           { rotulo: 'menu.categorias', icone: '🏷️', to: '/cadastros/categorias', cap: 'cadastros.categoria.listar' },
           { rotulo: 'menu.marcas', icone: '™️', to: '/cadastros/marcas', cap: 'cadastros.marca.listar' },
+          { rotulo: 'menu.formas_entrega', icone: '🚚', to: '/cadastros/formas-entrega', cap: 'cadastros.forma_entrega.listar' },
         ],
       },
       {

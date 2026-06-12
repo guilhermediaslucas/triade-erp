@@ -144,8 +144,8 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 | Favorecidos | ✅ | |
 | Condições de pagamento | ✅ | |
 | Contas correntes / Categorias financeiras | ✅ | |
-| UF + municípios (IBGE) no endereço | ⚠️ | CEP via ViaCEP ok; dropdown de município a confirmar |
-| Formas de entrega/envio como **CRUD** (modalFormaEntrega) | ⚠️ | hoje lista fixa; mockup permite cadastrar |
+| UF + municípios (IBGE) no endereço | ✅ | UF vira select; cidade com datalist de municípios via API do IBGE (Clientes + Fornecedores) |
+| Formas de entrega/envio como **CRUD** (modalFormaEntrega) | ✅ | cadastro Cadastros › Estoque › Formas de entrega (nome/tipo/prazo/obs/ativo); migration 027; e2e 7 PASS |
 
 ## 6. Relatórios
 
@@ -216,8 +216,8 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 3. ✅ KPIs clicáveis no Dashboard (drill por período) — feito.
 4. ✅ Coluna Previsto/Efetivo (feito — check Previsto bloqueia baixa) + ✅ detalhe do título por duplo-clique.
 5. ✅ Foto/avatar de usuário (feito).
-6. Formas de entrega como CRUD; municípios IBGE.
-7. CRM (oportunidades + interações) — quando você decidir o escopo.
+6. ✅ Formas de entrega como CRUD; ✅ municípios IBGE (feitos).
+7. CRM (oportunidades + interações) — **Gui decidiu NÃO seguir por ora.**
 
 > Itens ⚠️ pedem só **confirmação no ar** (podem já estar prontos) — revisar
 > tela a tela e fechar.

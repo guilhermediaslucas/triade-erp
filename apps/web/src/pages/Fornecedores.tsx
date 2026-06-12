@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
-import { mascaraCnpj, mascaraCep, buscarCnpj, buscarCep } from '../lib/br.js';
+import { mascaraCnpj, mascaraCep, buscarCnpj, buscarCep, UFS, buscarMunicipios } from '../lib/br.js';
 
 interface Fornecedor { id: string; nome: string; fantasia: string | null; documento: string; email: string | null; telefone: string | null; cep: string | null; cidade: string | null; uf: string | null; ativo: boolean; }
 const vazio = (): Fornecedor => ({ id: '', nome: '', fantasia: '', documento: '', email: '', telefone: '', cep: '', cidade: '', uf: '', ativo: true });
@@ -70,6 +70,9 @@ function ModalForn({ f, onFechar, onSalvo }: { f: Fornecedor; onFechar: () => vo
     catch { setErro('clientes.cnpj_nao_encontrado'); } finally { setBusc(false); }
   }
   async function acharCep() { const d = await buscarCep(v.cep ?? ''); if (d) setV((x) => ({ ...x, cidade: d.cidade ?? x.cidade, uf: d.uf ?? x.uf })); }
+  // Municípios da UF (IBGE) para sugerir a cidade.
+  const [munis, setMunis] = useState<string[]>([]);
+  useEffect(() => { buscarMunicipios(v.uf ?? '').then(setMunis); }, [v.uf]);
   async function salvar() {
     setErro(null); setSalv(true);
     const corpo = { nome: v.nome, fantasia: v.fantasia, documento: v.documento, email: v.email, telefone: v.telefone, cep: v.cep, cidade: v.cidade, uf: v.uf };
@@ -93,8 +96,16 @@ function ModalForn({ f, onFechar, onSalvo }: { f: Fornecedor; onFechar: () => vo
       </div>
       <div className="cores-grid">
         <label className="campo">CEP<input value={v.cep ?? ''} onChange={(e) => set('cep', mascaraCep(e.target.value))} onBlur={acharCep} /></label>
-        <label className="campo">{t('clientes.cidade')}<input value={v.cidade ?? ''} onChange={(e) => set('cidade', e.target.value)} /></label>
-        <label className="campo">UF<input value={v.uf ?? ''} onChange={(e) => set('uf', e.target.value.toUpperCase().slice(0, 2))} style={{ maxWidth: 80 }} /></label>
+        <label className="campo">{t('clientes.cidade')}
+          <input list="forn-munis" value={v.cidade ?? ''} onChange={(e) => set('cidade', e.target.value)} />
+          <datalist id="forn-munis">{munis.map((m) => <option key={m} value={m} />)}</datalist>
+        </label>
+        <label className="campo">UF
+          <select value={v.uf ?? ''} onChange={(e) => set('uf', e.target.value)} style={{ maxWidth: 90 }}>
+            <option value="">UF</option>
+            {UFS.map((uf) => <option key={uf} value={uf}>{uf}</option>)}
+          </select>
+        </label>
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv} onClick={salvar}>{t('common.salvar')}</button></div>

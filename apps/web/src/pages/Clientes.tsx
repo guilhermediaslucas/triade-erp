@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { UFS, buscarMunicipios } from '../lib/br.js';
 
 type TipoPessoa = 'PJ' | 'PF';
 interface Endereco { cep: string; logradouro: string; numero: string; complemento: string; bairro: string; cidade: string; uf: string; favorito: boolean; }
@@ -122,6 +123,16 @@ function ModalCli({ c, onFechar, onSalvo }: { c: Cliente; onFechar: () => void; 
     } catch { /* ignora */ }
   }
 
+  // Municípios por UF (IBGE) para sugerir a cidade nos endereços.
+  const [munisPorUf, setMunisPorUf] = useState<Record<string, string[]>>({});
+  const ufsDosEnds = ends.map((e) => e.uf).filter(Boolean).join(',');
+  useEffect(() => {
+    Array.from(new Set(ends.map((e) => e.uf).filter(Boolean))).forEach((uf) => {
+      if (!munisPorUf[uf]) buscarMunicipios(uf).then((lista) => setMunisPorUf((cur) => (cur[uf] ? cur : { ...cur, [uf]: lista })));
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ufsDosEnds]);
+
   async function salvar() {
     setErro(null); setSalv(true);
     const corpo = {
@@ -175,8 +186,12 @@ function ModalCli({ c, onFechar, onSalvo }: { c: Cliente; onFechar: () => void; 
           </div>
           <div className="end-grid">
             <input placeholder={t('clientes.bairro')} value={e.bairro} onChange={(ev) => setEnd(i, 'bairro', ev.target.value)} />
-            <input placeholder={t('clientes.cidade')} value={e.cidade} onChange={(ev) => setEnd(i, 'cidade', ev.target.value)} />
-            <input placeholder="UF" value={e.uf} onChange={(ev) => setEnd(i, 'uf', ev.target.value.toUpperCase().slice(0, 2))} style={{ maxWidth: 70 }} />
+            <input list={`mun-${i}`} placeholder={t('clientes.cidade')} value={e.cidade} onChange={(ev) => setEnd(i, 'cidade', ev.target.value)} />
+            <datalist id={`mun-${i}`}>{(munisPorUf[e.uf] ?? []).map((m) => <option key={m} value={m} />)}</datalist>
+            <select value={e.uf} onChange={(ev) => setEnd(i, 'uf', ev.target.value)} style={{ maxWidth: 80 }}>
+              <option value="">UF</option>
+              {UFS.map((uf) => <option key={uf} value={uf}>{uf}</option>)}
+            </select>
           </div>
         </div>
       ))}

@@ -12,6 +12,25 @@ export async function buscarCnpj(documento: string): Promise<DadosCnpj | null> {
   const j = await resp.json();
   return { razao: j.razao_social ?? null, fantasia: j.nome_fantasia ?? null, cep: j.cep ?? null, cidade: j.municipio ?? null, uf: j.uf ?? null };
 }
+// 27 unidades federativas (siglas) — para o select de UF nos endereços.
+export const UFS = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'] as const;
+
+// Municípios de uma UF via API do IBGE (localidades). Retorna os nomes ordenados.
+const _cacheMun: Record<string, string[]> = {};
+export async function buscarMunicipios(uf: string): Promise<string[]> {
+  const sigla = (uf || '').toUpperCase();
+  if (!(UFS as readonly string[]).includes(sigla)) return [];
+  if (_cacheMun[sigla]) return _cacheMun[sigla]!;
+  try {
+    const resp = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${sigla}/municipios?orderBy=nome`);
+    if (!resp.ok) return [];
+    const j = await resp.json();
+    const nomes = Array.isArray(j) ? j.map((m: any) => String(m?.nome ?? '')).filter(Boolean) : [];
+    _cacheMun[sigla] = nomes;
+    return nomes;
+  } catch { return []; }
+}
+
 export interface DadosCep { logradouro: string | null; bairro: string | null; cidade: string | null; uf: string | null; }
 export async function buscarCep(cep: string): Promise<DadosCep | null> {
   const d = soDigitos(cep);

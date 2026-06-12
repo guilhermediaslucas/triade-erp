@@ -1732,3 +1732,34 @@ Object.assign(es, {
   'financeiro.previsto_nao_baixa': 'Un título previsto no se puede dar de baja. Márcalo como efectivo primero.',
   'financeiro.previsto_so_aberto': 'Solo los títulos abiertos pueden marcarse como previstos.',
 });
+
+Object.assign(pt, {
+  'menu.formas_entrega': 'Formas de entrega',
+  'cap.cadastros.forma_entrega.listar': 'Listar formas de entrega', 'cap.cadastros.forma_entrega.gerenciar': 'Criar e editar formas de entrega',
+  'formas_entrega.crumb': 'Cadastros / Estoque / Formas de entrega', 'formas_entrega.titulo': 'Formas de entrega',
+  'formas_entrega.sub': 'Modalidades usadas na expedição dos pedidos (motoboy, correios, retirada…)',
+  'formas_entrega.nova': 'Nova forma de entrega', 'formas_entrega.buscar': 'Buscar forma de entrega',
+  'formas_entrega.nome': 'Nome', 'formas_entrega.tipo': 'Tipo', 'formas_entrega.prazo': 'Prazo estimado', 'formas_entrega.prazo_ph': 'Ex.: 3 a 8 dias úteis', 'formas_entrega.obs': 'Observação',
+  'forma_entrega.tipo_motoboy': 'Motoboy', 'forma_entrega.tipo_correios': 'Correios', 'forma_entrega.tipo_retirada': 'Retirada na loja', 'forma_entrega.tipo_transportadora': 'Transportadora', 'forma_entrega.tipo_propria': 'Entrega própria',
+  'forma_entrega.tipo_invalido': 'Tipo de forma de entrega inválido.',
+});
+Object.assign(en, {
+  'menu.formas_entrega': 'Delivery methods',
+  'cap.cadastros.forma_entrega.listar': 'List delivery methods', 'cap.cadastros.forma_entrega.gerenciar': 'Create and edit delivery methods',
+  'formas_entrega.crumb': 'Records / Stock / Delivery methods', 'formas_entrega.titulo': 'Delivery methods',
+  'formas_entrega.sub': 'Methods used to ship orders (courier, postal, pickup…)',
+  'formas_entrega.nova': 'New delivery method', 'formas_entrega.buscar': 'Search delivery method',
+  'formas_entrega.nome': 'Name', 'formas_entrega.tipo': 'Type', 'formas_entrega.prazo': 'Estimated time', 'formas_entrega.prazo_ph': 'e.g. 3 to 8 business days', 'formas_entrega.obs': 'Notes',
+  'forma_entrega.tipo_motoboy': 'Courier', 'forma_entrega.tipo_correios': 'Postal', 'forma_entrega.tipo_retirada': 'Store pickup', 'forma_entrega.tipo_transportadora': 'Carrier', 'forma_entrega.tipo_propria': 'Own delivery',
+  'forma_entrega.tipo_invalido': 'Invalid delivery method type.',
+});
+Object.assign(es, {
+  'menu.formas_entrega': 'Formas de entrega',
+  'cap.cadastros.forma_entrega.listar': 'Listar formas de entrega', 'cap.cadastros.forma_entrega.gerenciar': 'Crear y editar formas de entrega',
+  'formas_entrega.crumb': 'Registros / Stock / Formas de entrega', 'formas_entrega.titulo': 'Formas de entrega',
+  'formas_entrega.sub': 'Modalidades usadas en la expedición de pedidos (mensajero, correos, retiro…)',
+  'formas_entrega.nova': 'Nueva forma de entrega', 'formas_entrega.buscar': 'Buscar forma de entrega',
+  'formas_entrega.nome': 'Nombre', 'formas_entrega.tipo': 'Tipo', 'formas_entrega.prazo': 'Plazo estimado', 'formas_entrega.prazo_ph': 'Ej.: 3 a 8 días hábiles', 'formas_entrega.obs': 'Observación',
+  'forma_entrega.tipo_motoboy': 'Mensajero', 'forma_entrega.tipo_correios': 'Correos', 'forma_entrega.tipo_retirada': 'Retiro en tienda', 'forma_entrega.tipo_transportadora': 'Transportista', 'forma_entrega.tipo_propria': 'Entrega propia',
+  'forma_entrega.tipo_invalido': 'Tipo de forma de entrega inválido.',
+});
