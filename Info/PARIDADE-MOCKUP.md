@@ -110,7 +110,7 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 | Fluxo de caixa + saldos bancários + drill | ✅ | |
 | Conciliação bancária (manual + importar OFX/CSV) | ✅ | |
 | Comissões (apuração + fechar competência) | ✅ | |
-| **Regra geral de comissão (cadastro de regras)** | ⚠️ | usa % individual; regra geral pendente |
+| **Regra geral de comissão (cadastro de regras)** | ✅ | cadastro de regras (% por pedido, por vendedor/geral, vigência); prioridade específica→geral→% individual; migration 029; e2e 14 PASS |
 | DRE (origem + categoria) | ✅ | |
 | Aging de recebíveis | ✅ | |
 | Contas correntes | ✅ | |
@@ -217,7 +217,8 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 4. ✅ Coluna Previsto/Efetivo (feito — check Previsto bloqueia baixa) + ✅ detalhe do título por duplo-clique.
 5. ✅ Foto/avatar de usuário (feito).
 6. ✅ Formas de entrega como CRUD; ✅ municípios IBGE (feitos).
-7. CRM (oportunidades + interações) — **Gui decidiu NÃO seguir por ora.**
+7. ✅ Regra geral de comissão (cadastro de regras) — feito.
+8. CRM (oportunidades + interações) — **Gui decidiu NÃO seguir por ora.**
 
 > Itens ⚠️ pedem só **confirmação no ar** (podem já estar prontos) — revisar
 > tela a tela e fechar.

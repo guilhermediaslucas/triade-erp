@@ -1770,6 +1770,14 @@ Object.assign(pt, {
   'tipodoc.crumb': 'Cadastros / Financeiro / Tipos de documento', 'tipodoc.titulo': 'Tipos de documento', 'tipodoc.titulo_s': 'Tipo de documento',
   'tipodoc.sub': 'Usados no campo Tipo de documento ao lançar um título', 'tipodoc.novo': 'Novo tipo de documento', 'tipodoc.buscar': 'Buscar tipo de documento',
   'tipodoc.nome': 'Tipo de documento', 'tipodoc.nome_ph': 'Ex.: NF-e, Boleto, Fatura, Recibo', 'tipodoc.sem': 'Nenhum',
+  'comregra.titulo': 'Regras de comissão vigentes', 'comregra.sub': 'Defina o % por pedido, por vendedor ou geral, com vigência por período ou indeterminada.',
+  'comregra.nova': 'Nova regra', 'comregra.vazio': 'Nenhuma regra. Sem regra, usa-se o % individual de cada vendedor.',
+  'comregra.nome': 'Nome da regra', 'comregra.nome_ph': 'Ex.: Padrão, Campanha Black Friday, Diferenciada Carla',
+  'comregra.taxa': 'Taxa (% por pedido)', 'comregra.taxa_label': 'Taxa de comissão (% sobre o pedido)',
+  'comregra.todos': 'Todos (geral)', 'comregra.indet': 'Indeterminada', 'comregra.indet_label': 'Vigência indeterminada (vale enquanto a regra estiver ativa)',
+  'comregra.dica': 'Vendedor em branco = vale para todos. Prioridade: regra do vendedor no período → regra geral no período → % individual do vendedor.',
+  'comregra.prioridade': 'Prioridade ao aplicar: 1) regra do vendedor vigente · 2) regra geral vigente · 3) % individual do vendedor (padrão).',
+  'comissao.taxa_invalida': 'Informe uma taxa entre 0 e 100.', 'comissao.periodo_invalido': 'A data final não pode ser anterior à inicial.',
 });
 Object.assign(en, {
   'menu.tipodoc': 'Document types',
@@ -1777,6 +1785,14 @@ Object.assign(en, {
   'tipodoc.crumb': 'Records / Finance / Document types', 'tipodoc.titulo': 'Document types', 'tipodoc.titulo_s': 'Document type',
   'tipodoc.sub': 'Used in the Document type field when posting a title', 'tipodoc.novo': 'New document type', 'tipodoc.buscar': 'Search document type',
   'tipodoc.nome': 'Document type', 'tipodoc.nome_ph': 'e.g. Invoice, Bill, Receipt', 'tipodoc.sem': 'None',
+  'comregra.titulo': 'Active commission rules', 'comregra.sub': 'Set the % per order, per salesperson or general, with a period or indefinite validity.',
+  'comregra.nova': 'New rule', 'comregra.vazio': 'No rules. Without a rule, each salesperson’s individual % is used.',
+  'comregra.nome': 'Rule name', 'comregra.nome_ph': 'e.g. Default, Black Friday, Carla special',
+  'comregra.taxa': 'Rate (% per order)', 'comregra.taxa_label': 'Commission rate (% of the order)',
+  'comregra.todos': 'All (general)', 'comregra.indet': 'Indefinite', 'comregra.indet_label': 'Indefinite validity (applies while the rule is active)',
+  'comregra.dica': 'Blank salesperson = applies to all. Priority: salesperson rule in period → general rule in period → salesperson individual %.',
+  'comregra.prioridade': 'Priority when applying: 1) active salesperson rule · 2) active general rule · 3) salesperson individual % (default).',
+  'comissao.taxa_invalida': 'Enter a rate between 0 and 100.', 'comissao.periodo_invalido': 'End date cannot be before the start date.',
 });
 Object.assign(es, {
   'menu.tipodoc': 'Tipos de documento',
@@ -1784,4 +1800,12 @@ Object.assign(es, {
   'tipodoc.crumb': 'Registros / Finanzas / Tipos de documento', 'tipodoc.titulo': 'Tipos de documento', 'tipodoc.titulo_s': 'Tipo de documento',
   'tipodoc.sub': 'Usados en el campo Tipo de documento al registrar un título', 'tipodoc.novo': 'Nuevo tipo de documento', 'tipodoc.buscar': 'Buscar tipo de documento',
   'tipodoc.nome': 'Tipo de documento', 'tipodoc.nome_ph': 'Ej.: Factura, Boleta, Recibo', 'tipodoc.sem': 'Ninguno',
+  'comregra.titulo': 'Reglas de comisión vigentes', 'comregra.sub': 'Define el % por pedido, por vendedor o general, con vigencia por período o indeterminada.',
+  'comregra.nova': 'Nueva regla', 'comregra.vazio': 'Sin reglas. Sin regla, se usa el % individual de cada vendedor.',
+  'comregra.nome': 'Nombre de la regla', 'comregra.nome_ph': 'Ej.: Estándar, Black Friday, Diferenciada Carla',
+  'comregra.taxa': 'Tasa (% por pedido)', 'comregra.taxa_label': 'Tasa de comisión (% sobre el pedido)',
+  'comregra.todos': 'Todos (general)', 'comregra.indet': 'Indeterminada', 'comregra.indet_label': 'Vigencia indeterminada (vale mientras la regla esté activa)',
+  'comregra.dica': 'Vendedor en blanco = vale para todos. Prioridad: regla del vendedor en el período → regla general en el período → % individual del vendedor.',
+  'comregra.prioridade': 'Prioridad al aplicar: 1) regla del vendedor vigente · 2) regla general vigente · 3) % individual del vendedor (predeterminado).',
+  'comissao.taxa_invalida': 'Ingresa una tasa entre 0 y 100.', 'comissao.periodo_invalido': 'La fecha final no puede ser anterior a la inicial.',
 });

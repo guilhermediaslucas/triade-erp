@@ -58,6 +58,18 @@ export function rotasFinanceiro(deps: Dependencias): Router {
   r.get('/financeiro/comissoes', autF, azF('financeiro.comissao.ver'), async (req, res) => {
     try { res.json(await deps.comissoesService.apurar(req.usuario!.schema, req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
   });
+  r.get('/financeiro/comissoes/regras', autF, azF('financeiro.comissao.ver'), async (req, res) => {
+    try { res.json(await deps.comissoesService.listarRegras(req.usuario!.schema)); } catch (e) { tratarErro(res, e); }
+  });
+  r.post('/financeiro/comissoes/regras', autF, azF('financeiro.comissao.gerenciar'), async (req, res) => {
+    try { res.status(201).json({ id: await deps.comissoesService.criarRegra(req.usuario!.schema, req.body ?? {}) }); } catch (e) { tratarErro(res, e); }
+  });
+  r.put('/financeiro/comissoes/regras/:id', autF, azF('financeiro.comissao.gerenciar'), async (req, res) => {
+    try { await deps.comissoesService.editarRegra(req.usuario!.schema, req.params.id!, req.body ?? {}); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
+  r.patch('/financeiro/comissoes/regras/:id/ativo', autF, azF('financeiro.comissao.gerenciar'), async (req, res) => {
+    try { await deps.comissoesService.alternarAtivoRegra(req.usuario!.schema, req.params.id!, !!(req.body ?? {}).ativo); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
   r.post('/financeiro/comissoes/fechar', autF, azF('financeiro.comissao.gerenciar'), async (req, res) => {
     try { res.status(201).json(await deps.comissoesService.fechar(req.usuario!.schema, req.body ?? {})); } catch (e) { tratarErro(res, e); }
   });

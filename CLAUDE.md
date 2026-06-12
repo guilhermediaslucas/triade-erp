@@ -176,6 +176,23 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Paridade §3: Regra geral de comissão (cadastro de regras).** Antes a apuração usava só o
+  **% individual** do vendedor; agora há um **cadastro de regras** (Financeiro › Controle de comissões, seção
+  "Regras de comissão"): nome, **taxa % por pedido**, **vendedor** (ou em branco = geral), **vigência** por
+  período ou **indeterminada**, ativo. Migration tenant **029** (`comissao_regra`). **Resolução por pedido**
+  (`SqlComissaoRepository.apurar` reescrito): para cada pedido a taxa é **1) regra do vendedor vigente na data
+  → 2) regra geral vigente → 3) `comissao_percentual` do vendedor** (fallback/compat); a comissão soma
+  `pedido.total × taxa/100` e o `%` exibido vira a taxa **efetiva**. **Backend:** domínio `ComissaoRegra`/
+  `NovaComissaoRegra` + métodos no repo; `ComissoesService` (CRUD com validação: taxa 0–100, período não
+  invertido, nome ≥2); rotas `/financeiro/comissoes/regras` (GET/POST/PUT/PATCH ativo, caps
+  `financeiro.comissao.ver/gerenciar`). **Frontend:** seção "Regras de comissão" na tela Comissões (lista +
+  modal: taxa, vendedor select [em branco=geral], check de vigência indeterminada, de/ate, ativar/inativar);
+  i18n pt/en/es. **Validação:** **type-check api+web verde** + **e2e Postgres real (pglite, 14 PASS):** sem
+  regra usa % individual; geral indeterminada aplica a todos; específica do vendedor vence a geral; **regra por
+  período resolve pedido a pedido** (pedido fora da vigência cai no fallback); CRUD valida taxa>100/período
+  invertido/nome curto→400 e inexistente→404. **Pendente:** Gui `git commit`+push (Windows) → boot do Render
+  aplica a migration 029 + caps; relogar. **Nota:** o `segue_regra_geral` do vendedor virou informativo — a
+  resolução já prioriza as regras automaticamente.
 - **2026-06-12** — **Paridade §3: Tipos de documento (cadastro + uso no título).** Novo cadastro **Cadastros ›
   Financeiro › Tipos de documento** (só nome + ativo; ex.: NF-e, Boleto, Fatura, Recibo). Migration tenant
   **028** (`tipo_documento` + `titulo.tipo_documento text`). Caps `cadastros.tipodoc.listar/gerenciar`
