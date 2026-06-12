@@ -1,10 +1,11 @@
 export interface ResumoDashboard {
-  // KPIs (linha c5) com variação percentual vs período anterior
-  vendasDia: number; vendasDiaDeltaPct: number;
-  vendasSemana: number; vendasSemanaDeltaPct: number;
-  vendasMes: number; vendasMesDeltaPct: number;
-  vendasAno: number; vendasAnoDeltaPct: number;
-  clientesAtivos: number; clientesDeltaPct: number;
+  // KPIs (linha c5) com variação percentual vs período anterior.
+  // DeltaPct = null quando não havia período anterior (mostra "novo no período").
+  vendasDia: number; vendasDiaDeltaPct: number | null;
+  vendasSemana: number; vendasSemanaDeltaPct: number | null;
+  vendasMes: number; vendasMesDeltaPct: number | null;
+  vendasAno: number; vendasAnoDeltaPct: number | null;
+  clientesAtivos: number; clientesDeltaPct: number | null;
 
   pedidosPorStatus: { status: string; quantidade: number }[];
   receberAberto: number; receberVencido: number;
@@ -20,6 +21,7 @@ export interface ResumoDashboard {
   fluxoEntradasMes: number; fluxoSaidasMes: number; fluxoSaldoMes: number;
 
   faturamentoMensal: { mes: string; total: number }[];
+  faturamentoAnterior: { mes: string; total: number }[];   // 6 meses imediatamente anteriores (série de comparação)
   vendasCategoria: { categoria: string; total: number }[];
   saldosBancarios: { nome: string; saldo: number }[];
 }

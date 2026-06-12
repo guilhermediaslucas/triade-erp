@@ -11,14 +11,14 @@ import { EmpresaSwitcher } from './EmpresaSwitcher.js';
 
 interface Item { rotulo: string; icone: string; to: string; cap?: string; soSuperAdmin?: boolean; }
 interface Secao { sublabel?: string; itens: Item[]; }
-interface Grupo { rotulo?: string; secoes: Secao[]; }
+interface Grupo { rotulo?: string; icone?: string; secoes: Secao[]; }
 
 // Estrutura espelhando o mockup (erp-mockup.html). Os grupos/itens só aparecem
 // se o usuário tiver a capability — o menu cresce conforme as fases avançam.
 const GRUPOS: Grupo[] = [
   { secoes: [{ itens: [{ rotulo: 'menu.dashboard', icone: '▦', to: '/', cap: 'dashboard.ver' }] }] },
   {
-    rotulo: 'menu.comercial',
+    rotulo: 'menu.comercial', icone: '🛒',
     secoes: [{ itens: [
       { rotulo: 'menu.precos', icone: '🏷️', to: '/comercial/precos', cap: 'comercial.preco.listar' },
       { rotulo: 'menu.pedidos', icone: '🧾', to: '/comercial/pedidos', cap: 'comercial.pedido.listar' },
@@ -26,12 +26,13 @@ const GRUPOS: Grupo[] = [
     ] }],
   },
   {
-    rotulo: 'menu.financeiro',
+    rotulo: 'menu.financeiro', icone: '💲',
     secoes: [{ itens: [
       { rotulo: 'menu.receber', icone: '💰', to: '/financeiro/receber', cap: 'financeiro.receber.listar' },
       { rotulo: 'menu.pagar', icone: '💸', to: '/financeiro/pagar', cap: 'financeiro.pagar.listar' },
       { rotulo: 'menu.nota', icone: '🧾', to: '/financeiro/nota', cap: 'financeiro.compra.criar' },
       { rotulo: 'menu.fluxo', icone: '📊', to: '/financeiro/fluxo', cap: 'financeiro.fluxo.ver' },
+      { rotulo: 'menu.fluxo_proj', icone: '🔮', to: '/financeiro/fluxo-projetado', cap: 'financeiro.fluxo.ver' },
       { rotulo: 'menu.conciliacao', icone: '🏦', to: '/financeiro/conciliacao', cap: 'financeiro.conciliacao.ver' },
       { rotulo: 'menu.comissoes', icone: '🧮', to: '/financeiro/comissoes', cap: 'financeiro.comissao.ver' },
       { rotulo: 'menu.aging', icone: '📅', to: '/financeiro/aging-receber', cap: 'financeiro.receber.listar' },
@@ -39,7 +40,7 @@ const GRUPOS: Grupo[] = [
     ] }],
   },
   {
-    rotulo: 'menu.estoque_exp',
+    rotulo: 'menu.estoque_exp', icone: '📦',
     secoes: [{ itens: [
       { rotulo: 'menu.expedicao', icone: '🚚', to: '/estoque/expedicao', cap: 'comercial.pedido.gerenciar' },
       { rotulo: 'menu.posicao', icone: '📦', to: '/estoque/posicao', cap: 'estoque.saldo.ver' },
@@ -50,13 +51,13 @@ const GRUPOS: Grupo[] = [
     ] }],
   },
   {
-    rotulo: 'menu.logistica',
+    rotulo: 'menu.logistica', icone: '🚚',
     secoes: [{ itens: [
       { rotulo: 'menu.gestao_fretes', icone: '🛣️', to: '/logistica/fretes', cap: 'logistica.frete.ver' },
     ] }],
   },
   {
-    rotulo: 'menu.relatorios',
+    rotulo: 'menu.relatorios', icone: '📊',
     secoes: [{ itens: [
       { rotulo: 'menu.rel_vendas', icone: '📈', to: '/relatorios/vendas', cap: 'relatorios.ver' },
       { rotulo: 'menu.rel_pedidos', icone: '🧾', to: '/relatorios/pedidos', cap: 'relatorios.ver' },
@@ -70,7 +71,7 @@ const GRUPOS: Grupo[] = [
     ] }],
   },
   {
-    rotulo: 'menu.cadastros',
+    rotulo: 'menu.cadastros', icone: '📋',
     secoes: [
       {
         sublabel: 'menu.sub.comercial',
@@ -108,7 +109,7 @@ const GRUPOS: Grupo[] = [
     ],
   },
   {
-    rotulo: 'menu.config',
+    rotulo: 'menu.config', icone: '⚙️',
     secoes: [{
       itens: [
         { rotulo: 'menu.usuarios', icone: '👤', to: '/acesso/usuarios', cap: 'acesso.usuario.listar' },
@@ -118,7 +119,7 @@ const GRUPOS: Grupo[] = [
     }],
   },
   {
-    rotulo: 'menu.superadmin',
+    rotulo: 'menu.superadmin', icone: '🏢',
     secoes: [{ itens: [{ rotulo: 'menu.empresas', icone: '🏬', to: '/superadmin/empresas', soSuperAdmin: true }] }],
   },
 ];
@@ -167,7 +168,7 @@ export function Layout({ children }: { children: ReactNode }) {
             return (
               <div key={gi} className={'nav-grupo' + (aberto ? ' aberto' : '')}>
                 <button type="button" className="nav-grupo-head" onClick={() => toggleGrupo(gi)}>
-                  <span>{t(g.rotulo)}</span>
+                  <span className="nav-grupo-lbl">{g.icone && <span className="nav-grupo-ic">{g.icone}</span>}{t(g.rotulo)}</span>
                   <span className="nav-chev">{aberto ? '\u25be' : '\u25b8'}</span>
                 </button>
                 {aberto && corpo}
@@ -175,6 +176,10 @@ export function Layout({ children }: { children: ReactNode }) {
             );
           })}
         </nav>
+        <div className="sidebar-foot">
+          <div className="sidebar-foot-brand">TR<span>Í</span>ADE <small>ERP</small></div>
+          <div className="sidebar-foot-sup"><span className="sidebar-foot-ic">❓</span><div><b>{t('menu.suporte')}</b><small>{t('menu.suporte_sub')}</small></div></div>
+        </div>
       </aside>
       <div className="app-main">
         <header className="topbar">

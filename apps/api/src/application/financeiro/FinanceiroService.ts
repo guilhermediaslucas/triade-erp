@@ -8,6 +8,9 @@ export interface AgingLinha {
 }
 export interface RelatorioAging { linhas: AgingLinha[]; totais: Record<AgingFaixa, number>; totalAberto: number; }
 
+export interface SemanaProjecao { rotulo: string; de: string; ate: string; entradas: number; saidas: number; saldo: number; }
+export interface RelatorioFluxoProj { saldoInicial: number; semanas: SemanaProjecao[]; }
+
 export type DrePor = 'origem' | 'categoria';
 export interface DreLinha { origem: string; total: number; }
 export interface RelatorioDre { por: DrePor; receitas: DreLinha[]; despesas: DreLinha[]; totalReceitas: number; totalDespesas: number; resultado: number; }
@@ -52,6 +55,30 @@ export class FinanceiroService {
     for (const l of linhas) totais[l.faixa] += l.valor;
     (Object.keys(totais) as AgingFaixa[]).forEach((k) => { totais[k] = r2(totais[k]); });
     return { linhas, totais, totalAberto: r2(linhas.reduce((a, l) => a + l.valor, 0)) };
+  }
+
+  // Fluxo de caixa projetado: projeção rolling de 13 semanas (método direto).
+  // Saldo inicial = caixa atual (Σ títulos pagos: receber + / pagar −). A cada semana soma os títulos
+  // EM ABERTO pela data de vencimento (receber = entrada, pagar = saída). A semana 1 absorve os vencidos.
+  async fluxoProjetado(schema: string): Promise<RelatorioFluxoProj> {
+    const pagos = await this.repo.listarPagos(schema);
+    const saldoInicial = r2(pagos.reduce((a, m) => a + (m.tipo === 'entrada' ? m.valor : -m.valor), 0));
+    const receber = (await this.repo.listar(schema, 'receber')).filter((t) => t.status === 'aberto');
+    const pagar = (await this.repo.listar(schema, 'pagar')).filter((t) => t.status === 'aberto');
+    const iso = (d: Date) => d.toISOString().slice(0, 10);
+    const add = (base: string, dias: number) => { const d = new Date(base + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + dias); return iso(d); };
+    const hoje = new Date().toISOString().slice(0, 10);
+    const semanas: SemanaProjecao[] = [];
+    let saldo = saldoInicial;
+    for (let i = 0; i < 13; i++) {
+      const de = add(hoje, i * 7), ate = add(de, 6);
+      const naSemana = (v: string) => (i === 0 ? v <= ate : v >= de && v <= ate);  // semana 1 inclui vencidos
+      const entradas = r2(receber.filter((t) => naSemana(String(t.vencimento).slice(0, 10))).reduce((a, t) => a + t.valor, 0));
+      const saidas = r2(pagar.filter((t) => naSemana(String(t.vencimento).slice(0, 10))).reduce((a, t) => a + t.valor, 0));
+      saldo = r2(saldo + entradas - saidas);
+      semanas.push({ rotulo: 'S' + (i + 1), de, ate, entradas, saidas, saldo });
+    }
+    return { saldoInicial, semanas };
   }
 
   // DRE de caixa (resultado do período): títulos pagos no período, agrupados por origem ou categoria.

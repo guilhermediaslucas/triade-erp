@@ -620,7 +620,7 @@ Object.assign(es, {
 
 // --- Fase 6: Dashboard ---
 Object.assign(pt, {
-  'dash.vendas_mes': 'Vendas no mês', 'dash.saldo_caixa': 'Saldo de caixa', 'dash.a_receber': 'A receber (aberto)',
+  'dash.vendas_mes': 'Vendas do mês', 'dash.saldo_caixa': 'Saldo de caixa', 'dash.a_receber': 'A receber (aberto)',
   'dash.a_pagar': 'A pagar (aberto)', 'dash.estoque_baixo': 'Estoque baixo', 'dash.produtos': 'produto(s)',
   'dash.vencido': 'vencido', 'dash.em_dia': 'Em dia', 'dash.pedidos_status': 'Pedidos por status',
   'dash.top_produtos': 'Produtos mais vendidos', 'dash.sem_vendas': 'Ainda sem vendas registradas.',
@@ -1460,7 +1460,8 @@ Object.assign(pt, {
   'dash.av_estoque': 'Produtos com estoque baixo', 'dash.av_receber_venc': 'A receber vencido',
   'dash.qa_novo_pedido': 'Novo pedido', 'dash.qa_novo_cliente': 'Novo cliente', 'dash.qa_entrada': 'Entrada de estoque',
   'dash.vendas_dia': 'Vendas do dia', 'dash.vendas_semana': 'Vendas da semana', 'dash.vendas_ano': 'Vendas do ano', 'dash.clientes_ativos': 'Clientes ativos',
-  'dash.vs_ontem': 'vs ontem', 'dash.top_cli_valor': 'Top 5 clientes — por valor', 'dash.top_cli_qtd': 'Top 5 clientes — por pedidos',
+  'dash.vs_ontem': 'vs ontem', 'dash.vs_semana': 'vs sem. anterior', 'dash.vs_mes': 'vs mês anterior', 'dash.vs_ano': 'vs ano anterior', 'dash.novo_periodo': 'novo no período',
+  'dash.top_cli_valor': 'Top 5 clientes — por valor', 'dash.top_cli_qtd': 'Top 5 clientes — por pedidos',
   'dash.total_comprado': 'Total comprado', 'dash.qtd_pedidos': 'Quantidade de pedidos', 'dash.sem_dados': 'Sem dados ainda. Crie pedidos para popular o ranking.',
   'dash.pedidos_recentes': 'Pedidos recentes', 'dash.ver_todos': 'Ver todos', 'dash.fluxo_mes': 'Fluxo de caixa (mês)', 'dash.ver_detalhes': 'Ver detalhes',
   'dash.entradas': 'Entradas', 'dash.saidas': 'Saídas', 'dash.saldo': 'Saldo', 'dash.total_contas': 'Total em contas', 'dash.saldo_total': 'Saldo total', 'dash.ver_contas': 'Ver contas',
@@ -1480,7 +1481,8 @@ Object.assign(en, {
   'dash.av_estoque': 'Low-stock products', 'dash.av_receber_venc': 'Overdue receivables',
   'dash.qa_novo_pedido': 'New order', 'dash.qa_novo_cliente': 'New customer', 'dash.qa_entrada': 'Stock entry',
   'dash.vendas_dia': 'Sales today', 'dash.vendas_semana': 'Sales this week', 'dash.vendas_ano': 'Sales this year', 'dash.clientes_ativos': 'Active customers',
-  'dash.vs_ontem': 'vs yesterday', 'dash.top_cli_valor': 'Top 5 customers — by value', 'dash.top_cli_qtd': 'Top 5 customers — by orders',
+  'dash.vs_ontem': 'vs yesterday', 'dash.vs_semana': 'vs last week', 'dash.vs_mes': 'vs last month', 'dash.vs_ano': 'vs last year', 'dash.novo_periodo': 'new in period',
+  'dash.top_cli_valor': 'Top 5 customers — by value', 'dash.top_cli_qtd': 'Top 5 customers — by orders',
   'dash.total_comprado': 'Total purchased', 'dash.qtd_pedidos': 'Number of orders', 'dash.sem_dados': 'No data yet. Create orders to populate the ranking.',
   'dash.pedidos_recentes': 'Recent orders', 'dash.ver_todos': 'View all', 'dash.fluxo_mes': 'Cash flow (month)', 'dash.ver_detalhes': 'View details',
   'dash.entradas': 'Inflows', 'dash.saidas': 'Outflows', 'dash.saldo': 'Balance', 'dash.total_contas': 'Total in accounts', 'dash.saldo_total': 'Total balance', 'dash.ver_contas': 'View accounts',
@@ -1500,7 +1502,8 @@ Object.assign(es, {
   'dash.av_estoque': 'Productos con stock bajo', 'dash.av_receber_venc': 'Por cobrar vencido',
   'dash.qa_novo_pedido': 'Nuevo pedido', 'dash.qa_novo_cliente': 'Nuevo cliente', 'dash.qa_entrada': 'Entrada de stock',
   'dash.vendas_dia': 'Ventas del día', 'dash.vendas_semana': 'Ventas de la semana', 'dash.vendas_ano': 'Ventas del año', 'dash.clientes_ativos': 'Clientes activos',
-  'dash.vs_ontem': 'vs ayer', 'dash.top_cli_valor': 'Top 5 clientes — por valor', 'dash.top_cli_qtd': 'Top 5 clientes — por pedidos',
+  'dash.vs_ontem': 'vs ayer', 'dash.vs_semana': 'vs sem. anterior', 'dash.vs_mes': 'vs mes anterior', 'dash.vs_ano': 'vs año anterior', 'dash.novo_periodo': 'nuevo en el período',
+  'dash.top_cli_valor': 'Top 5 clientes — por valor', 'dash.top_cli_qtd': 'Top 5 clientes — por pedidos',
   'dash.total_comprado': 'Total comprado', 'dash.qtd_pedidos': 'Cantidad de pedidos', 'dash.sem_dados': 'Sin datos aún. Crea pedidos para poblar el ranking.',
   'dash.pedidos_recentes': 'Pedidos recientes', 'dash.ver_todos': 'Ver todos', 'dash.fluxo_mes': 'Flujo de caja (mes)', 'dash.ver_detalhes': 'Ver detalles',
   'dash.entradas': 'Entradas', 'dash.saidas': 'Salidas', 'dash.saldo': 'Saldo', 'dash.total_contas': 'Total en cuentas', 'dash.saldo_total': 'Saldo total', 'dash.ver_contas': 'Ver cuentas',
@@ -1785,6 +1788,11 @@ Object.assign(pt, {
   'pedido.forma_envio_obrigatoria': 'Informe a forma de envio para expedir o pedido.', 'pedido.data_entrega_obrigatoria': 'Informe a data de entrega.',
   'menu.rel_pedidos': 'Pedidos', 'relped.crumb': 'Relatórios / Pedidos', 'relped.titulo': 'Relatório de pedidos',
   'relped.sub': 'Todos os pedidos do sistema, com filtro de data e status', 'relped.todos': 'Todos os status', 'relped.qtd': 'Pedidos', 'relped.total': 'Valor total',
+  'menu.suporte': 'Suporte', 'menu.suporte_sub': 'Central de ajuda',
+  'menu.fluxo_proj': 'Fluxo projetado', 'fluxoproj.crumb': 'Financeiro / Fluxo de caixa projetado', 'fluxoproj.titulo': 'Fluxo de caixa projetado',
+  'fluxoproj.sub': 'Projeção rolling de 13 semanas (método direto) a partir dos títulos em aberto',
+  'fluxoproj.saldo_inicial': 'Saldo inicial (caixa atual)', 'fluxoproj.saldo_final': 'Saldo projetado (13 sem.)', 'fluxoproj.grafico': 'Saldo projetado por semana',
+  'fluxoproj.semana': 'Semana', 'fluxoproj.periodo': 'Período', 'fluxoproj.saldo': 'Saldo projetado',
 });
 Object.assign(en, {
   'menu.tipodoc': 'Document types',
@@ -1807,6 +1815,11 @@ Object.assign(en, {
   'pedido.forma_envio_obrigatoria': 'Set the shipping method to dispatch the order.', 'pedido.data_entrega_obrigatoria': 'Enter the delivery date.',
   'menu.rel_pedidos': 'Orders', 'relped.crumb': 'Reports / Orders', 'relped.titulo': 'Orders report',
   'relped.sub': 'All orders in the system, with date and status filters', 'relped.todos': 'All statuses', 'relped.qtd': 'Orders', 'relped.total': 'Total value',
+  'menu.suporte': 'Support', 'menu.suporte_sub': 'Help center',
+  'menu.fluxo_proj': 'Projected cash flow', 'fluxoproj.crumb': 'Finance / Projected cash flow', 'fluxoproj.titulo': 'Projected cash flow',
+  'fluxoproj.sub': '13-week rolling projection (direct method) from open titles',
+  'fluxoproj.saldo_inicial': 'Starting balance (current cash)', 'fluxoproj.saldo_final': 'Projected balance (13 wks)', 'fluxoproj.grafico': 'Projected balance per week',
+  'fluxoproj.semana': 'Week', 'fluxoproj.periodo': 'Period', 'fluxoproj.saldo': 'Projected balance',
 });
 Object.assign(es, {
   'menu.tipodoc': 'Tipos de documento',
@@ -1829,4 +1842,9 @@ Object.assign(es, {
   'pedido.forma_envio_obrigatoria': 'Informa la forma de envío para expedir el pedido.', 'pedido.data_entrega_obrigatoria': 'Informa la fecha de entrega.',
   'menu.rel_pedidos': 'Pedidos', 'relped.crumb': 'Informes / Pedidos', 'relped.titulo': 'Informe de pedidos',
   'relped.sub': 'Todos los pedidos del sistema, con filtro de fecha y estado', 'relped.todos': 'Todos los estados', 'relped.qtd': 'Pedidos', 'relped.total': 'Valor total',
+  'menu.suporte': 'Soporte', 'menu.suporte_sub': 'Centro de ayuda',
+  'menu.fluxo_proj': 'Flujo proyectado', 'fluxoproj.crumb': 'Finanzas / Flujo de caja proyectado', 'fluxoproj.titulo': 'Flujo de caja proyectado',
+  'fluxoproj.sub': 'Proyección rolling de 13 semanas (método directo) a partir de los títulos abiertos',
+  'fluxoproj.saldo_inicial': 'Saldo inicial (caja actual)', 'fluxoproj.saldo_final': 'Saldo proyectado (13 sem.)', 'fluxoproj.grafico': 'Saldo proyectado por semana',
+  'fluxoproj.semana': 'Semana', 'fluxoproj.periodo': 'Período', 'fluxoproj.saldo': 'Saldo proyectado',
 });

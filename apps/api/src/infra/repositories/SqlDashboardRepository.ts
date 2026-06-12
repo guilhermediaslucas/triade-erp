@@ -2,8 +2,9 @@ import type { DataSource } from 'typeorm';
 import type { DashboardRepository, ResumoDashboard, SerieDashboard, TipoSerie } from '../../domain/dashboard/Dashboard.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
-const pct = (cur: number, ant: number) =>
-  ant > 0 ? Math.round(((cur - ant) / ant) * 1000) / 10 : (cur > 0 ? 100 : 0);
+// null = sem período anterior (cur>0 e ant=0) → frontend mostra "novo no período".
+const pct = (cur: number, ant: number): number | null =>
+  ant > 0 ? Math.round(((cur - ant) / ant) * 1000) / 10 : (cur > 0 ? null : 0);
 
 export class SqlDashboardRepository implements DashboardRepository {
   constructor(private readonly ds: DataSource) {}
@@ -89,6 +90,13 @@ export class SqlDashboardRepository implements DashboardRepository {
          LEFT JOIN "${s}".pedido p ON date_trunc('month', p.criado_em) = m AND p.${NAO}
         GROUP BY m ORDER BY m`);
 
+    // Faturamento dos 6 meses imediatamente anteriores (série de comparação "Período anterior").
+    const fatAnterior = await this.ds.query(
+      `SELECT to_char(m, 'YYYY-MM') mes, COALESCE(SUM(p.total),0) total
+         FROM generate_series(date_trunc('month', now()) - interval '11 months', date_trunc('month', now()) - interval '6 months', interval '1 month') m
+         LEFT JOIN "${s}".pedido p ON date_trunc('month', p.criado_em) = m AND p.${NAO}
+        GROUP BY m ORDER BY m`);
+
     const vendasCat = await this.ds.query(
       `SELECT COALESCE(c.nome,'—') categoria, COALESCE(SUM(pi.subtotal),0) total
          FROM "${s}".pedido_item pi
@@ -121,6 +129,7 @@ export class SqlDashboardRepository implements DashboardRepository {
       pedidosRecentes: recentes.map((r: any) => ({ numero: um(r.numero), cliente: r.cliente, vendedor: r.vendedor, valor: um(r.valor), status: r.status, data: new Date(r.data).toISOString() })),
       fluxoEntradasMes: um(fx.ent), fluxoSaidasMes: um(fx.sai), fluxoSaldoMes: um(fx.ent) - um(fx.sai),
       faturamentoMensal: fatMensal.map((r: any) => ({ mes: r.mes, total: um(r.total) })),
+      faturamentoAnterior: fatAnterior.map((r: any) => ({ mes: r.mes, total: um(r.total) })),
       vendasCategoria: vendasCat.map((r: any) => ({ categoria: r.categoria, total: um(r.total) })),
       saldosBancarios: saldos.map((r: any) => ({ nome: r.nome, saldo: um(r.saldo) })),
     };

@@ -26,3 +26,12 @@ export function corStatus(s: StatusPedido): string {
 
 export const numeroPedido = (n: number) => 'PE-' + String(n).padStart(6, '0');
 export const moeda = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+// Abreviação de valores no dashboard (espelha o _fmtBig do mockup):
+// >= 1 milhão → R$ X,XXM · >= mil → R$ Xk (arredondado) · senão valor cheio.
+export function abrevMoeda(n: number): string {
+  const a = Math.abs(n);
+  if (a >= 1_000_000) return 'R$ ' + (n / 1_000_000).toFixed(2).replace('.', ',') + 'M';
+  if (a >= 1_000) return 'R$ ' + Math.round(n / 1_000) + 'k';
+  return moeda(n);
+}

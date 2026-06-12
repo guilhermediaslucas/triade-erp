@@ -3,14 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
-import { corStatus, moeda, numeroPedido, type StatusPedido } from '../lib/pedido.js';
+import { abrevMoeda, corStatus, moeda, numeroPedido, type StatusPedido } from '../lib/pedido.js';
 
 interface Resumo {
-  vendasDia: number; vendasDiaDeltaPct: number;
-  vendasSemana: number; vendasSemanaDeltaPct: number;
-  vendasMes: number; vendasMesDeltaPct: number;
-  vendasAno: number; vendasAnoDeltaPct: number;
-  clientesAtivos: number; clientesDeltaPct: number;
+  vendasDia: number; vendasDiaDeltaPct: number | null;
+  vendasSemana: number; vendasSemanaDeltaPct: number | null;
+  vendasMes: number; vendasMesDeltaPct: number | null;
+  vendasAno: number; vendasAnoDeltaPct: number | null;
+  clientesAtivos: number; clientesDeltaPct: number | null;
   pedidosPorStatus: { status: string; quantidade: number }[];
   receberAberto: number; receberVencido: number;
   pagarAberto: number; pagarVencido: number;
@@ -21,27 +21,42 @@ interface Resumo {
   pedidosRecentes: { numero: number; cliente: string; vendedor: string; valor: number; status: string; data: string }[];
   fluxoEntradasMes: number; fluxoSaidasMes: number; fluxoSaldoMes: number;
   faturamentoMensal: { mes: string; total: number }[];
+  faturamentoAnterior: { mes: string; total: number }[];
   vendasCategoria: { categoria: string; total: number }[];
   saldosBancarios: { nome: string; saldo: number }[];
 }
 const CORES = ['#7b61ff', '#3b82f6', '#16a34a', '#ea9213', '#e1483b', '#6366f1'];
 const pctBR = (n: number) => Math.abs(n).toLocaleString('pt-BR', { maximumFractionDigits: 1 });
 
-function Delta({ pct, suf }: { pct: number; suf?: string }) {
+function Delta({ pct, suf }: { pct: number | null; suf?: string }) {
+  const { t } = useI18n();
+  if (pct === null) return <div className="delta up">{t('dash.novo_periodo')}{suf ? ' · ' + suf : ''}</div>;
   const up = pct >= 0;
   return <div className={'delta ' + (up ? 'up' : 'down')}>{up ? '▲' : '▼'} {pctBR(pct)}%{suf ? ' ' + suf : ''}</div>;
 }
 
-function GraficoLinha({ pontos }: { pontos: { mes: string; total: number }[] }) {
-  const W = 520, H = 210, pad = 30;
-  const max = Math.max(1, ...pontos.map((p) => p.total));
+function GraficoLinha({ pontos, anteriores }: { pontos: { mes: string; total: number }[]; anteriores: number[] }) {
+  const W = 560, H = 220, padL = 48, padR = 12, padT = 10, padB = 26;
   const n = pontos.length;
-  const x = (i: number) => pad + (n <= 1 ? 0 : (i * (W - 2 * pad) / (n - 1)));
-  const y = (v: number) => H - pad - (v / max) * (H - 2 * pad);
+  const max = Math.max(1, ...pontos.map((p) => p.total), ...anteriores);
+  const innerW = W - padL - padR, innerH = H - padT - padB;
+  const x = (i: number) => padL + (n <= 1 ? innerW / 2 : (i * innerW) / (n - 1));
+  const y = (v: number) => padT + innerH - (v / max) * innerH;
   const pts = pontos.map((p, i) => `${x(i)},${y(p.total)}`).join(' ');
-  const area = `${pad},${H - pad} ${pts} ${x(n - 1)},${H - pad}`;
+  const ptsAnt = anteriores.map((v, i) => `${x(i)},${y(v)}`).join(' ');
+  const area = `${padL},${padT + innerH} ${pts} ${x(n - 1)},${padT + innerH}`;
   return (
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 230 }}>
+      {[0, 0.25, 0.5, 0.75, 1].map((g) => {
+        const yy = padT + innerH * (1 - g);
+        return (
+          <g key={g}>
+            <line x1={padL} x2={W - padR} y1={yy} y2={yy} stroke="var(--borda)" strokeWidth="1" />
+            <text x={padL - 6} y={yy + 3} fontSize="9" textAnchor="end" fill="var(--muted)">{abrevMoeda(max * g)}</text>
+          </g>
+        );
+      })}
+      {anteriores.some((v) => v > 0) && <polyline points={ptsAnt} fill="none" stroke="var(--muted)" strokeWidth="2" strokeDasharray="4 4" opacity="0.55" />}
       <polygon points={area} fill="var(--accent)" opacity="0.10" />
       <polyline points={pts} fill="none" stroke="var(--accent)" strokeWidth="2.5" />
       {pontos.map((p, i) => (
@@ -69,7 +84,7 @@ function Donut({ dados }: { dados: { categoria: string; total: number }[] }) {
             off += dash; return el;
           })}
         </svg>
-        <div className="donut-c"><b>{moeda(total)}</b><span>{t('dash.total')}</span></div>
+        <div className="donut-c"><b>{abrevMoeda(total)}</b><span>{t('dash.total')}</span></div>
       </div>
       <div className="lst" style={{ marginTop: 6 }}>
         {dados.length === 0 && <div className="it" style={{ color: 'var(--muted)' }}>{t('dash.sem_vendas')}</div>}
@@ -77,7 +92,7 @@ function Donut({ dados }: { dados: { categoria: string; total: number }[] }) {
           <div key={i} className="it">
             <span style={{ width: 10, height: 10, borderRadius: 3, background: CORES[i % CORES.length], flex: 'none' }} />
             <div className="nm" style={{ flex: 1 }}>{d.categoria}</div>
-            <b className="qt" style={{ color: 'var(--ink)' }}>{moeda(d.total)}</b>
+            <b className="qt" style={{ color: 'var(--ink)' }}>{abrevMoeda(d.total)}</b>
           </div>
         ))}
       </div>
@@ -100,18 +115,18 @@ export function Dashboard() {
   const totalContas = d.saldosBancarios.reduce((a, b) => a + b.saldo, 0);
   const fmtData = (s: string) => new Date(s).toLocaleDateString('pt-BR');
 
-  const kpis = [
-    { tipo: 'dia', ic: '🛒', tint: 'tint-pp', lbl: t('dash.vendas_dia'), val: moeda(d.vendasDia), pct: d.vendasDiaDeltaPct, suf: t('dash.vs_ontem') },
-    { tipo: 'semana', ic: '🕐', tint: 'tint-bl', lbl: t('dash.vendas_semana'), val: moeda(d.vendasSemana), pct: d.vendasSemanaDeltaPct },
-    { tipo: 'mes', ic: '📈', tint: 'tint-gr', lbl: t('dash.vendas_mes'), val: moeda(d.vendasMes), pct: d.vendasMesDeltaPct },
-    { tipo: 'ano', ic: '💲', tint: 'tint-or', lbl: t('dash.vendas_ano'), val: moeda(d.vendasAno), pct: d.vendasAnoDeltaPct },
-    { tipo: 'clientes', ic: '👥', tint: 'tint-in', lbl: t('dash.clientes_ativos'), val: d.clientesAtivos.toLocaleString('pt-BR'), pct: d.clientesDeltaPct },
+  const kpis: { tipo: string; ic: string; tint: string; lbl: string; val: string; pct?: number | null; suf?: string; sub?: string }[] = [
+    { tipo: 'dia', ic: '🛒', tint: 'tint-pp', lbl: t('dash.vendas_dia'), val: abrevMoeda(d.vendasDia), pct: d.vendasDiaDeltaPct, suf: t('dash.vs_ontem') },
+    { tipo: 'semana', ic: '🕐', tint: 'tint-bl', lbl: t('dash.vendas_semana'), val: abrevMoeda(d.vendasSemana), pct: d.vendasSemanaDeltaPct, suf: t('dash.vs_semana') },
+    { tipo: 'mes', ic: '📈', tint: 'tint-gr', lbl: t('dash.vendas_mes'), val: abrevMoeda(d.vendasMes), pct: d.vendasMesDeltaPct, suf: t('dash.vs_mes') },
+    { tipo: 'ano', ic: '💲', tint: 'tint-or', lbl: t('dash.vendas_ano'), val: abrevMoeda(d.vendasAno), pct: d.vendasAnoDeltaPct, suf: t('dash.vs_ano') },
+    { tipo: 'clientes', ic: '👥', tint: 'tint-in', lbl: t('dash.clientes_ativos'), val: d.clientesAtivos.toLocaleString('pt-BR'), sub: d.clientesAtivos.toLocaleString('pt-BR') + ' ' + t('dash.cli_ativos_total') },
   ];
   const avisos = [
     { ic: '🧾', tint: 'tint-rd', n: qtd('orcamento'), txt: t('dash.av_orcamento'), to: '/comercial/pedidos', cap: 'comercial.pedido.listar' },
     { ic: '⏳', tint: 'tint-or', n: qtd('aguardando_pagamento'), txt: t('dash.av_aguardando'), to: '/comercial/pedidos', cap: 'comercial.pedido.listar' },
     { ic: '📦', tint: 'tint-bl', n: d.estoqueBaixo, txt: t('dash.av_estoque'), to: '/estoque/posicao', cap: 'estoque.saldo.ver' },
-    { ic: '🧾', tint: 'tint-in', n: d.receberVencido > 0 ? moeda(d.receberVencido) : '0', txt: t('dash.av_receber_venc'), to: '/financeiro/receber', cap: 'financeiro.receber.listar' },
+    { ic: '🧾', tint: 'tint-in', n: d.receberVencido > 0 ? abrevMoeda(d.receberVencido) : '0', txt: t('dash.av_receber_venc'), to: '/financeiro/receber', cap: 'financeiro.receber.listar' },
   ].filter((a) => temCapability(a.cap));
   const acoes = [
     { ic: '🛒', tint: 'tint-pp', txt: t('dash.qa_novo_pedido'), to: '/comercial/pedidos/novo', cap: 'comercial.pedido.criar' },
@@ -132,7 +147,7 @@ export function Dashboard() {
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/dashboard/serie/' + k.tipo); } }}>
             <div className="kpi">
               <div className={'kpi-ic ' + k.tint}>{k.ic}</div>
-              <div><div className="lbl">{k.lbl}</div><div className="val">{k.val}</div><Delta pct={k.pct} suf={k.suf} /></div>
+              <div><div className="lbl">{k.lbl}</div><div className="val">{k.val}</div>{k.sub ? <div className="delta">{k.sub}</div> : <Delta pct={k.pct ?? null} suf={k.suf} />}</div>
             </div>
           </div>
         ))}
@@ -141,9 +156,12 @@ export function Dashboard() {
       <div className="dash-row d2">
         <div className="card">
           <div className="card-head"><h3>{t('dash.faturamento')}</h3>
-            <div className="legendmini"><span><i style={{ background: 'var(--accent)' }} />{t('dash.este_periodo')}</span></div>
+            <div className="legendmini">
+              <span><i style={{ background: 'var(--accent)' }} />{t('dash.este_periodo')}</span>
+              <span><i style={{ background: 'var(--muted)' }} />{t('dash.periodo_anterior')}</span>
+            </div>
           </div>
-          <GraficoLinha pontos={d.faturamentoMensal} />
+          <GraficoLinha pontos={d.faturamentoMensal} anteriores={d.faturamentoAnterior.map((a) => a.total)} />
         </div>
         <div className="card">
           <div className="card-head"><h3>{t('dash.por_categoria')}</h3></div>
@@ -156,7 +174,7 @@ export function Dashboard() {
             {d.topProdutos.map((p) => (
               <div key={p.nome} className="it">
                 <div className="thumb">💧</div>
-                <div><div className="nm">{p.nome}</div><div className="meta">{moeda(p.valor)}</div></div>
+                <div><div className="nm">{p.nome}</div><div className="meta">{abrevMoeda(p.valor)}</div></div>
                 <div className="qt">{p.quantidade.toLocaleString('pt-BR')} {t('dash.un')}</div>
               </div>
             ))}
@@ -170,7 +188,7 @@ export function Dashboard() {
           <div className="lst">
             {d.topClientesValor.length === 0 && <div className="it" style={{ color: 'var(--muted)' }}>{t('dash.sem_dados')}</div>}
             {d.topClientesValor.map((c) => (
-              <div key={c.nome} className="it"><div className="nm" style={{ flex: 1 }}>{c.nome}</div><b className="qt" style={{ color: 'var(--ink)' }}>{moeda(c.total)}</b></div>
+              <div key={c.nome} className="it"><div className="nm" style={{ flex: 1 }}>{c.nome}</div><b className="qt" style={{ color: 'var(--ink)' }}>{abrevMoeda(c.total)}</b></div>
             ))}
           </div>
         </div>
@@ -226,9 +244,9 @@ export function Dashboard() {
         </div>
         <div className="card">
           <div className="card-head"><h3>{t('dash.fluxo_mes')}</h3><Link to="/financeiro/fluxo" style={{ color: 'var(--accent)', fontSize: 12, fontWeight: 600 }}>{t('dash.ver_detalhes')}</Link></div>
-          <div className="fstat"><div className="l">{t('dash.entradas')}</div><div className="v" style={{ color: 'var(--dash-green)' }}>{moeda(d.fluxoEntradasMes)}</div></div>
-          <div className="fstat"><div className="l">{t('dash.saidas')}</div><div className="v" style={{ color: 'var(--dash-red)' }}>{moeda(d.fluxoSaidasMes)}</div></div>
-          <div className="fstat sel"><div className="l">{t('dash.saldo')}</div><div className="v" style={{ color: 'var(--accent2)' }}>{moeda(d.fluxoSaldoMes)}</div></div>
+          <div className="fstat"><div className="l">{t('dash.entradas')}</div><div className="v" style={{ color: 'var(--dash-green)' }}>{abrevMoeda(d.fluxoEntradasMes)}</div></div>
+          <div className="fstat"><div className="l">{t('dash.saidas')}</div><div className="v" style={{ color: 'var(--dash-red)' }}>{abrevMoeda(d.fluxoSaidasMes)}</div></div>
+          <div className="fstat sel"><div className="l">{t('dash.saldo')}</div><div className="v" style={{ color: 'var(--accent2)' }}>{abrevMoeda(d.fluxoSaldoMes)}</div></div>
         </div>
       </div>
 
@@ -240,7 +258,7 @@ export function Dashboard() {
             <div key={b.nome} className="dash-bar-row">
               <div className="dash-bar-nome">{b.nome}</div>
               <div className="dash-bar-track"><div className="dash-bar-fill" style={{ width: (Math.abs(b.saldo) / maxSaldo * 100) + '%', background: b.saldo >= 0 ? 'var(--accent)' : 'var(--dash-red)' }} /></div>
-              <div className="dash-bar-q">{moeda(b.saldo)}</div>
+              <div className="dash-bar-q">{abrevMoeda(b.saldo)}</div>
             </div>
           ))}
         </div>
@@ -249,9 +267,9 @@ export function Dashboard() {
           {d.saldosBancarios.length === 0
             ? <div className="fstat" style={{ color: 'var(--muted)' }}><div className="l">{t('dash.sem_contas')}</div></div>
             : d.saldosBancarios.map((b) => (
-              <div key={b.nome} className="fstat"><div className="l">{b.nome}</div><div className="v">{moeda(b.saldo)}</div></div>
+              <div key={b.nome} className="fstat"><div className="l">{b.nome}</div><div className="v">{abrevMoeda(b.saldo)}</div></div>
             ))}
-          <div className="fstat sel"><div className="l">{t('dash.saldo_total')}</div><div className="v" style={{ color: 'var(--accent2)' }}>{moeda(totalContas)}</div></div>
+          <div className="fstat sel"><div className="l">{t('dash.saldo_total')}</div><div className="v" style={{ color: 'var(--accent2)' }}>{abrevMoeda(totalContas)}</div></div>
         </div>
       </div>
 

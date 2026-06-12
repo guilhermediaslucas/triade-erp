@@ -176,6 +176,38 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Paridade §6: Fluxo de caixa projetado (13 semanas, método direto).** Novo relatório
+  **Financeiro › Fluxo projetado**: projeção rolling de 13 semanas a partir dos **títulos em aberto**.
+  **Backend (sem migration):** `FinanceiroService.fluxoProjetado` — saldo inicial = caixa atual (Σ títulos
+  pagos: receber + / pagar −, via `listarPagos`); para cada semana soma os títulos em aberto pela data de
+  **vencimento** (receber=entrada, pagar=saída), com a **semana 1 absorvendo os vencidos** (`v <= ate`);
+  saldo acumula semana a semana. Tipos `SemanaProjecao`/`RelatorioFluxoProj`. Rota
+  `GET /financeiro/fluxo-projetado` (cap `financeiro.fluxo.ver`). **Frontend:** `RelFluxoProj.tsx` — 2 KPIs
+  (saldo inicial/projetado), **gráfico SVG** do saldo (com baseline zero p/ saldo negativo) + tabela das 13
+  semanas (período, entradas, saídas, saldo); menu Financeiro, i18n pt/en/es. **Validação:** **type-check
+  api+web verde** + **e2e Postgres real (pglite, 6 PASS):** saldo inicial 700, vencido cai na S1 (saldo 800),
+  entrada S2 (1300), saída S3 (1250), 13 semanas, saldo final 1250. **Pendente:** Gui git push.
+- **2026-06-12** — **Polimento fino do dashboard (paridade pixel a pixel).** (1) **Deltas dos KPIs:** o
+  `pct` do backend agora retorna **null** quando não havia período anterior (cur>0 e ant=0); o `Delta` mostra
+  **"novo no período"** nesse caso. Sufixos em todos os cards ("vs ontem/sem. anterior/mês anterior/ano
+  anterior"). O card **Clientes ativos** virou "X ativos no total" (sem %). (2) **Faturamento:** o gráfico
+  SVG ganhou **eixo Y** com escala abreviada + **2ª série "Período anterior"** (linha tracejada/fade) — novo
+  `faturamentoAnterior` no resumo (6 meses imediatamente anteriores, via `generate_series` -11..-6); legenda
+  com as duas séries. (3) **"Vendas no mês" → "Vendas do mês"** (i18n). (4) **Rodapé do menu:** marca
+  **TRÍADE ERP** + **Suporte · Central de ajuda** no fim da sidebar (flex column, `.sidebar-foot`). i18n
+  pt/en/es. **Validação:** **type-check api+web verde** + **e2e Postgres real (pglite, 7 PASS):** delta=null
+  sem período anterior (dia/mês), faturamento atual e anterior com 6 meses, mês corrente=1000, série anterior
+  zerada. **Pendente:** Gui git push + Ctrl+Shift+R.
+- **2026-06-12** — **Fidelidade visual: ícones nos grupos do menu + números abreviados no dashboard.**
+  Comparando as telas (sistema × mockup) o Gui apontou 2 diferenças: (1) os **grupos do menu** (Comercial,
+  Financeiro, Estoque/Expedição, Logística, Relatórios, Cadastros, Configurações, Super-admin) não tinham
+  **ícone** ao lado do nome — adicionado `icone` ao tipo `Grupo` + render no `nav-grupo-head` (🛒💲📦🚚📊📋⚙️🏢),
+  CSS `.nav-grupo-lbl/.nav-grupo-ic`. (2) Os **números do dashboard** apareciam cheios (R$ 1.255,00) e o mockup
+  **abrevia** — novo `abrevMoeda` em `lib/pedido` espelhando o `_fmtBig` do mockup (≥1M → `R$ X,XXM`; ≥mil →
+  `R$ Xk` arredondado; senão valor cheio) aplicado aos 5 KPIs, donut (centro+legenda), Top produtos, Top
+  clientes, fluxo do mês, saldos bancários, total em contas e aviso de a-receber-vencido. **Validação:**
+  **type-check web verde** + conferência da abreviação (1842→`R$ 2k`, 1.25M→`R$ 1,25M`, <1000 cheio).
+  **Pendente:** Gui git push + Ctrl+Shift+R.
 - **2026-06-12** — **Paridade §6: Relatório de pedidos (lista plana com filtros).** Novo relatório
   **Relatórios › Pedidos** — lista **todos** os pedidos (inclui orçamento/cancelado, diferente do "Vendas")
   com filtro de **data** (criação) e **status** + export CSV/Excel. Colunas: nº, data, cliente, vendedor,

@@ -54,9 +54,18 @@ a { text-decoration: none; color: inherit; }
 
 /* ----- App shell ----- */
 .app-shell { display: flex; min-height: 100vh; }
-.sidebar { width: 260px; background: var(--side-bg); color: var(--side-fg); padding: 18px 0; flex-shrink: 0; }
+.sidebar { width: 260px; background: var(--side-bg); color: var(--side-fg); padding: 18px 0; flex-shrink: 0; display: flex; flex-direction: column; min-height: 100vh; }
+.sidebar nav { flex: 1 1 auto; }
 .sidebar-brand { font-size: 20px; font-weight: 800; letter-spacing: 1px; color: #fff; padding: 6px 22px 22px; }
 .sidebar-brand span { color: #a78bfa; }
+.sidebar-foot { margin-top: auto; padding: 16px 22px 6px; border-top: 1px solid rgba(255,255,255,.08); }
+.sidebar-foot-brand { font-size: 16px; font-weight: 800; letter-spacing: 1px; color: #fff; }
+.sidebar-foot-brand span { color: #e1483b; }
+.sidebar-foot-brand small { font-size: 9px; letter-spacing: 2px; opacity: .65; margin-left: 2px; }
+.sidebar-foot-sup { display: flex; align-items: center; gap: 8px; margin-top: 10px; opacity: .7; }
+.sidebar-foot-sup b { display: block; font-size: 12px; font-weight: 600; line-height: 1.2; }
+.sidebar-foot-sup small { font-size: 10px; opacity: .85; }
+.sidebar-foot-ic { font-size: 15px; }
 .nav-item { display: flex; align-items: center; gap: 11px; padding: 11px 22px; font-size: 14px; color: var(--side-fg); cursor: pointer; }
 .nav-item:hover { background: rgba(255,255,255,.06); }
 .nav-item.ativo { background: var(--accent); color: #fff; font-weight: 600; }
@@ -410,6 +419,8 @@ body.theme-dark .nota-info { background: #14233a; color: #93c5fd; border-color: 
 /* ===== Menu recolhível (grupos) ===== */
 .nav-grupo-head { display: flex; align-items: center; justify-content: space-between; width: 100%; background: none; border: 0; cursor: pointer; color: var(--side-fg); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; opacity: .6; padding: 12px 22px 6px; font-family: inherit; }
 .nav-grupo-head:hover { opacity: .95; }
+.nav-grupo-lbl { display: inline-flex; align-items: center; gap: 8px; }
+.nav-grupo-ic { font-size: 14px; line-height: 1; }
 .nav-chev { font-size: 10px; opacity: .7; }
 
 /* ===== Dashboard fiel ao mockup (erp-mockup.html) ===== */

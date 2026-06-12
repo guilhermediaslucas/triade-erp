@@ -158,7 +158,7 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 | **Curva ABC (clientes)** | ✅ | seletor Produtos/Clientes (e2e 5 PASS) |
 | Validade de lotes / Estoque parado / Perdas / Inventários | ✅ | |
 | DRE simplificada | ✅ | |
-| Aging / projeção | ✅ | |
+| Aging / projeção | ✅ | aging ✅; **fluxo de caixa projetado** (13 semanas, método direto) ✅ — e2e 6 PASS |
 | Relatório de pedidos (lista plana com filtros) | ✅ | Relatórios › Pedidos (data + status, todos os status, forma de envio/entrega, export); e2e 5 PASS |
 | Relatório Contas a receber / a pagar (com filtros + Excel) | ⚠️ | há Contas; "relatório dedicado" do mockup a avaliar |
 | Exportar Excel formatado (.xlsx com cara de relatório) | ✅ | |
