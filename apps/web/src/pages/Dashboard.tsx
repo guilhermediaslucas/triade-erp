@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
@@ -88,6 +88,7 @@ function Donut({ dados }: { dados: { categoria: string; total: number }[] }) {
 export function Dashboard() {
   const { token, temCapability } = useAuth();
   const { t } = useI18n();
+  const navigate = useNavigate();
   const [d, setD] = useState<Resumo | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   useEffect(() => { api.get<Resumo>('/dashboard', token!).then(setD).catch((e) => setErro((e as ErroApi).chaveI18n)); /* eslint-disable-next-line */ }, []);
@@ -100,11 +101,11 @@ export function Dashboard() {
   const fmtData = (s: string) => new Date(s).toLocaleDateString('pt-BR');
 
   const kpis = [
-    { ic: '🛒', tint: 'tint-pp', lbl: t('dash.vendas_dia'), val: moeda(d.vendasDia), pct: d.vendasDiaDeltaPct, suf: t('dash.vs_ontem') },
-    { ic: '🕐', tint: 'tint-bl', lbl: t('dash.vendas_semana'), val: moeda(d.vendasSemana), pct: d.vendasSemanaDeltaPct },
-    { ic: '📈', tint: 'tint-gr', lbl: t('dash.vendas_mes'), val: moeda(d.vendasMes), pct: d.vendasMesDeltaPct },
-    { ic: '💲', tint: 'tint-or', lbl: t('dash.vendas_ano'), val: moeda(d.vendasAno), pct: d.vendasAnoDeltaPct },
-    { ic: '👥', tint: 'tint-in', lbl: t('dash.clientes_ativos'), val: d.clientesAtivos.toLocaleString('pt-BR'), pct: d.clientesDeltaPct },
+    { tipo: 'dia', ic: '🛒', tint: 'tint-pp', lbl: t('dash.vendas_dia'), val: moeda(d.vendasDia), pct: d.vendasDiaDeltaPct, suf: t('dash.vs_ontem') },
+    { tipo: 'semana', ic: '🕐', tint: 'tint-bl', lbl: t('dash.vendas_semana'), val: moeda(d.vendasSemana), pct: d.vendasSemanaDeltaPct },
+    { tipo: 'mes', ic: '📈', tint: 'tint-gr', lbl: t('dash.vendas_mes'), val: moeda(d.vendasMes), pct: d.vendasMesDeltaPct },
+    { tipo: 'ano', ic: '💲', tint: 'tint-or', lbl: t('dash.vendas_ano'), val: moeda(d.vendasAno), pct: d.vendasAnoDeltaPct },
+    { tipo: 'clientes', ic: '👥', tint: 'tint-in', lbl: t('dash.clientes_ativos'), val: d.clientesAtivos.toLocaleString('pt-BR'), pct: d.clientesDeltaPct },
   ];
   const avisos = [
     { ic: '🧾', tint: 'tint-rd', n: qtd('orcamento'), txt: t('dash.av_orcamento'), to: '/comercial/pedidos', cap: 'comercial.pedido.listar' },
@@ -126,7 +127,9 @@ export function Dashboard() {
 
       <div className="dash-row c5">
         {kpis.map((k) => (
-          <div className="card" key={k.lbl}>
+          <div className="card clicavel" key={k.lbl} role="button" tabIndex={0} title={t('dash.kpi_drill')}
+            onClick={() => navigate('/dashboard/serie/' + k.tipo)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/dashboard/serie/' + k.tipo); } }}>
             <div className="kpi">
               <div className={'kpi-ic ' + k.tint}>{k.ic}</div>
               <div><div className="lbl">{k.lbl}</div><div className="val">{k.val}</div><Delta pct={k.pct} suf={k.suf} /></div>

@@ -171,10 +171,14 @@ Object.assign(pt, {
   'cap.modulo.superadmin': 'Super-admin', 'cap.superadmin.empresa.provisionar': 'Provisionar empresas',
   'empresas.titulo': 'Empresas', 'empresas.codigo': 'Código', 'empresas.nome': 'Razão social',
   'empresas.fantasia': 'Nome fantasia', 'empresas.admin': 'Administrador inicial',
-  'empresas.provisionar': 'Provisionar empresa',
+  'empresas.provisionar': 'Criar empresa',
   'empresas.provisionar_hint': 'Cria uma nova empresa com seu banco isolado, perfil Administrador e o primeiro usuário.',
   'empresas.codigo_hint': 'Só letras e números, sem espaços. Usado no login.',
-  'empresas.criada': 'Empresa provisionada com sucesso.',
+  'empresas.criada': 'Empresa criada com sucesso.',
+  'empresas.acoes': 'Ações', 'empresas.editar': 'Editar', 'empresas.excluir': 'Excluir',
+  'empresas.editar_titulo': 'Editar empresa', 'empresas.ativa': 'Empresa ativa',
+  'empresas.salva': 'Empresa atualizada com sucesso.', 'empresas.excluida': 'Empresa excluída.',
+  'empresas.excluir_confirma': 'Excluir a empresa "{nome}"? Isso apaga todos os dados dela (sem volta).',
   'empresa.codigo_invalido': 'Código inválido (use letras e números, sem espaços).',
   'empresa.codigo_em_uso': 'Já existe uma empresa com este código.', 'empresa.nome_invalido': 'Informe uma razão social válida.',
 });
@@ -183,10 +187,14 @@ Object.assign(en, {
   'cap.modulo.superadmin': 'Super-admin', 'cap.superadmin.empresa.provisionar': 'Provision companies',
   'empresas.titulo': 'Companies', 'empresas.codigo': 'Code', 'empresas.nome': 'Legal name',
   'empresas.fantasia': 'Trade name', 'empresas.admin': 'Initial administrator',
-  'empresas.provisionar': 'Provision company',
+  'empresas.provisionar': 'Create company',
   'empresas.provisionar_hint': 'Creates a new company with its own isolated database, an Administrator role and the first user.',
   'empresas.codigo_hint': 'Letters and numbers only, no spaces. Used at login.',
-  'empresas.criada': 'Company provisioned successfully.',
+  'empresas.criada': 'Company created successfully.',
+  'empresas.acoes': 'Actions', 'empresas.editar': 'Edit', 'empresas.excluir': 'Delete',
+  'empresas.editar_titulo': 'Edit company', 'empresas.ativa': 'Active company',
+  'empresas.salva': 'Company updated successfully.', 'empresas.excluida': 'Company deleted.',
+  'empresas.excluir_confirma': 'Delete company "{nome}"? This erases all of its data (cannot be undone).',
   'empresa.codigo_invalido': 'Invalid code (use letters and numbers, no spaces).',
   'empresa.codigo_em_uso': 'A company with this code already exists.', 'empresa.nome_invalido': 'Enter a valid legal name.',
 });
@@ -195,10 +203,14 @@ Object.assign(es, {
   'cap.modulo.superadmin': 'Super-admin', 'cap.superadmin.empresa.provisionar': 'Aprovisionar empresas',
   'empresas.titulo': 'Empresas', 'empresas.codigo': 'Código', 'empresas.nome': 'Razón social',
   'empresas.fantasia': 'Nombre comercial', 'empresas.admin': 'Administrador inicial',
-  'empresas.provisionar': 'Aprovisionar empresa',
+  'empresas.provisionar': 'Crear empresa',
   'empresas.provisionar_hint': 'Crea una nueva empresa con su base de datos aislada, un perfil Administrador y el primer usuario.',
   'empresas.codigo_hint': 'Solo letras y números, sin espacios. Se usa en el inicio de sesión.',
-  'empresas.criada': 'Empresa aprovisionada con éxito.',
+  'empresas.criada': 'Empresa creada con éxito.',
+  'empresas.acoes': 'Acciones', 'empresas.editar': 'Editar', 'empresas.excluir': 'Eliminar',
+  'empresas.editar_titulo': 'Editar empresa', 'empresas.ativa': 'Empresa activa',
+  'empresas.salva': 'Empresa actualizada con éxito.', 'empresas.excluida': 'Empresa eliminada.',
+  'empresas.excluir_confirma': '¿Eliminar la empresa "{nome}"? Esto borra todos sus datos (sin retorno).',
   'empresa.codigo_invalido': 'Código inválido (usa letras y números, sin espacios).',
   'empresa.codigo_em_uso': 'Ya existe una empresa con este código.', 'empresa.nome_invalido': 'Ingresa una razón social válida.',
 });
@@ -1455,6 +1467,11 @@ Object.assign(pt, {
   'dash.sem_contas': 'Sem contas cadastradas', 'dash.un': 'un', 'dash.este_periodo': 'Este período', 'dash.periodo_anterior': 'Período anterior',
   'dash.footer': 'TRÍADE ERP © 2026 · Todos os direitos reservados · Versão 0.1.0', 'dash.cli_ativos_total': 'ativos no total',
   'dash.col_pedido': 'Pedido', 'dash.col_cliente': 'Cliente', 'dash.col_vendedor': 'Vendedor', 'dash.col_valor': 'Valor', 'dash.col_data': 'Data',
+  'dash.kpi_drill': 'Clique para ver o gráfico do período',
+  'dash.serie_crumb': 'Gráfico do período', 'dash.serie_total': 'Total do período', 'dash.serie_media': 'Média', 'dash.serie_pico': 'Pico',
+  'dash.serie_vazio': 'Sem vendas no período.', 'dash.serie_limpar': 'Últimos 30 dias', 'dash.serie_tipo_invalido': 'Período inválido.',
+  'dash.serie_dia': 'Vendas do dia — diário (últimos 30 dias)', 'dash.serie_semana': 'Vendas da semana — últimas 12 semanas',
+  'dash.serie_mes': 'Vendas do mês — últimos 12 meses', 'dash.serie_ano': 'Vendas do ano — últimos 5 anos', 'dash.serie_clientes': 'Clientes ativos — total atual',
 });
 Object.assign(en, {
   'dash.subtitulo': 'Operations overview',
@@ -1470,6 +1487,11 @@ Object.assign(en, {
   'dash.sem_contas': 'No accounts registered', 'dash.un': 'un', 'dash.este_periodo': 'This period', 'dash.periodo_anterior': 'Previous period',
   'dash.footer': 'TRÍADE ERP © 2026 · All rights reserved · Version 0.1.0', 'dash.cli_ativos_total': 'active total',
   'dash.col_pedido': 'Order', 'dash.col_cliente': 'Customer', 'dash.col_vendedor': 'Salesperson', 'dash.col_valor': 'Value', 'dash.col_data': 'Date',
+  'dash.kpi_drill': 'Click to see the period chart',
+  'dash.serie_crumb': 'Period chart', 'dash.serie_total': 'Period total', 'dash.serie_media': 'Average', 'dash.serie_pico': 'Peak',
+  'dash.serie_vazio': 'No sales in the period.', 'dash.serie_limpar': 'Last 30 days', 'dash.serie_tipo_invalido': 'Invalid period.',
+  'dash.serie_dia': 'Sales today — daily (last 30 days)', 'dash.serie_semana': 'Weekly sales — last 12 weeks',
+  'dash.serie_mes': 'Monthly sales — last 12 months', 'dash.serie_ano': 'Yearly sales — last 5 years', 'dash.serie_clientes': 'Active customers — current total',
 });
 Object.assign(es, {
   'dash.subtitulo': 'Visión general de la operación',
@@ -1485,6 +1507,11 @@ Object.assign(es, {
   'dash.sem_contas': 'Sin cuentas registradas', 'dash.un': 'un', 'dash.este_periodo': 'Este período', 'dash.periodo_anterior': 'Período anterior',
   'dash.footer': 'TRÍADE ERP © 2026 · Todos los derechos reservados · Versión 0.1.0', 'dash.cli_ativos_total': 'activos en total',
   'dash.col_pedido': 'Pedido', 'dash.col_cliente': 'Cliente', 'dash.col_vendedor': 'Vendedor', 'dash.col_valor': 'Valor', 'dash.col_data': 'Fecha',
+  'dash.kpi_drill': 'Haz clic para ver el gráfico del período',
+  'dash.serie_crumb': 'Gráfico del período', 'dash.serie_total': 'Total del período', 'dash.serie_media': 'Promedio', 'dash.serie_pico': 'Pico',
+  'dash.serie_vazio': 'Sin ventas en el período.', 'dash.serie_limpar': 'Últimos 30 días', 'dash.serie_tipo_invalido': 'Período inválido.',
+  'dash.serie_dia': 'Ventas del día — diario (últimos 30 días)', 'dash.serie_semana': 'Ventas de la semana — últimas 12 semanas',
+  'dash.serie_mes': 'Ventas del mes — últimos 12 meses', 'dash.serie_ano': 'Ventas del año — últimos 5 años', 'dash.serie_clientes': 'Clientes activos — total actual',
 });
 
 // --- Padrão de tela (crumb/chips) + Clientes ---
@@ -1675,3 +1702,7 @@ Object.assign(es, { 'precos.nota': 'En el precio base defines el precio fijo de 
 Object.assign(pt, { 'fin.vence7': 'Vence em 7 dias' });
 Object.assign(en, { 'fin.vence7': 'Due in 7 days' });
 Object.assign(es, { 'fin.vence7': 'Vence en 7 días' });
+
+Object.assign(pt, { 'fin.detalhe': 'Detalhes do título', 'fin.ver_detalhe': 'Duplo-clique para ver os detalhes', 'fin.origem': 'Origem' });
+Object.assign(en, { 'fin.detalhe': 'Title details', 'fin.ver_detalhe': 'Double-click to see details', 'fin.origem': 'Origin' });
+Object.assign(es, { 'fin.detalhe': 'Detalles del título', 'fin.ver_detalhe': 'Doble clic para ver detalles', 'fin.origem': 'Origen' });

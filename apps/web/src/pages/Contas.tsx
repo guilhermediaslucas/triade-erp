@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
@@ -29,6 +29,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   const [novo, setNovo] = useState(false);
   const [parcelarT, setParcelarT] = useState<Titulo | null>(null);
   const [baixar, setBaixar] = useState<Titulo | null>(null);
+  const [verT, setVerT] = useState<Titulo | null>(null);
   const [sel, setSel] = useState<Set<string>>(new Set());
   const [baixaMassa, setBaixaMassa] = useState(false);
   const [filtroAberto, setFiltroAberto] = useState(false);
@@ -174,7 +175,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
         <tbody>
           {filtrados.length === 0 && <tr><td colSpan={(pode ? 1 : 0) + 2 + HIDEABLE.filter((k) => !oc(k)).length} className="vazio">{t('common.nenhum')}</td></tr>}
           {filtrados.map((tt) => { const sit = situacao(tt); return (
-            <tr key={tt.id} className={sel.has(tt.id) ? 'linha-sel' : ''}>
+            <tr key={tt.id} className={sel.has(tt.id) ? 'linha-sel' : ''} style={{ cursor: 'pointer' }} onDoubleClick={() => setVerT(tt)} title={t('fin.ver_detalhe')}>
               {pode && <td><input type="checkbox" checked={sel.has(tt.id)} onChange={() => toggle(tt.id)} /></td>}
               <td>{tt.descricao}{tt.origem === 'pedido' && <span className="tag-origem">{t('fin.do_pedido')}</span>}</td>
               {!oc('pessoa') && <td>{tt.pessoaNome ?? '—'}</td>}
@@ -193,7 +194,32 @@ export function Contas({ tipo }: { tipo: Tipo }) {
       {parcelarT && <ModalParcelar tipo={tipo} titulo={parcelarT} onFechar={() => setParcelarT(null)} onSalvo={(n) => { setParcelarT(null); carregar(); toast(t('parcelar.toast').replace('{n}', String(n))); }} />}
       {baixar && <ModalBaixa tipo={tipo} titulos={[baixar]} onFechar={() => setBaixar(null)} onSalvo={() => { setBaixar(null); carregar(); toast(t('fin.toast_baixado')); }} />}
       {baixaMassa && <ModalBaixa tipo={tipo} titulos={abertosSel} onFechar={() => setBaixaMassa(false)} onSalvo={(n) => { setBaixaMassa(false); carregar(); toast(t('bulk.baixados').replace('{n}', String(n))); }} />}
+      {verT && <ModalVerTitulo tipo={tipo} titulo={verT} onFechar={() => setVerT(null)} />}
     </div>
+  );
+}
+
+// Janela de detalhe do título (duplo-clique na linha), somente leitura.
+function ModalVerTitulo({ tipo, titulo, onFechar }: { tipo: Tipo; titulo: Titulo; onFechar: () => void; }) {
+  const { t } = useI18n();
+  const sit = situacao(titulo);
+  const fmtData = (d: string) => new Date(d + 'T00:00:00').toLocaleDateString('pt-BR');
+  const linha = (rotulo: string, valor: ReactNode) => (
+    <div className="det-linha"><span className="det-rot">{rotulo}</span><span className="det-val">{valor}</span></div>
+  );
+  return (
+    <div className="modal-fundo" onClick={onFechar}><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 460 }}>
+      <h2>{t('fin.detalhe')}</h2>
+      {linha(t('fin.descricao'), titulo.descricao)}
+      {linha(tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor'), titulo.pessoaNome ?? '—')}
+      {linha(t('catfin.titulo_s'), titulo.categoriaFinanceiraNome ?? '—')}
+      {linha(t('fin.valor'), <b>{moeda(titulo.valor)}</b>)}
+      {linha(t('fin.vencimento'), fmtData(titulo.vencimento))}
+      {linha(t('fin.situacao'), <span className={'pill ' + (sit === 'pago' ? 'st-verde' : sit === 'vencido' ? 'st-vermelho' : 'st-laranja')}>{t('fin.' + sit)}</span>)}
+      {titulo.status === 'pago' && linha(t('pedidos.forma_pgto'), titulo.formaPagamento ?? '—')}
+      {linha(t('fin.origem'), titulo.origem === 'pedido' ? t('fin.do_pedido') : titulo.origem)}
+      <div className="modal-acoes"><button className="btn-primary" onClick={onFechar}>{t('common.fechar')}</button></div>
+    </div></div>
   );
 }
 

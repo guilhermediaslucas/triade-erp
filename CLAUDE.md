@@ -176,6 +176,56 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Paridade §3: detalhe do título por duplo-clique (Contas).** Modal **read-only**
+  (`ModalVerTitulo`) que abre ao dar **duplo-clique** numa linha de *Contas a receber/pagar*: mostra
+  descrição, pessoa, categoria, valor, vencimento, situação (pill), forma de pagamento (se pago) e origem.
+  Frontend puro (dados já carregados); i18n pt/en/es (`fin.detalhe`, `fin.ver_detalhe`, `fin.origem`);
+  CSS `.det-linha/.det-rot/.det-val`. **type-check web verde.** **Pendente:** Gui `git push`.
+  **Falta do §11.4:** coluna **Previsto/Efetivo** (regime competência×caixa) — é decisão de modelo, deixei
+  pro Gui.
+- **2026-06-11** — **UX pedido do Gui: Lembrar-me, sistema clean (sem idioma/fuso) e CRUD de empresas.**
+  Lote noturno (Gui autorizou avançar sozinho). **(1) Lembrar-me corrigido:** a revalidação `/me` no
+  reload só **desloga em 401** agora (antes qualquer erro de rede/5xx — ex.: API hibernando no Render —
+  apagava a sessão persistida). `api/client.ts` passa o **status HTTP** no erro (`ErroApi.status`; rede=0);
+  `AuthContext` mantém a sessão em cache em erro transitório. **(2) Menu recolhido:** já estava no código
+  (grupos iniciam fechados); o print do Gui era do **deploy antigo** (Cloudflare estava travado) — some
+  após o rebuild. **(3) Sistema mais clean:** removido o **seletor de idioma** (topbar + login) e os campos
+  **idioma/fuso horário** de *Dados da empresa* (i18n continua pt-BR; o backend mantém os campos, a tela só
+  reenvia os valores salvos). **(4) Criar empresa:** "Provisionar"→**"Criar empresa"** (i18n pt/en/es) e o
+  **código sumiu da UI** — agora é **gerado automaticamente** (slug do nome, único, `^[a-z][a-z0-9]{1,30}$`)
+  no `ProvisionarEmpresa` (campo `codigo` virou opcional, compat mantida). **(5) Editar/excluir empresa:**
+  `EmpresaRepository.editarCadastro`/`excluir` + `Migrador.removerTenant` (DROP SCHEMA CASCADE);
+  `EmpresaService.editar` (nome/fantasia/ativo) e `excluir` (apaga registro + **dropa o schema do tenant**);
+  rotas `PUT/DELETE /empresas/:codigo` (super-admin); tela Empresas com coluna **Ações** (Editar=modal,
+  Excluir=confirm). **Validação:** **type-check api+web verde** + **e2e Postgres real (pglite, 12 PASS):**
+  cria sem código (slug `dermacenterestetica`, schema criado), 2ª igual→sufixo `...2`, nome curto→400,
+  nome só símbolos→slug válido (`e123`), editar reflete, fantasia curta→400, editar/excluir inexistente→404,
+  excluir remove registro **e** dropa o schema. **Sem migration** (colunas já existiam). **Pendente:** Gui
+  `git push` + Ctrl+Shift+R. **Nota:** mesmo workaround de ambiente (mount trunca arquivos do file-tool;
+  tsc/e2e na cópia `/tmp` com esbuild linux). **Próximo na paridade (§11):** Previsto/Efetivo + detalhe do
+  título (duplo-clique); foto/avatar de usuário; formas de entrega como CRUD.
+- **2026-06-11** — **Paridade §7: KPIs do Dashboard clicáveis (drill por período).** Os 5 cards
+  de KPI (Vendas dia/semana/mês/ano + Clientes ativos) viraram **clicáveis** (`.card.clicavel` com
+  hover + acessível por teclado) → navegam para **`/dashboard/serie/:tipo`**. Nova tela
+  **`DashboardSerie`**: 3 KPIs (Total do período, Média, Pico) + **gráfico SVG** (barras; **linha** no
+  "mês"), sem dependência (Chart.js do mockup virou SVG inline, padrão do projeto). **Dia** tem filtro
+  de intervalo (de/ate, default últimos 30 dias) + botão "Últimos 30 dias". **Backend (hexagonal):**
+  `SerieDashboard`/`TipoSerie` no domínio; `DashboardRepository.serie` + `SqlDashboardRepository.serie`
+  (vendas = pedidos não orçamento/cancelado): **dia** série diária no intervalo (CTE `faixa`, default
+  -29d, params $1/$2), **semana** 12 semanas, **mês** 12 meses, **ano** 5 anos (todos via
+  `generate_series` + `date_trunc` + LEFT JOIN), **clientes** = contagem atual de ativos
+  (formato quantidade); `DashboardService.serie` valida tipo (whitelist → 400) e só aplica de/ate ao
+  "dia" (mesmo `lim` ISO do RelatoriosService). Rota `GET /dashboard/serie?tipo=&de=&ate=` (cap
+  `dashboard.ver`). i18n pt/en/es (`dash.serie_*`, `dash.kpi_drill`). CSS `.dash-row.c3` + `.card.clicavel`.
+  **Validação:** **type-check api+web verde** + **e2e Postgres real (pglite, 15 PASS)** no
+  `SqlDashboardRepository.serie` (janelas 30/12/12/5/1, somas com cancelado/orçamento fora, 40d fora da
+  janela diária, clientes ativos=2) + **serviço (4 PASS)** (tipo inválido→400, datas ISO/inválidas,
+  janela fixa ignora intervalo). **Pendente:** Gui `git push` + Ctrl+Shift+R. **Nota de ambiente:** o
+  mount do sandbox de novo serviu versão truncada dos arquivos editados pelo file-tool (Windows OK);
+  rodei tsc/e2e numa cópia em `/tmp` com os arquivos alterados reconstruídos e symlinks de
+  `@triade/shared` refeitos p/ a sessão atual; tsx precisou do esbuild **linux** 0.28.0 via
+  `ESBUILD_BINARY_PATH` (node_modules veio do Windows). **Próximo na paridade (§11):** Previsto/Efetivo
+  + detalhe do título (duplo-clique).
 - **2026-06-11** — **Ajuste toast Pix-only + Curva ABC de clientes.** (1) O toast de *pendência de baixa* passou a
   disparar **só para Pix** (Boleto/Cartão/Dinheiro usam o toast normal de status); o gate de separação segue como no
   mockup. (2) **Curva ABC de clientes**: `RelatorioRepository.curvaAbcClientes` (Σ total e nº de pedidos por cliente,

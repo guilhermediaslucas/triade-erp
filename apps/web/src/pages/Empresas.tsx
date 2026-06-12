@@ -4,7 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 
 interface EmpresaResumo { codigo: string; nome: string; fantasia: string; ativo: boolean; }
-const VAZIO = { codigo: '', nome: '', fantasia: '', adminNome: '', adminEmail: '', adminSenha: '' };
+const VAZIO = { nome: '', fantasia: '', adminNome: '', adminEmail: '', adminSenha: '' };
 
 export function Empresas() {
   const { token } = useAuth();
@@ -14,6 +14,7 @@ export function Empresas() {
   const [erro, setErro] = useState<string | null>(null);
   const [ok, setOk] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
+  const [editando, setEditando] = useState<EmpresaResumo | null>(null);
 
   async function carregar() {
     try { setEmpresas(await api.get<EmpresaResumo[]>('/empresas', token!)); }
@@ -23,13 +24,20 @@ export function Empresas() {
 
   const set = (c: keyof typeof VAZIO, v: string) => setForm({ ...form, [c]: v });
 
-  async function provisionar() {
+  async function criar() {
     setErro(null); setOk(null); setSalvando(true);
     try {
       await api.post('/empresas', form, token!);
       setOk('empresas.criada'); setForm(VAZIO); carregar();
     } catch (e) { setErro((e as ErroApi).chaveI18n); }
     finally { setSalvando(false); }
+  }
+
+  async function excluir(e: EmpresaResumo) {
+    if (!window.confirm(t('empresas.excluir_confirma').replace('{nome}', e.fantasia || e.nome))) return;
+    setErro(null); setOk(null);
+    try { await api.del(`/empresas/${e.codigo}`, token!); setOk('empresas.excluida'); carregar(); }
+    catch (ex) { setErro((ex as ErroApi).chaveI18n); }
   }
 
   return (
@@ -40,14 +48,19 @@ export function Empresas() {
 
       <div className="card pad0" style={{ marginBottom: 24 }}>
         <table className="tabela">
-          <thead><tr><th>{t('empresas.codigo')}</th><th>{t('empresas.fantasia')}</th><th>{t('usuarios.situacao')}</th></tr></thead>
+          <thead><tr><th>{t('empresas.nome')}</th><th>{t('empresas.fantasia')}</th><th>{t('usuarios.situacao')}</th><th style={{ width: 160 }}>{t('empresas.acoes')}</th></tr></thead>
           <tbody>
-            {empresas.length === 0 && <tr><td colSpan={3} className="vazio">{t('common.nenhum')}</td></tr>}
+            {empresas.length === 0 && <tr><td colSpan={4} className="vazio">{t('common.nenhum')}</td></tr>}
             {empresas.map((e) => (
               <tr key={e.codigo}>
-                <td><code>{e.codigo}</code></td>
+                <td>{e.nome}</td>
                 <td>{e.fantasia}</td>
                 <td><span className={e.ativo ? 'pill-ok' : 'pill-off'}>{e.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
+                <td>
+                  <button className="btn-link" onClick={() => setEditando(e)}>{t('empresas.editar')}</button>
+                  {' · '}
+                  <button className="btn-link" style={{ color: 'var(--dash-red)' }} onClick={() => excluir(e)}>{t('empresas.excluir')}</button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -57,15 +70,9 @@ export function Empresas() {
       <div className="card" style={{ maxWidth: 620 }}>
         <h3 style={{ marginTop: 0 }}>{t('empresas.provisionar')}</h3>
         <p className="muted" style={{ marginTop: 0 }}>{t('empresas.provisionar_hint')}</p>
-        <div className="cores-grid">
-          <label className="campo">{t('empresas.codigo')}
-            <input value={form.codigo} onChange={(e) => set('codigo', e.target.value)} placeholder="ex.: dermacenter" />
-            <small className="hint">{t('empresas.codigo_hint')}</small>
-          </label>
-          <label className="campo">{t('empresas.nome')}
-            <input value={form.nome} onChange={(e) => set('nome', e.target.value)} />
-          </label>
-        </div>
+        <label className="campo">{t('empresas.nome')}
+          <input value={form.nome} onChange={(e) => set('nome', e.target.value)} />
+        </label>
         <label className="campo">{t('empresas.fantasia')}
           <input value={form.fantasia} onChange={(e) => set('fantasia', e.target.value)} />
         </label>
@@ -83,9 +90,51 @@ export function Empresas() {
           </label>
         </div>
         <div className="modal-acoes">
-          <button className="btn-primary" disabled={salvando} onClick={provisionar}>{t('empresas.provisionar')}</button>
+          <button className="btn-primary" disabled={salvando} onClick={criar}>{t('empresas.provisionar')}</button>
         </div>
       </div>
+
+      {editando && (
+        <ModalEditar
+          empresa={editando}
+          onFechar={() => setEditando(null)}
+          onSalvo={() => { setEditando(null); setOk('empresas.salva'); carregar(); }}
+          onErro={(c) => setErro(c)}
+        />
+      )}
     </div>
+  );
+}
+
+function ModalEditar({ empresa, onFechar, onSalvo, onErro }: {
+  empresa: EmpresaResumo; onFechar: () => void; onSalvo: () => void; onErro: (c: string) => void;
+}) {
+  const { token } = useAuth();
+  const { t } = useI18n();
+  const [nome, setNome] = useState(empresa.nome);
+  const [fantasia, setFantasia] = useState(empresa.fantasia);
+  const [ativo, setAtivo] = useState(empresa.ativo);
+  const [salvando, setSalvando] = useState(false);
+
+  async function salvar() {
+    setSalvando(true);
+    try { await api.put(`/empresas/${empresa.codigo}`, { nome, fantasia, ativo }, token!); onSalvo(); }
+    catch (e) { onErro((e as ErroApi).chaveI18n); }
+    finally { setSalvando(false); }
+  }
+
+  return (
+    <div className="modal-fundo" onClick={onFechar}><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
+      <h2>{t('empresas.editar_titulo')}</h2>
+      <label className="campo">{t('empresas.nome')}<input value={nome} onChange={(e) => setNome(e.target.value)} autoFocus /></label>
+      <label className="campo">{t('empresas.fantasia')}<input value={fantasia} onChange={(e) => setFantasia(e.target.value)} /></label>
+      <label className="login-lembrar" style={{ marginTop: 8 }}>
+        <input type="checkbox" checked={ativo} onChange={(e) => setAtivo(e.target.checked)} /> {t('empresas.ativa')}
+      </label>
+      <div className="modal-acoes">
+        <button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button>
+        <button className="btn-primary" disabled={salvando} onClick={salvar}>{t('common.salvar')}</button>
+      </div>
+    </div></div>
   );
 }

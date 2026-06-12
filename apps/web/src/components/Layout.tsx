@@ -3,7 +3,6 @@ import { NavLink } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { useBranding } from '../branding/BrandingContext.js';
-import { SeletorIdioma } from './SeletorIdioma.js';
 import { BuscaGlobal } from './BuscaGlobal.js';
 import { Sino } from './Sino.js';
 import { useTema } from '../theme/ThemeContext.js';
@@ -183,7 +182,6 @@ export function Layout({ children }: { children: ReactNode }) {
             <EmpresaSwitcher />
             <button className="btn-tema" onClick={alternar} title={t('tema.alternar')}>{escuro ? '☀️' : '🌙'}</button>
             <Sino />
-            <SeletorIdioma />
             <span className="topbar-user">{usuario?.nome}</span>
             <button className="btn-sair" onClick={logout}>{t('topbar.sair')}</button>
           </div>

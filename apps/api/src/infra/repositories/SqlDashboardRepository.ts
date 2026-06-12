@@ -1,5 +1,5 @@
 import type { DataSource } from 'typeorm';
-import type { DashboardRepository, ResumoDashboard } from '../../domain/dashboard/Dashboard.js';
+import type { DashboardRepository, ResumoDashboard, SerieDashboard, TipoSerie } from '../../domain/dashboard/Dashboard.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 const pct = (cur: number, ant: number) =>
@@ -123,6 +123,63 @@ export class SqlDashboardRepository implements DashboardRepository {
       faturamentoMensal: fatMensal.map((r: any) => ({ mes: r.mes, total: um(r.total) })),
       vendasCategoria: vendasCat.map((r: any) => ({ categoria: r.categoria, total: um(r.total) })),
       saldosBancarios: saldos.map((r: any) => ({ nome: r.nome, saldo: um(r.saldo) })),
+    };
+  }
+
+  // Série temporal das vendas (pedidos não orçamento/cancelado) para o drill dos KPIs.
+  async serie(schema: string, tipo: TipoSerie, de: string | null, ate: string | null): Promise<SerieDashboard> {
+    const s = validarSchema(schema);
+    const um = (v: any) => Number(v ?? 0);
+    const NAO = `status NOT IN ('orcamento','cancelado')`;
+
+    if (tipo === 'clientes') {
+      const q = (await this.ds.query(
+        `SELECT COUNT(*) FILTER (WHERE ativo)::int q, to_char(now(),'MM/YYYY') rotulo FROM "${s}".cliente`))[0];
+      return { tipo, labels: [q.rotulo], data: [um(q.q)], formato: 'quantidade' };
+    }
+
+    let sql: string;
+    let params: any[] = [];
+    if (tipo === 'dia') {
+      // Intervalo arbitrário (default: últimos 30 dias), série diária.
+      const ini = de ?? null, fim = ate ?? null;
+      sql =
+        `WITH faixa AS (
+           SELECT COALESCE($1::date, CURRENT_DATE - 29) di,
+                  COALESCE($2::date, CURRENT_DATE) df
+         )
+         SELECT to_char(g.d,'DD/MM') rotulo, COALESCE(SUM(p.total),0) total
+           FROM faixa, generate_series((SELECT LEAST(di,df) FROM faixa), (SELECT GREATEST(di,df) FROM faixa), interval '1 day') g(d)
+           LEFT JOIN "${s}".pedido p ON p.criado_em::date = g.d::date AND p.${NAO}
+          GROUP BY g.d ORDER BY g.d`;
+      params = [ini, fim];
+    } else if (tipo === 'semana') {
+      sql =
+        `SELECT to_char(g.w,'DD/MM') rotulo, COALESCE(SUM(p.total),0) total
+           FROM generate_series(date_trunc('week', now()) - interval '11 weeks', date_trunc('week', now()), interval '1 week') g(w)
+           LEFT JOIN "${s}".pedido p ON date_trunc('week', p.criado_em) = g.w AND p.${NAO}
+          GROUP BY g.w ORDER BY g.w`;
+    } else if (tipo === 'mes') {
+      sql =
+        `SELECT to_char(g.m,'MM/YYYY') rotulo, COALESCE(SUM(p.total),0) total
+           FROM generate_series(date_trunc('month', now()) - interval '11 months', date_trunc('month', now()), interval '1 month') g(m)
+           LEFT JOIN "${s}".pedido p ON date_trunc('month', p.criado_em) = g.m AND p.${NAO}
+          GROUP BY g.m ORDER BY g.m`;
+    } else {
+      // ano: últimos 5 anos
+      sql =
+        `SELECT to_char(g.y,'YYYY') rotulo, COALESCE(SUM(p.total),0) total
+           FROM generate_series(date_trunc('year', now()) - interval '4 years', date_trunc('year', now()), interval '1 year') g(y)
+           LEFT JOIN "${s}".pedido p ON date_trunc('year', p.criado_em) = g.y AND p.${NAO}
+          GROUP BY g.y ORDER BY g.y`;
+    }
+
+    const rows = await this.ds.query(sql, params);
+    return {
+      tipo,
+      labels: rows.map((r: any) => r.rotulo),
+      data: rows.map((r: any) => um(r.total)),
+      formato: 'moeda',
     };
   }
 }

@@ -1,4 +1,4 @@
-export interface ErroApi { chaveI18n: string; }
+export interface ErroApi { chaveI18n: string; status?: number; }
 
 // Base da API.
 // - Produção (Cloudflare Pages / Vercel): defina a variável de build VITE_API_URL
@@ -20,10 +20,10 @@ async function req<T>(metodo: string, caminho: string, token?: string, corpo?: u
       body: corpo !== undefined ? JSON.stringify(corpo) : undefined,
     });
   } catch {
-    throw { chaveI18n: 'erro.rede' } as ErroApi;
+    throw { chaveI18n: 'erro.rede', status: 0 } as ErroApi;
   }
   const dados = await resp.json().catch(() => ({}));
-  if (!resp.ok) throw { chaveI18n: (dados as any)?.erro ?? 'erro.interno' } as ErroApi;
+  if (!resp.ok) throw { chaveI18n: (dados as any)?.erro ?? 'erro.interno', status: resp.status } as ErroApi;
   return dados as T;
 }
 

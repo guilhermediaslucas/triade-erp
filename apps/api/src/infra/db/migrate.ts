@@ -55,6 +55,12 @@ export async function migrarTenant(ds: DataSource, schema: string): Promise<stri
   return aplicadas;
 }
 
+// Remove por completo o schema de um tenant (DROP SCHEMA CASCADE).
+export async function removerTenant(ds: DataSource, schema: string): Promise<void> {
+  const s = validarSchema(schema);
+  await ds.query(`DROP SCHEMA IF EXISTS "${s}" CASCADE`);
+}
+
 // Migra o public e, em seguida, todos os tenants ja registrados.
 export async function migrarTudo(ds: DataSource): Promise<string[]> {
   const todas: string[] = [];

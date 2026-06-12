@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { api } from '../api/client.js';
+import { api, type ErroApi } from '../api/client.js';
 
 export interface UsuarioLogado { id: string; nome: string; email: string; empresa: string; }
 interface LoginResp { token: string; usuario: { id: string; nome: string; email: string }; empresa: { codigo: string; fantasia: string }; superAdmin?: boolean; }
@@ -68,7 +68,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     window.location.assign('/');
   }
 
-  // Ao recarregar com sessao salva, revalida e atualiza capabilities/superAdmin (token expirado -> logout).
+  // Ao recarregar com sessao salva, revalida e atualiza capabilities/superAdmin.
+  // IMPORTANTE: só desloga em 401 (token realmente inválido/expirado). Erro de rede
+  // ou 5xx (ex.: API hibernando no Render) NÃO pode apagar a sessão "Lembrar-me" —
+  // mantemos a sessão em cache e as capabilities salvas até uma resposta 401.
   useEffect(() => {
     if (!sessao?.token) return;
     const persist = persistido();
@@ -79,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           salvar({ ...sessao, capabilities: me.capabilities, superAdmin: sa }, persist);
         }
       })
-      .catch(() => salvar(null));
+      .catch((e: ErroApi) => { if (e?.status === 401) salvar(null); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

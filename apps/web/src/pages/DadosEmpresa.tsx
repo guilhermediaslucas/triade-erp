@@ -1,12 +1,9 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
-import { IDIOMAS, type Idioma } from '@triade/shared';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { useBranding } from '../branding/BrandingContext.js';
-import { TIMEZONES, type Branding } from '../branding/tema.js';
-
-const ROTULO_IDIOMA: Record<Idioma, string> = { 'pt-BR': 'Português (BR)', 'en-US': 'English (US)', es: 'Español' };
+import type { Branding } from '../branding/tema.js';
 
 export function DadosEmpresa() {
   const { token } = useAuth();
@@ -85,19 +82,6 @@ export function DadosEmpresa() {
           </label>
           <label className="campo">{t('empresa.cor_menu_fonte')}
             <input type="color" value={form.corMenuFonte} onChange={(e) => set('corMenuFonte', e.target.value)} />
-          </label>
-        </div>
-
-        <div className="cores-grid">
-          <label className="campo">{t('empresa.idioma_padrao')}
-            <select value={form.idiomaPadrao} onChange={(e) => set('idiomaPadrao', e.target.value)}>
-              {IDIOMAS.map((i) => <option key={i} value={i}>{ROTULO_IDIOMA[i]}</option>)}
-            </select>
-          </label>
-          <label className="campo">{t('empresa.timezone_padrao')}
-            <select value={form.timezonePadrao} onChange={(e) => set('timezonePadrao', e.target.value)}>
-              {TIMEZONES.map((tz) => <option key={tz} value={tz}>{tz}</option>)}
-            </select>
           </label>
         </div>
 

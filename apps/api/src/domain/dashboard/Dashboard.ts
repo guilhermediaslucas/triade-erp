@@ -23,6 +23,15 @@ export interface ResumoDashboard {
   vendasCategoria: { categoria: string; total: number }[];
   saldosBancarios: { nome: string; saldo: number }[];
 }
+// Série temporal para o drill dos KPIs (clique no card → gráfico do período).
+export type TipoSerie = 'dia' | 'semana' | 'mes' | 'ano' | 'clientes';
+export interface SerieDashboard {
+  tipo: TipoSerie;
+  labels: string[];
+  data: number[];
+  formato: 'moeda' | 'quantidade';
+}
 export interface DashboardRepository {
   resumo(schema: string): Promise<ResumoDashboard>;
+  serie(schema: string, tipo: TipoSerie, de: string | null, ate: string | null): Promise<SerieDashboard>;
 }

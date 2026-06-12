@@ -11,5 +11,8 @@ export function rotasDashboard(deps: Dependencias): Router {
   r.get('/dashboard', aut, az('dashboard.ver'), async (req: Request, res: Response) => {
     try { res.json(await deps.dashboardService.resumo(req.usuario!.schema)); } catch (e) { tratarErro(res, e); }
   });
+  r.get('/dashboard/serie', aut, az('dashboard.ver'), async (req: Request, res: Response) => {
+    try { res.json(await deps.dashboardService.serie(req.usuario!.schema, req.query.tipo, req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
+  });
   return r;
 }

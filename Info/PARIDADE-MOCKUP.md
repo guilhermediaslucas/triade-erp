@@ -104,7 +104,7 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 | Esconder/mostrar colunas (modalColunas) | ⚠️ | feito nas Contas; revisar paridade |
 | **Redimensionar colunas (arraste)** | ❌ | adiado (alto esforço) |
 | **Coluna Previsto/Efetivo + destaque de previsão** | ❌ | conceito de competência vs caixa |
-| Janela de detalhe do título (duplo-clique) | ❌ | modalTituloView |
+| Janela de detalhe do título (duplo-clique) | ✅ | modal read-only nas Contas (duplo-clique na linha) |
 | Parcelar título (N parcelas) | ✅ | |
 | Multiplicar título (N cópias) | ✅ | |
 | Fluxo de caixa + saldos bancários + drill | ✅ | |
@@ -171,7 +171,7 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 | Avisos e pendências + Ações rápidas | ✅ | |
 | Pedidos recentes + Fluxo do mês | ✅ | |
 | Saldos bancários + Total em contas + rodapé | ✅ | |
-| KPIs clicáveis (abrem gráfico do período) | ❌ | drill por período do mockup |
+| KPIs clicáveis (abrem gráfico do período) | ✅ | drill `/dashboard/serie/:tipo`; dia/semana/mês/ano/clientes (e2e 15 PASS) |
 
 ## 8. Configurações / Acesso
 
@@ -180,8 +180,8 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 | Usuários (CRUD, senha, perfil pill) | ✅ | |
 | Perfis (CRUD, permissões por módulo, **Módulos liberados**) | ✅ | |
 | **Foto/avatar do usuário + apresentação** | ❌ | mockup tem foto no perfil |
-| Dados da empresa (logo, cores, idioma/timezone) | ✅ | |
-| Multi-empresa / white-label / admin geral | ✅ | super-admin + switcher |
+| Dados da empresa (logo, cores, idioma/timezone) | ✅ | idioma/timezone **removidos da UI** por preferência do Gui (sistema clean) |
+| Multi-empresa / white-label / admin geral | ✅ | super-admin + switcher; **CRUD completo** (criar sem código/auto-slug, editar, excluir+drop schema) |
 | Tema claro/escuro | ✅ | |
 | Login (ver senha + recuperar senha) | ✅ | recuperar é stub visual |
 
@@ -213,8 +213,8 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 
 1. ✅ **§1 — Fluxo Pix/Boleto → Financeiro → Kanban** (feito; toast fixo c/ botão Abrir = refino).
 2. ✅ Curva ABC de clientes (feito).
-3. KPIs clicáveis no Dashboard (drill por período).
-4. Coluna Previsto/Efetivo + detalhe do título (duplo-clique).
+3. ✅ KPIs clicáveis no Dashboard (drill por período) — feito.
+4. Coluna Previsto/Efetivo (✅ detalhe do título por duplo-clique feito; **Previsto/Efetivo** = decisão de competência×caixa, aguarda o Gui).
 5. Foto/avatar de usuário.
 6. Formas de entrega como CRUD; municípios IBGE.
 7. CRM (oportunidades + interações) — quando você decidir o escopo.

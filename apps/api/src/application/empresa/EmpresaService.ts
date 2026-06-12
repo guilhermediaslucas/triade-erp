@@ -1,12 +1,16 @@
 import { IDIOMAS } from '@triade/shared';
 import type { Empresa } from '../../domain/empresa/Empresa.js';
 import type { AtualizacaoEmpresa, EmpresaRepository } from '../../domain/empresa/EmpresaRepository.js';
+import type { Migrador } from '../../domain/ports/Migrador.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
 const HEX = /^#[0-9a-fA-F]{6}$/;
 
 export class EmpresaService {
-  constructor(private readonly empresas: EmpresaRepository) {}
+  constructor(
+    private readonly empresas: EmpresaRepository,
+    private readonly migrador: Migrador,
+  ) {}
 
   async obter(codigo: string): Promise<Empresa> {
     const e = await this.empresas.buscarPorCodigo(codigo);
@@ -27,5 +31,24 @@ export class EmpresaService {
       corPrimaria: d.corPrimaria, corMenuFundo: d.corMenuFundo, corMenuFonte: d.corMenuFonte,
       idiomaPadrao: d.idiomaPadrao, timezonePadrao: d.timezonePadrao.trim(),
     });
+  }
+
+  // Edição do cadastro pelo super-admin (razão social, nome fantasia, ativo).
+  async editar(codigo: string, d: { nome?: string; fantasia?: string; ativo?: boolean }): Promise<void> {
+    const e = await this.empresas.buscarPorCodigo(codigo);
+    if (!e) throw new ErroAplicacao('empresa.nao_encontrada', 404);
+    if (!d.nome || d.nome.trim().length < 2) throw new ErroAplicacao('empresa.nome_invalido', 400);
+    if (!d.fantasia || d.fantasia.trim().length < 2) throw new ErroAplicacao('empresa.fantasia_invalida', 400);
+    await this.empresas.editarCadastro(codigo, {
+      nome: d.nome.trim(), fantasia: d.fantasia.trim(), ativo: d.ativo !== false,
+    });
+  }
+
+  // Exclui a empresa: remove o registro em public.empresa e dropa o schema do tenant.
+  async excluir(codigo: string): Promise<void> {
+    const e = await this.empresas.buscarPorCodigo(codigo);
+    if (!e) throw new ErroAplicacao('empresa.nao_encontrada', 404);
+    await this.empresas.excluir(codigo);
+    await this.migrador.removerTenant(e.schemaName);
   }
 }

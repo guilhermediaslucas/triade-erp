@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { DataSource } from 'typeorm';
 import type { Empresa } from '../../domain/empresa/Empresa.js';
-import type { AtualizacaoEmpresa, EmpresaRepository, NovaEmpresa } from '../../domain/empresa/EmpresaRepository.js';
+import type { AtualizacaoEmpresa, EdicaoCadastroEmpresa, EmpresaRepository, NovaEmpresa } from '../../domain/empresa/EmpresaRepository.js';
 
 const COLS = `id, codigo, nome, fantasia, schema_name, ativo, criado_em,
               logo, cor_primaria, cor_menu_fundo, cor_menu_fonte, idioma_padrao, timezone_padrao`;
@@ -49,5 +49,16 @@ export class SqlEmpresaRepository implements EmpresaRepository {
          cor_menu_fonte=$6, idioma_padrao=$7, timezone_padrao=$8 WHERE codigo=$1`,
       [codigo, d.fantasia, d.logo, d.corPrimaria, d.corMenuFundo, d.corMenuFonte, d.idiomaPadrao, d.timezonePadrao],
     );
+  }
+
+  async editarCadastro(codigo: string, d: EdicaoCadastroEmpresa): Promise<void> {
+    await this.ds.query(
+      `UPDATE public.empresa SET nome=$2, fantasia=$3, ativo=$4 WHERE codigo=$1`,
+      [codigo, d.nome, d.fantasia, d.ativo],
+    );
+  }
+
+  async excluir(codigo: string): Promise<void> {
+    await this.ds.query(`DELETE FROM public.empresa WHERE codigo=$1`, [codigo]);
   }
 }

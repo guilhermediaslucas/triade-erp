@@ -28,5 +28,20 @@ export function rotasEmpresas(deps: Dependencias): Router {
     } catch (e) { tratarErro(res, e); }
   });
 
+  r.put('/empresas/:codigo', autenticar, exigirSuperAdmin, async (req: Request, res: Response) => {
+    try {
+      const b = req.body ?? {};
+      await deps.empresaService.editar(req.params.codigo!, { nome: b.nome, fantasia: b.fantasia, ativo: b.ativo });
+      res.status(204).end();
+    } catch (e) { tratarErro(res, e); }
+  });
+
+  r.delete('/empresas/:codigo', autenticar, exigirSuperAdmin, async (req: Request, res: Response) => {
+    try {
+      await deps.empresaService.excluir(req.params.codigo!);
+      res.status(204).end();
+    } catch (e) { tratarErro(res, e); }
+  });
+
   return r;
 }
