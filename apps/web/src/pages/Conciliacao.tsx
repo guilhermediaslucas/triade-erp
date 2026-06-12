@@ -119,12 +119,12 @@ export function Conciliacao() {
 
       {resp && (
         <>
-          <div className="kpis">
-            <div className="kpi-card"><div className="kpi-l">{t('concil.entradas')}</div><div className="kpi-v">{moeda(resp.totalEntradas)}</div></div>
-            <div className="kpi-card"><div className="kpi-l">{t('concil.saidas')}</div><div className="kpi-v">{moeda(resp.totalSaidas)}</div></div>
-            <div className="kpi-card"><div className="kpi-l">{t('concil.saldo_mov')}</div><div className="kpi-v">{moeda(resp.saldoMovimento)}</div></div>
-            <div className="kpi-card"><div className="kpi-l">{t('concil.conciliados')}</div><div className="kpi-v">{resp.qtdConciliado}</div></div>
-            <div className="kpi-card kpi-vermelho"><div className="kpi-l">{t('concil.pendentes')}</div><div className="kpi-v">{resp.qtdPendente}</div></div>
+          <div className="kpi-row">
+            <div className="card kpi-mock"><div className="kpi-ic tint-gr">💰</div><div className="kpi-body"><div className="kpi-lbl">{t('concil.entradas')}</div><div className="kpi-val">{moeda(resp.totalEntradas)}</div></div></div>
+            <div className="card kpi-mock"><div className="kpi-ic tint-rd">💸</div><div className="kpi-body"><div className="kpi-lbl">{t('concil.saidas')}</div><div className="kpi-val">{moeda(resp.totalSaidas)}</div></div></div>
+            <div className="card kpi-mock"><div className="kpi-ic tint-bl">📊</div><div className="kpi-body"><div className="kpi-lbl">{t('concil.saldo_mov')}</div><div className="kpi-val">{moeda(resp.saldoMovimento)}</div></div></div>
+            <div className="card kpi-mock"><div className="kpi-ic tint-gr">✅</div><div className="kpi-body"><div className="kpi-lbl">{t('concil.conciliados')}</div><div className="kpi-val">{resp.qtdConciliado}</div></div></div>
+            <div className="card kpi-mock"><div className="kpi-ic tint-or">⏳</div><div className="kpi-body"><div className="kpi-lbl">{t('concil.pendentes')}</div><div className="kpi-val">{resp.qtdPendente}</div></div></div>
           </div>
 
           <div className="card" style={{ maxWidth: 560, marginBottom: 16 }}>

@@ -25,10 +25,10 @@ export function FluxoCaixa() {
       <div className="crumb">{t('fluxo.crumb')}</div><h1 className="page-titulo">{t('fluxo.titulo')}</h1>
       <p className="muted" style={{ marginTop: -8 }}>{t('fluxo.sub')}</p>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
-      <div className="kpis">
-        <div className="kpi-card"><div className="kpi-l">{t('fluxo.entradas')}</div><div className="kpi-v" style={{ color: '#15803d' }}>{moeda(entradas)}</div></div>
-        <div className="kpi-card"><div className="kpi-l">{t('fluxo.saidas')}</div><div className="kpi-v" style={{ color: '#b91c1c' }}>{moeda(saidas)}</div></div>
-        <div className="kpi-card"><div className="kpi-l">{t('fluxo.saldo')}</div><div className="kpi-v" style={{ color: saldo >= 0 ? '#15803d' : '#b91c1c' }}>{moeda(saldo)}</div></div>
+      <div className="kpi-row" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+        <div className="card kpi-mock"><div className="kpi-ic tint-gr">💰</div><div className="kpi-body"><div className="kpi-lbl">{t('fluxo.entradas')}</div><div className="kpi-val" style={{ color: '#16a34a' }}>{moeda(entradas)}</div></div></div>
+        <div className="card kpi-mock"><div className="kpi-ic tint-rd">💸</div><div className="kpi-body"><div className="kpi-lbl">{t('fluxo.saidas')}</div><div className="kpi-val" style={{ color: '#e1483b' }}>{moeda(saidas)}</div></div></div>
+        <div className="card kpi-mock"><div className="kpi-ic tint-bl">📊</div><div className="kpi-body"><div className="kpi-lbl">{t('fluxo.saldo')}</div><div className="kpi-val" style={{ color: saldo >= 0 ? '#16a34a' : '#e1483b' }}>{moeda(saldo)}</div></div></div>
       </div>
       <div className="card pad0"><table className="tabela">
         <thead><tr><th>{t('fin.vencimento')}</th><th>{t('fin.descricao')}</th><th>{t('pedidos.forma_pgto')}</th><th>{t('fluxo.entrada')}</th><th>{t('fluxo.saida')}</th></tr></thead>
