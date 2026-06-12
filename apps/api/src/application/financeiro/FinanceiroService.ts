@@ -1,4 +1,5 @@
 import type { LinhaConciliacao, MovimentoFluxo, PagoAgrupado, Titulo, TipoTitulo, TituloRepository } from '../../domain/financeiro/Titulo.js';
+import type { PedidoRepository } from '../../domain/comercial/Pedido.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
 export type AgingFaixa = 'a_vencer' | 'd1_30' | 'd31_60' | 'd61_90' | 'd90_mais';
@@ -28,7 +29,7 @@ const r2 = (n: number) => Math.round(n * 100) / 100;
 const lim = (v: any): string | null => (v && /^\d{4}-\d{2}-\d{2}$/.test(String(v)) ? String(v) : null);
 
 export class FinanceiroService {
-  constructor(private readonly repo: TituloRepository) {}
+  constructor(private readonly repo: TituloRepository, private readonly pedidos?: PedidoRepository) {}
   listar(schema: string, tipo: TipoTitulo): Promise<Titulo[]> { return this.repo.listar(schema, tipo); }
   fluxo(schema: string): Promise<MovimentoFluxo[]> { return this.repo.listarPagos(schema); }
 
@@ -84,6 +85,14 @@ export class FinanceiroService {
     if (!t) throw new ErroAplicacao('financeiro.nao_encontrado', 404);
     if (t.status === 'pago') throw new ErroAplicacao('financeiro.ja_pago', 409);
     await this.repo.baixar(schema, id, (formaPagamento && String(formaPagamento).trim()) || null, contaCorrenteId || null);
+    // Confirmação do recebimento do título de um pedido (Pix/Boleto) libera o pedido:
+    // aguardando_pagamento → aprovado, ficando disponível para Separação no Kanban.
+    if (this.pedidos && t.origem === 'pedido' && t.pedidoId) {
+      const ped = await this.pedidos.buscarPorId(schema, t.pedidoId);
+      if (ped && ped.status === 'aguardando_pagamento') {
+        await this.pedidos.mudarStatus(schema, t.pedidoId, 'aprovado');
+      }
+    }
   }
   async cancelarBaixa(schema: string, id: string): Promise<void> {
     const t = await this.repo.buscarPorId(schema, id);

@@ -21,6 +21,14 @@ const TRANSICOES: Record<StatusPedido, StatusPedido[]> = {
   cancelado: [],
 };
 
+function normalizarForma(forma: string | null): string {
+  return (forma ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
+function liberaDireto(forma: string | null): boolean {
+  const f = normalizarForma(forma);
+  return f === 'cartao' || f === 'dinheiro';
+}
+
 function enderecoTexto(e: EnderecoCliente): string {
   const p1 = [e.logradouro, e.numero].filter(Boolean).join(', ');
   const p2 = [e.bairro, [e.cidade, e.uf].filter(Boolean).join('/')].filter(Boolean).join(' - ');
@@ -141,6 +149,13 @@ export class PedidosService {
     }
 
     await this.pedidos.mudarStatus(schema, id, novo);
+
+    // Gate por forma de pagamento (espelha o mockup): Cartão/Dinheiro liberam direto
+    // (pulam a espera → já vão para 'aprovado'); Pix/Boleto ficam em 'aguardando_pagamento'
+    // até a baixa do título no Financeiro (ver FinanceiroService.baixar).
+    if (novo === 'aguardando_pagamento' && liberaDireto(pedido.formaPagamento)) {
+      await this.pedidos.mudarStatus(schema, id, 'aprovado');
+    }
   }
 
   // Separacao por BIPAGEM: le a etiqueta de cada item; o codigo traz produto/lote/validade.

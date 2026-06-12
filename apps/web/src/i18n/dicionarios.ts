@@ -1098,21 +1098,21 @@ Object.assign(es, { 'busca.abrir': 'Buscar', 'busca.placeholder': 'Buscar pantal
 // --- Refinamento: Toasts de confirmação ---
 Object.assign(pt, {
   'fin.toast_criado': 'Título lançado.', 'fin.toast_baixado': 'Título baixado.', 'fin.toast_cancelado': 'Baixa cancelada.',
-  'pedido.toast_status': 'Pedido movido para', 'sep.toast_ok': 'Separação concluída e estoque baixado.',
+  'pedido.toast_status': 'Pedido movido para', 'pedido.toast_pix_pendente': 'Pedido aguardando baixa no Financeiro (Pix/Boleto). O setor financeiro foi notificado.', 'sep.toast_ok': 'Separação concluída e estoque baixado.',
 });
 Object.assign(en, {
   'fin.toast_criado': 'Title created.', 'fin.toast_baixado': 'Title settled.', 'fin.toast_cancelado': 'Settlement reverted.',
-  'pedido.toast_status': 'Order moved to', 'sep.toast_ok': 'Picking done and stock deducted.',
+  'pedido.toast_status': 'Order moved to', 'pedido.toast_pix_pendente': 'Order awaiting receipt in Finance (Pix/Boleto). Finance has been notified.', 'sep.toast_ok': 'Picking done and stock deducted.',
 });
 Object.assign(es, {
   'fin.toast_criado': 'Título creado.', 'fin.toast_baixado': 'Título pagado.', 'fin.toast_cancelado': 'Pago cancelado.',
-  'pedido.toast_status': 'Pedido movido a', 'sep.toast_ok': 'Preparación hecha y stock descontado.',
+  'pedido.toast_status': 'Pedido movido a', 'pedido.toast_pix_pendente': 'Pedido esperando cobro en Finanzas (Pix/Boleto). Finanzas fue notificada.', 'sep.toast_ok': 'Preparación hecha y stock descontado.',
 });
 
 // --- Refinamento: Sino de notificações ---
-Object.assign(pt, { 'sino.titulo': 'Notificações', 'sino.vazio': 'Nada pendente. Tudo em dia! 🎉', 'sino.titulos_vencidos': 'Títulos a receber vencidos', 'sino.lotes_vencendo': 'Lotes vencendo (30 d)', 'sino.estoque_baixo': 'Produtos com estoque baixo' });
-Object.assign(en, { 'sino.titulo': 'Notifications', 'sino.vazio': 'Nothing pending. All caught up! 🎉', 'sino.titulos_vencidos': 'Overdue receivables', 'sino.lotes_vencendo': 'Lots expiring (30 d)', 'sino.estoque_baixo': 'Low-stock products' });
-Object.assign(es, { 'sino.titulo': 'Notificaciones', 'sino.vazio': 'Nada pendiente. ¡Todo al día! 🎉', 'sino.titulos_vencidos': 'Cobranzas vencidas', 'sino.lotes_vencendo': 'Lotes por vencer (30 d)', 'sino.estoque_baixo': 'Productos con stock bajo' });
+Object.assign(pt, { 'sino.titulo': 'Notificações', 'sino.vazio': 'Nada pendente. Tudo em dia! 🎉', 'sino.titulos_vencidos': 'Títulos a receber vencidos', 'sino.lotes_vencendo': 'Lotes vencendo (30 d)', 'sino.estoque_baixo': 'Produtos com estoque baixo', 'sino.pendencia_baixa': 'Pedidos aguardando baixa (Pix/Boleto)' });
+Object.assign(en, { 'sino.titulo': 'Notifications', 'sino.vazio': 'Nothing pending. All caught up! 🎉', 'sino.titulos_vencidos': 'Overdue receivables', 'sino.lotes_vencendo': 'Lots expiring (30 d)', 'sino.estoque_baixo': 'Low-stock products', 'sino.pendencia_baixa': 'Orders awaiting receipt (Pix/Boleto)' });
+Object.assign(es, { 'sino.titulo': 'Notificaciones', 'sino.vazio': 'Nada pendiente. ¡Todo al día! 🎉', 'sino.titulos_vencidos': 'Cobranzas vencidas', 'sino.lotes_vencendo': 'Lotes por vencer (30 d)', 'sino.estoque_baixo': 'Productos con stock bajo', 'sino.pendencia_baixa': 'Pedidos esperando cobro (Pix/Boleto)' });
 
 // --- Refinamento: Ações em massa ---
 Object.assign(pt, {

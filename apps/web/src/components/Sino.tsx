@@ -28,6 +28,11 @@ export function Sino() {
         const venc = ag ? ag.linhas.filter((l) => l.diasAtraso > 0).length : 0;
         if (venc > 0) out.push({ chave: 'sino.titulos_vencidos', icone: '💸', qtd: venc, to: '/financeiro/aging-receber' });
       }
+      if (temCapability('financeiro.receber.listar')) {
+        const rec = await api.get<{ origem: string; status: string }[]>('/financeiro/receber', token).catch(() => null);
+        const pend = rec ? rec.filter((x) => x.origem === 'pedido' && x.status === 'aberto').length : 0;
+        if (pend > 0) out.push({ chave: 'sino.pendencia_baixa', icone: '🧾', qtd: pend, to: '/financeiro/receber' });
+      }
       if (temCapability('relatorios.ver')) {
         const lotes = await api.get<{ validade: string | null }[]>('/relatorios/validade-lotes', token).catch(() => null);
         const vencendo = lotes ? lotes.filter((l) => { const d = diasAteValidade(l.validade); return d !== null && d <= 30; }).length : 0;

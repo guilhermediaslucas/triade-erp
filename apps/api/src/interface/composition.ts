@@ -107,7 +107,7 @@ export function montarDependencias() {
     gestaoFretesService: new GestaoFretesService(new SqlGestaoFreteRepository(AppDataSource), tituloRepo),
     pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, precoClienteRepo, clientesRepo, estoqueRepo, etiquetaRepo, tituloRepo, condicaoRepo, motoboysRepo),
     condicoesService: new CondicoesService(condicaoRepo),
-    financeiroService: new FinanceiroService(tituloRepo),
+    financeiroService: new FinanceiroService(tituloRepo, pedidoRepo),
     categoriasFinanceirasService: new CategoriasFinanceirasService(catFinRepo),
     comprasService: new ComprasService(produtosRepo, tituloRepo, recebimentoRepo, estoqueRepo, marcasRepo, etiquetaRepo),
     comissoesService: new ComissoesService(new SqlComissaoRepository(AppDataSource), tituloRepo),

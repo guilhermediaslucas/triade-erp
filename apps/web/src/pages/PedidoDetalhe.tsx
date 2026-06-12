@@ -36,7 +36,12 @@ export function PedidoDetalhe() {
 
   async function mudar(status: StatusPedido) {
     setErro(null);
-    try { await api.patch('/pedidos/' + id + '/status', { status }, token!); carregar(); toast(t('pedido.toast_status') + ' ' + t('status.' + status)); }
+    try {
+      await api.patch('/pedidos/' + id + '/status', { status }, token!); carregar();
+      const forma = (p?.formaPagamento ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+      if (status === 'aguardando_pagamento' && (forma === 'pix' || forma === 'boleto')) toast(t('pedido.toast_pix_pendente'));
+      else toast(t('pedido.toast_status') + ' ' + t('status.' + status));
+    }
     catch (e) { const k = (e as ErroApi).chaveI18n; setErro(k); toast(t(k), 'erro'); }
   }
 
