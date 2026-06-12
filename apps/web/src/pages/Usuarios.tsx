@@ -3,6 +3,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { Avatar } from '../components/Avatar.js';
+import { Ic } from '../components/Icones.js';
 
 interface UsuarioResumo { id: string; nome: string; email: string; ativo: boolean; perfilId: string | null; perfilNome: string | null; foto: string | null; }
 interface Perfil { id: string; nome: string; }
@@ -47,7 +48,7 @@ export function Usuarios() {
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="toolbar">
-        <div className="busca-box-tb">🔎<input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('usuarios.buscar')} /></div>
+        <div className="busca-box-tb"><Ic name="i-search" className="sm" /><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('usuarios.buscar')} /></div>
         {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
       </div>
       <div className="card pad0">
@@ -64,12 +65,12 @@ export function Usuarios() {
                 <td>{u.email}</td>
                 <td>{u.perfilNome ? <span className="pill">{u.perfilNome}</span> : <span className="muted">{t('usuarios.sem_perfil')}</span>}</td>
                 <td><span className={u.ativo ? 'pill-ok' : 'pill-off'}>{u.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
-                <td className="acoes">
-                  {podeGerenciar && <>
-                    <button className="btn-link" onClick={() => setForm({ aberto: true, editandoId: u.id })}>{t('common.editar')}</button>
+                <td style={{ textAlign: 'right' }}>
+                  {podeGerenciar && <span className="acoes-ic">
+                    <button className="acao-ic" title={t('common.editar')} onClick={() => setForm({ aberto: true, editandoId: u.id })}><Ic name="i-edit" className="sm" /></button>
                     <button className="btn-link" onClick={() => setSenhaDe(u)}>{t('usuarios.redefinir_senha')}</button>
-                    <button className="btn-link" onClick={() => alternarAtivo(u)}>{u.ativo ? t('usuarios.inativar') : t('usuarios.ativar')}</button>
-                  </>}
+                    <button className="acao-ic danger" title={u.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternarAtivo(u)}><Ic name="i-trash" className="sm" /></button>
+                  </span>}
                 </td>
               </tr>
             ))}

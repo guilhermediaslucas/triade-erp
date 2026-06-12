@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Ic } from '../components/Icones.js';
 
 interface Condicao { id: string; nome: string; parcelas: number; intervaloDias: number; ativo: boolean; }
 const vazio = (): Condicao => ({ id: '', nome: '', parcelas: 1, intervaloDias: 30, ativo: true });
@@ -33,7 +34,7 @@ export function Condicoes() {
         {pode && <button className="btn-primary" onClick={() => setEdit(vazio())}>+ {t('cond.nova')}</button>}</div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="toolbar">
-        <div className="busca-box-tb">🔎<input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('cond.buscar')} /></div>
+        <div className="busca-box-tb"><Ic name="i-search" className="sm" /><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('cond.buscar')} /></div>
         {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
       </div>
       <div className="card pad0"><table className="tabela">
@@ -44,7 +45,7 @@ export function Condicoes() {
             <tr key={c.id} className={c.ativo ? '' : 'linha-inativa'}>
               <td>{c.nome}</td><td>{c.parcelas}x</td><td>{c.intervaloDias} {t('cond.dias')}</td>
               <td><span className={c.ativo ? 'pill-ok' : 'pill-off'}>{c.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
-              <td className="acoes">{pode && <><button className="btn-link" onClick={() => setEdit({ ...c })}>{t('common.editar')}</button><button className="btn-link" onClick={() => alternar(c)}>{c.ativo ? t('usuarios.inativar') : t('usuarios.ativar')}</button></>}</td>
+              <td style={{ textAlign: 'right' }}><span className="acoes-ic">{pode && <><button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...c })}><Ic name="i-edit" className="sm" /></button><button className="acao-ic danger" title={c.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternar(c)}><Ic name="i-trash" className="sm" /></button></>}</span></td>
             </tr>
           ))}
         </tbody>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Ic } from '../components/Icones.js';
 
 interface TipoDoc { id: string; nome: string; ativo: boolean; }
 
@@ -40,7 +41,7 @@ export function TiposDocumento() {
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="toolbar">
-        <div className="busca-box-tb">🔎<input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('tipodoc.buscar')} /></div>
+        <div className="busca-box-tb"><Ic name="i-search" className="sm" /><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('tipodoc.buscar')} /></div>
         {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
       </div>
       <div className="card pad0">
@@ -52,10 +53,10 @@ export function TiposDocumento() {
               <tr key={m.id} className={m.ativo ? '' : 'linha-inativa'}>
                 <td>{m.nome}</td>
                 <td><span className={m.ativo ? 'pill-ok' : 'pill-off'}>{m.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
-                <td className="acoes">{pode && <>
-                  <button className="btn-link" onClick={() => setEdit({ ...m })}>{t('common.editar')}</button>
-                  <button className="btn-link" onClick={() => alternar(m)}>{m.ativo ? t('usuarios.inativar') : t('usuarios.ativar')}</button>
-                </>}</td>
+                <td style={{ textAlign: 'right' }}><span className="acoes-ic">{pode && <>
+                  <button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...m })}><Ic name="i-edit" className="sm" /></button>
+                  <button className="acao-ic danger" title={m.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternar(m)}><Ic name="i-trash" className="sm" /></button>
+                </>}</span></td>
               </tr>
             ))}
           </tbody>

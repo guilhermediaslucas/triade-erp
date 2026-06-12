@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Ic } from '../components/Icones.js';
 
 interface Categoria { id: string; nome: string; }
 
@@ -33,17 +34,16 @@ export function Categorias() {
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="toolbar">
-        <div className="busca-box-tb">🔎<input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('categorias.buscar')} /></div>
-        
+        <div className="busca-box-tb"><Ic name="i-search" className="sm" /><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('categorias.buscar')} /></div>
       </div>
       <div className="card pad0">
         <table className="tabela">
-          <thead><tr><th>{t('categorias.nome')}</th><th></th></tr></thead>
+          <thead><tr><th>{t('categorias.nome')}</th><th style={{ textAlign: 'right' }}>{t('usuarios.acoes')}</th></tr></thead>
           <tbody>
             {filtrados.length === 0 && <tr><td colSpan={2} className="vazio">{t('common.nenhum')}</td></tr>}
             {filtrados.map((c) => (
-              <tr key={c.id}><td>{c.nome}</td>
-                <td className="acoes">{pode && <button className="btn-link" onClick={() => setEdit({ ...c })}>{t('common.editar')}</button>}</td>
+              <tr key={c.id}><td><b>{c.nome}</b></td>
+                <td style={{ textAlign: 'right' }}><span className="acoes-ic">{pode && <button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...c })}><Ic name="i-edit" className="sm" /></button>}</span></td>
               </tr>
             ))}
           </tbody>

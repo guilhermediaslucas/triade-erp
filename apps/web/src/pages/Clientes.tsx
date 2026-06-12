@@ -52,7 +52,7 @@ export function Clientes() {
       <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('clientes.titulo')}</h1><div className="muted page-sub">{t('clientes.sub')}</div></div>
         {pode && <button className="btn-primary" onClick={() => setEdit(vazio())}>+ {t('clientes.novo')}</button>}</div>
       <div className="toolbar">
-        <div className="busca-box-tb">🔎<input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('clientes.buscar')} /></div>
+        <div className="busca-box-tb"><Ic name="i-search" className="sm" /><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('clientes.buscar')} /></div>
         {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}

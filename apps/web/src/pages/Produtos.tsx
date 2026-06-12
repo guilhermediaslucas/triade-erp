@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Ic } from '../components/Icones.js';
 
 interface Categoria { id: string; nome: string; }
 interface Produto {
@@ -73,10 +74,10 @@ export function Produtos() {
               <td>{p.categoriaNome ? <span className={'pill ' + tintDe(p.categoriaId)}>{p.categoriaNome}</span> : '—'}</td>
               <td>{p.unidade}</td><td>{p.estoqueMinimo}</td><td>{p.localizacao ?? '—'}</td>
               <td><span className={p.ativo ? 'pill-ok' : 'pill-off'}>{p.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
-              <td className="acoes">{pode && <>
-                <button className="btn-link" onClick={() => setEdit({ ...p, categoriaId: p.categoriaId ?? '', localizacao: p.localizacao ?? '', registroAnvisa: p.registroAnvisa ?? '' })}>{t('common.editar')}</button>
-                <button className="btn-link" onClick={() => alternar(p)}>{p.ativo ? t('usuarios.inativar') : t('usuarios.ativar')}</button>
-              </>}</td>
+              <td style={{ textAlign: 'right' }}><span className="acoes-ic">{pode && <>
+                <button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...p, categoriaId: p.categoriaId ?? '', localizacao: p.localizacao ?? '', registroAnvisa: p.registroAnvisa ?? '' })}><Ic name="i-edit" className="sm" /></button>
+                <button className="acao-ic danger" title={p.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternar(p)}><Ic name="i-trash" className="sm" /></button>
+              </>}</span></td>
             </tr>
           ))}
         </tbody>

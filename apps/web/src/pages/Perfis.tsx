@@ -3,6 +3,7 @@ import { CAPABILITIES, type Capability } from '@triade/shared';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Ic } from '../components/Icones.js';
 
 interface Perfil { id: string; nome: string; descricao: string; ativo: boolean; capabilities: string[]; }
 
@@ -61,8 +62,8 @@ export function Perfis() {
                 <td className="muted">{modulosDe(p.capabilities)}</td>
                 <td>{p.capabilities.length} {t('perfis.qtd_permissoes')}</td>
                 <td><span className={p.ativo ? 'pill-ok' : 'pill-off'}>{p.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
-                <td className="acoes">
-                  {podeGerenciar && <button className="btn-link" onClick={() => abrirEdicao(p)}>{t('common.editar')}</button>}
+                <td style={{ textAlign: 'right' }}>
+                  {podeGerenciar && <span className="acoes-ic"><button className="acao-ic" title={t('common.editar')} onClick={() => abrirEdicao(p)}><Ic name="i-edit" className="sm" /></button></span>}
                 </td>
               </tr>
             ))}

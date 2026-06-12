@@ -3,6 +3,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
+import { Ic } from '../components/Icones.js';
 
 interface Linha { vendedorId: string; vendedor: string; percentual: number; vendido: number; comissao: number; }
 interface Regra { id: string; nome: string; taxa: number; vendedorId: string | null; vendedorNome: string | null; de: string | null; ate: string | null; ativo: boolean; }
@@ -78,10 +79,10 @@ export function Comissoes() {
                 <td>{r.de ? fmtData(r.de) : <span className="muted">{t('comregra.indet')}</span>}</td>
                 <td>{r.ate ? fmtData(r.ate) : (r.de ? '—' : <span className="muted">{t('comregra.indet')}</span>)}</td>
                 <td><span className={r.ativo ? 'pill-ok' : 'pill-off'}>{r.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
-                <td className="acoes">{podeFechar && <>
-                  <button className="btn-link" onClick={() => setEdit({ ...r })}>{t('common.editar')}</button>
-                  <button className="btn-link" onClick={() => alternarRegra(r)}>{r.ativo ? t('usuarios.inativar') : t('usuarios.ativar')}</button>
-                </>}</td>
+                <td style={{ textAlign: 'right' }}><span className="acoes-ic">{podeFechar && <>
+                  <button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...r })}><Ic name="i-edit" className="sm" /></button>
+                  <button className="acao-ic danger" title={r.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternarRegra(r)}><Ic name="i-trash" className="sm" /></button>
+                </>}</span></td>
               </tr>
             ))}
           </tbody>

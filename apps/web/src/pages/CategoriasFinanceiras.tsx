@@ -3,6 +3,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { useToast } from '../components/Toast.js';
+import { Ic } from '../components/Icones.js';
 
 type TipoCat = 'receita' | 'despesa';
 interface Cat { id: string; nome: string; tipo: TipoCat; ativo: boolean; }
@@ -43,7 +44,7 @@ export function CategoriasFinanceiras() {
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="toolbar">
-        <div className="busca-box-tb">🔎<input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('catfin.buscar')} /></div>
+        <div className="busca-box-tb"><Ic name="i-search" className="sm" /><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('catfin.buscar')} /></div>
         {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
       </div>
       <div className="card pad0">
@@ -56,10 +57,10 @@ export function CategoriasFinanceiras() {
                 <td>{c.nome}</td>
                 <td><span className={'pill ' + (c.tipo === 'receita' ? 'st-verde' : 'st-laranja')}>{t('catfin.' + c.tipo)}</span></td>
                 <td><span className={c.ativo ? 'pill-ok' : 'pill-off'}>{c.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
-                <td className="acoes">{pode && <>
-                  <button className="btn-link" onClick={() => setEdit({ ...c })}>{t('common.editar')}</button>
-                  <button className="btn-link" onClick={() => alternar(c)}>{c.ativo ? t('usuarios.inativar') : t('usuarios.ativar')}</button>
-                </>}</td>
+                <td style={{ textAlign: 'right' }}><span className="acoes-ic">{pode && <>
+                  <button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...c })}><Ic name="i-edit" className="sm" /></button>
+                  <button className="acao-ic danger" title={c.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternar(c)}><Ic name="i-trash" className="sm" /></button>
+                </>}</span></td>
               </tr>
             ))}
           </tbody>
