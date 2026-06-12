@@ -1444,6 +1444,14 @@ Object.assign(pt, {
   'dash.av_orcamento': 'Pedidos em orçamento', 'dash.av_aguardando': 'Pedidos aguardando pagamento',
   'dash.av_estoque': 'Produtos com estoque baixo', 'dash.av_receber_venc': 'A receber vencido',
   'dash.qa_novo_pedido': 'Novo pedido', 'dash.qa_novo_cliente': 'Novo cliente', 'dash.qa_entrada': 'Entrada de estoque',
+  'dash.vendas_dia': 'Vendas do dia', 'dash.vendas_semana': 'Vendas da semana', 'dash.vendas_ano': 'Vendas do ano', 'dash.clientes_ativos': 'Clientes ativos',
+  'dash.vs_ontem': 'vs ontem', 'dash.top_cli_valor': 'Top 5 clientes — por valor', 'dash.top_cli_qtd': 'Top 5 clientes — por pedidos',
+  'dash.total_comprado': 'Total comprado', 'dash.qtd_pedidos': 'Quantidade de pedidos', 'dash.sem_dados': 'Sem dados ainda. Crie pedidos para popular o ranking.',
+  'dash.pedidos_recentes': 'Pedidos recentes', 'dash.ver_todos': 'Ver todos', 'dash.fluxo_mes': 'Fluxo de caixa (mês)', 'dash.ver_detalhes': 'Ver detalhes',
+  'dash.entradas': 'Entradas', 'dash.saidas': 'Saídas', 'dash.saldo': 'Saldo', 'dash.total_contas': 'Total em contas', 'dash.saldo_total': 'Saldo total', 'dash.ver_contas': 'Ver contas',
+  'dash.sem_contas': 'Sem contas cadastradas', 'dash.un': 'un', 'dash.este_periodo': 'Este período', 'dash.periodo_anterior': 'Período anterior',
+  'dash.footer': 'TRÍADE ERP © 2026 · Todos os direitos reservados · Versão 0.1.0', 'dash.cli_ativos_total': 'ativos no total',
+  'dash.col_pedido': 'Pedido', 'dash.col_cliente': 'Cliente', 'dash.col_vendedor': 'Vendedor', 'dash.col_valor': 'Valor', 'dash.col_data': 'Data',
 });
 Object.assign(en, {
   'dash.subtitulo': 'Operations overview',
@@ -1451,6 +1459,14 @@ Object.assign(en, {
   'dash.av_orcamento': 'Orders in quote', 'dash.av_aguardando': 'Orders awaiting payment',
   'dash.av_estoque': 'Low-stock products', 'dash.av_receber_venc': 'Overdue receivables',
   'dash.qa_novo_pedido': 'New order', 'dash.qa_novo_cliente': 'New customer', 'dash.qa_entrada': 'Stock entry',
+  'dash.vendas_dia': 'Sales today', 'dash.vendas_semana': 'Sales this week', 'dash.vendas_ano': 'Sales this year', 'dash.clientes_ativos': 'Active customers',
+  'dash.vs_ontem': 'vs yesterday', 'dash.top_cli_valor': 'Top 5 customers — by value', 'dash.top_cli_qtd': 'Top 5 customers — by orders',
+  'dash.total_comprado': 'Total purchased', 'dash.qtd_pedidos': 'Number of orders', 'dash.sem_dados': 'No data yet. Create orders to populate the ranking.',
+  'dash.pedidos_recentes': 'Recent orders', 'dash.ver_todos': 'View all', 'dash.fluxo_mes': 'Cash flow (month)', 'dash.ver_detalhes': 'View details',
+  'dash.entradas': 'Inflows', 'dash.saidas': 'Outflows', 'dash.saldo': 'Balance', 'dash.total_contas': 'Total in accounts', 'dash.saldo_total': 'Total balance', 'dash.ver_contas': 'View accounts',
+  'dash.sem_contas': 'No accounts registered', 'dash.un': 'un', 'dash.este_periodo': 'This period', 'dash.periodo_anterior': 'Previous period',
+  'dash.footer': 'TRÍADE ERP © 2026 · All rights reserved · Version 0.1.0', 'dash.cli_ativos_total': 'active total',
+  'dash.col_pedido': 'Order', 'dash.col_cliente': 'Customer', 'dash.col_vendedor': 'Salesperson', 'dash.col_valor': 'Value', 'dash.col_data': 'Date',
 });
 Object.assign(es, {
   'dash.subtitulo': 'Visión general de la operación',
@@ -1458,6 +1474,14 @@ Object.assign(es, {
   'dash.av_orcamento': 'Pedidos en presupuesto', 'dash.av_aguardando': 'Pedidos esperando pago',
   'dash.av_estoque': 'Productos con stock bajo', 'dash.av_receber_venc': 'Por cobrar vencido',
   'dash.qa_novo_pedido': 'Nuevo pedido', 'dash.qa_novo_cliente': 'Nuevo cliente', 'dash.qa_entrada': 'Entrada de stock',
+  'dash.vendas_dia': 'Ventas del día', 'dash.vendas_semana': 'Ventas de la semana', 'dash.vendas_ano': 'Ventas del año', 'dash.clientes_ativos': 'Clientes activos',
+  'dash.vs_ontem': 'vs ayer', 'dash.top_cli_valor': 'Top 5 clientes — por valor', 'dash.top_cli_qtd': 'Top 5 clientes — por pedidos',
+  'dash.total_comprado': 'Total comprado', 'dash.qtd_pedidos': 'Cantidad de pedidos', 'dash.sem_dados': 'Sin datos aún. Crea pedidos para poblar el ranking.',
+  'dash.pedidos_recentes': 'Pedidos recientes', 'dash.ver_todos': 'Ver todos', 'dash.fluxo_mes': 'Flujo de caja (mes)', 'dash.ver_detalhes': 'Ver detalles',
+  'dash.entradas': 'Entradas', 'dash.saidas': 'Salidas', 'dash.saldo': 'Saldo', 'dash.total_contas': 'Total en cuentas', 'dash.saldo_total': 'Saldo total', 'dash.ver_contas': 'Ver cuentas',
+  'dash.sem_contas': 'Sin cuentas registradas', 'dash.un': 'un', 'dash.este_periodo': 'Este período', 'dash.periodo_anterior': 'Período anterior',
+  'dash.footer': 'TRÍADE ERP © 2026 · Todos los derechos reservados · Versión 0.1.0', 'dash.cli_ativos_total': 'activos en total',
+  'dash.col_pedido': 'Pedido', 'dash.col_cliente': 'Cliente', 'dash.col_vendedor': 'Vendedor', 'dash.col_valor': 'Valor', 'dash.col_data': 'Fecha',
 });
 
 // --- Padrão de tela (crumb/chips) + Clientes ---
