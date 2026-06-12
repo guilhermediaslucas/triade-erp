@@ -117,11 +117,17 @@ export class PedidosService {
     return { id, numero };
   }
 
-  async mudarStatus(schema: string, id: string, novo: StatusPedido): Promise<void> {
+  async mudarStatus(schema: string, id: string, novo: StatusPedido, dados?: { formaEnvio?: any; formaEnvioDetalhe?: any; entregueEm?: any }): Promise<void> {
     const pedido = await this.pedidos.buscarPorId(schema, id);
     if (!pedido) throw new ErroAplicacao('pedido.nao_encontrado', 404);
     const permitidos = TRANSICOES[pedido.status] ?? [];
     if (!permitidos.includes(novo)) throw new ErroAplicacao('pedido.transicao_invalida', 400);
+
+    // Expedir exige a forma de envio; entregar exige a data de entrega (espelha o mockup).
+    const formaEnvio = String(dados?.formaEnvio ?? '').trim();
+    const entregueEm = dados?.entregueEm && /^\d{4}-\d{2}-\d{2}$/.test(String(dados.entregueEm)) ? String(dados.entregueEm) : '';
+    if (novo === 'expedido' && !formaEnvio) throw new ErroAplicacao('pedido.forma_envio_obrigatoria', 400);
+    if (novo === 'entregue' && !entregueEm) throw new ErroAplicacao('pedido.data_entrega_obrigatoria', 400);
 
     // Confirmar (orçamento → aguardando pagamento) comita crédito: checa limite.
     if (novo === 'aguardando_pagamento' && pedido.clienteId) {
@@ -149,6 +155,8 @@ export class PedidosService {
     }
 
     await this.pedidos.mudarStatus(schema, id, novo);
+    if (novo === 'expedido') await this.pedidos.definirExpedicao(schema, id, formaEnvio, (String(dados?.formaEnvioDetalhe ?? '').trim()) || null);
+    if (novo === 'entregue') await this.pedidos.definirEntrega(schema, id, entregueEm);
 
     // Gate por forma de pagamento (espelha o mockup): Cartão/Dinheiro liberam direto
     // (pulam a espera → já vão para 'aprovado'); Pix/Boleto ficam em 'aguardando_pagamento'

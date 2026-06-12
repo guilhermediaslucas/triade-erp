@@ -1778,6 +1778,11 @@ Object.assign(pt, {
   'comregra.dica': 'Vendedor em branco = vale para todos. Prioridade: regra do vendedor no período → regra geral no período → % individual do vendedor.',
   'comregra.prioridade': 'Prioridade ao aplicar: 1) regra do vendedor vigente · 2) regra geral vigente · 3) % individual do vendedor (padrão).',
   'comissao.taxa_invalida': 'Informe uma taxa entre 0 e 100.', 'comissao.periodo_invalido': 'A data final não pode ser anterior à inicial.',
+  'fenv.titulo': 'Informar forma de envio', 'fenv.forma': 'Forma de entrega', 'fenv.selecione': 'Selecione ou digite…',
+  'fenv.detalhe': 'Detalhe (opcional)', 'fenv.detalhe_ph': 'Ex.: código de rastreio, nome do motoboy', 'fenv.confirmar': 'Confirmar expedição',
+  'ent.titulo': 'Confirmar entrega', 'ent.data': 'Data de entrega', 'ent.confirmar': 'Confirmar entrega',
+  'pedido.forma_envio': 'Forma de envio', 'pedido.entregue_em': 'Entregue em',
+  'pedido.forma_envio_obrigatoria': 'Informe a forma de envio para expedir o pedido.', 'pedido.data_entrega_obrigatoria': 'Informe a data de entrega.',
 });
 Object.assign(en, {
   'menu.tipodoc': 'Document types',
@@ -1793,6 +1798,11 @@ Object.assign(en, {
   'comregra.dica': 'Blank salesperson = applies to all. Priority: salesperson rule in period → general rule in period → salesperson individual %.',
   'comregra.prioridade': 'Priority when applying: 1) active salesperson rule · 2) active general rule · 3) salesperson individual % (default).',
   'comissao.taxa_invalida': 'Enter a rate between 0 and 100.', 'comissao.periodo_invalido': 'End date cannot be before the start date.',
+  'fenv.titulo': 'Set shipping method', 'fenv.forma': 'Delivery method', 'fenv.selecione': 'Select or type…',
+  'fenv.detalhe': 'Detail (optional)', 'fenv.detalhe_ph': 'e.g. tracking code, courier name', 'fenv.confirmar': 'Confirm shipment',
+  'ent.titulo': 'Confirm delivery', 'ent.data': 'Delivery date', 'ent.confirmar': 'Confirm delivery',
+  'pedido.forma_envio': 'Shipping method', 'pedido.entregue_em': 'Delivered on',
+  'pedido.forma_envio_obrigatoria': 'Set the shipping method to dispatch the order.', 'pedido.data_entrega_obrigatoria': 'Enter the delivery date.',
 });
 Object.assign(es, {
   'menu.tipodoc': 'Tipos de documento',
@@ -1808,4 +1818,9 @@ Object.assign(es, {
   'comregra.dica': 'Vendedor en blanco = vale para todos. Prioridad: regla del vendedor en el período → regla general en el período → % individual del vendedor.',
   'comregra.prioridade': 'Prioridad al aplicar: 1) regla del vendedor vigente · 2) regla general vigente · 3) % individual del vendedor (predeterminado).',
   'comissao.taxa_invalida': 'Ingresa una tasa entre 0 y 100.', 'comissao.periodo_invalido': 'La fecha final no puede ser anterior a la inicial.',
+  'fenv.titulo': 'Informar forma de envío', 'fenv.forma': 'Forma de entrega', 'fenv.selecione': 'Selecciona o escribe…',
+  'fenv.detalhe': 'Detalle (opcional)', 'fenv.detalhe_ph': 'Ej.: código de seguimiento, nombre del mensajero', 'fenv.confirmar': 'Confirmar expedición',
+  'ent.titulo': 'Confirmar entrega', 'ent.data': 'Fecha de entrega', 'ent.confirmar': 'Confirmar entrega',
+  'pedido.forma_envio': 'Forma de envío', 'pedido.entregue_em': 'Entregado el',
+  'pedido.forma_envio_obrigatoria': 'Informa la forma de envío para expedir el pedido.', 'pedido.data_entrega_obrigatoria': 'Informa la fecha de entrega.',
 });

@@ -25,6 +25,9 @@ export interface Pedido {
   motoboyId: string | null;
   motoboyNome: string | null;
   distanciaKm: number | null;
+  formaEnvio: string | null;          // definida ao expedir (catálogo Formas de entrega)
+  formaEnvioDetalhe: string | null;   // ex.: código de rastreio / nome do motoboy
+  entregueEm: string | null;          // data de entrega (definida ao mover p/ Entregue)
   subtotal: number;
   frete: number;
   total: number;
@@ -62,5 +65,7 @@ export interface PedidoRepository {
   listar(schema: string): Promise<PedidoResumo[]>;
   buscarPorId(schema: string, id: string): Promise<Pedido | null>;
   mudarStatus(schema: string, id: string, status: StatusPedido): Promise<void>;
+  definirExpedicao(schema: string, id: string, formaEnvio: string, detalhe: string | null): Promise<void>;
+  definirEntrega(schema: string, id: string, entregueEm: string): Promise<void>;
   somaEmAberto(schema: string, clienteId: string, excetoPedidoId: string): Promise<number>;
 }

@@ -5,12 +5,14 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { useToast } from '../components/Toast.js';
 import { corStatus, moeda, numeroPedido, PROXIMOS, type StatusPedido } from '../lib/pedido.js';
+import { ModalDataEntrega, ModalFormaEnvio } from '../components/ExpedicaoModais.js';
 
 interface Item { produtoNome: string; quantidade: number; precoUnitario: number; subtotal: number; }
 interface Pedido {
   id: string; numero: number; clienteNome: string | null; vendedorNome: string | null; status: StatusPedido;
   formaPagamento: string | null; observacao: string | null; enderecoEntrega: string | null;
   formaEntrega: string; motoboyNome: string | null; distanciaKm: number | null;
+  formaEnvio: string | null; formaEnvioDetalhe: string | null; entregueEm: string | null;
   subtotal: number; frete: number; total: number; criadoEm: string; itens: Item[];
 }
 
@@ -23,6 +25,8 @@ export function PedidoDetalhe() {
   const [p, setP] = useState<Pedido | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const podeGerenciar = temCapability('comercial.pedido.gerenciar');
+  const [formas, setFormas] = useState<string[]>([]);
+  const [modal, setModal] = useState<'envio' | 'entrega' | null>(null);
 
   // Separação por bipagem
   const [sepOpen, setSepOpen] = useState(false);
@@ -32,17 +36,27 @@ export function PedidoDetalhe() {
   const scanRef = useRef<HTMLInputElement>(null);
 
   async function carregar() { try { setP(await api.get('/pedidos/' + id, token!)); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
-  useEffect(() => { carregar(); /* eslint-disable-next-line */ }, [id]);
+  useEffect(() => {
+    carregar();
+    if (temCapability('cadastros.forma_entrega.listar')) api.get<{ nome: string; ativo: boolean }[]>('/formas-entrega', token!).then((l) => setFormas(l.filter((f) => f.ativo).map((f) => f.nome))).catch(() => {});
+    /* eslint-disable-next-line */
+  }, [id]);
 
-  async function mudar(status: StatusPedido) {
+  async function patchStatus(status: StatusPedido, extra?: Record<string, string>) {
     setErro(null);
     try {
-      await api.patch('/pedidos/' + id + '/status', { status }, token!); carregar();
+      await api.patch('/pedidos/' + id + '/status', { status, ...extra }, token!); carregar();
       const forma = (p?.formaPagamento ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
       if (status === 'aguardando_pagamento' && forma === 'pix') toast(t('pedido.toast_pix_pendente'));
       else toast(t('pedido.toast_status') + ' ' + t('status.' + status));
     }
     catch (e) { const k = (e as ErroApi).chaveI18n; setErro(k); toast(t(k), 'erro'); }
+  }
+  function mudar(status: StatusPedido) {
+    // Expedir/Entregar pedem dados (forma de envio / data de entrega) antes de confirmar.
+    if (status === 'expedido') { setModal('envio'); return; }
+    if (status === 'entregue') { setModal('entrega'); return; }
+    patchStatus(status);
   }
 
   function abrirSeparacao() { setCodigos([]); setScan(''); setSepErro(null); setSepOpen(true); setTimeout(() => scanRef.current?.focus(), 50); }
@@ -109,6 +123,8 @@ export function PedidoDetalhe() {
           <div><span className="det-l">{t('pedidos.forma_pgto')}</span><div>{p.formaPagamento ?? '—'}</div></div>
           <div><span className="det-l">{t('pedidos.data')}</span><div>{new Date(p.criadoEm).toLocaleString('pt-BR')}</div></div>
           <div><span className="det-l">{t('entrega.forma')}</span><div>{entregaTexto}</div></div>
+          {p.formaEnvio && <div><span className="det-l">{t('pedido.forma_envio')}</span><div>{p.formaEnvio}{p.formaEnvioDetalhe ? ' · ' + p.formaEnvioDetalhe : ''}</div></div>}
+          {p.entregueEm && <div><span className="det-l">{t('pedido.entregue_em')}</span><div>{new Date(p.entregueEm + 'T00:00:00').toLocaleDateString('pt-BR')}</div></div>}
           <div style={{ gridColumn: '1 / -1' }}><span className="det-l">{t('pedidos.endereco')}</span><div>{p.enderecoEntrega ?? '—'}</div></div>
           {p.observacao && <div style={{ gridColumn: '1 / -1' }}><span className="det-l">{t('pedidos.obs')}</span><div>{p.observacao}</div></div>}
         </div>
@@ -172,6 +188,11 @@ export function PedidoDetalhe() {
           </div>
         </div>
       )}
+
+      {modal === 'envio' && <ModalFormaEnvio numero={p.numero} formas={formas} inicial={{ forma: p.formaEnvio, detalhe: p.formaEnvioDetalhe }}
+        onFechar={() => setModal(null)} onConfirmar={(forma, det) => { setModal(null); patchStatus('expedido', { formaEnvio: forma, formaEnvioDetalhe: det }); }} />}
+      {modal === 'entrega' && <ModalDataEntrega numero={p.numero} inicial={p.entregueEm}
+        onFechar={() => setModal(null)} onConfirmar={(data) => { setModal(null); patchStatus('entregue', { entregueEm: data }); }} />}
     </div>
   );
 }

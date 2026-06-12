@@ -176,6 +176,21 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Paridade §2: workflow de expedição (forma de envio ao expedir + data de entrega ao
+  entregar).** Migration tenant **030** (`pedido.forma_envio`, `forma_envio_detalhe`, `entregue_em`).
+  **Backend:** `Pedido` += os 3 campos; `PedidoRepository.definirExpedicao`/`definirEntrega`;
+  `SqlPedidoRepository` mapeia/grava; **`PedidosService.mudarStatus`** ganhou `dados?` opcional e passou a
+  **exigir** `formaEnvio` ao ir p/ **expedido** (→400 `pedido.forma_envio_obrigatoria`) e `entregueEm` (ISO)
+  ao ir p/ **entregue** (→400 `pedido.data_entrega_obrigatoria`); grava os campos após a transição. Rota
+  `PATCH /pedidos/:id/status` repassa `formaEnvio/formaEnvioDetalhe/entregueEm`. **Frontend:** componente
+  compartilhado `ExpedicaoModais` (`ModalFormaEnvio` com datalist das formas ativas + detalhe opcional;
+  `ModalDataEntrega`); **Kanban Expedição** abre o modal ao soltar em Expedido/Entregue; **Detalhe do pedido**
+  idem ao clicar nos botões de status; ambos carregam as formas de entrega ativas; o detalhe exibe forma de
+  envio + entregue em. i18n pt/en/es. **Importante:** como o backend passou a exigir esses dados, os dois
+  caminhos (Kanban e detalhe) foram ajustados juntos — senão o botão de status quebraria. **Validação:**
+  **type-check api+web verde** + **e2e Postgres real (pglite, 5 PASS):** expedir sem forma→400, expedir grava
+  forma/detalhe, entregar sem data→400, entregar grava data, transição inválida segue 400. **Pendente:** Gui
+  `git commit`+push (Windows) → boot do Render aplica a migration 030; relogar.
 - **2026-06-12** — **Paridade §3: Regra geral de comissão (cadastro de regras).** Antes a apuração usava só o
   **% individual** do vendedor; agora há um **cadastro de regras** (Financeiro › Controle de comissões, seção
   "Regras de comissão"): nome, **taxa % por pedido**, **vendedor** (ou em branco = geral), **vigência** por

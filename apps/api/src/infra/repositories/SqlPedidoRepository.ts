@@ -65,6 +65,8 @@ export class SqlPedidoRepository implements PedidoRepository {
       formaPagamento: r.forma_pagamento ?? null, observacao: r.observacao ?? null, enderecoEntrega: r.endereco_entrega ?? null,
       formaEntrega: r.forma_entrega ?? 'retirada', motoboyId: r.motoboy_id ?? null, motoboyNome: r.motoboy_nome ?? null,
       distanciaKm: r.distancia_km != null ? Number(r.distancia_km) : null,
+      formaEnvio: r.forma_envio ?? null, formaEnvioDetalhe: r.forma_envio_detalhe ?? null,
+      entregueEm: r.entregue_em ? new Date(r.entregue_em).toISOString().slice(0, 10) : null,
       subtotal: Number(r.subtotal), frete: Number(r.frete), total: Number(r.total),
       condicaoParcelas: r.condicao_parcelas ?? 1, condicaoIntervalo: r.condicao_intervalo ?? 30, criadoEm: new Date(r.criado_em),
       itens: itens.map((i: any) => ({
@@ -77,6 +79,14 @@ export class SqlPedidoRepository implements PedidoRepository {
   async mudarStatus(schema: string, id: string, status: StatusPedido): Promise<void> {
     const s = validarSchema(schema);
     await this.ds.query(`UPDATE "${s}".pedido SET status = $2 WHERE id = $1`, [id, status]);
+  }
+  async definirExpedicao(schema: string, id: string, formaEnvio: string, detalhe: string | null): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(`UPDATE "${s}".pedido SET forma_envio = $2, forma_envio_detalhe = $3 WHERE id = $1`, [id, formaEnvio, detalhe]);
+  }
+  async definirEntrega(schema: string, id: string, entregueEm: string): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(`UPDATE "${s}".pedido SET entregue_em = $2 WHERE id = $1`, [id, entregueEm]);
   }
 
   async somaEmAberto(schema: string, clienteId: string, excetoPedidoId: string): Promise<number> {

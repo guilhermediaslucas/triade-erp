@@ -86,6 +86,7 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 | Forma de entrega (retirada/motoboy/correios/transportadora) + frete | ✅ | motoboy via Google Maps c/ fallback |
 | Kanban Comercial (leitura) + filtro de data | ⚠️ | Kanban existe; filtro por data de criação a confirmar |
 | Kanban Expedição (drag) + sincronização | ✅ | |
+| Expedir pede forma de envio · Entregar pede data de entrega | ✅ | modais ao mover p/ Expedido/Entregue (Kanban + detalhe); migration 030; e2e 5 PASS |
 | **Gate Pix/Boleto antes de separar** | ✅ | ver §1 (e2e 5 PASS) |
 | Visualização do pedido (duplo-clique, leitura, entrega editável) | ⚠️ | há página de detalhe; "forma de entrega editável no view" a confirmar |
 | Romaneio imprimível | ✅ | |

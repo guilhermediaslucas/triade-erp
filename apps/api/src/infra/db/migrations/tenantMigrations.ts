@@ -454,4 +454,12 @@ export const tenantMigrations: MigracaoTenant[] = [
       );
     `,
   },
+  {
+    nome: '030_pedido_expedicao',
+    sql: (s) => `
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS forma_envio text;
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS forma_envio_detalhe text;
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS entregue_em date;
+    `,
+  },
 ];
