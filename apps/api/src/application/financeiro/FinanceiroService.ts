@@ -77,13 +77,23 @@ export class FinanceiroService {
       tipo, descricao: String(e.descricao).trim(), pessoaNome: (e?.pessoaNome && String(e.pessoaNome).trim()) || null,
       valor, vencimento, categoriaFinanceiraId: (e?.categoriaFinanceiraId && String(e.categoriaFinanceiraId).trim()) || null,
       favorecidoId: (e?.favorecidoId && String(e.favorecidoId).trim()) || null,
+      previsto: e?.previsto === true,
     }, 'manual', null);
+  }
+
+  // Marca/desmarca o título como previsto (provisão). Só faz sentido em título em aberto.
+  async definirPrevisto(schema: string, id: string, previsto: boolean): Promise<void> {
+    const t = await this.repo.buscarPorId(schema, id);
+    if (!t) throw new ErroAplicacao('financeiro.nao_encontrado', 404);
+    if (t.status === 'pago') throw new ErroAplicacao('financeiro.previsto_so_aberto', 400);
+    await this.repo.definirPrevisto(schema, id, !!previsto);
   }
 
   async baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null): Promise<void> {
     const t = await this.repo.buscarPorId(schema, id);
     if (!t) throw new ErroAplicacao('financeiro.nao_encontrado', 404);
     if (t.status === 'pago') throw new ErroAplicacao('financeiro.ja_pago', 409);
+    if (t.previsto) throw new ErroAplicacao('financeiro.previsto_nao_baixa', 400);
     await this.repo.baixar(schema, id, (formaPagamento && String(formaPagamento).trim()) || null, contaCorrenteId || null);
     // Confirmação do recebimento do título de um pedido (Pix/Boleto) libera o pedido:
     // aguardando_pagamento → aprovado, ficando disponível para Separação no Kanban.

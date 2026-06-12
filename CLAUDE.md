@@ -176,6 +176,18 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Paridade §3: Previsto/Efetivo nos títulos (decisão do Gui).** Cada título de Contas a
+  receber/pagar tem um **check "Previsto"** (provisão). Migration tenant **026** (`titulo.previsto bool default
+  false`). **Regra:** título **previsto não pode ser baixado** (`FinanceiroService.baixar` → 400
+  `financeiro.previsto_nao_baixa`) e fica **mais claro** na lista (CSS `.linha-previsto` = texto muted+itálico);
+  para baixar, desmarca (vira efetivo). **Backend:** `Titulo.previsto`/`NovoTitulo.previsto` no domínio;
+  `SqlTituloRepository` (map + insert + `definirPrevisto`); `FinanceiroService.criar` aceita previsto,
+  `definirPrevisto` (só em aberto → senão 400 `previsto_so_aberto`); rota `PATCH /financeiro/:tipo/:id/previsto`.
+  **Frontend (Contas):** coluna **Previsto** com checkbox por título (em aberto, toggle via PATCH); linha previsto
+  some o botão **Baixar** e sai da **baixa em massa**; checkbox **Previsto** no Novo título; linha no detalhe
+  (duplo-clique). i18n pt/en/es. **Validação:** **type-check api+web verde** + **e2e Postgres real (pglite,
+  7 PASS):** cria previsto, baixar previsto→400, marca efetivo→baixa ok, pago→previsto 400, criar normal=false,
+  listar reflete flags. **Pendente:** Gui `git commit`+push (Windows) → boot do Render aplica a migration 026.
 - **2026-06-11** — **Paridade §8: foto/avatar de usuário.** Migration tenant **025** (`usuario.foto text`).
   **Backend:** `Usuario.foto`/`UsuarioResumo.foto` no domínio; `SqlUsuarioRepository` (select/insert/update +
   mapeador) grava/lê a foto; `UsuariosService` aceita `foto` no criar/editar com `normalizarFoto` (vazio→null,

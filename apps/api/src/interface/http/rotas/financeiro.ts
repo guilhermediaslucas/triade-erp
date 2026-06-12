@@ -22,6 +22,9 @@ function registrar(r: Router, deps: Dependencias, tipo: TipoTitulo, capBase: str
   r.patch(`${base}/:id/cancelar`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
     try { await deps.financeiroService.cancelarBaixa(sch(req), req.params.id!); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });
+  r.patch(`${base}/:id/previsto`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
+    try { await deps.financeiroService.definirPrevisto(sch(req), req.params.id!, !!(req.body ?? {}).previsto); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
   r.delete(`${base}/:id`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
     try { await deps.financeiroService.excluir(sch(req), req.params.id!); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });

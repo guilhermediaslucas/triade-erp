@@ -427,6 +427,8 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
 .det-val { text-align: right; }
 .avatar { border-radius: 50%; object-fit: cover; flex: none; vertical-align: middle; }
 .avatar-ph { display: inline-flex; align-items: center; justify-content: center; background: var(--accent); color: #fff; font-weight: 700; line-height: 1; }
+/* Título previsto (provisão): fica mais claro que os efetivos. */
+.linha-previsto td { color: var(--muted); font-style: italic; }
 .dash-row.d2 { grid-template-columns: 1.55fr 1fr 1fr; }
 .dash-row.d3 { grid-template-columns: 1.7fr 1fr; }
 .dash-row > .card { max-width: none; margin: 0; }

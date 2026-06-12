@@ -103,7 +103,7 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 | Filtros avançados (multi-status + favorecido + faixas) | ⚠️ | barra de filtros existe; multi-status/favorecido a confirmar |
 | Esconder/mostrar colunas (modalColunas) | ⚠️ | feito nas Contas; revisar paridade |
 | **Redimensionar colunas (arraste)** | ❌ | adiado (alto esforço) |
-| **Coluna Previsto/Efetivo + destaque de previsão** | ❌ | conceito de competência vs caixa |
+| **Coluna Previsto/Efetivo + destaque de previsão** | ✅ | check Previsto por título; previsto fica mais claro e **não pode ser baixado**; migration 026; e2e 7 PASS |
 | Janela de detalhe do título (duplo-clique) | ✅ | modal read-only nas Contas (duplo-clique na linha) |
 | Parcelar título (N parcelas) | ✅ | |
 | Multiplicar título (N cópias) | ✅ | |
@@ -214,7 +214,7 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 1. ✅ **§1 — Fluxo Pix/Boleto → Financeiro → Kanban** (feito; toast fixo c/ botão Abrir = refino).
 2. ✅ Curva ABC de clientes (feito).
 3. ✅ KPIs clicáveis no Dashboard (drill por período) — feito.
-4. Coluna Previsto/Efetivo (✅ detalhe do título por duplo-clique feito; **Previsto/Efetivo** = decisão de competência×caixa, aguarda o Gui).
+4. ✅ Coluna Previsto/Efetivo (feito — check Previsto bloqueia baixa) + ✅ detalhe do título por duplo-clique.
 5. ✅ Foto/avatar de usuário (feito).
 6. Formas de entrega como CRUD; municípios IBGE.
 7. CRM (oportunidades + interações) — quando você decidir o escopo.

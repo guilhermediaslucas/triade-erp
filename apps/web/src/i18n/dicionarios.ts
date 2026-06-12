@@ -1710,3 +1710,25 @@ Object.assign(es, { 'fin.detalhe': 'Detalles del título', 'fin.ver_detalhe': 'D
 Object.assign(pt, { 'usuarios.foto': 'Foto', 'usuarios.foto_enviar': 'Enviar foto', 'usuarios.foto_remover': 'Remover', 'usuario.foto_grande': 'A foto é muito grande (máx. 2 MB).' });
 Object.assign(en, { 'usuarios.foto': 'Photo', 'usuarios.foto_enviar': 'Upload photo', 'usuarios.foto_remover': 'Remove', 'usuario.foto_grande': 'Photo is too large (max 2 MB).' });
 Object.assign(es, { 'usuarios.foto': 'Foto', 'usuarios.foto_enviar': 'Subir foto', 'usuarios.foto_remover': 'Quitar', 'usuario.foto_grande': 'La foto es muy grande (máx. 2 MB).' });
+
+Object.assign(pt, {
+  'fin.previsto': 'Previsto', 'fin.previsto_hint': 'Marcar como previsto (provisão — não pode ser baixado)',
+  'fin.previsto_label': 'Lançamento previsto (provisão — não pode ser baixado)',
+  'fin.toast_previsto': 'Marcado como previsto', 'fin.toast_efetivo': 'Marcado como efetivo',
+  'financeiro.previsto_nao_baixa': 'Título previsto não pode ser baixado. Marque como efetivo primeiro.',
+  'financeiro.previsto_so_aberto': 'Só títulos em aberto podem ser marcados como previsto.',
+});
+Object.assign(en, {
+  'fin.previsto': 'Forecast', 'fin.previsto_hint': 'Mark as forecast (provision — cannot be settled)',
+  'fin.previsto_label': 'Forecast entry (provision — cannot be settled)',
+  'fin.toast_previsto': 'Marked as forecast', 'fin.toast_efetivo': 'Marked as actual',
+  'financeiro.previsto_nao_baixa': 'A forecast title cannot be settled. Mark it as actual first.',
+  'financeiro.previsto_so_aberto': 'Only open titles can be marked as forecast.',
+});
+Object.assign(es, {
+  'fin.previsto': 'Previsto', 'fin.previsto_hint': 'Marcar como previsto (provisión — no se puede dar de baja)',
+  'fin.previsto_label': 'Asiento previsto (provisión — no se puede dar de baja)',
+  'fin.toast_previsto': 'Marcado como previsto', 'fin.toast_efetivo': 'Marcado como efectivo',
+  'financeiro.previsto_nao_baixa': 'Un título previsto no se puede dar de baja. Márcalo como efectivo primero.',
+  'financeiro.previsto_so_aberto': 'Solo los títulos abiertos pueden marcarse como previstos.',
+});

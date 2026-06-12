@@ -8,7 +8,7 @@ import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel } from '../lib/excel.js';
 
 type Tipo = 'receber' | 'pagar';
-interface Titulo { id: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; }
+interface Titulo { id: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; previsto: boolean; }
 interface CatFin { id: string; nome: string; tipo: 'receita' | 'despesa'; ativo: boolean; }
 interface Fav { id: string; nome: string; ativo: boolean; }
 
@@ -87,10 +87,16 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   function toggle(id: string) { setSel((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; }); }
   function toggleTodos() { setSel((s) => (s.size === filtrados.length ? new Set() : new Set(filtrados.map((x) => x.id)))); }
   const selecionados = itens.filter((x) => sel.has(x.id));
-  const abertosSel = selecionados.filter((x) => x.status === 'aberto');
+  // Títulos previstos (provisão) não podem ser baixados — ficam fora da baixa em massa.
+  const abertosSel = selecionados.filter((x) => x.status === 'aberto' && !x.previsto);
 
   async function cancelar(tt: Titulo) {
     try { await api.patch('/financeiro/' + tipo + '/' + tt.id + '/cancelar', {}, token!); carregar(); toast(t('fin.toast_cancelado')); }
+    catch (e) { const k = (e as ErroApi).chaveI18n; setErro(k); toast(t(k), 'erro'); }
+  }
+
+  async function alternarPrevisto(tt: Titulo) {
+    try { await api.patch('/financeiro/' + tipo + '/' + tt.id + '/previsto', { previsto: !tt.previsto }, token!); carregar(); toast(t(tt.previsto ? 'fin.toast_efetivo' : 'fin.toast_previsto')); }
     catch (e) { const k = (e as ErroApi).chaveI18n; setErro(k); toast(t(k), 'erro'); }
   }
 
@@ -170,12 +176,12 @@ export function Contas({ tipo }: { tipo: Tipo }) {
       <div className="card pad0"><table className="tabela">
         <thead><tr>
           {pode && <th style={{ width: 34 }}><input type="checkbox" checked={filtrados.length > 0 && sel.size === filtrados.length} onChange={toggleTodos} /></th>}
-          <th>{t('fin.descricao')}</th>{!oc('pessoa') && <th>{tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor')}</th>}{!oc('cat') && <th>{t('catfin.titulo_s')}</th>}{!oc('venc') && <th>{t('fin.vencimento')}</th>}{!oc('valor') && <th>{t('fin.valor')}</th>}{!oc('sit') && <th>{t('fin.situacao')}</th>}<th>{t('usuarios.acoes')}</th>
+          <th>{t('fin.descricao')}</th>{!oc('pessoa') && <th>{tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor')}</th>}{!oc('cat') && <th>{t('catfin.titulo_s')}</th>}{!oc('venc') && <th>{t('fin.vencimento')}</th>}{!oc('valor') && <th>{t('fin.valor')}</th>}{!oc('sit') && <th>{t('fin.situacao')}</th>}<th style={{ textAlign: 'center' }}>{t('fin.previsto')}</th><th>{t('usuarios.acoes')}</th>
         </tr></thead>
         <tbody>
-          {filtrados.length === 0 && <tr><td colSpan={(pode ? 1 : 0) + 2 + HIDEABLE.filter((k) => !oc(k)).length} className="vazio">{t('common.nenhum')}</td></tr>}
+          {filtrados.length === 0 && <tr><td colSpan={(pode ? 1 : 0) + 3 + HIDEABLE.filter((k) => !oc(k)).length} className="vazio">{t('common.nenhum')}</td></tr>}
           {filtrados.map((tt) => { const sit = situacao(tt); return (
-            <tr key={tt.id} className={sel.has(tt.id) ? 'linha-sel' : ''} style={{ cursor: 'pointer' }} onDoubleClick={() => setVerT(tt)} title={t('fin.ver_detalhe')}>
+            <tr key={tt.id} className={(sel.has(tt.id) ? 'linha-sel ' : '') + (tt.previsto ? 'linha-previsto' : '')} style={{ cursor: 'pointer' }} onDoubleClick={() => setVerT(tt)} title={t('fin.ver_detalhe')}>
               {pode && <td><input type="checkbox" checked={sel.has(tt.id)} onChange={() => toggle(tt.id)} /></td>}
               <td>{tt.descricao}{tt.origem === 'pedido' && <span className="tag-origem">{t('fin.do_pedido')}</span>}</td>
               {!oc('pessoa') && <td>{tt.pessoaNome ?? '—'}</td>}
@@ -183,8 +189,13 @@ export function Contas({ tipo }: { tipo: Tipo }) {
               {!oc('venc') && <td>{new Date(tt.vencimento + 'T00:00:00').toLocaleDateString('pt-BR')}</td>}
               {!oc('valor') && <td>{moeda(tt.valor)}</td>}
               {!oc('sit') && <td><span className={'pill ' + (sit === 'pago' ? 'st-verde' : sit === 'vencido' ? 'st-vermelho' : 'st-laranja')}>{t('fin.' + sit)}</span></td>}
+              <td style={{ textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
+                {tt.status === 'aberto'
+                  ? <input type="checkbox" checked={tt.previsto} disabled={!pode} onChange={() => alternarPrevisto(tt)} title={t('fin.previsto_hint')} />
+                  : <span className="muted">—</span>}
+              </td>
               <td className="acoes">{pode && (tt.status === 'aberto'
-                ? <><button className="btn-link" onClick={() => setBaixar(tt)}>{t('fin.baixar')}</button> <button className="btn-link" onClick={() => setParcelarT(tt)}>{t('parcelar.acao')}</button></>
+                ? <>{!tt.previsto && <button className="btn-link" onClick={() => setBaixar(tt)}>{t('fin.baixar')}</button>} <button className="btn-link" onClick={() => setParcelarT(tt)}>{t('parcelar.acao')}</button></>
                 : <button className="btn-link" onClick={() => cancelar(tt)}>{t('fin.cancelar_baixa')}</button>)}</td>
             </tr>
           ); })}
@@ -217,6 +228,7 @@ function ModalVerTitulo({ tipo, titulo, onFechar }: { tipo: Tipo; titulo: Titulo
       {linha(t('fin.vencimento'), fmtData(titulo.vencimento))}
       {linha(t('fin.situacao'), <span className={'pill ' + (sit === 'pago' ? 'st-verde' : sit === 'vencido' ? 'st-vermelho' : 'st-laranja')}>{t('fin.' + sit)}</span>)}
       {titulo.status === 'pago' && linha(t('pedidos.forma_pgto'), titulo.formaPagamento ?? '—')}
+      {linha(t('fin.previsto'), titulo.previsto ? t('common.sim') : t('common.nao'))}
       {linha(t('fin.origem'), titulo.origem === 'pedido' ? t('fin.do_pedido') : titulo.origem)}
       <div className="modal-acoes"><button className="btn-primary" onClick={onFechar}>{t('common.fechar')}</button></div>
     </div></div>
@@ -231,6 +243,7 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
   const [cats, setCats] = useState<CatFin[]>([]);
   const [favorecidoId, setFavId] = useState('');
   const [favs, setFavs] = useState<Fav[]>([]);
+  const [previsto, setPrevisto] = useState(false);
   const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
   const tipoCat = tipo === 'receber' ? 'receita' : 'despesa';
   useEffect(() => {
@@ -240,7 +253,7 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
   }, []);
   async function salvar() {
     setErro(null); setSalv(true);
-    try { await api.post('/financeiro/' + tipo, { descricao, pessoaNome, valor: Number(valor), vencimento, categoriaFinanceiraId: categoriaFinanceiraId || null, favorecidoId: favorecidoId || null }, token!); onSalvo(); }
+    try { await api.post('/financeiro/' + tipo, { descricao, pessoaNome, valor: Number(valor), vencimento, categoriaFinanceiraId: categoriaFinanceiraId || null, favorecidoId: favorecidoId || null, previsto }, token!); onSalvo(); }
     catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
   return (
@@ -262,6 +275,9 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
         <label className="campo">{t('fin.valor')}<input type="number" min="0" step="0.01" value={valor} onChange={(e) => setValor(e.target.value)} /></label>
         <label className="campo">{t('fin.vencimento')}<input type="date" value={vencimento} onChange={(e) => setVenc(e.target.value)} /></label>
       </div>
+      <label className="login-lembrar" style={{ marginTop: 4 }}>
+        <input type="checkbox" checked={previsto} onChange={(e) => setPrevisto(e.target.checked)} /> {t('fin.previsto_label')}
+      </label>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv} onClick={salvar}>{t('common.salvar')}</button></div>
     </div></div>

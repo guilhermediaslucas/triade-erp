@@ -407,4 +407,10 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".usuario ADD COLUMN IF NOT EXISTS foto text;
     `,
   },
+  {
+    nome: '026_titulo_previsto',
+    sql: (s) => `
+      ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS previsto boolean NOT NULL DEFAULT false;
+    `,
+  },
 ];

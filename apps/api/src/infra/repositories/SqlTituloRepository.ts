@@ -14,6 +14,7 @@ function map(r: any): Titulo {
     pedidoId: r.pedido_id ?? null,
     categoriaFinanceiraId: r.categoria_financeira_id ?? null, categoriaFinanceiraNome: r.categoria_financeira_nome ?? null,
     favorecidoId: r.favorecido_id ?? null, favorecidoNome: r.favorecido_nome ?? null,
+    previsto: r.previsto === true,
     criadoEm: iso(r.criado_em)!,
   };
 }
@@ -77,14 +78,18 @@ export class SqlTituloRepository implements TituloRepository {
   async criar(schema: string, t: NovoTitulo, origem: string, pedidoId: string | null): Promise<string> {
     const s = validarSchema(schema); const id = randomUUID();
     await this.ds.query(
-      `INSERT INTO "${s}".titulo (id, tipo, descricao, pessoa_nome, valor, vencimento, origem, pedido_id, categoria_financeira_id, favorecido_id)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
-      [id, t.tipo, t.descricao, t.pessoaNome, t.valor, t.vencimento, origem, pedidoId, t.categoriaFinanceiraId ?? null, t.favorecidoId ?? null]);
+      `INSERT INTO "${s}".titulo (id, tipo, descricao, pessoa_nome, valor, vencimento, origem, pedido_id, categoria_financeira_id, favorecido_id, previsto)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+      [id, t.tipo, t.descricao, t.pessoaNome, t.valor, t.vencimento, origem, pedidoId, t.categoriaFinanceiraId ?? null, t.favorecidoId ?? null, t.previsto === true]);
     return id;
   }
   async baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null): Promise<void> {
     const s = validarSchema(schema);
     await this.ds.query(`UPDATE "${s}".titulo SET status='pago', forma_pagamento=$2, conta_corrente_id=$3, pago_em=now() WHERE id=$1`, [id, formaPagamento, contaCorrenteId]);
+  }
+  async definirPrevisto(schema: string, id: string, previsto: boolean): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(`UPDATE "${s}".titulo SET previsto=$2 WHERE id=$1`, [id, previsto]);
   }
   async cancelarBaixa(schema: string, id: string): Promise<void> {
     const s = validarSchema(schema);
