@@ -58,21 +58,7 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'menu.gestao_fretes', to: '/logistica/fretes', cap: 'logistica.frete.ver' },
     ] }],
   },
-  {
-    rotulo: 'menu.relatorios', icone: 'i-chart',
-    secoes: [{ itens: [
-      { rotulo: 'menu.rel_vendas', to: '/relatorios/vendas', cap: 'relatorios.ver' },
-      { rotulo: 'menu.rel_pedidos', to: '/relatorios/pedidos', cap: 'relatorios.ver' },
-      { rotulo: 'menu.rel_produtos', to: '/relatorios/produtos', cap: 'relatorios.ver' },
-      { rotulo: 'menu.rel_categorias', to: '/relatorios/vendas-categoria', cap: 'relatorios.ver' },
-      { rotulo: 'menu.rel_abc', to: '/relatorios/curva-abc', cap: 'relatorios.ver' },
-      { rotulo: 'menu.rel_validade', to: '/relatorios/validade', cap: 'relatorios.ver' },
-      { rotulo: 'menu.rel_parado', to: '/relatorios/estoque-parado', cap: 'relatorios.ver' },
-      { rotulo: 'menu.rel_perdas', to: '/relatorios/perdas', cap: 'relatorios.ver' },
-      { rotulo: 'menu.rel_inventarios', to: '/relatorios/inventarios', cap: 'estoque.inventario.ver' },
-      { rotulo: 'menu.rel_reembolsos', to: '/relatorios/reembolsos', cap: 'financeiro.pagar.listar' },
-    ] }],
-  },
+  { secoes: [{ itens: [{ rotulo: 'menu.relatorios', icone: 'i-chart', to: '/relatorios', cap: 'relatorios.ver' }] }] },
   {
     rotulo: 'menu.cadastros', icone: 'i-clip',
     secoes: [

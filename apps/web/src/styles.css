@@ -525,6 +525,9 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
 .fluxo-lin { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 13px; border-bottom: 1px solid var(--borda); }
 .fluxo-banco { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 13px; cursor: pointer; }
 .fluxo-banco span { display: flex; align-items: center; gap: 8px; }
+.rel-link { display: block; padding: 8px 10px; border-radius: 8px; color: var(--ink); text-decoration: none; font-size: 14px; }
+.rel-link:hover { background: var(--bg); color: var(--accent); }
+.rel-link.active { background: var(--accent-soft, #efeafe); color: var(--accent); font-weight: 600; }
 .det-linha { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--borda); font-size: 14px; }
 .det-linha:last-of-type { border-bottom: none; }
 .det-rot { color: var(--muted); }

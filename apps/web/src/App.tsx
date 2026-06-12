@@ -34,6 +34,7 @@ import { BaixaPerda } from './pages/BaixaPerda.js';
 import { GestaoFretes } from './pages/GestaoFretes.js';
 import { Contas } from './pages/Contas.js';
 import { FluxoCaixa } from './pages/FluxoCaixa.js';
+import { Relatorios } from './pages/Relatorios.js';
 import { RelDRE } from './pages/RelDRE.js';
 import { NotaEntrada } from './pages/NotaEntrada.js';
 import { Recebimento } from './pages/Recebimento.js';
@@ -98,6 +99,7 @@ export function App() {
                 <Route path="/financeiro/conciliacao" element={<Protegida cap="financeiro.conciliacao.ver"><Conciliacao /></Protegida>} />
                 <Route path="/financeiro/fluxo" element={<Protegida cap="financeiro.fluxo.ver"><FluxoCaixa /></Protegida>} />
                 <Route path="/financeiro/pagar" element={<Protegida cap="financeiro.pagar.listar"><Contas tipo="pagar" /></Protegida>} />
+                <Route path="/relatorios" element={<Protegida cap="relatorios.ver"><Relatorios /></Protegida>} />
                 <Route path="/relatorios/vendas" element={<Protegida cap="relatorios.ver"><RelVendas /></Protegida>} />
                 <Route path="/relatorios/pedidos" element={<Protegida cap="relatorios.ver"><RelPedidos /></Protegida>} />
                 <Route path="/relatorios/reembolsos" element={<Protegida cap="financeiro.pagar.listar"><RelFavorecidos /></Protegida>} />

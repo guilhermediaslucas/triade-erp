@@ -1503,6 +1503,27 @@ Object.assign(es, {
 Object.assign(pt, { 'rel.exportar_csv': 'Exportar CSV', 'rel.exportar_xlsx': 'Exportar Excel' });
 Object.assign(en, { 'rel.exportar_csv': 'Export CSV', 'rel.exportar_xlsx': 'Export Excel' });
 Object.assign(es, { 'rel.exportar_csv': 'Exportar CSV', 'rel.exportar_xlsx': 'Exportar Excel' });
+Object.assign(pt, {
+  'rel.crumb_hub': 'Relatórios', 'rel.hub_sub': 'Indicadores e exportações por categoria',
+  'rel.abrir_grupo': 'Abrir grupo', 'rel.fechar_grupo': 'Fechar grupo',
+  'rel.g_financeiro': 'Financeiro', 'rel.g_financeiro_d': 'Contas a pagar e receber, comissões, reembolsos.',
+  'rel.g_comercial': 'Vendas / Comercial', 'rel.g_comercial_d': 'Desempenho por vendedor, curva ABC e produtos mais vendidos.',
+  'rel.g_estoque': 'Estoque', 'rel.g_estoque_d': 'Validade de lotes, estoque parado, perdas e inventários.',
+});
+Object.assign(en, {
+  'rel.crumb_hub': 'Reports', 'rel.hub_sub': 'Indicators and exports by category',
+  'rel.abrir_grupo': 'Open group', 'rel.fechar_grupo': 'Close group',
+  'rel.g_financeiro': 'Finance', 'rel.g_financeiro_d': 'Payables and receivables, commissions, refunds.',
+  'rel.g_comercial': 'Sales / Commercial', 'rel.g_comercial_d': 'Performance by rep, ABC curve and best sellers.',
+  'rel.g_estoque': 'Stock', 'rel.g_estoque_d': 'Batch expiry, idle stock, losses and counts.',
+});
+Object.assign(es, {
+  'rel.crumb_hub': 'Informes', 'rel.hub_sub': 'Indicadores y exportaciones por categoría',
+  'rel.abrir_grupo': 'Abrir grupo', 'rel.fechar_grupo': 'Cerrar grupo',
+  'rel.g_financeiro': 'Financiero', 'rel.g_financeiro_d': 'Cuentas a pagar y cobrar, comisiones, reembolsos.',
+  'rel.g_comercial': 'Ventas / Comercial', 'rel.g_comercial_d': 'Desempeño por vendedor, curva ABC y más vendidos.',
+  'rel.g_estoque': 'Stock', 'rel.g_estoque_d': 'Caducidad de lotes, stock parado, pérdidas e inventarios.',
+});
 
 // --- Refinamento: filtros avançados nas Contas ---
 Object.assign(pt, {
