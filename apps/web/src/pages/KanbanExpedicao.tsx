@@ -33,9 +33,7 @@ export function KanbanExpedicao() {
 
   return (
     <div>
-      <div className="page-head">
-        <div><h1 className="page-titulo">{t('expedicao.titulo')}</h1><div className="muted" style={{ fontSize: 13 }}>{t('expedicao.sub')}</div></div>
-      </div>
+      <div className="crumb">{t('expedicao.crumb')}</div><h1 className="page-titulo">{t('expedicao.titulo')}</h1><p className="muted page-sub">{t('expedicao.sub')}</p>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="kanban">
         {COLUNAS.map((col) => {
