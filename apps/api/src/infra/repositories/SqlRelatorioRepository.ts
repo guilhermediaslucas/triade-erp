@@ -1,5 +1,5 @@
 import type { DataSource } from 'typeorm';
-import type { LinhaCategoria, LinhaEstoqueParado, LinhaPerda, LinhaProduto, LinhaValidadeLote, RelatorioRepository, RelatorioVendas } from '../../domain/relatorio/Relatorio.js';
+import type { LinhaCategoria, LinhaEstoqueParado, LinhaPedidoRel, LinhaPerda, LinhaProduto, LinhaValidadeLote, RelatorioRepository, RelatorioVendas } from '../../domain/relatorio/Relatorio.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 const ATIVO = "status NOT IN ('orcamento','cancelado')";
@@ -27,6 +27,27 @@ export class SqlRelatorioRepository implements RelatorioRepository {
     for (const l of map) { const k = l.vendedor ?? '—'; (agrup[k] ??= { quantidade: 0, total: 0 }); agrup[k].quantidade++; agrup[k].total += l.total; }
     const porVendedor = Object.entries(agrup).map(([vendedor, v]) => ({ vendedor, ...v })).sort((a, b) => b.total - a.total);
     return { linhas: map, total, quantidade: map.length, porVendedor };
+  }
+
+  // Relatório de pedidos: lista plana de TODOS os pedidos (inclui orçamento/cancelado),
+  // com filtro de data (criação) e status opcional.
+  async pedidos(schema: string, de: string | null, ate: string | null, status: string | null): Promise<LinhaPedidoRel[]> {
+    const s = validarSchema(schema);
+    const linhas = await this.ds.query(
+      `SELECT p.numero, p.criado_em, p.status, p.total, p.forma_entrega, p.forma_envio, p.entregue_em,
+              c.nome cliente, v.nome vendedor
+         FROM "${s}".pedido p
+         LEFT JOIN "${s}".cliente c ON c.id = p.cliente_id
+         LEFT JOIN "${s}".vendedor v ON v.id = p.vendedor_id
+        WHERE ($1::date IS NULL OR p.criado_em::date >= $1)
+          AND ($2::date IS NULL OR p.criado_em::date <= $2)
+          AND ($3::text IS NULL OR p.status = $3)
+        ORDER BY p.criado_em DESC`, [de, ate, status]);
+    return linhas.map((r: any) => ({
+      numero: r.numero, data: new Date(r.criado_em).toISOString(), cliente: r.cliente ?? null, vendedor: r.vendedor ?? null,
+      formaEntrega: r.forma_entrega ?? 'retirada', formaEnvio: r.forma_envio ?? null, status: r.status, total: Number(r.total),
+      entregueEm: r.entregue_em ? new Date(r.entregue_em).toISOString().slice(0, 10) : null,
+    }));
   }
 
   async produtosVendidos(schema: string, de: string | null, ate: string | null): Promise<LinhaProduto[]> {

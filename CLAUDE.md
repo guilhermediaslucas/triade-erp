@@ -176,6 +176,17 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Paridade §6: Relatório de pedidos (lista plana com filtros).** Novo relatório
+  **Relatórios › Pedidos** — lista **todos** os pedidos (inclui orçamento/cancelado, diferente do "Vendas")
+  com filtro de **data** (criação) e **status** + export CSV/Excel. Colunas: nº, data, cliente, vendedor,
+  forma de entrega, **forma de envio**, status, **entregue em**, total. **Backend:** `RelatorioRepository.pedidos`
+  + `SqlRelatorioRepository.pedidos` (LEFT JOIN cliente/vendedor; filtros `de/ate/status` via params; sem o
+  filtro ATIVO — mostra tudo); `RelatoriosService.pedidos` (lim ISO + status opcional). Rota
+  `GET /relatorios/pedidos?de=&ate=&status=` (cap `relatorios.ver`). **Frontend:** `RelPedidos.tsx` (filtros +
+  2 KPIs qtd/total + tabela + export), menu Relatórios, i18n pt/en/es. **Validação:** **type-check api+web
+  verde** + **e2e Postgres real (pglite, 5 PASS):** lista os 4 (inclui orçamento/cancelado), traz forma de
+  envio/entregue, filtra por status, filtra por data (exclui antigo), status inexistente→vazio. **Sem
+  migration.** **Pendente:** Gui git push.
 - **2026-06-12** — **Paridade §2: workflow de expedição (forma de envio ao expedir + data de entrega ao
   entregar).** Migration tenant **030** (`pedido.forma_envio`, `forma_envio_detalhe`, `entregue_em`).
   **Backend:** `Pedido` += os 3 campos; `PedidoRepository.definirExpedicao`/`definirEntrega`;

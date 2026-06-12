@@ -13,6 +13,10 @@ export interface LinhaEstoqueParado {
 export interface LinhaPerda {
   produtoId: string; produto: string; lote: string | null; quantidade: number; motivo: string | null; data: string; valor: number;
 }
+export interface LinhaPedidoRel {
+  numero: number; data: string; cliente: string | null; vendedor: string | null;
+  formaEntrega: string; formaEnvio: string | null; status: string; total: number; entregueEm: string | null;
+}
 export type ClasseAbc = 'A' | 'B' | 'C';
 export interface LinhaAbc { nome: string; quantidade: number; total: number; pct: number; acumuladoPct: number; classe: ClasseAbc; }
 export interface RelatorioAbc { linhas: LinhaAbc[]; totalGeral: number; resumo: Record<ClasseAbc, { itens: number; total: number }>; }
@@ -25,4 +29,5 @@ export interface RelatorioRepository {
   validadeLotes(schema: string): Promise<LinhaValidadeLote[]>;
   estoqueParado(schema: string): Promise<LinhaEstoqueParado[]>;
   perdasEstoque(schema: string, de: string | null, ate: string | null): Promise<LinhaPerda[]>;
+  pedidos(schema: string, de: string | null, ate: string | null, status: string | null): Promise<LinhaPedidoRel[]>;
 }

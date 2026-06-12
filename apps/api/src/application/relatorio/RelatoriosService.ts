@@ -10,6 +10,10 @@ export class RelatoriosService {
   validadeLotes(schema: string) { return this.repo.validadeLotes(schema); }
   estoqueParado(schema: string) { return this.repo.estoqueParado(schema); }
   perdasEstoque(schema: string, de: any, ate: any): Promise<LinhaPerda[]> { return this.repo.perdasEstoque(schema, lim(de), lim(ate)); }
+  pedidos(schema: string, de: any, ate: any, status: any) {
+    const st = (status && String(status).trim()) || null;
+    return this.repo.pedidos(schema, lim(de), lim(ate), st);
+  }
 
   // Curva ABC: ordenados por receita, classe A (≤80% acumulado), B (≤95%), C (resto). por=produtos|clientes.
   async curvaAbc(schema: string, de: any, ate: any, por: any): Promise<RelatorioAbc> {

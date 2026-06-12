@@ -59,6 +59,7 @@ const GRUPOS: Grupo[] = [
     rotulo: 'menu.relatorios',
     secoes: [{ itens: [
       { rotulo: 'menu.rel_vendas', icone: '📈', to: '/relatorios/vendas', cap: 'relatorios.ver' },
+      { rotulo: 'menu.rel_pedidos', icone: '🧾', to: '/relatorios/pedidos', cap: 'relatorios.ver' },
       { rotulo: 'menu.rel_produtos', icone: '🏆', to: '/relatorios/produtos', cap: 'relatorios.ver' },
       { rotulo: 'menu.rel_categorias', icone: '🧩', to: '/relatorios/vendas-categoria', cap: 'relatorios.ver' },
       { rotulo: 'menu.rel_abc', icone: '🔠', to: '/relatorios/curva-abc', cap: 'relatorios.ver' },

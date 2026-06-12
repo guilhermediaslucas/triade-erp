@@ -1783,6 +1783,8 @@ Object.assign(pt, {
   'ent.titulo': 'Confirmar entrega', 'ent.data': 'Data de entrega', 'ent.confirmar': 'Confirmar entrega',
   'pedido.forma_envio': 'Forma de envio', 'pedido.entregue_em': 'Entregue em',
   'pedido.forma_envio_obrigatoria': 'Informe a forma de envio para expedir o pedido.', 'pedido.data_entrega_obrigatoria': 'Informe a data de entrega.',
+  'menu.rel_pedidos': 'Pedidos', 'relped.crumb': 'Relatórios / Pedidos', 'relped.titulo': 'Relatório de pedidos',
+  'relped.sub': 'Todos os pedidos do sistema, com filtro de data e status', 'relped.todos': 'Todos os status', 'relped.qtd': 'Pedidos', 'relped.total': 'Valor total',
 });
 Object.assign(en, {
   'menu.tipodoc': 'Document types',
@@ -1803,6 +1805,8 @@ Object.assign(en, {
   'ent.titulo': 'Confirm delivery', 'ent.data': 'Delivery date', 'ent.confirmar': 'Confirm delivery',
   'pedido.forma_envio': 'Shipping method', 'pedido.entregue_em': 'Delivered on',
   'pedido.forma_envio_obrigatoria': 'Set the shipping method to dispatch the order.', 'pedido.data_entrega_obrigatoria': 'Enter the delivery date.',
+  'menu.rel_pedidos': 'Orders', 'relped.crumb': 'Reports / Orders', 'relped.titulo': 'Orders report',
+  'relped.sub': 'All orders in the system, with date and status filters', 'relped.todos': 'All statuses', 'relped.qtd': 'Orders', 'relped.total': 'Total value',
 });
 Object.assign(es, {
   'menu.tipodoc': 'Tipos de documento',
@@ -1823,4 +1827,6 @@ Object.assign(es, {
   'ent.titulo': 'Confirmar entrega', 'ent.data': 'Fecha de entrega', 'ent.confirmar': 'Confirmar entrega',
   'pedido.forma_envio': 'Forma de envío', 'pedido.entregue_em': 'Entregado el',
   'pedido.forma_envio_obrigatoria': 'Informa la forma de envío para expedir el pedido.', 'pedido.data_entrega_obrigatoria': 'Informa la fecha de entrega.',
+  'menu.rel_pedidos': 'Pedidos', 'relped.crumb': 'Informes / Pedidos', 'relped.titulo': 'Informe de pedidos',
+  'relped.sub': 'Todos los pedidos del sistema, con filtro de fecha y estado', 'relped.todos': 'Todos los estados', 'relped.qtd': 'Pedidos', 'relped.total': 'Valor total',
 });

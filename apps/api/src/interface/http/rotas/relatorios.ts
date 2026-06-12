@@ -30,5 +30,8 @@ export function rotasRelatorios(deps: Dependencias): Router {
   r.get('/relatorios/perdas-estoque', aut, az('relatorios.ver'), async (req, res: Response) => {
     try { res.json(await deps.relatoriosService.perdasEstoque(sch(req), req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
   });
+  r.get('/relatorios/pedidos', aut, az('relatorios.ver'), async (req, res: Response) => {
+    try { res.json(await deps.relatoriosService.pedidos(sch(req), req.query.de, req.query.ate, req.query.status)); } catch (e) { tratarErro(res, e); }
+  });
   return r;
 }

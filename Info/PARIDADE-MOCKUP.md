@@ -159,6 +159,7 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 | Validade de lotes / Estoque parado / Perdas / Inventários | ✅ | |
 | DRE simplificada | ✅ | |
 | Aging / projeção | ✅ | |
+| Relatório de pedidos (lista plana com filtros) | ✅ | Relatórios › Pedidos (data + status, todos os status, forma de envio/entrega, export); e2e 5 PASS |
 | Relatório Contas a receber / a pagar (com filtros + Excel) | ⚠️ | há Contas; "relatório dedicado" do mockup a avaliar |
 | Exportar Excel formatado (.xlsx com cara de relatório) | ✅ | |
 
