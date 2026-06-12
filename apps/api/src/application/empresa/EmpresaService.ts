@@ -47,18 +47,40 @@ export class EmpresaService {
     return e;
   }
 
-  async atualizar(codigo: string, d: AtualizacaoEmpresa): Promise<void> {
-    if (!d.fantasia || d.fantasia.trim().length < 2) throw new ErroAplicacao('empresa.fantasia_invalida', 400);
-    for (const cor of [d.corPrimaria, d.corMenuFundo, d.corMenuFonte]) {
+  async atualizar(codigo: string, d: Partial<AtualizacaoEmpresa>): Promise<void> {
+    // Mescla sobre os valores atuais: o que não vier no payload mantém o que está salvo.
+    const atual = await this.empresas.buscarPorCodigo(codigo);
+    if (!atual) throw new ErroAplicacao('empresa.nao_encontrada', 404);
+
+    const nome = (d.nome ?? atual.nome).trim();
+    if (nome.length < 2) throw new ErroAplicacao('empresa.nome_invalido', 400);
+    const fantasia = (d.fantasia ?? atual.fantasia).trim();
+    if (fantasia.length < 2) throw new ErroAplicacao('empresa.fantasia_invalida', 400);
+
+    const corPrimaria = d.corPrimaria ?? atual.corPrimaria;
+    const corSecundaria = d.corSecundaria ?? atual.corSecundaria;
+    const corMenuFundo = d.corMenuFundo ?? atual.corMenuFundo;
+    const corMenuFonte = d.corMenuFonte ?? atual.corMenuFonte;
+    for (const cor of [corPrimaria, corSecundaria, corMenuFundo, corMenuFonte]) {
       if (!HEX.test(cor)) throw new ErroAplicacao('empresa.cor_invalida', 400);
     }
-    if (!IDIOMAS.includes(d.idiomaPadrao as any)) throw new ErroAplicacao('empresa.idioma_invalido', 400);
-    if (!d.timezonePadrao || d.timezonePadrao.trim() === '') throw new ErroAplicacao('empresa.timezone_invalido', 400);
+    const idiomaPadrao = d.idiomaPadrao ?? atual.idiomaPadrao;
+    if (!IDIOMAS.includes(idiomaPadrao as any)) throw new ErroAplicacao('empresa.idioma_invalido', 400);
+    const timezonePadrao = (d.timezonePadrao ?? atual.timezonePadrao).trim();
+    if (timezonePadrao === '') throw new ErroAplicacao('empresa.timezone_invalido', 400);
+
+    const logoAltura = Math.min(120, Math.max(24, Math.round(Number(d.logoAltura ?? atual.logoAltura)) || 44));
+    const logo = d.logo !== undefined ? (d.logo && d.logo.trim() !== '' ? d.logo : null) : atual.logo;
+    const txt = (novo: string | undefined, velho: string) => (novo !== undefined ? novo.trim() : velho);
+
     await this.empresas.atualizar(codigo, {
-      fantasia: d.fantasia.trim(),
-      logo: d.logo && d.logo.trim() !== '' ? d.logo : null,
-      corPrimaria: d.corPrimaria, corMenuFundo: d.corMenuFundo, corMenuFonte: d.corMenuFonte,
-      idiomaPadrao: d.idiomaPadrao, timezonePadrao: d.timezonePadrao.trim(),
+      nome, fantasia, logo,
+      corPrimaria, corSecundaria, corMenuFundo, corMenuFonte, logoAltura,
+      idiomaPadrao, timezonePadrao,
+      cnpj: txt(d.cnpj, atual.cnpj), inscricaoEstadual: txt(d.inscricaoEstadual, atual.inscricaoEstadual),
+      telefone: txt(d.telefone, atual.telefone), email: txt(d.email, atual.email),
+      logradouro: txt(d.logradouro, atual.logradouro), bairro: txt(d.bairro, atual.bairro),
+      cep: txt(d.cep, atual.cep), uf: txt(d.uf, atual.uf), cidade: txt(d.cidade, atual.cidade),
     });
   }
 

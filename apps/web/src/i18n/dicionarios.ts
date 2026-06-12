@@ -1709,6 +1709,36 @@ Object.assign(es, { 'entrada.card': 'Datos de la entrada', 'nota.card': 'Datos d
 Object.assign(pt, { 'empresa.card': 'Identidade e preferências' });
 Object.assign(en, { 'empresa.card': 'Identity and preferences' });
 Object.assign(es, { 'empresa.card': 'Identidad y preferencias' });
+Object.assign(pt, {
+  'empresa.identificacao': 'Identificação', 'empresa.razao': 'Razão social', 'empresa.fantasia_hint': 'Usado no menu lateral e na tela de login.',
+  'empresa.cnpj': 'CNPJ', 'empresa.buscar': 'Buscar', 'empresa.ie': 'Inscrição estadual', 'empresa.telefone': 'Telefone', 'empresa.email': 'E-mail',
+  'empresa.endereco': 'Endereço (logradouro e número)', 'empresa.bairro': 'Bairro', 'empresa.cep': 'CEP', 'empresa.uf': 'Estado (UF)', 'empresa.cidade': 'Cidade',
+  'empresa.preview': 'Pré-visualização', 'empresa.logo_onde': 'A mesma imagem aparece no menu lateral e no login.', 'empresa.logo_inserir': 'Clique para inserir a logo da empresa', 'empresa.logo_hint': 'PNG ou JPG · até 2 MB',
+  'empresa.logo_tamanho': 'Tamanho no menu', 'empresa.logo_tamanho_hint': 'Altura da logo exibida no menu lateral. Não afeta a tela de login.',
+  'empresa.paleta': 'Paleta de cores', 'empresa.paleta_hint': 'Quatro cores aplicadas ao layout em tempo real: primária (botões e destaques), secundária (realces/saldos), fundo do menu e cor da fonte do menu.',
+  'empresa.cor_primaria': 'Primária', 'empresa.cor_secundaria': 'Secundária', 'empresa.cor_menu_fundo': 'Menu (fundo)', 'empresa.cor_menu_fonte': 'Menu (fonte)',
+  'empresa.cor_secundaria_hint': 'A cor secundária realça valores financeiros (saldos e totais em destaque) e o total dos cards de pedido.', 'empresa.nome_invalido': 'Razão social inválida (mínimo 2 caracteres).',
+});
+Object.assign(en, {
+  'empresa.identificacao': 'Identification', 'empresa.razao': 'Legal name', 'empresa.fantasia_hint': 'Used in the sidebar and login screen.',
+  'empresa.cnpj': 'Tax ID (CNPJ)', 'empresa.buscar': 'Look up', 'empresa.ie': 'State registration', 'empresa.telefone': 'Phone', 'empresa.email': 'E-mail',
+  'empresa.endereco': 'Address (street and number)', 'empresa.bairro': 'District', 'empresa.cep': 'ZIP code', 'empresa.uf': 'State', 'empresa.cidade': 'City',
+  'empresa.preview': 'Preview', 'empresa.logo_onde': 'The same image appears in the sidebar and login.', 'empresa.logo_inserir': 'Click to add the company logo', 'empresa.logo_hint': 'PNG or JPG · up to 2 MB',
+  'empresa.logo_tamanho': 'Size in menu', 'empresa.logo_tamanho_hint': 'Logo height shown in the sidebar. Does not affect the login screen.',
+  'empresa.paleta': 'Color palette', 'empresa.paleta_hint': 'Four colors applied live: primary (buttons/highlights), secondary (totals/balances), menu background and menu text.',
+  'empresa.cor_primaria': 'Primary', 'empresa.cor_secundaria': 'Secondary', 'empresa.cor_menu_fundo': 'Menu (background)', 'empresa.cor_menu_fonte': 'Menu (text)',
+  'empresa.cor_secundaria_hint': 'The secondary color highlights financial values (balances and totals) and the order card total.', 'empresa.nome_invalido': 'Invalid legal name (min. 2 characters).',
+});
+Object.assign(es, {
+  'empresa.identificacao': 'Identificación', 'empresa.razao': 'Razón social', 'empresa.fantasia_hint': 'Usado en el menú lateral y la pantalla de inicio.',
+  'empresa.cnpj': 'CNPJ', 'empresa.buscar': 'Buscar', 'empresa.ie': 'Inscripción estatal', 'empresa.telefone': 'Teléfono', 'empresa.email': 'Correo',
+  'empresa.endereco': 'Dirección (calle y número)', 'empresa.bairro': 'Barrio', 'empresa.cep': 'Código postal', 'empresa.uf': 'Estado (UF)', 'empresa.cidade': 'Ciudad',
+  'empresa.preview': 'Vista previa', 'empresa.logo_onde': 'La misma imagen aparece en el menú lateral y el inicio.', 'empresa.logo_inserir': 'Haz clic para agregar el logo de la empresa', 'empresa.logo_hint': 'PNG o JPG · hasta 2 MB',
+  'empresa.logo_tamanho': 'Tamaño en el menú', 'empresa.logo_tamanho_hint': 'Altura del logo en el menú lateral. No afecta el inicio de sesión.',
+  'empresa.paleta': 'Paleta de colores', 'empresa.paleta_hint': 'Cuatro colores aplicados en vivo: primario (botones/destacados), secundario (saldos/totales), fondo del menú y texto del menú.',
+  'empresa.cor_primaria': 'Primario', 'empresa.cor_secundaria': 'Secundario', 'empresa.cor_menu_fundo': 'Menú (fondo)', 'empresa.cor_menu_fonte': 'Menú (texto)',
+  'empresa.cor_secundaria_hint': 'El color secundario resalta valores financieros (saldos y totales) y el total de las tarjetas de pedido.', 'empresa.nome_invalido': 'Razón social inválida (mín. 2 caracteres).',
+});
 
 Object.assign(pt, { 'precos.nota': 'No preço base você define o preço fixo de cada produto e gerencia o histórico de campanhas (botão Campanhas). A campanha vigente na data sobrepõe o fixo; por cliente, o preço negociado sobrepõe o base.' });
 Object.assign(en, { 'precos.nota': 'In base price you set each product’s fixed price and manage the campaign history (Campaigns button). The active campaign overrides the fixed price; per customer, the negotiated price overrides the base.' });

@@ -39,4 +39,21 @@ export const publicMigrations: MigracaoPublic[] = [
       );
     `,
   },
+  {
+    nome: '004_empresa_identificacao',
+    sql: `
+      ALTER TABLE public.empresa
+        ADD COLUMN IF NOT EXISTS cor_secundaria     text NOT NULL DEFAULT '#2563eb',
+        ADD COLUMN IF NOT EXISTS logo_altura        int  NOT NULL DEFAULT 44,
+        ADD COLUMN IF NOT EXISTS cnpj               text NOT NULL DEFAULT '',
+        ADD COLUMN IF NOT EXISTS inscricao_estadual text NOT NULL DEFAULT '',
+        ADD COLUMN IF NOT EXISTS telefone           text NOT NULL DEFAULT '',
+        ADD COLUMN IF NOT EXISTS email              text NOT NULL DEFAULT '',
+        ADD COLUMN IF NOT EXISTS logradouro         text NOT NULL DEFAULT '',
+        ADD COLUMN IF NOT EXISTS bairro             text NOT NULL DEFAULT '',
+        ADD COLUMN IF NOT EXISTS cep                text NOT NULL DEFAULT '',
+        ADD COLUMN IF NOT EXISTS uf                 text NOT NULL DEFAULT '',
+        ADD COLUMN IF NOT EXISTS cidade             text NOT NULL DEFAULT '';
+    `,
+  },
 ];

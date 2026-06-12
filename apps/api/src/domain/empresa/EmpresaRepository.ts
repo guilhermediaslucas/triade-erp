@@ -1,6 +1,7 @@
 import type { BrandingEmpresa, Empresa } from './Empresa.js';
 
 export interface AtualizacaoEmpresa extends BrandingEmpresa {
+  nome: string;       // razão social
   fantasia: string;
 }
 

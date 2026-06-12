@@ -141,7 +141,7 @@ a { text-decoration: none; color: inherit; }
 .perm-item input { width: 16px; height: 16px; }
 
 /* ----- Fase 1B: branding ----- */
-.sidebar-logo { max-width: 150px; max-height: 44px; object-fit: contain; }
+.sidebar-logo { max-width: 180px; max-height: var(--logo-altura, 44px); object-fit: contain; }
 .alerta-ok { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; padding: 10px 14px; border-radius: 8px; font-size: 14px; margin-bottom: 16px; }
 .logo-area { display: flex; align-items: center; gap: 16px; }
 .logo-preview { max-width: 160px; max-height: 56px; object-fit: contain; border: 1px solid var(--borda); border-radius: 8px; padding: 6px; background: #fff; }
@@ -239,6 +239,29 @@ a { text-decoration: none; color: inherit; }
 .preco-inp { width: 130px; border: 1px solid #d7d9e3; border-radius: 8px; padding: 7px 10px; font-size: 14px; }
 .camp-btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--borda); border-radius: 9px; padding: 7px 12px; font-size: 12px; background: var(--card); color: var(--muted); cursor: pointer; }
 .camp-btn:hover { border-color: var(--accent); color: var(--ink); }
+
+/* dados da empresa (ficha + logo + paleta, padrão do mockup) */
+.emp-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; align-items: start; }
+.emp-grid .card { padding: 20px; }
+.emp-sec { margin: 0 0 14px; font-size: 15px; font-weight: 800; }
+.inp-acao { display: flex; gap: 8px; }
+.inp-acao input { flex: 1; }
+.inp-acao .btn-ghost { white-space: nowrap; }
+.emp-logo-row { display: flex; gap: 14px; align-items: center; margin-bottom: 12px; }
+.emp-logo-prev { max-width: 120px; max-height: 110px; border-radius: 12px; object-fit: contain; background: var(--bg); padding: 6px; }
+.emp-logo-vazio { width: 110px; height: 110px; border-radius: 12px; background: var(--bg); display: grid; place-items: center; color: var(--muted); }
+.emp-drop { width: 100%; border: 1.5px dashed var(--borda); border-radius: 12px; padding: 18px; background: var(--bg); color: var(--muted); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: inherit; }
+.emp-drop:hover { border-color: var(--accent); color: var(--ink); }
+.emp-drop .ic { width: 24px; height: 24px; }
+.emp-drop small { font-size: 11px; }
+.emp-slider { margin-top: 14px; }
+.emp-slider-top { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+.emp-slider input[type="range"] { width: 100%; }
+.emp-cor { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+.emp-cor-lbl { font-size: 13px; font-weight: 700; width: 120px; flex: none; }
+.emp-cor input[type="color"] { width: 46px; height: 30px; padding: 2px; border: 1px solid var(--borda); border-radius: 7px; background: none; cursor: pointer; }
+.emp-cor-hex { font-family: monospace; font-size: 12px; color: var(--muted); background: var(--bg); padding: 5px 10px; border-radius: 7px; }
+@media (max-width: 880px) { .emp-grid { grid-template-columns: 1fr; } }
 
 /* estoque */
 .lote-row { background: #f8fafc; font-size: 13px; color: var(--muted); }

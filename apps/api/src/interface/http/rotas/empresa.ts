@@ -7,8 +7,11 @@ import { tratarErro } from '../responder.js';
 function brandingDe(e: any) {
   return {
     codigo: e.codigo, nome: e.nome, fantasia: e.fantasia,
-    logo: e.logo, corPrimaria: e.corPrimaria, corMenuFundo: e.corMenuFundo,
-    corMenuFonte: e.corMenuFonte, idiomaPadrao: e.idiomaPadrao, timezonePadrao: e.timezonePadrao,
+    logo: e.logo, corPrimaria: e.corPrimaria, corSecundaria: e.corSecundaria,
+    corMenuFundo: e.corMenuFundo, corMenuFonte: e.corMenuFonte, logoAltura: e.logoAltura,
+    idiomaPadrao: e.idiomaPadrao, timezonePadrao: e.timezonePadrao,
+    cnpj: e.cnpj, inscricaoEstadual: e.inscricaoEstadual, telefone: e.telefone, email: e.email,
+    logradouro: e.logradouro, bairro: e.bairro, cep: e.cep, uf: e.uf, cidade: e.cidade,
   };
 }
 
@@ -28,9 +31,12 @@ export function rotasEmpresa(deps: Dependencias): Router {
     try {
       const b = req.body ?? {};
       await deps.empresaService.atualizar(req.usuario!.empresa, {
-        fantasia: b.fantasia, logo: b.logo ?? null,
-        corPrimaria: b.corPrimaria, corMenuFundo: b.corMenuFundo, corMenuFonte: b.corMenuFonte,
+        nome: b.nome, fantasia: b.fantasia, logo: b.logo ?? null,
+        corPrimaria: b.corPrimaria, corSecundaria: b.corSecundaria,
+        corMenuFundo: b.corMenuFundo, corMenuFonte: b.corMenuFonte, logoAltura: b.logoAltura,
         idiomaPadrao: b.idiomaPadrao, timezonePadrao: b.timezonePadrao,
+        cnpj: b.cnpj, inscricaoEstadual: b.inscricaoEstadual, telefone: b.telefone, email: b.email,
+        logradouro: b.logradouro, bairro: b.bairro, cep: b.cep, uf: b.uf, cidade: b.cidade,
       });
       res.json({ ok: true });
     } catch (e) { tratarErro(res, e); }

@@ -176,6 +176,25 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Paridade de telas com o mockup: Pedidos + Tabela de preço + Dados da empresa.**
+  **(1) Pedidos (Comercial)** — só frontend: título "Pedidos - Comercial" + sub "Visão Kanban (somente leitura…)",
+  botões Filtrar/Limpar, **kanban com borda colorida no topo + ícone + contador** (cores do mockup, classes `pk-*`),
+  cards com **pill da forma de pagamento** (Pix/Boleto/Cartão) + total (usa `--accent2`). "Em separação" exibido como
+  **"Aguardando retirada"** (decisão do Gui — só rótulo; mantém 6 status). **(2) Tabela de preço** — card "Tabela"
+  com seletor de modo + **Salvar tabela** (lote, só o que mudou); coluna "Preço base"→**"Preço fixo (R$)"**, nova
+  coluna **"Campanha vigente"** e botão **"Campanhas (N)"** com a contagem. Backend: `/precos` (SqlPrecoBaseRepository
+  + PrecoProduto) passou a devolver `campanhasCount` e `precoVigente` por produto (subqueries em `preco_campanha`).
+  **(3) Dados da empresa** — redesenho 2 colunas (Identificação + Logo/Paleta) com **CNPJ Buscar** (BrasilAPI), CEP
+  (ViaCEP), UF select, **slider de tamanho da logo** e **4 cores** (incl. Secundária). **Backend: migration public
+  004** (`empresa` += cor_secundaria, logo_altura, cnpj, inscricao_estadual, telefone, email, logradouro, bairro,
+  cep, uf, cidade) + `BrandingEmpresa`/`AtualizacaoEmpresa` (+ nome) + `SqlEmpresaRepository` (COLS/mapear/atualizar)
+  + `EmpresaService.atualizar` reescrito (**merge** sobre os valores atuais → front antigo não quebra; valida cor
+  secundária/HEX, logo_altura 24–120) + rota `/empresa` GET/PUT expõem os campos. Frontend: `Branding`/`aplicarTema`
+  += `--accent2` (cor secundária) e `--logo-altura` (altura da logo no menu, `.sidebar-logo`). Ícones novos no sprite:
+  i-edit, i-clock, i-check, i-upload. i18n pt/en/es. **Validação:** **type-check NÃO rodou** (mount trunca leitura
+  de arquivos grandes no sandbox) — confiar no build do Cloudflare/Render (tsc). **Pendente:** Gui commit+push →
+  Render aplica migration 004 no boot (AUTO_MIGRATE) + **relogar** uma vez (recarrega branding). **Fila:** próximas
+  telas a igualar = **Perfil** e **Contas a pagar/receber** (mostrar prévia antes de aplicar).
 - **2026-06-12** — **Paridade do menu/topbar com o mockup + modais não fecham ao clicar fora + login lembra e-mail.**
   Lote do Gui (5 pedidos). **(1) Topbar:** removido o nome da empresa; no lugar entrou a **barra de busca**
   (estilo do mockup: ícone de lupa + placeholder + `Ctrl K`) que abre a paleta global (evento `abrir-busca`).

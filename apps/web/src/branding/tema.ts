@@ -4,13 +4,24 @@ export interface Branding {
   fantasia: string;
   logo: string | null;
   corPrimaria: string;
+  corSecundaria: string;
   corMenuFundo: string;
   corMenuFonte: string;
+  logoAltura: number;
   idiomaPadrao: string;
   timezonePadrao: string;
+  cnpj: string;
+  inscricaoEstadual: string;
+  telefone: string;
+  email: string;
+  logradouro: string;
+  bairro: string;
+  cep: string;
+  uf: string;
+  cidade: string;
 }
 
-const PADRAO = { corPrimaria: '#6d28d9', corMenuFundo: '#0f172a', corMenuFonte: '#cbd5e1' };
+const PADRAO = { corPrimaria: '#6d28d9', corSecundaria: '#2563eb', corMenuFundo: '#0f172a', corMenuFonte: '#cbd5e1', logoAltura: 44 };
 
 // Decide texto claro/escuro conforme luminancia do fundo.
 function contraste(hex: string): string {
@@ -20,13 +31,15 @@ function contraste(hex: string): string {
   return lum > 0.6 ? '#1e293b' : '#ffffff';
 }
 
-export function aplicarTema(b: { corPrimaria: string; corMenuFundo: string; corMenuFonte: string } | null): void {
+export function aplicarTema(b: { corPrimaria: string; corSecundaria?: string; corMenuFundo: string; corMenuFonte: string; logoAltura?: number } | null): void {
   const c = b ?? PADRAO;
   const raiz = document.documentElement.style;
   raiz.setProperty('--accent', c.corPrimaria);
   raiz.setProperty('--accent-fg', contraste(c.corPrimaria));
+  raiz.setProperty('--accent2', c.corSecundaria ?? PADRAO.corSecundaria);
   raiz.setProperty('--side-bg', c.corMenuFundo);
   raiz.setProperty('--side-fg', c.corMenuFonte);
+  raiz.setProperty('--logo-altura', String(c.logoAltura ?? PADRAO.logoAltura) + 'px');
 }
 
 export const TIMEZONES = [
