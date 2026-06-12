@@ -1706,3 +1706,7 @@ Object.assign(es, { 'fin.vence7': 'Vence en 7 días' });
 Object.assign(pt, { 'fin.detalhe': 'Detalhes do título', 'fin.ver_detalhe': 'Duplo-clique para ver os detalhes', 'fin.origem': 'Origem' });
 Object.assign(en, { 'fin.detalhe': 'Title details', 'fin.ver_detalhe': 'Double-click to see details', 'fin.origem': 'Origin' });
 Object.assign(es, { 'fin.detalhe': 'Detalles del título', 'fin.ver_detalhe': 'Doble clic para ver detalles', 'fin.origem': 'Origen' });
+
+Object.assign(pt, { 'usuarios.foto': 'Foto', 'usuarios.foto_enviar': 'Enviar foto', 'usuarios.foto_remover': 'Remover', 'usuario.foto_grande': 'A foto é muito grande (máx. 2 MB).' });
+Object.assign(en, { 'usuarios.foto': 'Photo', 'usuarios.foto_enviar': 'Upload photo', 'usuarios.foto_remover': 'Remove', 'usuario.foto_grande': 'Photo is too large (max 2 MB).' });
+Object.assign(es, { 'usuarios.foto': 'Foto', 'usuarios.foto_enviar': 'Subir foto', 'usuarios.foto_remover': 'Quitar', 'usuario.foto_grande': 'La foto es muy grande (máx. 2 MB).' });

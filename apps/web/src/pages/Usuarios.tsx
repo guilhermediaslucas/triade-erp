@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Avatar } from '../components/Avatar.js';
 
-interface UsuarioResumo { id: string; nome: string; email: string; ativo: boolean; perfilId: string | null; perfilNome: string | null; }
+interface UsuarioResumo { id: string; nome: string; email: string; ativo: boolean; perfilId: string | null; perfilNome: string | null; foto: string | null; }
 interface Perfil { id: string; nome: string; }
 
 export function Usuarios() {
@@ -59,7 +60,7 @@ export function Usuarios() {
             {filtrados.length === 0 && <tr><td colSpan={5} className="vazio">{t('common.nenhum')}</td></tr>}
             {filtrados.map((u) => (
               <tr key={u.id} className={u.ativo ? '' : 'linha-inativa'}>
-                <td>{u.nome}</td>
+                <td><span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><Avatar nome={u.nome} foto={u.foto} tamanho={26} />{u.nome}</span></td>
                 <td>{u.email}</td>
                 <td>{u.perfilNome ? <span className="pill">{u.perfilNome}</span> : <span className="muted">{t('usuarios.sem_perfil')}</span>}</td>
                 <td><span className={u.ativo ? 'pill-ok' : 'pill-off'}>{u.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
@@ -92,7 +93,7 @@ export function Usuarios() {
 }
 
 function ModalUsuario({ usuario, perfis, onFechar, onSalvo }: {
-  usuario: { id: string; nome: string; perfilId: string | null } | null;
+  usuario: { id: string; nome: string; perfilId: string | null; foto: string | null } | null;
   perfis: Perfil[]; onFechar: () => void; onSalvo: () => void;
 }) {
   const { token } = useAuth();
@@ -102,14 +103,25 @@ function ModalUsuario({ usuario, perfis, onFechar, onSalvo }: {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [perfilId, setPerfilId] = useState(usuario?.perfilId ?? '');
+  const [foto, setFoto] = useState<string | null>(usuario?.foto ?? null);
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  function escolherFoto(e: ChangeEvent<HTMLInputElement>) {
+    const arq = e.target.files?.[0];
+    if (!arq) return;
+    if (arq.size > 2_000_000) { setErro('usuario.foto_grande'); return; }
+    const leitor = new FileReader();
+    leitor.onload = () => setFoto(String(leitor.result));
+    leitor.readAsDataURL(arq);
+  }
 
   async function salvar() {
     setErro(null); setSalvando(true);
     try {
-      if (editando) await api.put('/usuarios/' + usuario!.id, { nome, perfilId: perfilId || null }, token!);
-      else await api.post('/usuarios', { nome, email, senha, perfilId: perfilId || null }, token!);
+      if (editando) await api.put('/usuarios/' + usuario!.id, { nome, perfilId: perfilId || null, foto }, token!);
+      else await api.post('/usuarios', { nome, email, senha, perfilId: perfilId || null, foto }, token!);
       onSalvo();
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalvando(false); }
   }
@@ -118,6 +130,16 @@ function ModalUsuario({ usuario, perfis, onFechar, onSalvo }: {
     <div className="modal-fundo" onClick={onFechar}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>{editando ? t('usuarios.editar_titulo') : t('usuarios.novo_titulo')}</h2>
+        <div className="campo">{t('usuarios.foto')}
+          <div className="logo-area">
+            <Avatar nome={nome} foto={foto} tamanho={56} />
+            <div className="logo-btns">
+              <input ref={fileRef} type="file" accept="image/*" hidden onChange={escolherFoto} />
+              <button type="button" className="btn-ghost" onClick={() => fileRef.current?.click()}>{t('usuarios.foto_enviar')}</button>
+              {foto && <button type="button" className="btn-link" onClick={() => setFoto(null)}>{t('usuarios.foto_remover')}</button>}
+            </div>
+          </div>
+        </div>
         <label className="campo">{t('usuarios.nome')}
           <input value={nome} onChange={(e) => setNome(e.target.value)} autoFocus />
         </label>

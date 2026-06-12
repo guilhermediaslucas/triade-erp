@@ -10,7 +10,7 @@ export class SqlUsuarioRepository implements UsuarioRepository {
   async buscarPorEmail(schema: string, email: string): Promise<Usuario | null> {
     const s = validarSchema(schema);
     const r = (await this.ds.query(
-      `SELECT id, nome, email, senha_hash, ativo, perfil_id, criado_em
+      `SELECT id, nome, email, senha_hash, ativo, perfil_id, foto, criado_em
          FROM "${s}".usuario WHERE email = $1 LIMIT 1`,
       [email],
     ))[0];
@@ -20,7 +20,7 @@ export class SqlUsuarioRepository implements UsuarioRepository {
   async buscarPorId(schema: string, id: string): Promise<Usuario | null> {
     const s = validarSchema(schema);
     const r = (await this.ds.query(
-      `SELECT id, nome, email, senha_hash, ativo, perfil_id, criado_em
+      `SELECT id, nome, email, senha_hash, ativo, perfil_id, foto, criado_em
          FROM "${s}".usuario WHERE id = $1 LIMIT 1`,
       [id],
     ))[0];
@@ -30,14 +30,14 @@ export class SqlUsuarioRepository implements UsuarioRepository {
   async listar(schema: string): Promise<UsuarioResumo[]> {
     const s = validarSchema(schema);
     const linhas = await this.ds.query(
-      `SELECT u.id, u.nome, u.email, u.ativo, u.perfil_id, p.nome AS perfil_nome
+      `SELECT u.id, u.nome, u.email, u.ativo, u.perfil_id, u.foto, p.nome AS perfil_nome
          FROM "${s}".usuario u
          LEFT JOIN "${s}".perfil p ON p.id = u.perfil_id
         ORDER BY u.nome`,
     );
     return linhas.map((r: any) => ({
       id: r.id, nome: r.nome, email: r.email, ativo: r.ativo,
-      perfilId: r.perfil_id ?? null, perfilNome: r.perfil_nome ?? null,
+      perfilId: r.perfil_id ?? null, perfilNome: r.perfil_nome ?? null, foto: r.foto ?? null,
     }));
   }
 
@@ -54,16 +54,16 @@ export class SqlUsuarioRepository implements UsuarioRepository {
     const s = validarSchema(schema);
     const id = randomUUID();
     await this.ds.query(
-      `INSERT INTO "${s}".usuario (id, nome, email, senha_hash, ativo, perfil_id)
-       VALUES ($1, $2, $3, $4, true, $5)`,
-      [id, dados.nome, dados.email, dados.senhaHash, dados.perfilId],
+      `INSERT INTO "${s}".usuario (id, nome, email, senha_hash, ativo, perfil_id, foto)
+       VALUES ($1, $2, $3, $4, true, $5, $6)`,
+      [id, dados.nome, dados.email, dados.senhaHash, dados.perfilId, dados.foto ?? null],
     );
     return id;
   }
 
-  async atualizar(schema: string, id: string, nome: string, perfilId: string | null): Promise<void> {
+  async atualizar(schema: string, id: string, nome: string, perfilId: string | null, foto: string | null): Promise<void> {
     const s = validarSchema(schema);
-    await this.ds.query(`UPDATE "${s}".usuario SET nome = $2, perfil_id = $3 WHERE id = $1`, [id, nome, perfilId]);
+    await this.ds.query(`UPDATE "${s}".usuario SET nome = $2, perfil_id = $3, foto = $4 WHERE id = $1`, [id, nome, perfilId, foto]);
   }
 
   async definirAtivo(schema: string, id: string, ativo: boolean): Promise<void> {
@@ -91,7 +91,7 @@ export class SqlUsuarioRepository implements UsuarioRepository {
   private mapear(r: any): Usuario {
     return {
       id: r.id, nome: r.nome, email: r.email, senhaHash: r.senha_hash,
-      ativo: r.ativo, perfilId: r.perfil_id ?? null, criadoEm: new Date(r.criado_em),
+      ativo: r.ativo, perfilId: r.perfil_id ?? null, foto: r.foto ?? null, criadoEm: new Date(r.criado_em),
     };
   }
 }

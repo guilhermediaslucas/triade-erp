@@ -176,6 +176,17 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-11** — **Paridade §8: foto/avatar de usuário.** Migration tenant **025** (`usuario.foto text`).
+  **Backend:** `Usuario.foto`/`UsuarioResumo.foto` no domínio; `SqlUsuarioRepository` (select/insert/update +
+  mapeador) grava/lê a foto; `UsuariosService` aceita `foto` no criar/editar com `normalizarFoto` (vazio→null,
+  limite ~2,8MB→400 `usuario.foto_grande`); rotas `/usuarios` POST/PUT repassam `foto`; **`/me` agora retorna
+  `foto`** (busca o usuário do tenant; super-admin→null). **Frontend:** componente **`Avatar`** (foto data URI
+  ou **iniciais** como fallback) na **topbar** e na **lista de Usuários**; upload de foto no modal de Usuário
+  (FileReader→data URI, cap 2MB no front); `AuthContext` carrega `foto` do `/me` (login, troca de empresa e
+  revalidação no reload). i18n pt/en/es (`usuarios.foto*`, `usuario.foto_grande`); CSS `.avatar/.avatar-ph`.
+  **Validação:** **type-check api+web verde** + **e2e Postgres real (pglite, 7 PASS):** cria com foto (salva +
+  aparece no listar), cria sem foto→null, editar troca/limpa a foto, foto gigante→400, editar inexistente→404.
+  **Pendente:** Gui `git commit` (no Windows!) + push → o boot do Render aplica a migration 025 sozinho; relogar.
 - **2026-06-11** — **Paridade §3: detalhe do título por duplo-clique (Contas).** Modal **read-only**
   (`ModalVerTitulo`) que abre ao dar **duplo-clique** numa linha de *Contas a receber/pagar*: mostra
   descrição, pessoa, categoria, valor, vencimento, situação (pill), forma de pagamento (se pago) e origem.

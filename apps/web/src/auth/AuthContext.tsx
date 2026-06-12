@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 
-export interface UsuarioLogado { id: string; nome: string; email: string; empresa: string; }
+export interface UsuarioLogado { id: string; nome: string; email: string; empresa: string; foto: string | null; }
 interface LoginResp { token: string; usuario: { id: string; nome: string; email: string }; empresa: { codigo: string; fantasia: string }; superAdmin?: boolean; }
-interface MeResp { id: string; nome: string; email: string; empresa: string; capabilities: string[]; superAdmin?: boolean; }
+interface MeResp { id: string; nome: string; email: string; empresa: string; capabilities: string[]; superAdmin?: boolean; foto?: string | null; }
 
 interface AuthCtx {
   token: string | null;
@@ -44,10 +44,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const r = await api.post<LoginResp>('/auth/login', { email, senha });
     let capabilities: string[] = [];
     let superAdmin = r.superAdmin === true;
-    try { const me = await api.get<MeResp>('/me', r.token); capabilities = me.capabilities; superAdmin = me.superAdmin === true; } catch { /* ignora */ }
+    let foto: string | null = null;
+    try { const me = await api.get<MeResp>('/me', r.token); capabilities = me.capabilities; superAdmin = me.superAdmin === true; foto = me.foto ?? null; } catch { /* ignora */ }
     salvar({
       token: r.token,
-      usuario: { ...r.usuario, empresa: r.empresa.codigo },
+      usuario: { ...r.usuario, empresa: r.empresa.codigo, foto },
       empresaFantasia: r.empresa.fantasia,
       capabilities, superAdmin,
     }, lembrar);
@@ -57,10 +58,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!sessao) return;
     const r = await api.post<LoginResp>('/auth/trocar-empresa', { codigo }, sessao.token);
     let capabilities: string[] = [];
-    try { capabilities = (await api.get<MeResp>('/me', r.token)).capabilities; } catch { /* ignora */ }
+    let foto: string | null = null;
+    try { const me = await api.get<MeResp>('/me', r.token); capabilities = me.capabilities; foto = me.foto ?? null; } catch { /* ignora */ }
     salvar({
       token: r.token,
-      usuario: { ...r.usuario, empresa: r.empresa.codigo },
+      usuario: { ...r.usuario, empresa: r.empresa.codigo, foto },
       empresaFantasia: r.empresa.fantasia,
       capabilities, superAdmin: true,
     }, persistido());
@@ -78,8 +80,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     api.get<MeResp>('/me', sessao.token)
       .then((me) => {
         const sa = me.superAdmin === true;
-        if (JSON.stringify(me.capabilities) !== JSON.stringify(sessao.capabilities) || sa !== sessao.superAdmin) {
-          salvar({ ...sessao, capabilities: me.capabilities, superAdmin: sa }, persist);
+        const foto = me.foto ?? null;
+        if (JSON.stringify(me.capabilities) !== JSON.stringify(sessao.capabilities) || sa !== sessao.superAdmin || foto !== sessao.usuario.foto) {
+          salvar({ ...sessao, capabilities: me.capabilities, superAdmin: sa, usuario: { ...sessao.usuario, foto } }, persist);
         }
       })
       .catch((e: ErroApi) => { if (e?.status === 401) salvar(null); });

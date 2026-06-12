@@ -11,7 +11,10 @@ export function rotasMe(deps: Dependencias): Router {
     try {
       const u = req.usuario!;
       const capabilities = u.superAdmin ? [] : await deps.usuariosRepo.capabilities(u.schema, u.sub);
-      res.json({ id: u.sub, nome: u.nome, email: u.email, empresa: u.empresa, capabilities, superAdmin: u.superAdmin === true });
+      // foto vem do cadastro do usuário no tenant (super-admin não tem linha no tenant → null).
+      let foto: string | null = null;
+      if (!u.superAdmin) { const usr = await deps.usuariosRepo.buscarPorId(u.schema, u.sub); foto = usr?.foto ?? null; }
+      res.json({ id: u.sub, nome: u.nome, email: u.email, empresa: u.empresa, capabilities, superAdmin: u.superAdmin === true, foto });
     } catch (e) { tratarErro(res, e); }
   });
 

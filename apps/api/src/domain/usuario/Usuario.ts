@@ -5,6 +5,7 @@ export interface Usuario {
   senhaHash: string;
   ativo: boolean;
   perfilId: string | null;
+  foto: string | null;   // data URI da foto/avatar (opcional)
   criadoEm: Date; // UTC
 }
 
@@ -16,4 +17,5 @@ export interface UsuarioResumo {
   ativo: boolean;
   perfilId: string | null;
   perfilNome: string | null;
+  foto: string | null;
 }

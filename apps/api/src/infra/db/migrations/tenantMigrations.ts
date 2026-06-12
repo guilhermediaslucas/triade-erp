@@ -401,4 +401,10 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".frete_config ADD COLUMN IF NOT EXISTS cep_origem text;
     `,
   },
+  {
+    nome: '025_usuario_foto',
+    sql: (s) => `
+      ALTER TABLE "${s}".usuario ADD COLUMN IF NOT EXISTS foto text;
+    `,
+  },
 ];

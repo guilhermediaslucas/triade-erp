@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { useBranding } from '../branding/BrandingContext.js';
 import { BuscaGlobal } from './BuscaGlobal.js';
+import { Avatar } from './Avatar.js';
 import { Sino } from './Sino.js';
 import { useTema } from '../theme/ThemeContext.js';
 import { EmpresaSwitcher } from './EmpresaSwitcher.js';
@@ -182,7 +183,10 @@ export function Layout({ children }: { children: ReactNode }) {
             <EmpresaSwitcher />
             <button className="btn-tema" onClick={alternar} title={t('tema.alternar')}>{escuro ? '☀️' : '🌙'}</button>
             <Sino />
-            <span className="topbar-user">{usuario?.nome}</span>
+            <span className="topbar-user">
+              <Avatar nome={usuario?.nome ?? ''} foto={usuario?.foto ?? null} />
+              {usuario?.nome}
+            </span>
             <button className="btn-sair" onClick={logout}>{t('topbar.sair')}</button>
           </div>
         </header>

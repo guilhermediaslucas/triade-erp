@@ -5,6 +5,7 @@ export interface NovoUsuario {
   email: string;
   senhaHash: string;
   perfilId: string | null;
+  foto?: string | null;
 }
 
 export interface UsuarioRepository {
@@ -13,7 +14,7 @@ export interface UsuarioRepository {
   buscarPorId(schema: string, id: string): Promise<Usuario | null>;
   emailExiste(schema: string, email: string, excetoId?: string): Promise<boolean>;
   criar(schema: string, dados: NovoUsuario): Promise<string>;
-  atualizar(schema: string, id: string, nome: string, perfilId: string | null): Promise<void>;
+  atualizar(schema: string, id: string, nome: string, perfilId: string | null, foto: string | null): Promise<void>;
   definirAtivo(schema: string, id: string, ativo: boolean): Promise<void>;
   definirSenha(schema: string, id: string, senhaHash: string): Promise<void>;
   capabilities(schema: string, usuarioId: string): Promise<string[]>;

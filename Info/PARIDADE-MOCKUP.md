@@ -179,7 +179,7 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 |---|---|---|
 | Usuários (CRUD, senha, perfil pill) | ✅ | |
 | Perfis (CRUD, permissões por módulo, **Módulos liberados**) | ✅ | |
-| **Foto/avatar do usuário + apresentação** | ❌ | mockup tem foto no perfil |
+| **Foto/avatar do usuário + apresentação** | ✅ | foto (data URI) no CRUD de Usuários; avatar na lista e na topbar (fallback iniciais); migration 025; e2e 7 PASS |
 | Dados da empresa (logo, cores, idioma/timezone) | ✅ | idioma/timezone **removidos da UI** por preferência do Gui (sistema clean) |
 | Multi-empresa / white-label / admin geral | ✅ | super-admin + switcher; **CRUD completo** (criar sem código/auto-slug, editar, excluir+drop schema) |
 | Tema claro/escuro | ✅ | |
@@ -215,7 +215,7 @@ No mockup (`/* Item 2: notificações de pendência de baixa (Pix/Boleto) + toas
 2. ✅ Curva ABC de clientes (feito).
 3. ✅ KPIs clicáveis no Dashboard (drill por período) — feito.
 4. Coluna Previsto/Efetivo (✅ detalhe do título por duplo-clique feito; **Previsto/Efetivo** = decisão de competência×caixa, aguarda o Gui).
-5. Foto/avatar de usuário.
+5. ✅ Foto/avatar de usuário (feito).
 6. Formas de entrega como CRUD; municípios IBGE.
 7. CRM (oportunidades + interações) — quando você decidir o escopo.
 
