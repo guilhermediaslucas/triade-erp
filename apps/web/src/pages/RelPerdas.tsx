@@ -52,9 +52,9 @@ export function RelPerdas() {
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="kpis">
-        <div className="kpi-card kpi-vermelho"><div className="kpi-l">{t('perdas.kpi_valor')}</div><div className="kpi-v">{moeda(totalValor)}</div></div>
-        <div className="kpi-card"><div className="kpi-l">{t('perdas.kpi_itens')}</div><div className="kpi-v">{totalQtd}</div></div>
-        <div className="kpi-card"><div className="kpi-l">{t('perdas.kpi_lancamentos')}</div><div className="kpi-v">{linhas.length}</div></div>
+        <div className="kpi-card kpi-vermelho kpi-mock"><div className="kpi-ic tint-rd">💸</div><div><div className="kpi-l">{t('perdas.kpi_valor')}</div><div className="kpi-v">{moeda(totalValor)}</div></div></div>
+        <div className="kpi-card kpi-mock"><div className="kpi-ic tint-bl">📦</div><div><div className="kpi-l">{t('perdas.kpi_itens')}</div><div className="kpi-v">{totalQtd}</div></div></div>
+        <div className="kpi-card kpi-mock"><div className="kpi-ic tint-pp">🧾</div><div><div className="kpi-l">{t('perdas.kpi_lancamentos')}</div><div className="kpi-v">{linhas.length}</div></div></div>
       </div>
       <div className="card pad0"><table className="tabela">
         <thead><tr><th>{t('pedidos.data')}</th><th>{t('precos.produto')}</th><th>{t('estoque.lote')}</th><th>{t('perdas.motivo')}</th><th>{t('rel.qtd')}</th><th>{t('rel.valor')}</th></tr></thead>

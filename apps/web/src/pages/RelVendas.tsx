@@ -43,7 +43,7 @@ export function RelVendas() {
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       {d && <>
         <div className="kpis">
-          <div className="kpi-card"><div className="kpi-l">{t('rel.total_vendas')}</div><div className="kpi-v">{moeda(d.total)}</div><div className="kpi-s">{d.quantidade} {t('pedidos.titulo').toLowerCase()}</div></div>
+          <div className="kpi-card kpi-mock"><div className="kpi-ic tint-gr">💰</div><div><div className="kpi-l">{t('rel.total_vendas')}</div><div className="kpi-v">{moeda(d.total)}</div><div className="kpi-s">{d.quantidade} {t('pedidos.titulo').toLowerCase()}</div></div></div>
         </div>
         <div className="dash-grid2">
           <div className="card pad0"><table className="tabela">

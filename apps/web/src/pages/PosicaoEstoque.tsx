@@ -84,10 +84,10 @@ export function PosicaoEstoque() {
       {erro && <div className="alerta-erro">{t(erro)}</div>}
 
       <div className="kpi-row">
-        <div className="kpi-mock"><div className="kpi-ic tint-bl">📦</div><div><div className="kpi-lbl">{t('estoque.kpi_skus')}</div><div className="kpi-val">{kpis.skus}</div></div></div>
-        <div className="kpi-mock"><div className="kpi-ic tint-or">⚠️</div><div><div className="kpi-lbl">{t('estoque.kpi_baixo')}</div><div className="kpi-val">{kpis.baixo}</div></div></div>
-        <div className="kpi-mock"><div className="kpi-ic tint-rd">⏰</div><div><div className="kpi-lbl">{t('estoque.kpi_validade90')}</div><div className="kpi-val">{kpis.validade}</div></div></div>
-        <div className="kpi-mock"><div className="kpi-ic tint-gr">💰</div><div><div className="kpi-lbl">{t('estoque.kpi_valor')}</div><div className="kpi-val">{moeda(kpis.valor)}</div></div></div>
+        <div className="card kpi-mock"><div className="kpi-ic tint-bl">📦</div><div><div className="kpi-lbl">{t('estoque.kpi_skus')}</div><div className="kpi-val">{kpis.skus}</div></div></div>
+        <div className="card kpi-mock"><div className="kpi-ic tint-or">⚠️</div><div><div className="kpi-lbl">{t('estoque.kpi_baixo')}</div><div className="kpi-val">{kpis.baixo}</div></div></div>
+        <div className="card kpi-mock"><div className="kpi-ic tint-rd">⏰</div><div><div className="kpi-lbl">{t('estoque.kpi_validade90')}</div><div className="kpi-val">{kpis.validade}</div></div></div>
+        <div className="card kpi-mock"><div className="kpi-ic tint-gr">💰</div><div><div className="kpi-lbl">{t('estoque.kpi_valor')}</div><div className="kpi-val">{moeda(kpis.valor)}</div></div></div>
       </div>
 
       <div className="toolbar">

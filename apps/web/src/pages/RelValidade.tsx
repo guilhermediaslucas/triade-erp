@@ -73,8 +73,8 @@ export function RelValidade() {
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="kpis">
-        <div className="kpi-card"><div className="kpi-l">{t('validade.kpi_vencidos')}</div><div className="kpi-v">{kpiVencidos.qtd}</div><div className="kpi-sub">{moeda(kpiVencidos.valor)}</div></div>
-        <div className="kpi-card"><div className="kpi-l">{t('validade.kpi_criticos')}</div><div className="kpi-v">{kpiCriticos}</div></div>
+        <div className="kpi-card kpi-mock"><div className="kpi-ic tint-rd">⏰</div><div><div className="kpi-l">{t('validade.kpi_vencidos')}</div><div className="kpi-v">{kpiVencidos.qtd}</div><div className="kpi-sub">{moeda(kpiVencidos.valor)}</div></div></div>
+        <div className="kpi-card kpi-mock"><div className="kpi-ic tint-or">⚠️</div><div><div className="kpi-l">{t('validade.kpi_criticos')}</div><div className="kpi-v">{kpiCriticos}</div></div></div>
       </div>
       <div className="card pad0"><table className="tabela">
         <thead><tr><th>{t('precos.produto')}</th><th>{t('estoque.lote')}</th><th>{t('estoque.validade')}</th><th>{t('validade.dias')}</th><th>{t('rel.saldo')}</th><th>{t('rel.valor')}</th><th>{t('validade.situacao')}</th></tr></thead>

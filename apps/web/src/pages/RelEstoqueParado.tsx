@@ -58,8 +58,8 @@ export function RelEstoqueParado() {
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="kpis">
-        <div className="kpi-card"><div className="kpi-l">{t('parado.kpi_itens')}</div><div className="kpi-v">{linhas.length}</div></div>
-        <div className="kpi-card"><div className="kpi-l">{t('parado.kpi_valor')}</div><div className="kpi-v">{moeda(valorParado)}</div></div>
+        <div className="kpi-card kpi-mock"><div className="kpi-ic tint-bl">🐢</div><div><div className="kpi-l">{t('parado.kpi_itens')}</div><div className="kpi-v">{linhas.length}</div></div></div>
+        <div className="kpi-card kpi-mock"><div className="kpi-ic tint-gr">💰</div><div><div className="kpi-l">{t('parado.kpi_valor')}</div><div className="kpi-v">{moeda(valorParado)}</div></div></div>
       </div>
       <div className="card pad0"><table className="tabela">
         <thead><tr><th>{t('precos.produto')}</th><th>{t('rel.saldo')}</th><th>{t('rel.valor')}</th><th>{t('parado.ultima_saida')}</th><th>{t('parado.dias_parado')}</th></tr></thead>
