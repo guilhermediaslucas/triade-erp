@@ -10,4 +10,10 @@ export class SqlSuperAdminRepository implements SuperAdminRepository {
       [email.trim().toLowerCase()]))[0];
     return r ? { id: r.id, email: r.email, nome: r.nome, senhaHash: r.senha_hash } : null;
   }
+
+  async atualizarSenha(email: string, senhaHash: string): Promise<void> {
+    await this.ds.query(
+      `UPDATE public.super_admin SET senha_hash = $2 WHERE email = $1`,
+      [email.trim().toLowerCase(), senhaHash]);
+  }
 }

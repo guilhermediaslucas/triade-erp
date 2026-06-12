@@ -1,0 +1,43 @@
+import { useState } from 'react';
+import { api, type ErroApi } from '../api/client.js';
+import { useAuth } from '../auth/AuthContext.js';
+import { useI18n } from '../i18n/I18nContext.js';
+import { useToast } from './Toast.js';
+
+// Modal de auto-serviço: o usuário logado troca a própria senha (super-admin ou usuário de tenant).
+export function TrocarSenha({ onFechar }: { onFechar: () => void }) {
+  const { token } = useAuth();
+  const { t } = useI18n();
+  const toast = useToast();
+  const [atual, setAtual] = useState('');
+  const [nova, setNova] = useState('');
+  const [conf, setConf] = useState('');
+  const [erro, setErro] = useState<string | null>(null);
+  const [salv, setSalv] = useState(false);
+
+  async function salvar() {
+    setErro(null);
+    if (nova.length < 6) { setErro('usuario.senha_curta'); return; }
+    if (nova !== conf) { setErro('senha.divergem'); return; }
+    setSalv(true);
+    try {
+      await api.put('/auth/senha', { senhaAtual: atual, novaSenha: nova }, token!);
+      toast(t('senha.ok'));
+      onFechar();
+    } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
+  }
+
+  return (
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 400 }}>
+      <h2>{t('senha.trocar')}</h2>
+      <label className="campo">{t('senha.atual')}<input type="password" value={atual} onChange={(e) => setAtual(e.target.value)} autoFocus /></label>
+      <label className="campo">{t('senha.nova')}<input type="password" value={nova} onChange={(e) => setNova(e.target.value)} /></label>
+      <label className="campo">{t('senha.confirmar')}<input type="password" value={conf} onChange={(e) => setConf(e.target.value)} /></label>
+      {erro && <div className="alerta-erro">{t(erro)}</div>}
+      <div className="modal-acoes">
+        <button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button>
+        <button className="btn-primary" disabled={salv || !atual || !nova} onClick={salvar}>{t('common.salvar')}</button>
+      </div>
+    </div></div>
+  );
+}

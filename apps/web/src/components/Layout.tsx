@@ -9,6 +9,7 @@ import { Sino } from './Sino.js';
 import { useTema } from '../theme/ThemeContext.js';
 import { EmpresaSwitcher } from './EmpresaSwitcher.js';
 import { Ic, SpriteIcones } from './Icones.js';
+import { TrocarSenha } from './TrocarSenha.js';
 
 interface Item { rotulo: string; icone?: string; to: string; cap?: string; soSuperAdmin?: boolean; }
 interface Secao { sublabel?: string; itens: Item[]; }
@@ -139,6 +140,7 @@ export function Layout({ children }: { children: ReactNode }) {
   // Inicia com todos os grupos recolhidos — só os nomes aparecem; clicar expande.
   const [abertos, setAbertos] = useState<Set<number>>(() => new Set());
   const [sairOpen, setSairOpen] = useState(false);
+  const [senhaOpen, setSenhaOpen] = useState(false);
   const toggleGrupo = (gi: number) => setAbertos((cur) => { const n = new Set(cur); n.has(gi) ? n.delete(gi) : n.add(gi); return n; });
 
   return (
@@ -216,10 +218,10 @@ export function Layout({ children }: { children: ReactNode }) {
             <EmpresaSwitcher />
             <button className="btn-tema" onClick={alternar} title={t('tema.alternar')}>{escuro ? '☀️' : '🌙'}</button>
             <Sino />
-            <span className="topbar-user">
+            <button type="button" className="topbar-user" onClick={() => setSenhaOpen(true)} title={t('senha.trocar')} style={{ background: 'none', border: 0, cursor: 'pointer', fontFamily: 'inherit' }}>
               <Avatar nome={usuario?.nome ?? ''} foto={usuario?.foto ?? null} />
               {usuario?.nome}
-            </span>
+            </button>
             <button className="btn-sair" onClick={() => setSairOpen(true)}>{t('topbar.sair')}</button>
           </div>
         </header>
@@ -235,6 +237,7 @@ export function Layout({ children }: { children: ReactNode }) {
           </div>
         </div></div>
       )}
+      {senhaOpen && <TrocarSenha onFechar={() => setSenhaOpen(false)} />}
     </div>
   );
 }

@@ -188,6 +188,19 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Auto-serviço "Trocar senha" (super-admin + usuário de tenant).** O Gui perguntou como trocar a
+  senha do admin do sistema — não havia jeito pela UI (o `garantirSuperAdmin` só cria se não existe; mudar a env
+  `SUPER_ADMIN_SENHA` não atualiza quem já existe). Implementado o jeito definitivo: **PUT `/auth/senha`** (autenticado)
+  que troca a própria senha. **Backend:** `SuperAdminRepository` += `atualizarSenha(email, hash)` (UPDATE em
+  `public.super_admin`); `AutenticarUsuario.trocarSenha(ctx{superAdmin,email,schema,sub}, atual, nova)` — valida
+  nova≥6, confere a atual (`hash.comparar`), e grava (super-admin → `superAdmins.atualizarSenha`; tenant →
+  `usuarios.definirSenha` após `buscarPorId`); erro `auth.senha_atual_invalida`. **Frontend:** componente
+  `TrocarSenha.tsx` (modal: senha atual, nova, confirmar) aberto **clicando no nome/avatar na topbar**; valida
+  confirmação no front (`senha.divergem`) e ≥6; toast de sucesso. i18n `senha.trocar/atual/nova/confirmar/ok/
+  divergem` + `auth.senha_atual_invalida` pt/en/es. **Validação:** hand-review (sandbox não roda tsc/e2e); sem
+  migration. **Pendente:** Gui `npm run build -w @triade/web` + commit+push. **Uso (após deploy):** topbar → clicar
+  no nome → Trocar senha. (Alternativa imediata sem deploy: trocar o `senha_hash` direto no Neon, ou apagar a linha
+  `public.super_admin` + setar `SUPER_ADMIN_SENHA` no Render + restart.)
 - **2026-06-12** — **Lançamento usa Fornecedor (não Favorecido) + cadastro inline; KPIs do Contas clicáveis; base visual 14px.**
   Pedido do Gui (3 frentes). **(A) Fornecedor no lançamento:** o modal a pagar passou a puxar do cadastro de
   **Fornecedores** (`/fornecedores`); a receber, de **Clientes** (`/clientes`) — **não mais Favorecidos** (decisão do

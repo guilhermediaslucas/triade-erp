@@ -8,4 +8,5 @@ export interface SuperAdmin {
 
 export interface SuperAdminRepository {
   buscarPorEmail(email: string): Promise<SuperAdmin | null>;
+  atualizarSenha(email: string, senhaHash: string): Promise<void>;
 }

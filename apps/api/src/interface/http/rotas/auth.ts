@@ -23,6 +23,22 @@ export function rotasAuth(deps: Dependencias): Router {
     }
   });
 
+  // Usuário logado troca a própria senha (super-admin ou usuário de tenant).
+  r.put('/auth/senha', autenticar, async (req: Request, res: Response) => {
+    const u = req.usuario!;
+    const { senhaAtual, novaSenha } = req.body ?? {};
+    try {
+      await deps.autenticarUsuario.trocarSenha(
+        { superAdmin: !!u.superAdmin, email: u.email, schema: u.schema, sub: u.sub },
+        senhaAtual, novaSenha);
+      res.json({ ok: true });
+    } catch (e) {
+      if (e instanceof ErroAplicacao) { res.status(e.status).json({ erro: e.chaveI18n }); return; }
+      console.error('[auth] erro inesperado:', e);
+      res.status(500).json({ erro: 'erro.interno' });
+    }
+  });
+
   r.post('/auth/login', async (req: Request, res: Response) => {
     const { codigoEmpresa, email, senha } = req.body ?? {};
     if (!email || !senha) {

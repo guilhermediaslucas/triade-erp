@@ -69,6 +69,27 @@ export class AutenticarUsuario {
     return this.emitir({ id: usuario.id, nome: usuario.nome, email: usuario.email }, empresa, false);
   }
 
+  // Self-service: o usuário logado troca a própria senha (super-admin ou usuário de tenant).
+  async trocarSenha(
+    ctx: { superAdmin: boolean; email: string; schema: string; sub: string },
+    senhaAtual: string,
+    novaSenha: string,
+  ): Promise<void> {
+    if (!senhaAtual || !novaSenha) throw new ErroAplicacao('auth.campos_obrigatorios', 400);
+    if (String(novaSenha).length < 6) throw new ErroAplicacao('usuario.senha_curta', 400);
+    if (ctx.superAdmin) {
+      const sa = await this.superAdmins.buscarPorEmail(ctx.email);
+      if (!sa) throw new ErroAplicacao('auth.credenciais_invalidas', 404);
+      if (!(await this.hash.comparar(senhaAtual, sa.senhaHash))) throw new ErroAplicacao('auth.senha_atual_invalida', 400);
+      await this.superAdmins.atualizarSenha(sa.email, await this.hash.gerar(novaSenha));
+      return;
+    }
+    const u = await this.usuarios.buscarPorId(ctx.schema, ctx.sub);
+    if (!u) throw new ErroAplicacao('auth.credenciais_invalidas', 404);
+    if (!(await this.hash.comparar(senhaAtual, u.senhaHash))) throw new ErroAplicacao('auth.senha_atual_invalida', 400);
+    await this.usuarios.definirSenha(ctx.schema, u.id, await this.hash.gerar(novaSenha));
+  }
+
   // Troca a empresa "ativa" do administrador global (emite novo token p/ o schema escolhido).
   async trocarEmpresa(sa: { id: string; nome: string; email: string }, codigo: string): Promise<AutenticarSaida> {
     const empresa = await this.empresas.buscarPorCodigo(codigo.trim().toLowerCase());
