@@ -3,9 +3,9 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 
-interface Vendedor { id: string; nome: string; email: string | null; telefone: string | null; regiao: string | null; metaMensal: number; comissaoPercentual: number; segueRegraGeral: boolean; ativo: boolean; }
+interface Vendedor { id: string; nome: string; email: string | null; telefone: string | null; regiao: string | null; metaMensal: number; comissaoPercentual: number; segueRegraGeral: boolean; ativo: boolean; vendasMes: number; }
 const moeda = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-const vazio = (): Vendedor => ({ id: '', nome: '', email: '', telefone: '', regiao: '', metaMensal: 0, comissaoPercentual: 0, segueRegraGeral: false, ativo: true });
+const vazio = (): Vendedor => ({ id: '', nome: '', email: '', telefone: '', regiao: '', metaMensal: 0, comissaoPercentual: 0, segueRegraGeral: false, ativo: true, vendasMes: 0 });
 
 export function Vendedores() {
   const { token, temCapability } = useAuth();
@@ -37,12 +37,12 @@ export function Vendedores() {
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="card pad0"><table className="tabela">
-        <thead><tr><th>{t('pessoa.nome')}</th><th>{t('vendedores.regiao')}</th><th>{t('vendedores.meta')}</th><th>{t('vendedores.comissao')}</th><th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
+        <thead><tr><th>{t('pessoa.nome')}</th><th>{t('vendedores.regiao')}</th><th>{t('vendedores.vendas_mes')}</th><th>{t('vendedores.meta')}</th><th>{t('vendedores.comissao')}</th><th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
         <tbody>
-          {filtrados.length === 0 && <tr><td colSpan={6} className="vazio">{t('common.nenhum')}</td></tr>}
+          {filtrados.length === 0 && <tr><td colSpan={7} className="vazio">{t('common.nenhum')}</td></tr>}
           {filtrados.map((v) => (
             <tr key={v.id} className={v.ativo ? '' : 'linha-inativa'}>
-              <td>{v.nome}</td><td>{v.regiao ?? '—'}</td><td>{moeda(v.metaMensal)}</td>
+              <td>{v.nome}</td><td>{v.regiao ?? '—'}</td><td>{v.vendasMes > 0 ? <b>{moeda(v.vendasMes)}</b> : <span className="muted">{moeda(0)}</span>}</td><td>{moeda(v.metaMensal)}</td>
               <td>{v.segueRegraGeral ? t('vendedores.regra_geral_curta') : v.comissaoPercentual + '%'}</td>
               <td><span className={v.ativo ? 'pill-ok' : 'pill-off'}>{v.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
               <td className="acoes">{pode && <>

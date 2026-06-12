@@ -8,7 +8,7 @@ function mapCliente(r: any, ends: EnderecoCliente[]): Cliente {
     id: r.id, tipoPessoa: r.tipo_pessoa, nome: r.nome, fantasia: r.fantasia ?? null,
     documento: r.documento, email: r.email ?? null, telefone: r.telefone ?? null,
     limiteCredito: Number(r.limite_credito), ativo: r.ativo, criadoEm: new Date(r.criado_em),
-    enderecos: ends,
+    enderecos: ends, emAberto: Number(r.em_aberto ?? 0),
   };
 }
 function mapEnd(r: any): EnderecoCliente {
@@ -24,7 +24,13 @@ export class SqlClienteRepository implements ClienteRepository {
 
   async listar(schema: string): Promise<Cliente[]> {
     const s = validarSchema(schema);
-    const clientes = await this.ds.query(`SELECT * FROM "${s}".cliente ORDER BY nome`);
+    const clientes = await this.ds.query(
+      `SELECT c.*, COALESCE((
+         SELECT SUM(t.valor) FROM "${s}".titulo t
+         JOIN "${s}".pedido p ON p.id = t.pedido_id
+         WHERE p.cliente_id = c.id AND t.tipo = 'receber' AND t.status = 'aberto'
+       ), 0) AS em_aberto
+       FROM "${s}".cliente c ORDER BY c.nome`);
     const ends = await this.ds.query(`SELECT * FROM "${s}".cliente_endereco`);
     return clientes.map((c: any) => mapCliente(c, ends.filter((e: any) => e.cliente_id === c.id).map(mapEnd)));
   }

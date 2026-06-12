@@ -6,13 +6,20 @@ import { validarSchema } from '../tenant/validarSchema.js';
 function map(r: any): Vendedor {
   return { id: r.id, nome: r.nome, email: r.email ?? null, telefone: r.telefone ?? null,
     regiao: r.regiao ?? null, metaMensal: Number(r.meta_mensal), comissaoPercentual: Number(r.comissao_percentual),
-    segueRegraGeral: r.segue_regra_geral, ativo: r.ativo, criadoEm: new Date(r.criado_em) };
+    segueRegraGeral: r.segue_regra_geral, ativo: r.ativo, criadoEm: new Date(r.criado_em),
+    vendasMes: Number(r.vendas_mes ?? 0) };
 }
 export class SqlVendedorRepository implements VendedorRepository {
   constructor(private readonly ds: DataSource) {}
   async listar(schema: string): Promise<Vendedor[]> {
     const s = validarSchema(schema);
-    return (await this.ds.query(`SELECT * FROM "${s}".vendedor ORDER BY nome`)).map(map);
+    return (await this.ds.query(
+      `SELECT v.*, COALESCE((
+         SELECT SUM(p.total) FROM "${s}".pedido p
+         WHERE p.vendedor_id = v.id AND p.status NOT IN ('orcamento','cancelado')
+           AND date_trunc('month', p.criado_em) = date_trunc('month', CURRENT_DATE)
+       ), 0) AS vendas_mes
+       FROM "${s}".vendedor v ORDER BY v.nome`)).map(map);
   }
   async buscarPorId(schema: string, id: string): Promise<Vendedor | null> {
     const s = validarSchema(schema);

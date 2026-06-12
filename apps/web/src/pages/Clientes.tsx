@@ -8,6 +8,7 @@ interface Endereco { cep: string; logradouro: string; numero: string; complement
 interface Cliente {
   id: string; tipoPessoa: TipoPessoa; nome: string; fantasia: string | null; documento: string;
   email: string | null; telefone: string | null; limiteCredito: number; ativo: boolean; enderecos: Endereco[];
+  emAberto: number;
 }
 const moeda = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const so = (v: string) => (v || '').replace(/\D/g, '');
@@ -15,7 +16,7 @@ function mascaraCnpj(v: string) { const d = so(v).slice(0, 14); return d.replace
 function mascaraCpf(v: string) { const d = so(v).slice(0, 11); return d.replace(/^(\d{3})(\d)/, '$1.$2').replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1-$2'); }
 function mascaraCep(v: string) { const d = so(v).slice(0, 8); return d.replace(/^(\d{5})(\d)/, '$1-$2'); }
 const endVazio = (): Endereco => ({ cep: '', logradouro: '', numero: '', complemento: '', bairro: '', cidade: '', uf: '', favorito: false });
-const vazio = (): Cliente => ({ id: '', tipoPessoa: 'PJ', nome: '', fantasia: '', documento: '', email: '', telefone: '', limiteCredito: 0, ativo: true, enderecos: [] });
+const vazio = (): Cliente => ({ id: '', tipoPessoa: 'PJ', nome: '', fantasia: '', documento: '', email: '', telefone: '', limiteCredito: 0, ativo: true, enderecos: [], emAberto: 0 });
 
 export function Clientes() {
   const { token, temCapability } = useAuth();
@@ -54,9 +55,9 @@ export function Clientes() {
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="card pad0"><table className="tabela">
-        <thead><tr><th>{t('clientes.nome')}</th><th>{t('clientes.tipo')}</th><th>{t('pessoa.documento')}</th><th>{t('clientes.limite')}</th><th>{t('clientes.cidade')}</th><th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
+        <thead><tr><th>{t('clientes.nome')}</th><th>{t('clientes.tipo')}</th><th>{t('pessoa.documento')}</th><th>{t('clientes.limite')}</th><th>{t('clientes.cidade')}</th><th>{t('clientes.em_aberto')}</th><th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
         <tbody>
-          {filtrados.length === 0 && <tr><td colSpan={7} className="vazio">{t('common.nenhum')}</td></tr>}
+          {filtrados.length === 0 && <tr><td colSpan={8} className="vazio">{t('common.nenhum')}</td></tr>}
           {filtrados.map((c) => {
             const fav = c.enderecos.find((e) => e.favorito) ?? c.enderecos[0];
             return (
@@ -64,6 +65,7 @@ export function Clientes() {
                 <td>{c.nome}{c.fantasia ? <span className="muted"> · {c.fantasia}</span> : null}</td>
                 <td>{c.tipoPessoa}</td><td>{c.documento}</td><td>{moeda(c.limiteCredito)}</td>
                 <td>{fav ? `${fav.cidade ?? ''}${fav.uf ? '/' + fav.uf : ''}` : '—'}</td>
+                <td>{c.emAberto > 0 ? <b>{moeda(c.emAberto)}</b> : <span className="muted">{moeda(0)}</span>}</td>
                 <td><span className={c.ativo ? 'pill-ok' : 'pill-off'}>{c.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
                 <td className="acoes">{pode && <>
                   <button className="btn-link" onClick={() => setEdit({ ...c, fantasia: c.fantasia ?? '', email: c.email ?? '', telefone: c.telefone ?? '', enderecos: c.enderecos.map((e) => ({ ...endVazio(), ...e, cep: e.cep ?? '', logradouro: e.logradouro ?? '', numero: e.numero ?? '', complemento: e.complemento ?? '', bairro: e.bairro ?? '', cidade: e.cidade ?? '', uf: e.uf ?? '' })) })}>{t('common.editar')}</button>

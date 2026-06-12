@@ -2,6 +2,7 @@ export interface Vendedor {
   id: string; nome: string; email: string | null; telefone: string | null;
   regiao: string | null; metaMensal: number; comissaoPercentual: number;
   segueRegraGeral: boolean; ativo: boolean; criadoEm: Date;
+  vendasMes: number;
 }
 export interface NovoVendedor {
   nome: string; email: string | null; telefone: string | null;

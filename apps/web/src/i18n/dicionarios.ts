@@ -301,21 +301,21 @@ Object.assign(es, {
 
 // --- Fidelidade Clientes (enderecos, busca CNPJ/CEP) ---
 Object.assign(pt, {
-  'clientes.cidade': 'Cidade', 'clientes.buscar': 'Buscar', 'clientes.enderecos': 'Endereços',
+  'clientes.cidade': 'Cidade', 'clientes.em_aberto': 'Em aberto', 'clientes.buscar': 'Buscar', 'clientes.enderecos': 'Endereços',
   'clientes.add_endereco': 'Adicionar endereço', 'clientes.sem_endereco': 'Nenhum endereço. O favorito será usado como padrão no pedido.',
   'clientes.favorito': 'Favorito', 'clientes.remover': 'Remover',
   'clientes.logradouro': 'Logradouro', 'clientes.numero': 'Número', 'clientes.bairro': 'Bairro',
   'clientes.cnpj_incompleto': 'Informe um CNPJ completo para buscar.', 'clientes.cnpj_nao_encontrado': 'CNPJ não encontrado.',
 });
 Object.assign(en, {
-  'clientes.cidade': 'City', 'clientes.buscar': 'Look up', 'clientes.enderecos': 'Addresses',
+  'clientes.cidade': 'City', 'clientes.em_aberto': 'Open', 'clientes.buscar': 'Look up', 'clientes.enderecos': 'Addresses',
   'clientes.add_endereco': 'Add address', 'clientes.sem_endereco': 'No address. The favorite is used as default in orders.',
   'clientes.favorito': 'Favorite', 'clientes.remover': 'Remove',
   'clientes.logradouro': 'Street', 'clientes.numero': 'Number', 'clientes.bairro': 'District',
   'clientes.cnpj_incompleto': 'Enter a full tax ID to look up.', 'clientes.cnpj_nao_encontrado': 'Tax ID not found.',
 });
 Object.assign(es, {
-  'clientes.cidade': 'Ciudad', 'clientes.buscar': 'Buscar', 'clientes.enderecos': 'Direcciones',
+  'clientes.cidade': 'Ciudad', 'clientes.em_aberto': 'Pendiente', 'clientes.buscar': 'Buscar', 'clientes.enderecos': 'Direcciones',
   'clientes.add_endereco': 'Agregar dirección', 'clientes.sem_endereco': 'Sin dirección. La favorita se usa por defecto en el pedido.',
   'clientes.favorito': 'Favorita', 'clientes.remover': 'Quitar',
   'clientes.logradouro': 'Calle', 'clientes.numero': 'Número', 'clientes.bairro': 'Barrio',
@@ -326,21 +326,21 @@ Object.assign(es, {
 Object.assign(pt, {
   'produtos.local': 'Localização', 'produtos.local_ph': 'Depósito / prateleira', 'produtos.anvisa': 'Registro ANVISA',
   'produtos.nota_preco': 'O preço de venda é definido em Comercial › Tabela de preço (será criado na Fase 3). Lote e validade pertencem à entrada de estoque.',
-  'vendedores.regiao': 'Região / carteira', 'vendedores.regiao_ph': 'Ex.: SP Capital, Interior SP',
+  'vendedores.regiao': 'Região / carteira', 'vendedores.vendas_mes': 'Vendas (mês)', 'vendedores.regiao_ph': 'Ex.: SP Capital, Interior SP',
   'vendedores.meta': 'Meta mensal (R$)', 'vendedores.regra_geral': 'Seguir regra geral de comissão (ignora o % individual)',
   'vendedores.regra_geral_curta': 'Regra geral', 'vendedor.meta_invalida': 'Meta mensal inválida.',
 });
 Object.assign(en, {
   'produtos.local': 'Location', 'produtos.local_ph': 'Warehouse / shelf', 'produtos.anvisa': 'ANVISA registration',
   'produtos.nota_preco': 'Sale price is set in Sales › Price table (coming in Phase 3). Batch and expiry belong to stock entry.',
-  'vendedores.regiao': 'Region / territory', 'vendedores.regiao_ph': 'e.g., SP Capital, Interior SP',
+  'vendedores.regiao': 'Region / territory', 'vendedores.vendas_mes': 'Sales (month)', 'vendedores.regiao_ph': 'e.g., SP Capital, Interior SP',
   'vendedores.meta': 'Monthly target (R$)', 'vendedores.regra_geral': 'Follow general commission rule (ignores individual %)',
   'vendedores.regra_geral_curta': 'General rule', 'vendedor.meta_invalida': 'Invalid monthly target.',
 });
 Object.assign(es, {
   'produtos.local': 'Ubicación', 'produtos.local_ph': 'Depósito / estante', 'produtos.anvisa': 'Registro ANVISA',
   'produtos.nota_preco': 'El precio de venta se define en Comercial › Tabla de precios (Fase 3). Lote y validez pertenecen a la entrada de stock.',
-  'vendedores.regiao': 'Región / cartera', 'vendedores.regiao_ph': 'Ej.: SP Capital, Interior SP',
+  'vendedores.regiao': 'Región / cartera', 'vendedores.vendas_mes': 'Ventas (mes)', 'vendedores.regiao_ph': 'Ej.: SP Capital, Interior SP',
   'vendedores.meta': 'Meta mensual (R$)', 'vendedores.regra_geral': 'Seguir regla general de comisión (ignora el % individual)',
   'vendedores.regra_geral_curta': 'Regla general', 'vendedor.meta_invalida': 'Meta mensual inválida.',
 });

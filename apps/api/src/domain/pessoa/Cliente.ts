@@ -12,6 +12,7 @@ export interface Cliente {
   documento: string; email: string | null; telefone: string | null;
   limiteCredito: number; ativo: boolean; criadoEm: Date;
   enderecos: EnderecoCliente[];
+  emAberto: number;
 }
 export interface NovoCliente {
   tipoPessoa: TipoPessoa; nome: string; fantasia: string | null;
