@@ -3,11 +3,29 @@ import { useNavigate } from 'react-router-dom';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
-import { corStatus, moeda, numeroPedido, PROXIMOS, type StatusPedido } from '../lib/pedido.js';
+import { moeda, numeroPedido, PROXIMOS, type StatusPedido } from '../lib/pedido.js';
 import { ModalDataEntrega, ModalFormaEnvio } from '../components/ExpedicaoModais.js';
+import { Ic } from '../components/Icones.js';
 
-interface PedidoResumo { id: string; numero: number; clienteNome: string | null; vendedorNome: string | null; status: StatusPedido; total: number; criadoEm: string; }
-const COLUNAS: StatusPedido[] = ['orcamento', 'aguardando_pagamento', 'aprovado', 'separacao', 'expedido', 'entregue'];
+interface PedidoResumo { id: string; numero: number; clienteNome: string | null; vendedorNome: string | null; status: StatusPedido; total: number; criadoEm: string; formaPagamento: string | null; }
+
+// Colunas do pipeline (cores/ícones/labels espelham o mockup de Expedição).
+const COLUNAS: { s: StatusPedido; cor: string; ic: string; label: string }[] = [
+  { s: 'orcamento', cor: '#94a3b8', ic: 'i-edit', label: 'status.orcamento' },
+  { s: 'aguardando_pagamento', cor: '#f59e0b', ic: 'i-clock', label: 'status.aguardando_pagamento' },
+  { s: 'aprovado', cor: '#0891b2', ic: 'i-check', label: 'expedicao.col_aguard_sep' },
+  { s: 'separacao', cor: '#7c3aed', ic: 'i-box', label: 'status.separacao' },
+  { s: 'expedido', cor: '#0ea5e9', ic: 'i-truck', label: 'status.expedido' },
+  { s: 'entregue', cor: '#16a34a', ic: 'i-check', label: 'status.entregue' },
+];
+
+function pillForma(f: string | null): string {
+  const k = (f ?? '').toLowerCase();
+  if (k.includes('pix')) return 'pk-pill pix';
+  if (k.includes('bole')) return 'pk-pill boleto';
+  if (k.includes('cart')) return 'pk-pill cartao';
+  return 'pk-pill';
+}
 
 export function KanbanExpedicao() {
   const { token, temCapability } = useAuth();
@@ -19,6 +37,9 @@ export function KanbanExpedicao() {
   const [sobre, setSobre] = useState<StatusPedido | null>(null);
   const [formas, setFormas] = useState<string[]>([]);
   const [pend, setPend] = useState<{ tipo: 'envio' | 'entrega'; id: string; numero: number } | null>(null);
+  const [de, setDe] = useState(''); const [ate, setAte] = useState('');
+  const [filtro, setFiltro] = useState<{ de: string; ate: string }>({ de: '', ate: '' });
+  const noPeriodo = (p: PedidoResumo) => { const d = p.criadoEm.slice(0, 10); if (filtro.de && d < filtro.de) return false; if (filtro.ate && d > filtro.ate) return false; return true; };
 
   async function carregar() { try { setItens(await api.get('/pedidos', token!)); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
   useEffect(() => {
@@ -46,28 +67,38 @@ export function KanbanExpedicao() {
 
   return (
     <div>
-      <div className="crumb">{t('expedicao.crumb')}</div><h1 className="page-titulo">{t('expedicao.titulo')}</h1><p className="muted page-sub">{t('expedicao.sub')}</p>
+      <div className="crumb">{t('expedicao.crumb')}</div>
+      <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('expedicao.titulo')}</h1><div className="muted page-sub">{t('expedicao.sub')}</div></div></div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
-      <div className="kanban">
+      <div className="toolbar" style={{ alignItems: 'flex-end' }}>
+        <label className="campo" style={{ margin: 0 }}>{t('pedidos.data_de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} style={{ maxWidth: 180 }} /></label>
+        <label className="campo" style={{ margin: 0 }}>{t('pedidos.data_ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} style={{ maxWidth: 180 }} /></label>
+        <button className="btn-primary" onClick={() => setFiltro({ de, ate })}><Ic name="i-search" className="sm" /> {t('pedidos.filtrar')}</button>
+        <button className="btn-ghost" onClick={() => { setDe(''); setAte(''); setFiltro({ de: '', ate: '' }); }}>{t('fin.f_limpar')}</button>
+        <span className="muted" style={{ fontSize: 12, marginLeft: 'auto' }}>{t('pedidos.filtro_dica')}</span>
+      </div>
+      <div className="pk-board">
         {COLUNAS.map((col) => {
-          const cards = itens.filter((p) => p.status === col);
+          const cards = itens.filter((p) => p.status === col.s && noPeriodo(p));
           return (
-            <div key={col}
-              className={'kb-col' + (sobre === col ? ' kb-col-sobre' : '')}
-              onDragOver={(e: DragEvent) => { e.preventDefault(); setSobre(col); }}
-              onDragLeave={() => setSobre((x) => (x === col ? null : x))}
-              onDrop={() => onDrop(col)}>
-              <div className="kb-col-head"><span className={'kb-dot ' + corStatus(col)}></span>{t('status.' + col)}<span className="kb-count">{cards.length}</span></div>
-              <div className="kb-cards">
+            <div key={col.s} className="pk-col" style={{ borderTopColor: col.cor, outline: sobre === col.s ? '2px solid ' + col.cor : 'none' }}
+              onDragOver={(e: DragEvent) => { e.preventDefault(); setSobre(col.s); }}
+              onDragLeave={() => setSobre((x) => (x === col.s ? null : x))}
+              onDrop={() => onDrop(col.s)}>
+              <div className="pk-h">
+                <span className="pk-nm" style={{ color: col.cor }}><Ic name={col.ic} className="sm" />{t(col.label)}</span>
+                <span className="pk-ct">{cards.length}</span>
+              </div>
+              <div className="pk-body">
                 {cards.map((p) => (
-                  <div key={p.id} className="kb-card kb-drag" draggable
+                  <div key={p.id} className="pk-card" draggable
                     onDragStart={() => setArrastando(p.id)} onDragEnd={() => setArrastando(null)}
                     onClick={() => nav('/comercial/pedidos/' + p.id)}>
-                    <div className="kb-card-top"><b>{numeroPedido(p.numero)}</b><span>{moeda(p.total)}</span></div>
-                    <div className="kb-card-cli">{p.clienteNome ?? '—'}</div>
+                    <div className="pk-card-top"><b className="pk-num">{numeroPedido(p.numero)}</b><span className="pk-data">{new Date(p.criadoEm).toLocaleDateString('pt-BR')}</span></div>
+                    <div className="pk-cli">{p.clienteNome ?? '—'}</div>
+                    <div className="pk-meta"><span className={pillForma(p.formaPagamento)}>{p.formaPagamento ?? '—'}</span><span className="pk-tot">{moeda(p.total)}</span></div>
                   </div>
                 ))}
-                {cards.length === 0 && <div className="kb-vazio">—</div>}
               </div>
             </div>
           );

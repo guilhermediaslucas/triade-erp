@@ -509,17 +509,20 @@ Object.assign(es, {
 // --- Fase 4B: Expedição + estoque insuficiente ---
 Object.assign(pt, {
   'menu.expedicao': 'Pedidos (Kanban)',
-  'expedicao.titulo': 'Expedição', 'expedicao.sub': 'Arraste os cards para mover o status. Ao enviar para "Em separação", o estoque é baixado automaticamente.',
+  'expedicao.titulo': 'Pedidos - Estoque/Expedição', 'expedicao.sub': 'Arraste os cards para avançar o status. Cartão pula "Aguardando pagamento"; Pix/Boleto precisa de confirmação financeira para liberar.',
+  'expedicao.col_aguard_sep': 'Aguardando separação',
   'estoque.insuficiente': 'Estoque insuficiente para separar o pedido.',
 });
 Object.assign(en, {
   'menu.expedicao': 'Orders (Kanban)',
-  'expedicao.titulo': 'Shipping', 'expedicao.sub': 'Drag cards to change status. Moving to "Picking" deducts stock automatically.',
+  'expedicao.titulo': 'Orders - Stock/Shipping', 'expedicao.sub': 'Drag cards to advance the status. Card skips "Awaiting payment"; Pix/Boleto needs financial confirmation to release.',
+  'expedicao.col_aguard_sep': 'Awaiting picking',
   'estoque.insuficiente': 'Not enough stock to pick the order.',
 });
 Object.assign(es, {
   'menu.expedicao': 'Pedidos (Kanban)',
-  'expedicao.titulo': 'Expedición', 'expedicao.sub': 'Arrastra las tarjetas para cambiar el estado. Al pasar a "En preparación", el stock se descuenta automáticamente.',
+  'expedicao.titulo': 'Pedidos - Stock/Expedición', 'expedicao.sub': 'Arrastra las tarjetas para avanzar el estado. Tarjeta salta "Esperando pago"; Pix/Boleto necesita confirmación financiera para liberar.',
+  'expedicao.col_aguard_sep': 'Esperando preparación',
   'estoque.insuficiente': 'Stock insuficiente para preparar el pedido.',
 });
 
@@ -1703,7 +1706,7 @@ Object.assign(pt, {
   'estoque.crumb': 'Estoque/Expedição / Posição de estoque', 'estoque.sub': 'Saldo por produto, com lotes e validade',
   'entrada.crumb': 'Estoque/Expedição / Entrada de estoque', 'receb.crumb': 'Estoque/Expedição / Recebimento',
   'perda.crumb': 'Estoque/Expedição / Baixa / perda', 'inv.crumb': 'Estoque/Expedição / Inventário',
-  'expedicao.crumb': 'Estoque/Expedição / Expedição',
+  'expedicao.crumb': 'Estoque/Expedição / Pedidos',
   'fluxo.crumb': 'Financeiro / Fluxo de caixa', 'nota.crumb': 'Financeiro / Nota de entrada',
   'com.crumb': 'Financeiro / Controle de comissões', 'com.sub': 'Apuração por vendedor e fechamento de competência',
   'gfrete.crumb': 'Logística / Gestão de fretes', 'precos.crumb': 'Comercial / Tabela de preço',
