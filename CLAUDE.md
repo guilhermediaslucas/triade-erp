@@ -188,6 +188,20 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Paridade: Nota de entrada (compra) igualada ao mockup.** A tela estava minimal (forn, produto,
+  qtd, custo, NF, total); o mockup é rica. Reescrita (`NotaEntrada.tsx`): grid 2 colunas (**Fornecedor | Produto**
+  ambos datalist; **Quantidade | Custo unitário**; **Nº da nota | Série**; **Emissão | 1º vencimento**), **3 KPIs**
+  (Quantidade, Custo unitário, Valor total), nota explicativa completa, botões **Cancelar** + **Lançar nota**.
+  Produto virou datalist (resolve o id pelo nome). **Backend (sem migration):** `ComprasService.lancarNota` passou a
+  aceitar `serie`, `emissao`, `vencimento` — o título a pagar agora usa o **vencimento informado** (antes era fixo
+  +30d), grava **emissão** e **numeroDocumento** (`NF / Série`) reusando os campos da migration 035. i18n
+  `nota.serie/serie_ph/nf_ph/produto_ph/venc1/valor_total/gera_full` pt/en/es. **Validação:** hand-review; sem
+  migration. **Pendente:** Gui build + commit+push. **Tela de fidelidade visual continua iterativa** (conforme o Gui
+  aponta cada tela).
+- **2026-06-12** — **Fix: tabelas largas rolam horizontalmente (não cortam).** `.card.pad0` tinha `overflow:hidden`
+  + herdava `max-width:640px` → tabela do Contas (11 colunas) era clipada. Trocado p/ `overflow-x:auto;
+  overflow-y:hidden; max-width:none` — fix **global** (todas as listas) espelhando a rolagem do mockup; telas com
+  `maxWidth` inline (ex.: detalhe do pedido 820) mantêm o limite. Pendente: Gui build+push.
 - **2026-06-12** — **Cadastro inline de Fornecedor igualado ao mockup ("Cadastrar fornecedor").** O mini-modal
   inline do lançamento estava mínimo (nome/doc/telefone); agora o **fornecedor** (pagar) espelha a tela do mockup:
   **Razão social, Nome fantasia** (placeholder "usa 1º nome da razão social"), **CNPJ + Buscar** (BrasilAPI →

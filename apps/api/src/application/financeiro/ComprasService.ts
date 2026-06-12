@@ -28,11 +28,16 @@ export class ComprasService {
     if (!Number.isFinite(custo) || custo < 0) throw new ErroAplicacao('estoque.custo_invalido', 400);
     const fornecedorNome = (e?.fornecedorNome && String(e.fornecedorNome).trim()) || null;
     const nf = (e?.nf && String(e.nf).trim()) || null;
+    const serie = (e?.serie && String(e.serie).trim()) || null;
+    const numeroDocumento = nf ? (serie ? `${nf} / ${serie}` : nf) : serie;
+    const isoOk = (v: any) => (v && /^\d{4}-\d{2}-\d{2}$/.test(String(v))) ? String(v) : null;
+    const emissao = isoOk(e?.emissao);
+    const vencimento = isoOk(e?.vencimento) ?? venc30();
     const total = Math.round(quantidade * custo * 100) / 100;
 
     const descricao = 'Compra' + (fornecedorNome ? ' - ' + fornecedorNome : '') + (nf ? ' (NF ' + nf + ')' : '');
     const tituloId = await this.titulos.criar(schema,
-      { tipo: 'pagar', descricao, pessoaNome: fornecedorNome, valor: total, vencimento: venc30() }, 'compra', null);
+      { tipo: 'pagar', descricao, pessoaNome: fornecedorNome, valor: total, vencimento, emissao, numeroDocumento }, 'compra', null);
 
     const recebimentoId = await this.recebimentos.criar(schema, {
       fornecedorNome, produtoId: prod.id, produtoNome: prod.nome, quantidade, custoUnitario: custo, total, nf, tituloId,
