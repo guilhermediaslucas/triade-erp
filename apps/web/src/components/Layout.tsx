@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { useBranding } from '../branding/BrandingContext.js';
@@ -127,9 +127,8 @@ export function Layout({ children }: { children: ReactNode }) {
   const { t } = useI18n();
   const fantasia = branding?.fantasia ?? empresaFantasia;
   const visivel = (it: Item) => it.soSuperAdmin ? superAdmin : (!it.cap || temCapability(it.cap));
-  const location = useLocation();
-  const grupoAtivo = GRUPOS.findIndex((g) => !!g.rotulo && g.secoes.some((se) => se.itens.some((it) => visivel(it) && it.to !== '/' && location.pathname.startsWith(it.to))));
-  const [abertos, setAbertos] = useState<Set<number>>(() => new Set(grupoAtivo >= 0 ? [grupoAtivo] : []));
+  // Inicia com todos os grupos recolhidos — só os nomes aparecem; clicar expande.
+  const [abertos, setAbertos] = useState<Set<number>>(() => new Set());
   const toggleGrupo = (gi: number) => setAbertos((cur) => { const n = new Set(cur); n.has(gi) ? n.delete(gi) : n.add(gi); return n; });
 
   return (
