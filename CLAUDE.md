@@ -34,6 +34,18 @@
 
 ---
 
+## 0. PRINCÍPIO PRIMORDIAL — fidelidade ao mockup
+
+> **A fidelidade VISUAL e FUNCIONAL da aplicação com o mockup
+> (`Info/mockups/erp-mockup.html`) é PRIMORDIAL e tem prioridade.** Toda tela do
+> sistema deve espelhar o mockup em estrutura, campos, fontes, ícones, espaçamento,
+> cores e comportamento. Ao tocar/criar qualquer tela, comparar com o mockup e
+> igualar (campos de negócio e fluxo, não só aparência). O que for só polimento de
+> UI (ex.: atalhos) pode ficar para depois, mas campos/fluxos do mockup devem bater.
+> O checklist de paridade vive em `Info/PARIDADE-MOCKUP.md`. Regra do Gui (2026-06-12).
+
+---
+
 ## 1. O que é o TRIADE
 
 ERP web de **distribuição B2B de produtos estéticos** (skincare, injetáveis,
@@ -176,6 +188,19 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-12** — **Paridade: Perfil (cards por módulo) + Contas a receber/pagar (numeração + colunas).**
+  **(1) Perfil** — migration tenant **032** (`perfil` += `ativo`, `descricao`). Editor virou o padrão do mockup:
+  Nome + **Ativo** + **Descrição** + **"Telas liberadas"** com **cards por módulo** (toggle no título marca/desmarca o
+  módulo) e permissões em **2 colunas**. Lista ganhou coluna de situação. Backend: `Perfil`/repo/`PerfisService`/rota
+  `/perfis` carregam/gravam ativo+descrição; `ProvisionarEmpresa` cria Administrador com descrição. **(2) Contas** —
+  migration tenant **033** (`titulo` += `numero` int + sequência `titulo_numero_seq`, com **backfill** dos títulos
+  existentes via row_number + setval). Backend: `Titulo` += `numero` (formatado **REC-/PAG-000000**) e `vendedorNome`
+  (LEFT JOIN pedido→vendedor no listar); `criar` e `criarParcelasDePedido` usam `nextval`. Frontend (Contas.tsx,
+  cirúrgico): coluna **Título** (sempre), novas colunas ocultáveis **Documento/Emissão/Baixa/Vendedor** (ordem do
+  mockup), **4º KPI "Boletos abertos"**, **chips de status** (Todos/A vencer/Vencido/Pago → `fSit`) e **dropdown de
+  favorecido/cliente** (`fPessoa`). i18n pt/en/es. **Validação:** **type-check NÃO rodou** (mount trunca leituras no
+  sandbox) — confiar no build Cloudflare/Render. **Pendente:** Gui commit+push → Render aplica migrations 032+033 no
+  boot + relogar. **Memória nova:** §0 do CLAUDE.md — **fidelidade visual+funcional ao mockup é PRIMORDIAL** (regra do Gui).
 - **2026-06-12** — **Paridade de telas com o mockup: Pedidos + Tabela de preço + Dados da empresa.**
   **(1) Pedidos (Comercial)** — só frontend: título "Pedidos - Comercial" + sub "Visão Kanban (somente leitura…)",
   botões Filtrar/Limpar, **kanban com borda colorida no topo + ícone + contador** (cores do mockup, classes `pk-*`),

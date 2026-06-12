@@ -480,4 +480,17 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".perfil ADD COLUMN IF NOT EXISTS descricao text NOT NULL DEFAULT '';
     `,
   },
+  {
+    nome: '033_titulo_numero',
+    sql: (s) => `
+      CREATE SEQUENCE IF NOT EXISTS "${s}".titulo_numero_seq;
+      ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS numero int;
+      UPDATE "${s}".titulo t SET numero = nv.n
+        FROM (SELECT id, (row_number() OVER (ORDER BY criado_em))::int AS n FROM "${s}".titulo WHERE numero IS NULL) nv
+       WHERE t.id = nv.id;
+      SELECT setval('"${s}".titulo_numero_seq',
+        GREATEST((SELECT COALESCE(MAX(numero), 0) FROM "${s}".titulo), 1),
+        (SELECT COALESCE(MAX(numero), 0) FROM "${s}".titulo) > 0);
+    `,
+  },
 ];

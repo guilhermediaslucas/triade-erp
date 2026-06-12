@@ -2,11 +2,12 @@ export type TipoTitulo = 'receber' | 'pagar';
 export type StatusTitulo = 'aberto' | 'pago';
 
 export interface Titulo {
-  id: string; tipo: TipoTitulo; descricao: string; pessoaNome: string | null;
+  id: string; numero: string; tipo: TipoTitulo; descricao: string; pessoaNome: string | null;
   valor: number; vencimento: string; status: StatusTitulo; formaPagamento: string | null;
   pagoEm: string | null; origem: string; pedidoId: string | null;
   categoriaFinanceiraId: string | null; categoriaFinanceiraNome: string | null;
   favorecidoId: string | null; favorecidoNome: string | null;
+  vendedorNome: string | null;     // vendedor do pedido vinculado (quando origem = pedido)
   previsto: boolean;   // lançamento previsto (provisão): mais claro na lista e NÃO pode ser baixado
   tipoDocumento: string | null;   // ex.: NF-e, Boleto, Fatura (cadastro Tipos de documento)
   criadoEm: string;

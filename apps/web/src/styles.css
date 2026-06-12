@@ -469,7 +469,9 @@ body.theme-dark .nota-info { background: #14233a; color: #93c5fd; border-color: 
 .busca-box-tb { display: flex; align-items: center; gap: 8px; background: var(--card); border: 1px solid var(--borda); border-radius: 10px; padding: 8px 12px; max-width: 300px; flex: 1 1 220px; color: var(--muted); }
 .busca-box-tb input { border: 0; outline: none; background: transparent; width: 100%; font-size: 14px; color: var(--ink); }
 .chip-f { background: var(--card); border: 1px solid var(--borda); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--muted); user-select: none; }
-.chip-f.on { background: var(--accent, #7b61ff); color: #fff; border-color: transparent; }
+.chip-f.on, .chip-f.ativo { background: var(--accent, #7b61ff); color: #fff; border-color: transparent; }
+.contas-chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.chip-sel { border: 1px solid var(--borda); border-radius: 20px; padding: 6px 12px; font-size: 13px; background: var(--card); color: var(--ink); cursor: pointer; }
 
 /* ===== Formulário em cards (padrão do mockup: Novo pedido / Detalhe) ===== */
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
