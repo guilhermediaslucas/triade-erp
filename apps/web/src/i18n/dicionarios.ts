@@ -473,7 +473,8 @@ Object.assign(pt, {
   'estoque.baixo': 'Estoque baixo', 'estoque.ok': 'Em dia',
   'estoque.kpi_skus': 'SKUs ativos', 'estoque.kpi_baixo': 'Estoque baixo', 'estoque.kpi_validade90': 'Validade < 90 dias', 'estoque.kpi_valor': 'Valor em estoque',
   'estoque.buscar': 'Buscar por produto', 'estoque.valor': 'Valor', 'estoque.f_validade': 'Validade próxima', 'estoque.sit_validade': 'Validade próxima',
-  'estoque.btn_entrada': 'Entrada', 'estoque.nota_lotes': 'Cada linha é um produto. Clique para ver os lotes que compõem o saldo.',
+  'estoque.btn_entrada': 'Entrada', 'estoque.nota_lotes': 'Cada linha é um produto. Duplo-clique para ver os lotes que compõem o saldo.',
+  'estoque.de': 'de', 'estoque.item': 'item(ns)',
   'entrada.titulo': 'Entrada de estoque', 'entrada.sub': 'Informe lote e validade e bipe as etiquetas já afixadas nos produtos. A quantidade é o número de códigos lidos.',
   'entrada.lote_ph': 'Ex.: L-2026-001', 'entrada.quantidade': 'Quantidade', 'entrada.custo': 'Custo unitário (R$)',
   'entrada.confirmar': 'Confirmar entrada', 'entrada.ok': 'Entrada registrada no estoque.',
@@ -486,7 +487,8 @@ Object.assign(en, {
   'estoque.baixo': 'Low stock', 'estoque.ok': 'OK',
   'estoque.kpi_skus': 'Active SKUs', 'estoque.kpi_baixo': 'Low stock', 'estoque.kpi_validade90': 'Expiry < 90 days', 'estoque.kpi_valor': 'Stock value',
   'estoque.buscar': 'Search by product', 'estoque.valor': 'Value', 'estoque.f_validade': 'Near expiry', 'estoque.sit_validade': 'Near expiry',
-  'estoque.btn_entrada': 'Entry', 'estoque.nota_lotes': 'Each row is a product. Click to see the batches that make up the balance.',
+  'estoque.btn_entrada': 'Entry', 'estoque.nota_lotes': 'Each row is a product. Double-click to see the batches that make up the balance.',
+  'estoque.de': 'of', 'estoque.item': 'item(s)',
   'entrada.titulo': 'Stock entry', 'entrada.sub': 'Set batch and expiry and scan the labels already on the products. Quantity equals the number of codes read.',
   'entrada.lote_ph': 'e.g., L-2026-001', 'entrada.quantidade': 'Quantity', 'entrada.custo': 'Unit cost (R$)',
   'entrada.confirmar': 'Confirm entry', 'entrada.ok': 'Stock entry registered.',
@@ -499,7 +501,8 @@ Object.assign(es, {
   'estoque.baixo': 'Stock bajo', 'estoque.ok': 'Al día',
   'estoque.kpi_skus': 'SKUs activos', 'estoque.kpi_baixo': 'Stock bajo', 'estoque.kpi_validade90': 'Caducidad < 90 días', 'estoque.kpi_valor': 'Valor en stock',
   'estoque.buscar': 'Buscar por producto', 'estoque.valor': 'Valor', 'estoque.f_validade': 'Caducidad próxima', 'estoque.sit_validade': 'Caducidad próxima',
-  'estoque.btn_entrada': 'Entrada', 'estoque.nota_lotes': 'Cada fila es un producto. Clic para ver los lotes que componen el saldo.',
+  'estoque.btn_entrada': 'Entrada', 'estoque.nota_lotes': 'Cada fila es un producto. Doble clic para ver los lotes que componen el saldo.',
+  'estoque.de': 'de', 'estoque.item': 'ítem(s)',
   'entrada.titulo': 'Entrada de stock', 'entrada.sub': 'Indica lote y caducidad y escanea las etiquetas ya pegadas en los productos. La cantidad es el número de códigos leídos.',
   'entrada.lote_ph': 'Ej.: L-2026-001', 'entrada.quantidade': 'Cantidad', 'entrada.custo': 'Costo unitario (R$)',
   'entrada.confirmar': 'Confirmar entrada', 'entrada.ok': 'Entrada registrada en el stock.',
@@ -1703,7 +1706,7 @@ Object.assign(es, {
 
 // --- crumb das telas de Estoque/Financeiro ---
 Object.assign(pt, {
-  'estoque.crumb': 'Estoque/Expedição / Posição de estoque', 'estoque.sub': 'Saldo por produto, com lotes e validade',
+  'estoque.crumb': 'Estoque/Expedição / Posição de estoque', 'estoque.sub': 'Saldo por produto, lote, validade e localização',
   'entrada.crumb': 'Estoque/Expedição / Entrada de estoque', 'receb.crumb': 'Estoque/Expedição / Recebimento',
   'perda.crumb': 'Estoque/Expedição / Baixa / perda', 'inv.crumb': 'Estoque/Expedição / Inventário',
   'expedicao.crumb': 'Estoque/Expedição / Pedidos',
@@ -1712,7 +1715,7 @@ Object.assign(pt, {
   'gfrete.crumb': 'Logística / Gestão de fretes', 'precos.crumb': 'Comercial / Tabela de preço',
 });
 Object.assign(en, {
-  'estoque.crumb': 'Stock / Stock position', 'estoque.sub': 'Balance per product, with batches and expiry',
+  'estoque.crumb': 'Stock / Stock position', 'estoque.sub': 'Balance per product, batch, expiry and location',
   'entrada.crumb': 'Stock / Stock entry', 'receb.crumb': 'Stock / Receiving',
   'perda.crumb': 'Stock / Write-off', 'inv.crumb': 'Stock / Inventory',
   'expedicao.crumb': 'Stock / Shipping',
@@ -1721,7 +1724,7 @@ Object.assign(en, {
   'gfrete.crumb': 'Logistics / Freight management', 'precos.crumb': 'Sales / Price table',
 });
 Object.assign(es, {
-  'estoque.crumb': 'Stock / Posición de stock', 'estoque.sub': 'Saldo por producto, con lotes y vencimiento',
+  'estoque.crumb': 'Stock / Posición de stock', 'estoque.sub': 'Saldo por producto, lote, vencimiento y ubicación',
   'entrada.crumb': 'Stock / Entrada de stock', 'receb.crumb': 'Stock / Recepción',
   'perda.crumb': 'Stock / Baja / pérdida', 'inv.crumb': 'Stock / Inventario',
   'expedicao.crumb': 'Stock / Expedición',

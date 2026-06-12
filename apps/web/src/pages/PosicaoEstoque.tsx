@@ -4,6 +4,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
+import { Ic } from '../components/Icones.js';
 
 interface Lote { id: string; lote: string | null; validade: string | null; quantidade: number; custoUnitario: number; marca: string | null; }
 interface Posicao { produtoId: string; produtoNome: string; unidade: string; estoqueMinimo: number; saldo: number; abaixoMinimo: boolean; lotes: Lote[]; }
@@ -64,10 +65,17 @@ export function PosicaoEstoque() {
 
   const stPill = (s: Etiqueta['status']) =>
     s === 'estoque' ? 'pill st-verde' : s === 'saida' ? 'pill st-laranja' : 'pill';
-  const badgeSit = (s: Filtro) =>
-    s === 'baixo' ? <span className="pill st-laranja">{t('estoque.baixo')}</span>
-      : s === 'validade' ? <span className="pill st-vermelho">{t('estoque.sit_validade')}</span>
-        : <span className="pill st-verde">{t('estoque.ok')}</span>;
+  // Espelha o mockup: pode mostrar os dois selos juntos (estoque baixo + validade próxima).
+  function badgesDe(p: Posicao) {
+    const baixo = p.abaixoMinimo, validade = venceProx(p);
+    if (!baixo && !validade) return <span className="pill st-verde">{t('estoque.ok')}</span>;
+    return (
+      <span style={{ display: 'inline-flex', gap: 6, flexWrap: 'wrap' }}>
+        {baixo && <span className="pill st-laranja">{t('estoque.baixo')}</span>}
+        {validade && <span className="pill st-vermelho">{t('estoque.sit_validade')}</span>}
+      </span>
+    );
+  }
 
   const chips: { v: Filtro; rot: string }[] = [
     { v: '', rot: 'common.todos' }, { v: 'ok', rot: 'estoque.ok' },
@@ -79,22 +87,24 @@ export function PosicaoEstoque() {
       <div className="crumb">{t('estoque.crumb')}</div>
       <div className="page-head">
         <div><h1 className="page-titulo">{t('estoque.titulo')}</h1><p className="muted page-sub">{t('estoque.sub')}</p></div>
-        <button className="btn-primary" onClick={() => nav('/estoque/entrada')}>📥 {t('estoque.btn_entrada')}</button>
+        <button className="btn-primary" onClick={() => nav('/estoque/entrada')}><Ic name="i-box" className="sm" /> {t('estoque.btn_entrada')}</button>
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
 
       <div className="kpi-row">
-        <div className="card kpi-mock"><div className="kpi-ic tint-bl">📦</div><div><div className="kpi-lbl">{t('estoque.kpi_skus')}</div><div className="kpi-val">{kpis.skus}</div></div></div>
-        <div className="card kpi-mock"><div className="kpi-ic tint-or">⚠️</div><div><div className="kpi-lbl">{t('estoque.kpi_baixo')}</div><div className="kpi-val">{kpis.baixo}</div></div></div>
-        <div className="card kpi-mock"><div className="kpi-ic tint-rd">⏰</div><div><div className="kpi-lbl">{t('estoque.kpi_validade90')}</div><div className="kpi-val">{kpis.validade}</div></div></div>
-        <div className="card kpi-mock"><div className="kpi-ic tint-gr">💰</div><div><div className="kpi-lbl">{t('estoque.kpi_valor')}</div><div className="kpi-val">{moeda(kpis.valor)}</div></div></div>
+        <div className="card kpi-mock"><div className="kpi-ic tint-bl"><Ic name="i-box" /></div><div><div className="kpi-lbl">{t('estoque.kpi_skus')}</div><div className="kpi-val">{kpis.skus}</div></div></div>
+        <div className="card kpi-mock"><div className="kpi-ic tint-or"><Ic name="i-alert" /></div><div><div className="kpi-lbl">{t('estoque.kpi_baixo')}</div><div className="kpi-val">{kpis.baixo}</div></div></div>
+        <div className="card kpi-mock"><div className="kpi-ic tint-rd"><Ic name="i-clock" /></div><div><div className="kpi-lbl">{t('estoque.kpi_validade90')}</div><div className="kpi-val">{kpis.validade}</div></div></div>
+        <div className="card kpi-mock"><div className="kpi-ic tint-gr"><Ic name="i-dollar" /></div><div><div className="kpi-lbl">{t('estoque.kpi_valor')}</div><div className="kpi-val">{moeda(kpis.valor)}</div></div></div>
       </div>
 
       <div className="toolbar">
         <div className="busca-box-tb"><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('estoque.buscar')} /></div>
+        <span className="muted" style={{ fontSize: 12 }}>{t('usuarios.situacao')}:</span>
         {chips.map((c) => (
           <span key={c.v} className={'chip-f' + (filtro === c.v ? ' on' : '')} onClick={() => setFiltro(c.v)}>{t(c.rot)}</span>
         ))}
+        <span className="muted" style={{ fontSize: 12, marginLeft: 'auto' }}>{lista.length} {t('estoque.de')} {itens.length} {t('estoque.item')}</span>
       </div>
 
       <div className="card pad0"><table className="tabela">
@@ -103,11 +113,11 @@ export function PosicaoEstoque() {
           {lista.length === 0 && <tr><td colSpan={6} className="vazio">{t('precos.sem_produtos')}</td></tr>}
           {lista.map((p) => (
             <Fragment key={p.produtoId}>
-              <tr className="linha-click" onClick={() => setAberto({ ...aberto, [p.produtoId]: !aberto[p.produtoId] })}>
+              <tr className="linha-click" style={{ cursor: 'pointer' }} title={t('estoque.nota_lotes')} onDoubleClick={() => setAberto({ ...aberto, [p.produtoId]: !aberto[p.produtoId] })}>
                 <td style={{ width: 28 }}>{p.lotes.length > 0 ? (aberto[p.produtoId] ? '▾' : '▸') : ''}</td>
                 <td>{p.produtoNome} <span className="muted">· {p.lotes.length} {t('estoque.lote').toLowerCase()}(s)</span></td>
                 <td><b>{p.saldo}</b></td><td>{p.estoqueMinimo}</td><td>{moeda(valorDe(p))}</td>
-                <td>{badgeSit(situacaoDe(p))}</td>
+                <td>{badgesDe(p)}</td>
               </tr>
               {aberto[p.produtoId] && p.lotes.map((l) => (
                 <tr key={l.id} className="lote-row">
