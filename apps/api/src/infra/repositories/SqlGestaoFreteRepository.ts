@@ -1,5 +1,5 @@
 import type { DataSource } from 'typeorm';
-import type { GestaoFreteRepository, LinhaFreteMotoboy } from '../../domain/comercial/GestaoFrete.js';
+import type { GestaoFreteRepository, LinhaFreteMotoboy, LinhaFretePedido } from '../../domain/comercial/GestaoFrete.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 export class SqlGestaoFreteRepository implements GestaoFreteRepository {
@@ -19,6 +19,24 @@ export class SqlGestaoFreteRepository implements GestaoFreteRepository {
         ORDER BY mb.nome`, [de, ate]);
     return linhas.map((r: any) => ({
       motoboyId: r.id, motoboy: r.nome, qtdPedidos: Number(r.qtd), totalFrete: Math.round(Number(r.total_frete) * 100) / 100,
+    }));
+  }
+
+  async listarPedidos(schema: string, de: string | null, ate: string | null): Promise<LinhaFretePedido[]> {
+    const s = validarSchema(schema);
+    const linhas = await this.ds.query(
+      `SELECT p.numero, p.criado_em, c.nome AS cliente, p.forma_entrega, mb.nome AS motoboy, p.distancia_km, p.frete
+         FROM "${s}".pedido p
+         LEFT JOIN "${s}".cliente c ON c.id = p.cliente_id
+         LEFT JOIN "${s}".motoboy mb ON mb.id = p.motoboy_id
+        WHERE p.frete > 0 AND p.status NOT IN ('orcamento','cancelado')
+          AND ($1::date IS NULL OR p.criado_em::date >= $1)
+          AND ($2::date IS NULL OR p.criado_em::date <= $2)
+        ORDER BY p.criado_em DESC`, [de, ate]);
+    return linhas.map((r: any) => ({
+      numero: Number(r.numero), criadoEm: new Date(r.criado_em).toISOString(), clienteNome: r.cliente ?? null,
+      formaEntrega: r.forma_entrega ?? 'motoboy', motoboy: r.motoboy ?? null,
+      distanciaKm: r.distancia_km != null ? Number(r.distancia_km) : null, frete: Math.round(Number(r.frete) * 100) / 100,
     }));
   }
 }

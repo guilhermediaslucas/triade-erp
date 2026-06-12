@@ -1,4 +1,4 @@
-import type { GestaoFreteRepository, LinhaFreteMotoboy } from '../../domain/comercial/GestaoFrete.js';
+import type { GestaoFreteRepository, LinhaFreteMotoboy, LinhaFretePedido } from '../../domain/comercial/GestaoFrete.js';
 import type { TituloRepository } from '../../domain/financeiro/Titulo.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
@@ -9,6 +9,9 @@ export class GestaoFretesService {
 
   apurar(schema: string, de: any, ate: any): Promise<LinhaFreteMotoboy[]> {
     return this.repo.apurar(schema, lim(de), lim(ate));
+  }
+  listarPedidos(schema: string, de: any, ate: any): Promise<LinhaFretePedido[]> {
+    return this.repo.listarPedidos(schema, lim(de), lim(ate));
   }
 
   // Fecha a competência: gera um título a pagar por motoboy com o frete acumulado no período.
