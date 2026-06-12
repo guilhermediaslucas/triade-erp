@@ -61,7 +61,7 @@ export function Usuarios() {
               <tr key={u.id} className={u.ativo ? '' : 'linha-inativa'}>
                 <td>{u.nome}</td>
                 <td>{u.email}</td>
-                <td>{u.perfilNome ?? t('usuarios.sem_perfil')}</td>
+                <td>{u.perfilNome ? <span className="pill">{u.perfilNome}</span> : <span className="muted">{t('usuarios.sem_perfil')}</span>}</td>
                 <td><span className={u.ativo ? 'pill-ok' : 'pill-off'}>{u.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
                 <td className="acoes">
                   {podeGerenciar && <>
