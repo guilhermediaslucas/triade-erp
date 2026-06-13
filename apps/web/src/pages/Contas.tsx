@@ -406,9 +406,14 @@ function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos:
   // Composição (só no título único): total a baixar = valor - desconto + multa + juros.
   const nD = Math.max(0, Number(desconto) || 0), nM = Math.max(0, Number(multa) || 0), nJ = Math.max(0, Number(juros) || 0);
   const totalBaixar = Math.round((totalSel - nD + nM + nJ) * 100) / 100;
+  // Pix e Boleto entram numa conta bancária — selecionar o banco é obrigatório.
+  const contaObrig = forma === 'Pix' || forma === 'Boleto';
+  const contaFaltando = contaObrig && !contaId;
   useEffect(() => { if (temCapability('cadastros.conta.listar')) api.get<{ id: string; nome: string }[]>('/contas-correntes', token!).then(setContas).catch(() => {}); /* eslint-disable-next-line */ }, []);
   async function salvar() {
-    setErro(null); setSalv(true);
+    setErro(null);
+    if (contaFaltando) { setErro('fin.conta_obrigatoria'); return; }
+    setSalv(true);
     let ok = 0;
     for (const tt of titulos) {
       // Composição só se aplica a baixa individual; em massa vai sem ajustes.
@@ -429,9 +434,10 @@ function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos:
           <select value={forma} onChange={(e) => setForma(e.target.value)}><option>Pix</option><option>Boleto</option><option>Cartão</option><option>Dinheiro</option><option>Transferência</option></select>
         </label>
       </div>
-      {contas.length > 0 && <label className="campo">{t('cc.conta')}
-        <select value={contaId} onChange={(e) => setContaId(e.target.value)}><option value="">{t('cc.nenhuma')}</option>{contas.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}</select>
+      {contas.length > 0 && <label className="campo">{t('cc.conta')}{contaObrig && <span className="hint"> · {t('fin.conta_obrig_hint')}</span>}
+        <select value={contaId} onChange={(e) => setContaId(e.target.value)} style={contaFaltando ? { borderColor: '#e1483b' } : undefined}><option value="">{t('cc.nenhuma')}</option>{contas.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}</select>
       </label>}
+      {contaObrig && contas.length === 0 && <div className="alerta-erro">{t('fin.conta_sem_cadastro')}</div>}
       {!massa && (<>
         <div className="perm-titulo" style={{ marginTop: 6 }}>{t('fin.composicao')}</div>
         <div className="cores-grid">
@@ -446,7 +452,7 @@ function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos:
         </div>
       </>)}
       {erro && <div className="alerta-erro">{t(erro)}</div>}
-      <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv || (!massa && totalBaixar < 0)} onClick={salvar}>{t('fin.confirmar_baixa')}</button></div>
+      <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv || (!massa && totalBaixar < 0) || contaFaltando} onClick={salvar}>{t('fin.confirmar_baixa')}</button></div>
     </div></div>
   );
 }

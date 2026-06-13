@@ -11,7 +11,7 @@ export class SqlGestaoFreteRepository implements GestaoFreteRepository {
          FROM "${s}".motoboy mb
          JOIN "${s}".pedido p ON p.motoboy_id = mb.id
               AND p.forma_entrega = 'motoboy'
-              AND p.status NOT IN ('orcamento','cancelado')
+              AND p.status = 'entregue'
         WHERE ($1::date IS NULL OR p.criado_em::date >= $1)
           AND ($2::date IS NULL OR p.criado_em::date <= $2)
         GROUP BY mb.id, mb.nome
@@ -29,7 +29,7 @@ export class SqlGestaoFreteRepository implements GestaoFreteRepository {
          FROM "${s}".pedido p
          LEFT JOIN "${s}".cliente c ON c.id = p.cliente_id
          LEFT JOIN "${s}".motoboy mb ON mb.id = p.motoboy_id
-        WHERE p.frete > 0 AND p.status NOT IN ('orcamento','cancelado')
+        WHERE p.frete > 0 AND p.status = 'entregue'
           AND ($1::date IS NULL OR p.criado_em::date >= $1)
           AND ($2::date IS NULL OR p.criado_em::date <= $2)
         ORDER BY p.criado_em DESC`, [de, ate]);
