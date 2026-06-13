@@ -209,7 +209,7 @@ export function Layout({ children }: { children: ReactNode }) {
           </button>
           <div className="topbar-dir">
             <EmpresaSwitcher />
-            <button className="btn-tema" onClick={alternar} title={t('tema.alternar')}>{escuro ? '☀️' : '🌙'}</button>
+            <button className="btn-tema" onClick={alternar} title={t('tema.alternar')}><Ic name={escuro ? 'i-sun' : 'i-moon'} className="sm" /></button>
             <Sino />
             <button type="button" className="topbar-user" onClick={() => setSenhaOpen(true)} title={t('senha.trocar')} style={{ background: 'none', border: 0, cursor: 'pointer', fontFamily: 'inherit' }}>
               <Avatar nome={usuario?.nome ?? ''} foto={usuario?.foto ?? null} />

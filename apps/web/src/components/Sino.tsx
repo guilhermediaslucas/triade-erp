@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Ic } from './Icones.js';
 
 interface Grupo { chave: string; icone: string; qtd: number; to: string; }
 
@@ -26,22 +27,22 @@ export function Sino() {
       if (temCapability('financeiro.receber.listar')) {
         const ag = await api.get<{ linhas: { diasAtraso: number }[] }>('/financeiro/aging-receber', token).catch(() => null);
         const venc = ag ? ag.linhas.filter((l) => l.diasAtraso > 0).length : 0;
-        if (venc > 0) out.push({ chave: 'sino.titulos_vencidos', icone: '💸', qtd: venc, to: '/financeiro/aging-receber' });
+        if (venc > 0) out.push({ chave: 'sino.titulos_vencidos', icone: 'i-dollar', qtd: venc, to: '/financeiro/aging-receber' });
       }
       if (temCapability('financeiro.receber.listar')) {
         const rec = await api.get<{ origem: string; status: string }[]>('/financeiro/receber', token).catch(() => null);
         const pend = rec ? rec.filter((x) => x.origem === 'pedido' && x.status === 'aberto').length : 0;
-        if (pend > 0) out.push({ chave: 'sino.pendencia_baixa', icone: '🧾', qtd: pend, to: '/financeiro/receber' });
+        if (pend > 0) out.push({ chave: 'sino.pendencia_baixa', icone: 'i-receipt', qtd: pend, to: '/financeiro/receber' });
       }
       if (temCapability('relatorios.ver')) {
         const lotes = await api.get<{ validade: string | null }[]>('/relatorios/validade-lotes', token).catch(() => null);
         const vencendo = lotes ? lotes.filter((l) => { const d = diasAteValidade(l.validade); return d !== null && d <= 30; }).length : 0;
-        if (vencendo > 0) out.push({ chave: 'sino.lotes_vencendo', icone: '⏳', qtd: vencendo, to: '/relatorios/validade' });
+        if (vencendo > 0) out.push({ chave: 'sino.lotes_vencendo', icone: 'i-clock', qtd: vencendo, to: '/relatorios/validade' });
       }
       if (temCapability('estoque.saldo.ver')) {
         const pos = await api.get<{ abaixoMinimo: boolean }[]>('/estoque', token).catch(() => null);
         const baixo = pos ? pos.filter((p) => p.abaixoMinimo).length : 0;
-        if (baixo > 0) out.push({ chave: 'sino.estoque_baixo', icone: '📦', qtd: baixo, to: '/estoque/posicao' });
+        if (baixo > 0) out.push({ chave: 'sino.estoque_baixo', icone: 'i-box', qtd: baixo, to: '/estoque/posicao' });
       }
     } catch { /* silencioso */ }
     setGrupos(out);
@@ -54,7 +55,7 @@ export function Sino() {
   return (
     <div className="sino-wrap">
       <button className="sino-btn" onClick={() => setAberto((v) => !v)} title={t('sino.titulo')}>
-        🔔{total > 0 && <span className="sino-badge">{total > 99 ? '99+' : total}</span>}
+        <Ic name="i-bell" />{total > 0 && <span className="sino-badge">{total > 99 ? '99+' : total}</span>}
       </button>
       {aberto && (
         <>
@@ -64,7 +65,7 @@ export function Sino() {
             {grupos.length === 0 && <div className="sino-vazio">{t('sino.vazio')}</div>}
             {grupos.map((g) => (
               <button key={g.chave} className="sino-item" onClick={() => ir(g.to)}>
-                <span className="sino-ic">{g.icone}</span>
+                <span className="sino-ic"><Ic name={g.icone} className="sm" /></span>
                 <span className="sino-lbl">{t(g.chave)}</span>
                 <span className="sino-qtd">{g.qtd}</span>
               </button>

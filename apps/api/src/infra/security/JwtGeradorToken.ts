@@ -10,11 +10,12 @@ export class JwtGeradorToken implements GeradorToken {
   ) {}
 
   gerar(payload: TokenPayload): string {
-    return jwt.sign(payload, this.segredo, { expiresIn: this.expiraEm });
+    return jwt.sign(payload, this.segredo, { expiresIn: this.expiraEm, algorithm: 'HS256' });
   }
 
   verificar(token: string): TokenPayload {
-    const dados = jwt.verify(token, this.segredo) as jwt.JwtPayload;
+    // Fixa o algoritmo (HS256) — não aceitar 'none' nem confusão de algoritmo.
+    const dados = jwt.verify(token, this.segredo, { algorithms: ['HS256'] }) as jwt.JwtPayload;
     return {
       sub: String(dados.sub),
       empresa: String(dados.empresa),

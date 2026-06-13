@@ -33,6 +33,21 @@ export function SpriteIcones() {
       <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4" /><polyline points="7 9 12 4 17 9" /><path d="M4 17v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2" /></symbol>
       <symbol id="i-menu" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></symbol>
       <symbol id="i-x" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18" /><line x1="18" y1="6" x2="6" y2="18" /></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></symbol>
+      <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" /><path d="M4.5 20.5c.8-3.6 4-5.5 7.5-5.5s6.7 1.9 7.5 5.5" /></symbol>
+      <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.4" /><path d="M3 19.5c.6-3 3-4.6 6-4.6s5.4 1.6 6 4.6" /><path d="M16 5.2a3.4 3.4 0 0 1 0 6.6" /><path d="M17.5 14.9c2.3.4 3.9 1.9 4.5 4.6" /></symbol>
+      <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 4.5 1.5 5.5 2 6.5H4c.5-1 2-2 2-6.5z" /><path d="M10 19a2 2 0 0 0 4 0" /></symbol>
+      <symbol id="i-camera" viewBox="0 0 24 24"><path d="M3 8.5A1.5 1.5 0 0 1 4.5 7H7l1.5-2.2h7L17 7h2.5A1.5 1.5 0 0 1 21 8.5v9A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5z" /><circle cx="12" cy="13" r="3.4" /></symbol>
+      <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V4h10v5" /><rect x="4" y="9" width="16" height="8" rx="1.5" /><rect x="7" y="14" width="10" height="6" rx="1" /></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" /><line x1="12" y1="2.5" x2="12" y2="4.6" /><line x1="12" y1="19.4" x2="12" y2="21.5" /><line x1="2.5" y1="12" x2="4.6" y2="12" /><line x1="19.4" y1="12" x2="21.5" y2="12" /><line x1="5.2" y1="5.2" x2="6.7" y2="6.7" /><line x1="17.3" y1="17.3" x2="18.8" y2="18.8" /><line x1="5.2" y1="18.8" x2="6.7" y2="17.3" /><line x1="17.3" y1="6.7" x2="18.8" y2="5.2" /></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.5 14.8A8 8 0 0 1 9.2 3.5 7.2 7.2 0 1 0 20.5 14.8z" /></symbol>
+      <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="14" r="4" /><path d="M11 11l9-9" /><line x1="17" y1="5" x2="19" y2="7" /><line x1="14.5" y1="7.5" x2="16.5" y2="9.5" /></symbol>
+      <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 11.5V4h7.5l9.5 9.5-7.5 7.5L3 11.5z" /><circle cx="7.5" cy="7.5" r="1.4" /></symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v5.5c0 5-3.5 8-8 9.5-4.5-1.5-8-4.5-8-9.5V6z" /></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11" /><polyline points="7 10.5 12 15.5 17 10.5" /><path d="M4 18v1.5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V18" /></symbol>
+      <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M5 3h14v18l-2.4-1.5-2.4 1.5-2.2-1.5L9.8 21l-2.4-1.5L5 21z" /><line x1="8.5" y1="8" x2="15.5" y2="8" /><line x1="8.5" y1="12" x2="13.5" y2="12" /></symbol>
+      <symbol id="i-flag" viewBox="0 0 24 24"><line x1="5" y1="21" x2="5" y2="3.5" /><path d="M5 4.2h11l-2.2 3.2 2.2 3.2H5" /></symbol>
+      <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 5h18l-7 8.2V20l-4-2.2v-4.6z" /></symbol>
     </svg>
   );
 }

@@ -32,6 +32,22 @@ import { rotasContas } from './rotas/contas.js';
 
 export function criarServidor(): Express {
   const app = express();
+  // Atrás do proxy do Render: confiar no 1º proxy p/ req.ip refletir o IP real (rate limit).
+  app.set('trust proxy', 1);
+  // Não revelar o framework (X-Powered-By: Express).
+  app.disable('x-powered-by');
+
+  // Cabeçalhos de segurança em todas as respostas. A API só devolve JSON, então
+  // CSP default-src 'none' é seguro e bloqueia qualquer render acidental de HTML.
+  app.use((_req: Request, res: Response, next: NextFunction) => {
+    res.header('X-Content-Type-Options', 'nosniff');
+    res.header('X-Frame-Options', 'DENY');
+    res.header('Referrer-Policy', 'no-referrer');
+    res.header('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'");
+    res.header('Cross-Origin-Resource-Policy', 'same-site');
+    if (env.isProd) res.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    next();
+  });
 
   // CORS: permite o site (frontend) chamar a API. A origem vem de CORS_ORIGIN
   // (padrao '*'). Responde o preflight (OPTIONS) direto.
@@ -39,6 +55,7 @@ export function criarServidor(): Express {
     res.header('Access-Control-Allow-Origin', env.corsOrigin);
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    if (env.corsOrigin !== '*') res.header('Vary', 'Origin');
     if (req.method === 'OPTIONS') { res.sendStatus(204); return; }
     next();
   });
@@ -52,8 +69,9 @@ export function criarServidor(): Express {
       await AppDataSource.query('SELECT 1');
       res.json({ status: 'ok', db: 'conectado' });
     } catch (e) {
-      const detalhe = e instanceof Error ? e.message : String(e);
-      res.status(503).json({ status: 'erro', db: 'sem conexao', detalhe });
+      // Não expor detalhe do erro em produção (pode vazar info de conexão).
+      const detalhe = env.isProd ? undefined : (e instanceof Error ? e.message : String(e));
+      res.status(503).json({ status: 'erro', db: 'sem conexao', ...(detalhe ? { detalhe } : {}) });
     }
   });
 

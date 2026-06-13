@@ -4,6 +4,33 @@ import { ErroAplicacao } from '../../../domain/erros/ErroAplicacao.js';
 import { criarAutenticar } from '../middlewares/autenticar.js';
 import { exigirSuperAdmin } from '../middlewares/exigirSuperAdmin.js';
 
+// Rate limit simples em memória p/ o login (anti brute force / credential stuffing).
+// Janela de 15 min, máx. 10 tentativas por IP+e-mail. Suficiente p/ 1 instância;
+// para múltiplas instâncias, trocar por store compartilhado (Redis) depois.
+const TENTATIVAS = new Map<string, { n: number; ate: number }>();
+const LIMITE = 10;
+const JANELA_MS = 15 * 60 * 1000;
+function limiteLogin(req: Request, res: Response, next: () => void): void {
+  const ip = req.ip ?? 'desconhecido';
+  const email = String((req.body ?? {}).email ?? '').toLowerCase();
+  const chave = ip + '|' + email;
+  const agora = Date.now();
+  const reg = TENTATIVAS.get(chave);
+  if (reg && agora > reg.ate) { TENTATIVAS.delete(chave); }
+  const atual = TENTATIVAS.get(chave);
+  if (atual && atual.n >= LIMITE) { res.status(429).json({ erro: 'auth.muitas_tentativas' }); return; }
+  next();
+}
+function registrarFalhaLogin(req: Request): void {
+  const ip = req.ip ?? 'desconhecido';
+  const email = String((req.body ?? {}).email ?? '').toLowerCase();
+  const chave = ip + '|' + email;
+  const agora = Date.now();
+  const reg = TENTATIVAS.get(chave);
+  if (!reg || agora > reg.ate) { TENTATIVAS.set(chave, { n: 1, ate: agora + JANELA_MS }); }
+  else { reg.n++; }
+}
+
 export function rotasAuth(deps: Dependencias): Router {
   const r = Router();
   const autenticar = criarAutenticar(deps.tokens);
@@ -39,7 +66,7 @@ export function rotasAuth(deps: Dependencias): Router {
     }
   });
 
-  r.post('/auth/login', async (req: Request, res: Response) => {
+  r.post('/auth/login', limiteLogin, async (req: Request, res: Response) => {
     const { codigoEmpresa, email, senha } = req.body ?? {};
     if (!email || !senha) {
       res.status(400).json({ erro: 'auth.campos_obrigatorios' });
@@ -50,6 +77,7 @@ export function rotasAuth(deps: Dependencias): Router {
       res.json(saida);
     } catch (e) {
       if (e instanceof ErroAplicacao) {
+        registrarFalhaLogin(req); // conta a tentativa malsucedida
         res.status(e.status).json({ erro: e.chaveI18n });
         return;
       }
