@@ -557,4 +557,31 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS juros numeric(14,2) NOT NULL DEFAULT 0;
     `,
   },
+  {
+    // CRM (Comercial): funil de oportunidades + interações por cliente.
+    nome: '040_crm',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".oportunidade (
+        id uuid PRIMARY KEY,
+        cliente_id uuid REFERENCES "${s}".cliente(id) ON DELETE SET NULL,
+        cliente_nome text NOT NULL,
+        titulo text,
+        valor numeric(14,2) NOT NULL DEFAULT 0,
+        vendedor_id uuid REFERENCES "${s}".vendedor(id) ON DELETE SET NULL,
+        estagio text NOT NULL DEFAULT 'lead',
+        previsao date,
+        pedido_id uuid REFERENCES "${s}".pedido(id) ON DELETE SET NULL,
+        perdido boolean NOT NULL DEFAULT false,
+        criado_em timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE TABLE IF NOT EXISTS "${s}".interacao (
+        id uuid PRIMARY KEY,
+        cliente_id uuid NOT NULL REFERENCES "${s}".cliente(id) ON DELETE CASCADE,
+        tipo text NOT NULL,
+        data date NOT NULL,
+        nota text,
+        criado_em timestamptz NOT NULL DEFAULT now()
+      );
+    `,
+  },
 ];

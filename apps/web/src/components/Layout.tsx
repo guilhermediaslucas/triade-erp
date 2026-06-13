@@ -28,6 +28,7 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'menu.precos', to: '/comercial/precos', cap: 'comercial.preco.listar' },
       { rotulo: 'menu.pedidos', to: '/comercial/pedidos', cap: 'comercial.pedido.listar' },
       { rotulo: 'menu.novo_pedido', to: '/comercial/pedidos/novo', cap: 'comercial.pedido.criar' },
+      { rotulo: 'menu.crm', to: '/comercial/crm', cap: 'comercial.crm.ver' },
     ] }],
   },
   {

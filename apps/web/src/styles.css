@@ -249,6 +249,10 @@ a { text-decoration: none; color: inherit; }
 .pk-edit { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: 0; border: 1px solid var(--borda); border-radius: 7px; background: var(--card, #fff); color: var(--accent, #7b61ff); cursor: pointer; }
 .pk-edit:hover { background: var(--accent-soft, #f3effe); border-color: var(--accent); }
 .fenv-forma-fixa { margin-top: 4px; padding: 9px 12px; border: 1px solid var(--borda, #ececf2); border-radius: 10px; background: var(--bg, #f4f5fa); font-weight: 600; color: var(--ink, #1f2430); }
+/* CRM — timeline do histórico do cliente */
+.tl-item { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--borda, #f1f5f9); }
+.tl-item:last-child { border-bottom: 0; }
+.tl-nm { font-size: 14px; color: var(--ink, #1f2430); }
 
 /* ===== Modo TV (painel de vendas em tela cheia) ===== */
 .tv { min-height: 100vh; background: #0e1016; color: #e6e8ee; padding: 28px 34px; box-sizing: border-box; font-family: "Segoe UI", Inter, system-ui, sans-serif; }

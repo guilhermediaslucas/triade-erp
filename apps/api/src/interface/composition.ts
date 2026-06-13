@@ -34,6 +34,8 @@ import { ClientesService, FornecedoresService, VendedoresService } from '../appl
 import { MotoboysService } from '../application/pessoa/MotoboysService.js';
 import { SqlPrecoBaseRepository } from '../infra/repositories/SqlPrecoBaseRepository.js';
 import { PrecosService } from '../application/comercial/PrecosService.js';
+import { SqlCrmRepository } from '../infra/repositories/SqlCrmRepository.js';
+import { CrmService } from '../application/comercial/CrmService.js';
 import { SqlPrecoClienteRepository } from '../infra/repositories/SqlPrecoClienteRepository.js';
 import { SqlCondicaoRepository } from '../infra/repositories/SqlCondicaoRepository.js';
 import { CondicoesService } from '../application/comercial/CondicoesService.js';
@@ -125,6 +127,7 @@ export function montarDependencias() {
     relatoriosService: new RelatoriosService(new SqlRelatorioRepository(AppDataSource)),
     estoqueService: new EstoqueService(estoqueRepo, etiquetaRepo),
     inventarioService: new InventarioService(inventarioRepo, etiquetaRepo, estoqueRepo),
+    crmService: new CrmService(new SqlCrmRepository(AppDataSource)),
   };
 }
 

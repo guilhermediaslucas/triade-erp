@@ -409,8 +409,9 @@ Object.assign(es, {
 
 // --- Fase 3B: Pedidos ---
 Object.assign(pt, {
-  'menu.pedidos': 'Pedidos', 'menu.novo_pedido': 'Novo pedido',
+  'menu.pedidos': 'Pedidos', 'menu.novo_pedido': 'Novo pedido', 'menu.crm': 'CRM',
   'cap.comercial.pedido.listar': 'Listar pedidos', 'cap.comercial.pedido.criar': 'Criar pedidos', 'cap.comercial.pedido.gerenciar': 'Gerenciar status dos pedidos',
+  'cap.comercial.crm.ver': 'Ver CRM', 'cap.comercial.crm.gerenciar': 'Gerenciar CRM (oportunidades e interações)',
   'pedidos.titulo': 'Pedidos - Comercial', 'pedidos.novo': 'Novo pedido', 'pedidos.numero': 'Número', 'pedidos.data': 'Data',
   'pedidos.cliente': 'Cliente', 'pedidos.vendedor': 'Vendedor', 'pedidos.status': 'Status', 'pedidos.total': 'Total',
   'pedidos.forma_pgto': 'Forma de pagamento', 'pedidos.endereco': 'Endereço de entrega', 'pedidos.endereco_ph': 'Preenchido pelo favorito do cliente (editável)',
@@ -428,8 +429,9 @@ Object.assign(pt, {
   'pedido.limite_estourado': 'Limite de crédito do cliente excedido.',
 });
 Object.assign(en, {
-  'menu.pedidos': 'Orders', 'menu.novo_pedido': 'New order',
+  'menu.pedidos': 'Orders', 'menu.novo_pedido': 'New order', 'menu.crm': 'CRM',
   'cap.comercial.pedido.listar': 'List orders', 'cap.comercial.pedido.criar': 'Create orders', 'cap.comercial.pedido.gerenciar': 'Manage order status',
+  'cap.comercial.crm.ver': 'View CRM', 'cap.comercial.crm.gerenciar': 'Manage CRM (opportunities and interactions)',
   'pedidos.titulo': 'Orders - Sales', 'pedidos.novo': 'New order', 'pedidos.numero': 'Number', 'pedidos.data': 'Date',
   'pedidos.cliente': 'Customer', 'pedidos.vendedor': 'Sales rep', 'pedidos.status': 'Status', 'pedidos.total': 'Total',
   'pedidos.forma_pgto': 'Payment method', 'pedidos.endereco': 'Delivery address', 'pedidos.endereco_ph': 'Filled from customer favorite (editable)',
@@ -447,8 +449,9 @@ Object.assign(en, {
   'pedido.limite_estourado': "Customer's credit limit exceeded.",
 });
 Object.assign(es, {
-  'menu.pedidos': 'Pedidos', 'menu.novo_pedido': 'Nuevo pedido',
+  'menu.pedidos': 'Pedidos', 'menu.novo_pedido': 'Nuevo pedido', 'menu.crm': 'CRM',
   'cap.comercial.pedido.listar': 'Listar pedidos', 'cap.comercial.pedido.criar': 'Crear pedidos', 'cap.comercial.pedido.gerenciar': 'Gestionar estado de pedidos',
+  'cap.comercial.crm.ver': 'Ver CRM', 'cap.comercial.crm.gerenciar': 'Gestionar CRM (oportunidades e interacciones)',
   'pedidos.titulo': 'Pedidos - Comercial', 'pedidos.novo': 'Nuevo pedido', 'pedidos.numero': 'Número', 'pedidos.data': 'Fecha',
   'pedidos.cliente': 'Cliente', 'pedidos.vendedor': 'Vendedor', 'pedidos.status': 'Estado', 'pedidos.total': 'Total',
   'pedidos.forma_pgto': 'Forma de pago', 'pedidos.endereco': 'Dirección de entrega', 'pedidos.endereco_ph': 'Rellenado por la favorita del cliente (editable)',
@@ -1606,6 +1609,70 @@ Object.assign(es, {
 Object.assign(pt, { 'tema.alternar': 'Alternar tema claro/escuro', 'tela.cheia': 'Tela cheia' });
 Object.assign(en, { 'tema.alternar': 'Toggle light/dark theme', 'tela.cheia': 'Fullscreen' });
 Object.assign(es, { 'tema.alternar': 'Alternar tema claro/oscuro', 'tela.cheia': 'Pantalla completa' });
+
+Object.assign(pt, {
+  'crm.crumb': 'Comercial / CRM', 'crm.titulo': 'CRM', 'crm.sub': 'Relacionamento com clientes — indicadores e histórico de interações',
+  'crm.kpi_ativos': 'Clientes ativos', 'crm.kpi_atendidos': 'Clientes atendidos', 'crm.kpi_ticket': 'Ticket médio', 'crm.kpi_interacoes': 'Interações registradas',
+  'crm.funil': 'Funil de oportunidades', 'crm.arraste': 'Arraste os cards entre os estágios', 'crm.nova_oport': 'Nova oportunidade',
+  'crm.est.lead': 'Lead', 'crm.est.contato': 'Contato', 'crm.est.proposta': 'Proposta', 'crm.est.negociacao': 'Negociação', 'crm.est.ganho': 'Ganho',
+  'crm.marcar_perdido': 'Marcar perdido', 'crm.orcamento': 'Orçamento', 'crm.gerar_orcamento': 'Gerar orçamento',
+  'crm.nota_funil': 'Marque uma oportunidade como Perdida (no card) para tirá-la do funil. Na coluna Ganho, use Gerar orçamento para abrir o pedido já com o cliente preenchido.',
+  'crm.historico': 'Histórico do cliente', 'crm.busque_cliente': '— selecione um cliente —', 'crm.registrar_interacao': 'Registrar interação',
+  'crm.timeline_vazia_sel': 'Selecione um cliente para ver pedidos, orçamentos e interações registradas.', 'crm.timeline_vazia': 'Sem pedidos ou interações para este cliente. Use "Registrar interação".',
+  'crm.recompra': 'Previsão de recompra', 'crm.recompra_sub': 'Com base no ciclo médio de compra de cada cliente',
+  'crm.ultima_compra': 'Última compra', 'crm.ciclo': 'Ciclo médio', 'crm.proxima': 'Próxima prevista', 'crm.sugestao': 'Sugestão de itens', 'crm.recompra_vazia': 'Sem clientes com histórico suficiente (2+ pedidos datados).',
+  'crm.atrasada': 'Atrasada', 'crm.esta_semana': 'Esta semana', 'crm.em_dia': 'Em dia', 'crm.dias': 'dias',
+  'crm.nota_recompra': 'Considera apenas clientes com 2+ pedidos datados. "Atrasada" = passou da data prevista; "Esta semana" = vence em até 7 dias.',
+  'crm.inativos': 'Clientes inativos', 'crm.sem_comprar': 'Sem comprar há mais de', 'crm.dias_sem': 'Dias sem comprar', 'crm.acao': 'Ação', 'crm.inativos_vazio': 'Nenhum cliente inativo nesse período.', 'crm.registrar_contato': 'Registrar contato',
+  'crm.nota_inativos': 'Clientes que já compraram mas pararam. Use "Registrar interação" para retomar o contato.',
+  'crm.confirmar_perder': 'Marcar esta oportunidade como perdida? Ela sai do funil.', 'crm.precisa_cadastro': 'Cadastre o cliente antes de gerar o orçamento.',
+  'crm.cliente_prospect': 'Cliente ou prospect', 'crm.cliente_ph': 'Digite ou selecione...', 'crm.titulo_oport': 'Título da oportunidade', 'crm.titulo_ph': 'Ex.: Reposição trimestral de injetáveis',
+  'crm.valor': 'Valor', 'crm.estagio': 'Estágio', 'crm.previsao': 'Previsão', 'crm.salvar_oport': 'Salvar oportunidade',
+  'crm.tipo': 'Tipo', 'crm.data': 'Data', 'crm.anotacao': 'Anotação', 'crm.anotacao_ph': 'Resumo do contato, próximos passos...', 'crm.salvar_interacao': 'Salvar interação',
+  'crm.cliente_obrigatorio': 'Informe o cliente.', 'crm.oportunidade_nao_encontrada': 'Oportunidade não encontrada.',
+});
+Object.assign(en, {
+  'crm.crumb': 'Sales / CRM', 'crm.titulo': 'CRM', 'crm.sub': 'Customer relationship — indicators and interaction history',
+  'crm.kpi_ativos': 'Active customers', 'crm.kpi_atendidos': 'Served customers', 'crm.kpi_ticket': 'Average ticket', 'crm.kpi_interacoes': 'Logged interactions',
+  'crm.funil': 'Opportunity funnel', 'crm.arraste': 'Drag cards between stages', 'crm.nova_oport': 'New opportunity',
+  'crm.est.lead': 'Lead', 'crm.est.contato': 'Contact', 'crm.est.proposta': 'Proposal', 'crm.est.negociacao': 'Negotiation', 'crm.est.ganho': 'Won',
+  'crm.marcar_perdido': 'Mark lost', 'crm.orcamento': 'Quote', 'crm.gerar_orcamento': 'Generate quote',
+  'crm.nota_funil': 'Mark an opportunity as Lost (on the card) to remove it from the funnel. In the Won column, use Generate quote to open the order with the customer prefilled.',
+  'crm.historico': 'Customer history', 'crm.busque_cliente': '— select a customer —', 'crm.registrar_interacao': 'Log interaction',
+  'crm.timeline_vazia_sel': 'Select a customer to see orders, quotes and logged interactions.', 'crm.timeline_vazia': 'No orders or interactions for this customer. Use "Log interaction".',
+  'crm.recompra': 'Repurchase forecast', 'crm.recompra_sub': 'Based on each customer average purchase cycle',
+  'crm.ultima_compra': 'Last purchase', 'crm.ciclo': 'Avg cycle', 'crm.proxima': 'Next expected', 'crm.sugestao': 'Suggested items', 'crm.recompra_vazia': 'No customers with enough history (2+ dated orders).',
+  'crm.atrasada': 'Overdue', 'crm.esta_semana': 'This week', 'crm.em_dia': 'On track', 'crm.dias': 'days',
+  'crm.nota_recompra': 'Only customers with 2+ dated orders. "Overdue" = past the expected date; "This week" = due within 7 days.',
+  'crm.inativos': 'Inactive customers', 'crm.sem_comprar': 'Not buying for over', 'crm.dias_sem': 'Days without buying', 'crm.acao': 'Action', 'crm.inativos_vazio': 'No inactive customers in this range.', 'crm.registrar_contato': 'Log contact',
+  'crm.nota_inativos': 'Customers who bought but stopped. Use "Log interaction" to resume contact.',
+  'crm.confirmar_perder': 'Mark this opportunity as lost? It leaves the funnel.', 'crm.precisa_cadastro': 'Register the customer before generating the quote.',
+  'crm.cliente_prospect': 'Customer or prospect', 'crm.cliente_ph': 'Type or select...', 'crm.titulo_oport': 'Opportunity title', 'crm.titulo_ph': 'e.g. Quarterly injectables restock',
+  'crm.valor': 'Value', 'crm.estagio': 'Stage', 'crm.previsao': 'Forecast', 'crm.salvar_oport': 'Save opportunity',
+  'crm.tipo': 'Type', 'crm.data': 'Date', 'crm.anotacao': 'Note', 'crm.anotacao_ph': 'Contact summary, next steps...', 'crm.salvar_interacao': 'Save interaction',
+  'crm.cliente_obrigatorio': 'Enter the customer.', 'crm.oportunidade_nao_encontrada': 'Opportunity not found.',
+});
+Object.assign(es, {
+  'crm.crumb': 'Comercial / CRM', 'crm.titulo': 'CRM', 'crm.sub': 'Relación con clientes — indicadores e historial de interacciones',
+  'crm.kpi_ativos': 'Clientes activos', 'crm.kpi_atendidos': 'Clientes atendidos', 'crm.kpi_ticket': 'Ticket medio', 'crm.kpi_interacoes': 'Interacciones registradas',
+  'crm.funil': 'Embudo de oportunidades', 'crm.arraste': 'Arrastra las tarjetas entre las etapas', 'crm.nova_oport': 'Nueva oportunidad',
+  'crm.est.lead': 'Lead', 'crm.est.contato': 'Contacto', 'crm.est.proposta': 'Propuesta', 'crm.est.negociacao': 'Negociación', 'crm.est.ganho': 'Ganado',
+  'crm.marcar_perdido': 'Marcar perdido', 'crm.orcamento': 'Presupuesto', 'crm.gerar_orcamento': 'Generar presupuesto',
+  'crm.nota_funil': 'Marca una oportunidad como Perdida (en la tarjeta) para sacarla del embudo. En la columna Ganado, usa Generar presupuesto para abrir el pedido con el cliente cargado.',
+  'crm.historico': 'Historial del cliente', 'crm.busque_cliente': '— selecciona un cliente —', 'crm.registrar_interacao': 'Registrar interacción',
+  'crm.timeline_vazia_sel': 'Selecciona un cliente para ver pedidos, presupuestos e interacciones.', 'crm.timeline_vazia': 'Sin pedidos ni interacciones para este cliente. Usa "Registrar interacción".',
+  'crm.recompra': 'Previsión de recompra', 'crm.recompra_sub': 'Según el ciclo medio de compra de cada cliente',
+  'crm.ultima_compra': 'Última compra', 'crm.ciclo': 'Ciclo medio', 'crm.proxima': 'Próxima prevista', 'crm.sugestao': 'Sugerencia de ítems', 'crm.recompra_vazia': 'Sin clientes con historial suficiente (2+ pedidos con fecha).',
+  'crm.atrasada': 'Atrasada', 'crm.esta_semana': 'Esta semana', 'crm.em_dia': 'Al día', 'crm.dias': 'días',
+  'crm.nota_recompra': 'Solo clientes con 2+ pedidos con fecha. "Atrasada" = pasó la fecha prevista; "Esta semana" = vence en hasta 7 días.',
+  'crm.inativos': 'Clientes inactivos', 'crm.sem_comprar': 'Sin comprar hace más de', 'crm.dias_sem': 'Días sin comprar', 'crm.acao': 'Acción', 'crm.inativos_vazio': 'Ningún cliente inactivo en ese período.', 'crm.registrar_contato': 'Registrar contacto',
+  'crm.nota_inativos': 'Clientes que compraron pero pararon. Usa "Registrar interacción" para retomar el contacto.',
+  'crm.confirmar_perder': '¿Marcar esta oportunidad como perdida? Sale del embudo.', 'crm.precisa_cadastro': 'Registra el cliente antes de generar el presupuesto.',
+  'crm.cliente_prospect': 'Cliente o prospecto', 'crm.cliente_ph': 'Escribe o selecciona...', 'crm.titulo_oport': 'Título de la oportunidad', 'crm.titulo_ph': 'Ej.: Reposición trimestral de inyectables',
+  'crm.valor': 'Valor', 'crm.estagio': 'Etapa', 'crm.previsao': 'Previsión', 'crm.salvar_oport': 'Guardar oportunidad',
+  'crm.tipo': 'Tipo', 'crm.data': 'Fecha', 'crm.anotacao': 'Anotación', 'crm.anotacao_ph': 'Resumen del contacto, próximos pasos...', 'crm.salvar_interacao': 'Guardar interacción',
+  'crm.cliente_obrigatorio': 'Informa el cliente.', 'crm.oportunidade_nao_encontrada': 'Oportunidad no encontrada.',
+});
 
 // --- Seletor de empresa (admin do sistema) ---
 Object.assign(pt, { 'emp.trocar': 'Trocar empresa (admin do sistema)', 'emp.titulo': 'Trocar empresa', 'emp.vazio': 'Nenhuma empresa.' });

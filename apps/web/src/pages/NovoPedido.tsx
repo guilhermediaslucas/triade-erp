@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
@@ -46,6 +46,8 @@ export function NovoPedido() {
   const toast = useToast();
   const { id: pedidoId } = useParams();         // presente = modo edição (orçamento)
   const editando = !!pedidoId;
+  const [sp] = useSearchParams();                // ?cliente= (pré-seleciona) e ?oport= (vincula ao CRM)
+  const oportId = sp.get('oport');
   const [enderecoAtual, setEnderecoAtual] = useState<string | null>(null);
   const [condAlvo, setCondAlvo] = useState<{ parcelas: number; intervalo: number } | null>(null);
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -112,6 +114,14 @@ export function NovoPedido() {
     }).catch((e) => setErro((e as ErroApi).chaveI18n));
     /* eslint-disable-next-line */
   }, [pedidoId]);
+
+  // (Gerar orçamento do CRM) pré-seleciona o cliente vindo por ?cliente= assim que a lista carrega.
+  useEffect(() => {
+    const cid = sp.get('cliente');
+    if (editando || !cid || clienteId || clientes.length === 0) return;
+    if (clientes.some((c) => c.id === cid)) escolherCliente(cid);
+    /* eslint-disable-next-line */
+  }, [clientes]);
 
   // (edição) Casa de volta a condição de pagamento pelo nº de parcelas, quando as condições carregam.
   useEffect(() => {
@@ -233,6 +243,11 @@ export function NovoPedido() {
     const r = await api.post<{ id: string }>('/pedidos', corpoPedido(), token!);
     return r.id;
   }
+  // Vincula o pedido criado à oportunidade do CRM (quando veio de "Gerar orçamento").
+  async function talvezVincularOport(pedidoIdNovo: string) {
+    if (!oportId) return;
+    try { await api.patch('/crm/oportunidades/' + oportId + '/orcamento', { pedidoId: pedidoIdNovo }, token!); } catch { /* ignora */ }
+  }
 
   // "Salvar como orçamento": só salva (status fica em orçamento) e vai ao detalhe.
   async function salvarOrcamento() {
@@ -240,6 +255,7 @@ export function NovoPedido() {
     try {
       const id = await salvar();
       await talvezSalvarEndereco();
+      await talvezVincularOport(id);
       nav('/comercial/pedidos/' + id);
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
@@ -253,6 +269,7 @@ export function NovoPedido() {
     try {
       const id = await salvar();
       await talvezSalvarEndereco();
+      await talvezVincularOport(id);
       let confirmou = false;
       try { await api.patch('/pedidos/' + id + '/status', { status: 'aguardando_pagamento' }, token!); confirmou = true; } catch { /* confirma no detalhe */ }
       // Pix/Boleto ficam pendentes de baixa no Financeiro — avisa por toast.

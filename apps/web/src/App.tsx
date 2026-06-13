@@ -23,6 +23,7 @@ import { Vendedores } from './pages/Vendedores.js';
 import { Favorecidos } from './pages/Favorecidos.js';
 import { Motoboys } from './pages/Motoboys.js';
 import { TabelaPreco } from './pages/TabelaPreco.js';
+import { Crm } from './pages/Crm.js';
 import { Pedidos } from './pages/Pedidos.js';
 import { NovoPedido } from './pages/NovoPedido.js';
 import { PedidoDetalhe } from './pages/PedidoDetalhe.js';
@@ -88,6 +89,7 @@ export function App() {
                 <Route path="/comercial/pedidos/:id/romaneio" element={<ProtectedRoute capability="comercial.pedido.listar"><Romaneio /></ProtectedRoute>} />
                 <Route path="/comercial/pedidos/:id" element={<Protegida cap="comercial.pedido.listar"><PedidoDetalhe /></Protegida>} />
                 <Route path="/comercial/precos" element={<Protegida cap="comercial.preco.listar"><TabelaPreco /></Protegida>} />
+                <Route path="/comercial/crm" element={<Protegida cap="comercial.crm.ver"><Crm /></Protegida>} />
                 <Route path="/estoque/expedicao" element={<Protegida cap="comercial.pedido.gerenciar"><KanbanExpedicao /></Protegida>} />
                 <Route path="/estoque/baixa" element={<Protegida cap="estoque.baixa.criar"><BaixaPerda /></Protegida>} />
                 <Route path="/estoque/posicao" element={<Protegida cap="estoque.saldo.ver"><PosicaoEstoque /></Protegida>} />
