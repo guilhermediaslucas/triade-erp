@@ -33,7 +33,16 @@ export interface SerieDashboard {
   data: number[];
   formato: 'moeda' | 'quantidade';
 }
+// Drilldown do gráfico de faturamento: detalhe de um mês (clique numa barra/ponto).
+export interface DrillFaturamento {
+  mes: string;                 // YYYY-MM
+  total: number;
+  pedidos: number;
+  ticketMedio: number;
+  topClientes: { nome: string; total: number }[];
+}
 export interface DashboardRepository {
   resumo(schema: string): Promise<ResumoDashboard>;
   serie(schema: string, tipo: TipoSerie, de: string | null, ate: string | null): Promise<SerieDashboard>;
+  drillFaturamento(schema: string, mes: string): Promise<DrillFaturamento>;
 }

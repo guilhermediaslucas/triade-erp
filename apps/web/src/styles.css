@@ -579,6 +579,11 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
 .fstat .l { font-size: 12px; color: var(--muted); } .fstat .v { font-size: 18px; font-weight: 700; margin-top: 2px; }
 .fstat.sel { background: var(--accent2-soft); border-color: var(--accent2); }
 .dash-footer { color: var(--muted2); font-size: 12px; text-align: center; padding: 18px 0 4px; }
+/* Dashboard interativo: animação de entrada do gráfico + hover/clique nos pontos */
+@keyframes dash-chart-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.dash-chart-in { animation: dash-chart-in .5s ease-out; }
+.dash-ponto-c { transition: r .12s ease, fill .12s ease; }
+.dash-ponto:hover .dash-ponto-c { r: 5.5; }
 @media (max-width: 1100px) { .dash-row.c5, .dash-row.c2, .dash-row.d2, .dash-row.d3, .alerts { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 680px) { .dash-row.c5, .dash-row.c2, .dash-row.c3, .dash-row.d2, .dash-row.d3, .alerts, .quick { grid-template-columns: 1fr; } }
 

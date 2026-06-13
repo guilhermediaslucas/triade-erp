@@ -28,6 +28,20 @@ interface Resumo {
 const CORES = ['#7b61ff', '#3b82f6', '#16a34a', '#ea9213', '#e1483b', '#6366f1'];
 const pctBR = (n: number) => Math.abs(n).toLocaleString('pt-BR', { maximumFractionDigits: 1 });
 
+// Contagem animada (0 → valor) com easing, ~0,8s. Usada nos KPIs.
+function AnimaNum({ to, moeda: m }: { to: number; moeda: boolean }) {
+  const [v, setV] = useState(0);
+  useEffect(() => {
+    let raf = 0; const t0 = performance.now(); const dur = 800;
+    const step = (now: number) => {
+      const p = Math.min((now - t0) / dur, 1); const e = 1 - Math.pow(1 - p, 3);
+      setV(to * e); if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step); return () => cancelAnimationFrame(raf);
+  }, [to]);
+  return <>{m ? abrevMoeda(v) : Math.round(v).toLocaleString('pt-BR')}</>;
+}
+
 function Delta({ pct, suf }: { pct: number | null; suf?: string }) {
   const { t } = useI18n();
   if (pct === null) return <div className="delta up">{t('dash.novo_periodo')}{suf ? ' · ' + suf : ''}</div>;
@@ -35,7 +49,7 @@ function Delta({ pct, suf }: { pct: number | null; suf?: string }) {
   return <div className={'delta ' + (up ? 'up' : 'down')}>{up ? '▲' : '▼'} {pctBR(pct)}%{suf ? ' ' + suf : ''}</div>;
 }
 
-function GraficoLinha({ pontos, anteriores }: { pontos: { mes: string; total: number }[]; anteriores: number[] }) {
+function GraficoLinha({ pontos, anteriores, onPick }: { pontos: { mes: string; total: number }[]; anteriores: number[]; onPick?: (mes: string) => void }) {
   const W = 560, H = 220, padL = 48, padR = 12, padT = 10, padB = 26;
   const n = pontos.length;
   const max = Math.max(1, ...pontos.map((p) => p.total), ...anteriores);
@@ -46,7 +60,7 @@ function GraficoLinha({ pontos, anteriores }: { pontos: { mes: string; total: nu
   const ptsAnt = anteriores.map((v, i) => `${x(i)},${y(v)}`).join(' ');
   const area = `${padL},${padT + innerH} ${pts} ${x(n - 1)},${padT + innerH}`;
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 230 }}>
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 230 }} className="dash-chart-in">
       {[0, 0.25, 0.5, 0.75, 1].map((g) => {
         const yy = padT + innerH * (1 - g);
         return (
@@ -60,8 +74,9 @@ function GraficoLinha({ pontos, anteriores }: { pontos: { mes: string; total: nu
       <polygon points={area} fill="var(--accent)" opacity="0.10" />
       <polyline points={pts} fill="none" stroke="var(--accent)" strokeWidth="2.5" />
       {pontos.map((p, i) => (
-        <g key={i}>
-          <circle cx={x(i)} cy={y(p.total)} r="3" fill="var(--accent)" />
+        <g key={i} onClick={onPick ? () => onPick(p.mes) : undefined} style={onPick ? { cursor: 'pointer' } : undefined} className="dash-ponto">
+          {onPick && <circle cx={x(i)} cy={y(p.total)} r="12" fill="transparent" />}
+          <circle cx={x(i)} cy={y(p.total)} r="3.5" fill="var(--accent)" className="dash-ponto-c" />
           <text x={x(i)} y={H - 8} fontSize="10" textAnchor="middle" fill="var(--muted)">{p.mes.slice(5)}/{p.mes.slice(2, 4)}</text>
         </g>
       ))}
@@ -106,6 +121,7 @@ export function Dashboard() {
   const navigate = useNavigate();
   const [d, setD] = useState<Resumo | null>(null);
   const [erro, setErro] = useState<string | null>(null);
+  const [drillMes, setDrillMes] = useState<string | null>(null);
   useEffect(() => { api.get<Resumo>('/dashboard', token!).then(setD).catch((e) => setErro((e as ErroApi).chaveI18n)); /* eslint-disable-next-line */ }, []);
 
   if (erro) return <div className="alerta-erro">{t(erro)}</div>;
@@ -115,12 +131,12 @@ export function Dashboard() {
   const totalContas = d.saldosBancarios.reduce((a, b) => a + b.saldo, 0);
   const fmtData = (s: string) => new Date(s).toLocaleDateString('pt-BR');
 
-  const kpis: { tipo: string; ic: string; tint: string; lbl: string; val: string; pct?: number | null; suf?: string; sub?: string }[] = [
-    { tipo: 'dia', ic: '🛒', tint: 'tint-pp', lbl: t('dash.vendas_dia'), val: abrevMoeda(d.vendasDia), pct: d.vendasDiaDeltaPct, suf: t('dash.vs_ontem') },
-    { tipo: 'semana', ic: '🕐', tint: 'tint-bl', lbl: t('dash.vendas_semana'), val: abrevMoeda(d.vendasSemana), pct: d.vendasSemanaDeltaPct, suf: t('dash.vs_semana') },
-    { tipo: 'mes', ic: '📈', tint: 'tint-gr', lbl: t('dash.vendas_mes'), val: abrevMoeda(d.vendasMes), pct: d.vendasMesDeltaPct, suf: t('dash.vs_mes') },
-    { tipo: 'ano', ic: '💲', tint: 'tint-or', lbl: t('dash.vendas_ano'), val: abrevMoeda(d.vendasAno), pct: d.vendasAnoDeltaPct, suf: t('dash.vs_ano') },
-    { tipo: 'clientes', ic: '👥', tint: 'tint-in', lbl: t('dash.clientes_ativos'), val: d.clientesAtivos.toLocaleString('pt-BR'), sub: d.clientesAtivos.toLocaleString('pt-BR') + ' ' + t('dash.cli_ativos_total') },
+  const kpis: { tipo: string; ic: string; tint: string; lbl: string; raw: number; moeda: boolean; pct?: number | null; suf?: string; sub?: string }[] = [
+    { tipo: 'dia', ic: '🛒', tint: 'tint-pp', lbl: t('dash.vendas_dia'), raw: d.vendasDia, moeda: true, pct: d.vendasDiaDeltaPct, suf: t('dash.vs_ontem') },
+    { tipo: 'semana', ic: '🕐', tint: 'tint-bl', lbl: t('dash.vendas_semana'), raw: d.vendasSemana, moeda: true, pct: d.vendasSemanaDeltaPct, suf: t('dash.vs_semana') },
+    { tipo: 'mes', ic: '📈', tint: 'tint-gr', lbl: t('dash.vendas_mes'), raw: d.vendasMes, moeda: true, pct: d.vendasMesDeltaPct, suf: t('dash.vs_mes') },
+    { tipo: 'ano', ic: '💲', tint: 'tint-or', lbl: t('dash.vendas_ano'), raw: d.vendasAno, moeda: true, pct: d.vendasAnoDeltaPct, suf: t('dash.vs_ano') },
+    { tipo: 'clientes', ic: '👥', tint: 'tint-in', lbl: t('dash.clientes_ativos'), raw: d.clientesAtivos, moeda: false, sub: d.clientesAtivos.toLocaleString('pt-BR') + ' ' + t('dash.cli_ativos_total') },
   ];
   const avisos = [
     { ic: '🧾', tint: 'tint-rd', n: qtd('orcamento'), txt: t('dash.av_orcamento'), to: '/comercial/pedidos', cap: 'comercial.pedido.listar' },
@@ -147,7 +163,7 @@ export function Dashboard() {
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/dashboard/serie/' + k.tipo); } }}>
             <div className="kpi">
               <div className={'kpi-ic ' + k.tint}>{k.ic}</div>
-              <div><div className="lbl">{k.lbl}</div><div className="val">{k.val}</div>{k.sub ? <div className="delta">{k.sub}</div> : <Delta pct={k.pct ?? null} suf={k.suf} />}</div>
+              <div><div className="lbl">{k.lbl}</div><div className="val"><AnimaNum to={k.raw} moeda={k.moeda} /></div>{k.sub ? <div className="delta">{k.sub}</div> : <Delta pct={k.pct ?? null} suf={k.suf} />}</div>
             </div>
           </div>
         ))}
@@ -161,7 +177,8 @@ export function Dashboard() {
               <span><i style={{ background: 'var(--muted)' }} />{t('dash.periodo_anterior')}</span>
             </div>
           </div>
-          <GraficoLinha pontos={d.faturamentoMensal} anteriores={d.faturamentoAnterior.map((a) => a.total)} />
+          <GraficoLinha pontos={d.faturamentoMensal} anteriores={d.faturamentoAnterior.map((a) => a.total)} onPick={setDrillMes} />
+          <div className="muted" style={{ fontSize: 11, marginTop: 4, textAlign: 'right' }}>{t('dash.clique_ponto')}</div>
         </div>
         <div className="card">
           <div className="card-head"><h3>{t('dash.por_categoria')}</h3></div>
@@ -274,6 +291,40 @@ export function Dashboard() {
       </div>
 
       <div className="dash-footer">{t('dash.footer')}</div>
+      {drillMes && <DrillModal mes={drillMes} onFechar={() => setDrillMes(null)} />}
     </div>
+  );
+}
+
+interface DrillFat { mes: string; total: number; pedidos: number; ticketMedio: number; topClientes: { nome: string; total: number }[]; }
+// Modal de drilldown de um mês do faturamento (clique no ponto do gráfico).
+function DrillModal({ mes, onFechar }: { mes: string; onFechar: () => void }) {
+  const { token } = useAuth(); const { t } = useI18n();
+  const [dd, setDd] = useState<DrillFat | null>(null);
+  const [erro, setErro] = useState<string | null>(null);
+  useEffect(() => { api.get<DrillFat>('/dashboard/drill?mes=' + encodeURIComponent(mes), token!).then(setDd).catch((e) => setErro((e as ErroApi).chaveI18n)); /* eslint-disable-next-line */ }, [mes]);
+  const titulo = mes.slice(5) + '/' + mes.slice(0, 4);
+  return (
+    <div className="modal-fundo" onClick={onFechar}><div className="modal modal-lg" onClick={(e) => e.stopPropagation()}>
+      <div className="card-head" style={{ marginBottom: 4 }}><h2 style={{ margin: 0 }}>{t('dash.faturamento')} · {titulo}</h2></div>
+      <div className="muted" style={{ fontSize: 13, marginBottom: 14 }}>{t('dash.drill_sub')}</div>
+      {erro && <div className="alerta-erro">{t(erro)}</div>}
+      {!dd && !erro && <div className="muted">{t('common.carregando')}</div>}
+      {dd && (<>
+        <div className="kpi-row" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: 14 }}>
+          <div className="card kpi-mock"><div className="kpi-ic tint-pp">$</div><div><div className="kpi-lbl">{t('dash.drill_faturado')}</div><div className="kpi-val">{moeda(dd.total)}</div></div></div>
+          <div className="card kpi-mock"><div className="kpi-ic tint-bl">#</div><div><div className="kpi-lbl">{t('dash.drill_pedidos')}</div><div className="kpi-val">{dd.pedidos}</div></div></div>
+          <div className="card kpi-mock"><div className="kpi-ic tint-gr">~</div><div><div className="kpi-lbl">{t('dash.drill_ticket')}</div><div className="kpi-val">{moeda(dd.ticketMedio)}</div></div></div>
+        </div>
+        <div className="perm-titulo">{t('dash.drill_top_clientes')}</div>
+        <div className="lst">
+          {dd.topClientes.length === 0 && <div className="it" style={{ color: 'var(--muted)' }}>{t('dash.sem_vendas')}</div>}
+          {dd.topClientes.map((c) => (
+            <div key={c.nome} className="it"><div className="nm" style={{ flex: 1 }}>{c.nome}</div><b className="qt" style={{ color: 'var(--ink)' }}>{moeda(c.total)}</b></div>
+          ))}
+        </div>
+      </>)}
+      <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.fechar')}</button></div>
+    </div></div>
   );
 }

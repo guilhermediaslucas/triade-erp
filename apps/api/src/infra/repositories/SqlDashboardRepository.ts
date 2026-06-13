@@ -1,5 +1,5 @@
 import type { DataSource } from 'typeorm';
-import type { DashboardRepository, ResumoDashboard, SerieDashboard, TipoSerie } from '../../domain/dashboard/Dashboard.js';
+import type { DashboardRepository, DrillFaturamento, ResumoDashboard, SerieDashboard, TipoSerie } from '../../domain/dashboard/Dashboard.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 // null = sem período anterior (cur>0 e ant=0) → frontend mostra "novo no período".
@@ -189,6 +189,29 @@ export class SqlDashboardRepository implements DashboardRepository {
       labels: rows.map((r: any) => r.rotulo),
       data: rows.map((r: any) => um(r.total)),
       formato: 'moeda',
+    };
+  }
+
+  // Drilldown de um mês do faturamento (clique no ponto/barra do gráfico).
+  async drillFaturamento(schema: string, mes: string): Promise<DrillFaturamento> {
+    const s = validarSchema(schema);
+    const um = (v: any) => Number(v ?? 0);
+    const NAO = `status NOT IN ('orcamento','cancelado')`;
+    const tot = (await this.ds.query(
+      `SELECT COALESCE(SUM(total),0) total, COUNT(*)::int pedidos
+         FROM "${s}".pedido
+        WHERE ${NAO} AND to_char(date_trunc('month', criado_em),'YYYY-MM') = $1`, [mes]))[0];
+    const top = await this.ds.query(
+      `SELECT COALESCE(c.nome,'—') nome, COALESCE(SUM(p.total),0) total
+         FROM "${s}".pedido p
+         LEFT JOIN "${s}".cliente c ON c.id = p.cliente_id
+        WHERE p.${NAO} AND to_char(date_trunc('month', p.criado_em),'YYYY-MM') = $1
+        GROUP BY 1 ORDER BY total DESC LIMIT 5`, [mes]);
+    const pedidos = um(tot.pedidos), total = um(tot.total);
+    return {
+      mes, total, pedidos,
+      ticketMedio: pedidos > 0 ? Math.round((total / pedidos) * 100) / 100 : 0,
+      topClientes: top.map((r: any) => ({ nome: r.nome, total: um(r.total) })),
     };
   }
 }
