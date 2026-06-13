@@ -49,7 +49,7 @@ export interface Pedido {
 
 export interface PedidoResumo {
   id: string; numero: number; clienteNome: string | null; vendedorNome: string | null;
-  status: StatusPedido; total: number; criadoEm: Date; formaEntrega: string;
+  status: StatusPedido; total: number; criadoEm: Date; formaEntrega: string; formaPagamento: string | null;
 }
 
 export interface NovoPedido {

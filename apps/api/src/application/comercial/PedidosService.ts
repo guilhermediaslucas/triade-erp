@@ -72,6 +72,9 @@ export class PedidosService {
       if (!prod) throw new ErroAplicacao('pedido.produto_invalido', 400);
       const quantidade = Number(it?.quantidade);
       if (!Number.isFinite(quantidade) || quantidade <= 0) throw new ErroAplicacao('pedido.qtd_invalida', 400);
+      // Bloqueia pedido/orçamento sem estoque suficiente (decisão do Gui).
+      const disp = await this.estoque.disponivel(schema, prod.id);
+      if (quantidade > disp) throw new ErroAplicacao('estoque.insuficiente', 409);
       const precoUnitario = (await this.precosCliente.precoDe(schema, cliente.id, prod.id)) ?? (await this.precos.precoDe(schema, prod.id));
       const subtotal = Math.round(quantidade * precoUnitario * 100) / 100;
       itens.push({ produtoId: prod.id, produtoNome: prod.nome, quantidade, precoUnitario, subtotal });

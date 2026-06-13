@@ -234,13 +234,13 @@ a { text-decoration: none; color: inherit; }
 .kb-vazio { color: #cbd5e1; text-align: center; font-size: 13px; padding: 8px 0; }
 
 /* kanban comercial (padrão do mockup) — colunas com borda colorida + ícone */
-.pk-board { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 8px; align-items: flex-start; }
-.pk-col { background: var(--card); border: 1px solid var(--borda); border-top: 3px solid var(--borda); border-radius: 12px; padding: 12px; min-width: 175px; width: 175px; min-height: 300px; flex: none; }
+.pk-board { display: grid; grid-template-columns: repeat(6, minmax(150px, 1fr)); gap: 10px; overflow-x: auto; padding-bottom: 8px; align-items: start; }
+.pk-col { background: var(--card); border: 1px solid var(--borda); border-top: 3px solid var(--borda); border-radius: 12px; padding: 11px; min-height: 200px; }
 .pk-h { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 10px; }
 .pk-nm { font-size: 11px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; line-height: 1.2; }
 .pk-nm .ic { flex: none; }
 .pk-ct { font-size: 11px; font-weight: 700; background: var(--bg); border-radius: 9px; padding: 2px 8px; min-width: 22px; text-align: center; color: var(--ink); }
-.pk-body { display: flex; flex-direction: column; gap: 8px; min-height: 240px; }
+.pk-body { display: flex; flex-direction: column; gap: 8px; min-height: 150px; }
 .pk-card { background: #fff; border: 1px solid var(--borda); border-radius: 10px; padding: 10px 12px; cursor: pointer; transition: box-shadow .12s, border-color .12s; }
 .pk-card:hover { border-color: var(--accent); box-shadow: 0 4px 12px rgba(20,20,40,.08); }
 .pk-card-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; }

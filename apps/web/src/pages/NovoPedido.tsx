@@ -278,7 +278,9 @@ export function NovoPedido() {
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
 
-  const bloqueado = salv;
+  // Bloqueia criar/salvar quando algum item passa do disponível em estoque.
+  const excedeEstoque = estoqueOk && itens.some((it) => it.produtoId && (Number(it.quantidade) || 0) > dispDe(it.produtoId));
+  const bloqueado = salv || excedeEstoque;
 
   return (
     <div>
@@ -363,11 +365,13 @@ export function NovoPedido() {
         <table className="tabela" style={{ marginTop: 6 }}>
           <thead><tr>
             <th style={{ width: 36 }}><input type="checkbox" checked={itens.length > 0 && sel.size === itens.length} onChange={toggleTodos} /></th>
-            <th>{t('precos.produto')}</th><th style={{ width: 110 }}>{t('rel.qtd')}</th><th style={{ width: 130 }}>{t('pedidos.preco_un')}</th><th style={{ width: 130 }}>{t('pedidos.subtotal')}</th><th style={{ width: 60 }}></th>
+            <th>{t('precos.produto')}</th><th style={{ width: 90 }}>{t('rel.qtd')}</th><th style={{ width: 110 }}>{t('pedidos.disponivel_col')}</th><th style={{ width: 120 }}>{t('pedidos.preco_un')}</th><th style={{ width: 120 }}>{t('pedidos.subtotal')}</th><th style={{ width: 50 }}></th>
           </tr></thead>
           <tbody>
-            {itens.length === 0 && <tr><td colSpan={6} className="vazio">{t('pedidos.sem_itens')}</td></tr>}
-            {itens.map((it, i) => (
+            {itens.length === 0 && <tr><td colSpan={7} className="vazio">{t('pedidos.sem_itens')}</td></tr>}
+            {itens.map((it, i) => {
+              const excede = estoqueOk && !!it.produtoId && (Number(it.quantidade) || 0) > dispDe(it.produtoId);
+              return (
               <tr key={i} className={sel.has(i) ? 'linha-sel' : ''}>
                 <td><input type="checkbox" checked={sel.has(i)} onChange={() => toggleSel(i)} /></td>
                 <td>
@@ -375,18 +379,15 @@ export function NovoPedido() {
                     <option value="">{t('pedidos.escolha_produto')}</option>
                     {produtos.map((pp) => <option key={pp.produtoId} value={pp.produtoId}>{pp.produtoNome}</option>)}
                   </select>
-                  {estoqueOk && it.produtoId && (
-                    <small className="hint" style={{ color: (Number(it.quantidade) || 0) > dispDe(it.produtoId) ? '#e1483b' : 'var(--muted)' }}>
-                      {t('pedidos.disponivel')}: {dispDe(it.produtoId)}
-                    </small>
-                  )}
                 </td>
-                <td><input type="number" min="0" step="1" value={it.quantidade} onChange={(e) => setItem(i, 'quantidade', e.target.value)} style={{ width: 90 }} /></td>
+                <td><input type="number" min="0" step="1" value={it.quantidade} onChange={(e) => setItem(i, 'quantidade', e.target.value)} style={{ width: 70 }} /></td>
+                <td>{!it.produtoId ? '—' : !estoqueOk ? '—' : <b style={{ color: excede ? '#e1483b' : '#16a34a' }}>{dispDe(it.produtoId)}</b>}</td>
                 <td>{moeda(precoDe(it.produtoId))}</td>
                 <td><b>{moeda(subDe(it))}</b></td>
                 <td><button type="button" className="btn-link" onClick={() => delItem(i)} aria-label={t('common.remover')}><Ic name="i-x" className="sm" /></button></td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -410,6 +411,7 @@ export function NovoPedido() {
         </div>
       </div>
 
+      {excedeEstoque && <div className="alerta-erro" style={{ maxWidth: 'none' }}>{t('pedidos.estoque_excede')}</div>}
       <div className="form-actions">
         <button className="btn-primary" disabled={bloqueado} onClick={criarPedido}>{editando ? t('pedidos.confirmar_virar') : t('pedidos.criar')}</button>
         <button className="btn-ghost" disabled={bloqueado} onClick={salvarOrcamento}>{editando ? t('pedidos.salvar_alteracoes') : t('pedidos.salvar_orcamento')}</button>

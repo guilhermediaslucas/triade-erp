@@ -1951,7 +1951,7 @@ Object.assign(pt, {
   'pedidos.excluir_sel': 'Excluir selecionados', 'pedidos.itens_sel': 'item(ns) selecionado(s)', 'pedidos.total_sel': 'Total selecionado',
   'pedidos.crumb_editar': 'Comercial / Pedidos / Editar orçamento', 'pedidos.editar': 'Editar orçamento', 'pedidos.sub_editar': 'Ajuste os itens e dados antes de virar pedido',
   'pedidos.end_manter': 'Manter endereço atual', 'pedidos.confirmar_virar': 'Confirmar pedido', 'pedidos.salvar_alteracoes': 'Salvar alterações',
-  'pedidos.disponivel': 'disp.',
+  'pedidos.disponivel': 'disp.', 'pedidos.disponivel_col': 'Disponível', 'pedidos.estoque_excede': 'Há itens com quantidade acima do disponível em estoque. Ajuste para criar o pedido/orçamento.',
 });
 Object.assign(en, {
   'pedidos.crumb_novo': 'Sales / Orders / New', 'pedidos.sub_novo': 'Customer, items and payment',
@@ -1966,7 +1966,7 @@ Object.assign(en, {
   'pedidos.excluir_sel': 'Delete selected', 'pedidos.itens_sel': 'item(s) selected', 'pedidos.total_sel': 'Selected total',
   'pedidos.crumb_editar': 'Sales / Orders / Edit quote', 'pedidos.editar': 'Edit quote', 'pedidos.sub_editar': 'Adjust items and details before turning it into an order',
   'pedidos.end_manter': 'Keep current address', 'pedidos.confirmar_virar': 'Confirm order', 'pedidos.salvar_alteracoes': 'Save changes',
-  'pedidos.disponivel': 'avail.',
+  'pedidos.disponivel': 'avail.', 'pedidos.disponivel_col': 'Available', 'pedidos.estoque_excede': 'Some items exceed available stock. Adjust to create the order/quote.',
 });
 Object.assign(es, {
   'pedidos.crumb_novo': 'Comercial / Pedidos / Nuevo', 'pedidos.sub_novo': 'Cliente, ítems y forma de pago',
@@ -1981,7 +1981,7 @@ Object.assign(es, {
   'pedidos.excluir_sel': 'Eliminar seleccionados', 'pedidos.itens_sel': 'ítem(s) seleccionado(s)', 'pedidos.total_sel': 'Total seleccionado',
   'pedidos.crumb_editar': 'Comercial / Pedidos / Editar presupuesto', 'pedidos.editar': 'Editar presupuesto', 'pedidos.sub_editar': 'Ajusta los ítems y datos antes de convertirlo en pedido',
   'pedidos.end_manter': 'Mantener dirección actual', 'pedidos.confirmar_virar': 'Confirmar pedido', 'pedidos.salvar_alteracoes': 'Guardar cambios',
-  'pedidos.disponivel': 'disp.',
+  'pedidos.disponivel': 'disp.', 'pedidos.disponivel_col': 'Disponible', 'pedidos.estoque_excede': 'Hay ítems por encima del stock disponible. Ajusta para crear el pedido/presupuesto.',
 });
 
 Object.assign(pt, { 'pedido.workflow': 'Workflow', 'pedido.titulo': 'Pedido', 'pedido.lote': 'Lote', 'pedido.validade': 'Validade', 'pedido.editar': 'Editar', 'pedido.so_orcamento_edita': 'Só é possível editar enquanto o pedido está em orçamento.' });
