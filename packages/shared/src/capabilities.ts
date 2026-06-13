@@ -75,6 +75,12 @@ export const CAPABILITIES: Capability[] = [
 export const CAPABILITY_IDS: string[] = CAPABILITIES.map((c) => c.id);
 export function capabilityExiste(id: string): boolean { return CAPABILITY_IDS.includes(id); }
 
+// Caps de "painel TV": NÃO são acesso comum — marcam usuários de Gestão à Vista,
+// cuja tela inicial redireciona para o painel. Não devem ir para perfis "vê tudo"
+// (Administrador/Diretor), senão esses usuários cairiam no painel TV ao logar.
+export const CAPS_PAINEL_TV: string[] = ['painel.tv_comercial', 'painel.tv_expedicao'];
+export const CAPABILITY_IDS_GERAIS: string[] = CAPABILITY_IDS.filter((id) => !CAPS_PAINEL_TV.includes(id));
+
 // ===== Perfis padrão (criados em toda empresa, atuais e novas) =====
 const REL_COMERCIAL = ['relatorios.ver', 'relatorios.vendas.ver', 'relatorios.pedidos.ver', 'relatorios.produtos.ver', 'relatorios.categorias.ver', 'relatorios.abc.ver'];
 

@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { DataSource } from 'typeorm';
-import { CAPABILITY_IDS, PERFIS_PADRAO } from '@triade/shared';
+import { CAPABILITY_IDS_GERAIS, PERFIS_PADRAO } from '@triade/shared';
 import { BcryptHashSenha } from '../security/BcryptHashSenha.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
@@ -19,7 +19,7 @@ export async function garantirPerfisPadrao(ds: DataSource, schemaRaw: string, co
       await ds.query(`INSERT INTO "${s}".perfil (id, nome, ativo, descricao) VALUES ($1,$2,true,$3)`, [id, p.nome, p.descricao]);
       perfil = { id };
     }
-    const caps = p.caps === 'TODAS' ? CAPABILITY_IDS : p.caps;
+    const caps = p.caps === 'TODAS' ? CAPABILITY_IDS_GERAIS : p.caps;
     for (const cap of caps) {
       await ds.query(`INSERT INTO "${s}".perfil_capability (perfil_id, capability) VALUES ($1,$2) ON CONFLICT DO NOTHING`, [perfil.id, cap]);
     }
