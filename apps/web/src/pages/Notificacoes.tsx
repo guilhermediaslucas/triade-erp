@@ -23,7 +23,7 @@ export function Notificacoes() {
         if (temCapability('financeiro.receber.listar')) {
           const ag = await api.get<{ linhas: { diasAtraso: number }[] }>('/financeiro/aging-receber', token).catch(() => null);
           const venc = ag ? ag.linhas.filter((l) => l.diasAtraso > 0).length : 0;
-          if (venc > 0) out.push({ chave: 'sino.titulos_vencidos', icone: 'i-dollar', tint: 'tint-rd', qtd: venc, to: '/financeiro/aging-receber' });
+          if (venc > 0) out.push({ chave: 'sino.titulos_vencidos', icone: 'i-dollar', tint: 'tint-rd', qtd: venc, to: '/financeiro/receber' });
           const rec = await api.get<{ origem: string; status: string }[]>('/financeiro/receber', token).catch(() => null);
           const pend = rec ? rec.filter((x) => x.origem === 'pedido' && x.status === 'aberto').length : 0;
           if (pend > 0) out.push({ chave: 'sino.pendencia_baixa', icone: 'i-receipt', tint: 'tint-or', qtd: pend, to: '/financeiro/receber' });

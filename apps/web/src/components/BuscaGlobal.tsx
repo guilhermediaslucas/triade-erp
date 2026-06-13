@@ -21,7 +21,6 @@ const DESTINOS: Destino[] = [
   { rotulo: 'menu.gestao_fretes', icone: 'i-truck', to: '/logistica/fretes', cap: 'logistica.frete.ver' },
   { rotulo: 'menu.receber', icone: 'i-dollar', to: '/financeiro/receber', cap: 'financeiro.receber.listar' },
   { rotulo: 'menu.pagar', icone: 'i-dollar', to: '/financeiro/pagar', cap: 'financeiro.pagar.listar' },
-  { rotulo: 'menu.aging', icone: 'i-clock', to: '/financeiro/aging-receber', cap: 'financeiro.receber.listar' },
   { rotulo: 'menu.fluxo', icone: 'i-chart', to: '/financeiro/fluxo', cap: 'financeiro.fluxo.ver' },
   { rotulo: 'menu.dre', icone: 'i-clip', to: '/financeiro/dre', cap: 'financeiro.fluxo.ver' },
   { rotulo: 'menu.nota', icone: 'i-receipt', to: '/financeiro/nota', cap: 'financeiro.compra.criar' },
