@@ -21,29 +21,30 @@ function moedaTV(v: number): string {
   return 'R$ ' + Math.round(n).toLocaleString('pt-BR');
 }
 
-// Gráfico de barras (vendas por dia) — SVG, ocupa a largura toda; rótulos no eixo X.
+// Gráfico de barras (vendas por dia). O SVG preenche a altura do card (barras
+// esticadas, preserveAspectRatio=none); as datas vão em HTML embaixo, sem distorcer.
 function Barras({ labels, data }: { labels: string[]; data: number[] }) {
-  const W = 1000, H = 340, padB = 26;
+  const W = 1000, H = 300;
   const n = Math.max(1, data.length);
   const max = Math.max(1, ...data);
-  const bw = (W / n) * 0.62;
-  const passo = Math.ceil(n / 12);   // ~12 rótulos no máx p/ não sobrepor
+  const bw = (W / n) * 0.64;
+  const passo = Math.ceil(n / 8);
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block' }} role="img">
-      <line x1="0" y1={H - padB} x2={W} y2={H - padB} stroke="var(--tvborda)" strokeWidth="1" />
-      {data.map((v, i) => {
-        const h = (v / max) * (H - padB - 8);
-        const cx = (W / n) * (i + 0.5);
-        return (
-          <g key={i}>
-            <rect x={cx - bw / 2} y={H - padB - h} width={bw} height={h} rx="2" fill="#16a34a"><title>{labels[i]}: {moeda(v)}</title></rect>
-            {(i % passo === 0 || i === n - 1) && (
-              <text x={cx} y={H - 6} fontSize="16" textAnchor="middle" fill="var(--tvink)">{labels[i]}</text>
-            )}
-          </g>
-        );
-      })}
-    </svg>
+    <>
+      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ width: '100%', flex: 1, minHeight: 0, display: 'block' }} role="img">
+        <line x1="0" y1={H - 1} x2={W} y2={H - 1} stroke="var(--tvborda)" strokeWidth="1" />
+        {data.map((v, i) => {
+          const h = (v / max) * (H - 6);
+          const cx = (W / n) * (i + 0.5);
+          return <rect key={i} x={cx - bw / 2} y={H - h} width={bw} height={h} fill="#16a34a"><title>{labels[i]}: {moeda(v)}</title></rect>;
+        })}
+      </svg>
+      <div className="tv-graf-datas">
+        {labels.map((lb, i) => (i % passo === 0 || i === n - 1)
+          ? <span key={i}>{lb}</span>
+          : null)}
+      </div>
+    </>
   );
 }
 
