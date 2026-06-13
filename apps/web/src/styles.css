@@ -533,6 +533,8 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
 .acao-ic { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--borda); background: #fff; border-radius: 8px; color: var(--muted); cursor: pointer; padding: 0; }
 .acao-ic:hover { background: var(--bg); color: var(--ink); border-color: var(--accent); }
 .acao-ic.danger:hover { color: #e1483b; border-color: #e1483b; }
+.acao-ic.ok { color: #16a34a; }
+.acao-ic.ok:hover { color: #fff; background: #16a34a; border-color: #16a34a; }
 .det-linha { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--borda); font-size: 14px; }
 .det-linha:last-of-type { border-bottom: none; }
 .det-rot { color: var(--muted); }

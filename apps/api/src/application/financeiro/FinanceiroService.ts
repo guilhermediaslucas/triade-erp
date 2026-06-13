@@ -178,12 +178,13 @@ export class FinanceiroService {
     await this.repo.definirPrevisto(schema, id, !!previsto);
   }
 
-  async baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null): Promise<void> {
+  async baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null, dataBaixa?: string | null): Promise<void> {
     const t = await this.repo.buscarPorId(schema, id);
     if (!t) throw new ErroAplicacao('financeiro.nao_encontrado', 404);
     if (t.status === 'pago') throw new ErroAplicacao('financeiro.ja_pago', 409);
     if (t.previsto) throw new ErroAplicacao('financeiro.previsto_nao_baixa', 400);
-    await this.repo.baixar(schema, id, (formaPagamento && String(formaPagamento).trim()) || null, contaCorrenteId || null);
+    const data = dataBaixa && /^\d{4}-\d{2}-\d{2}$/.test(String(dataBaixa)) ? String(dataBaixa) : null;
+    await this.repo.baixar(schema, id, (formaPagamento && String(formaPagamento).trim()) || null, contaCorrenteId || null, data);
     // Confirmação do recebimento do título de um pedido (Pix/Boleto) libera o pedido:
     // aguardando_pagamento → aprovado, ficando disponível para Separação no Kanban.
     if (this.pedidos && t.origem === 'pedido' && t.pedidoId) {

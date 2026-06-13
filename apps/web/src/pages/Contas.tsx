@@ -7,6 +7,7 @@ import { moeda, abrevMoeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel } from '../lib/excel.js';
 import { ModalNovaPessoa } from '../components/SeletorPessoa.js';
+import { Ic } from '../components/Icones.js';
 
 type Tipo = 'receber' | 'pagar';
 interface Titulo { id: string; numero: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; vendedorNome: string | null; previsto: boolean; tipoDocumento: string | null; numeroDocumento: string | null; emissao: string | null; criadoEm: string; pagoEm: string | null; }
@@ -256,9 +257,12 @@ export function Contas({ tipo }: { tipo: Tipo }) {
                   ? <input type="checkbox" checked={tt.previsto} disabled={!pode} onChange={() => alternarPrevisto(tt)} title={t('fin.previsto_hint')} />
                   : <span className="muted">—</span>}
               </td>
-              <td className="acoes">{pode && (tt.status === 'aberto'
-                ? <>{!tt.previsto && <button className="btn-link" onClick={() => setBaixar(tt)}>{t('fin.baixar')}</button>} <button className="btn-link" onClick={() => abrirParcelar(tt, 'dividir')}>{t('parcelar.acao')}</button></>
-                : <button className="btn-link" onClick={() => cancelar(tt)}>{t('fin.cancelar_baixa')}</button>)}</td>
+              <td data-label={t('usuarios.acoes')}><span className="acoes-ic">{pode && (tt.status === 'aberto'
+                ? <>
+                    {!tt.previsto && <button className="acao-ic ok" title={t('fin.baixar')} aria-label={t('fin.baixar')} onClick={() => setBaixar(tt)}><Ic name="i-check" className="sm" /></button>}
+                    <button className="acao-ic" title={t('parcelar.acao')} aria-label={t('parcelar.acao')} onClick={() => abrirParcelar(tt, 'dividir')}><Ic name="i-clock" className="sm" /></button>
+                  </>
+                : <button className="acao-ic danger" title={t('fin.cancelar_baixa')} aria-label={t('fin.cancelar_baixa')} onClick={() => cancelar(tt)}><Ic name="i-x" className="sm" /></button>)}</span></td>
             </tr>
           ); })}
         </tbody>
@@ -389,6 +393,7 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
 function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos: Titulo[]; onFechar: () => void; onSalvo: (n: number) => void; }) {
   const { token, temCapability } = useAuth(); const { t } = useI18n();
   const [forma, setForma] = useState('Pix'); const [contaId, setContaId] = useState('');
+  const [dataBaixa, setDataBaixa] = useState(new Date().toISOString().slice(0, 10));
   const [contas, setContas] = useState<{ id: string; nome: string }[]>([]);
   const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
   const totalSel = titulos.reduce((a, x) => a + x.valor, 0);
@@ -398,7 +403,7 @@ function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos:
     setErro(null); setSalv(true);
     let ok = 0;
     for (const tt of titulos) {
-      try { await api.patch('/financeiro/' + tipo + '/' + tt.id + '/baixar', { formaPagamento: forma, contaCorrenteId: contaId || null }, token!); ok++; }
+      try { await api.patch('/financeiro/' + tipo + '/' + tt.id + '/baixar', { formaPagamento: forma, contaCorrenteId: contaId || null, dataBaixa }, token!); ok++; }
       catch (e) { if (!massa) { setErro((e as ErroApi).chaveI18n); setSalv(false); return; } }
     }
     onSalvo(ok);
@@ -406,6 +411,7 @@ function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos:
   return (
     <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()}>
       <h2>{t('fin.baixar')} — {massa ? `${titulos.length} ${t('fin.titulos')} · ` : ''}{moeda(totalSel)}</h2>
+      <label className="campo">{t('fin.data_baixa')}<input type="date" value={dataBaixa} onChange={(e) => setDataBaixa(e.target.value)} /></label>
       <label className="campo">{t('pedidos.forma_pgto')}
         <select value={forma} onChange={(e) => setForma(e.target.value)}><option>Pix</option><option>Boleto</option><option>Cartão</option><option>Dinheiro</option><option>Transferência</option></select>
       </label>

@@ -96,9 +96,10 @@ export class SqlTituloRepository implements TituloRepository {
       [id, t.tipo, t.descricao, t.pessoaNome, t.valor, t.vencimento, origem, pedidoId, t.categoriaFinanceiraId ?? null, t.favorecidoId ?? null, t.previsto === true, t.tipoDocumento ?? null, t.numeroDocumento ?? null, t.emissao ?? null]);
     return id;
   }
-  async baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null): Promise<void> {
+  async baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null, dataBaixa?: string | null): Promise<void> {
     const s = validarSchema(schema);
-    await this.ds.query(`UPDATE "${s}".titulo SET status='pago', forma_pagamento=$2, conta_corrente_id=$3, pago_em=now() WHERE id=$1`, [id, formaPagamento, contaCorrenteId]);
+    // Data da baixa: usa a informada (YYYY-MM-DD) ou agora.
+    await this.ds.query(`UPDATE "${s}".titulo SET status='pago', forma_pagamento=$2, conta_corrente_id=$3, pago_em=COALESCE($4::timestamptz, now()) WHERE id=$1`, [id, formaPagamento, contaCorrenteId, dataBaixa || null]);
   }
   async definirPrevisto(schema: string, id: string, previsto: boolean): Promise<void> {
     const s = validarSchema(schema);

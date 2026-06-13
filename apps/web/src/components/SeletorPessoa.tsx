@@ -74,28 +74,48 @@ export function ModalNovaPessoa({ tipo, onFechar, onCriado }: {
     try {
       const corpo = fornecedor
         ? { nome, fantasia, documento, telefone, email, cep, cidade, uf }
-        : { tipoPessoa, nome, documento, telefone, email, limiteCredito: 0 };
+        : { tipoPessoa, nome, fantasia: tipoPessoa === 'PJ' ? fantasia : '', documento, telefone, email, limiteCredito: 0,
+            enderecos: (cep || cidade || uf) ? [{ cep, cidade, uf, favorito: true }] : [] };
       await api.post(fornecedor ? '/fornecedores' : '/clientes', corpo, token!);
       onCriado(nome.trim());
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
 
   if (!fornecedor) return (
-    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 420 }}>
-      <h2>{t('fin.novo_cliente')}</h2>
+    <div className="modal-fundo"><div className="modal modal-lg" onClick={(e) => e.stopPropagation()}>
+      <h2>{t('fin.cadastrar_cliente_com')}</h2>
       <label className="campo">{t('clientes.tipo')}
         <select value={tipoPessoa} onChange={(e) => setTipoPessoa(e.target.value as 'PJ' | 'PF')}>
           <option value="PJ">{t('clientes.pj')}</option><option value="PF">{t('clientes.pf')}</option>
         </select>
       </label>
       <label className="campo">{tipoPessoa === 'PJ' ? t('pessoa.razao') : t('fin.nome')}<input value={nome} onChange={(e) => setNome(e.target.value)} autoFocus /></label>
+      {tipoPessoa === 'PJ' && <label className="campo">{t('pessoa.fantasia')}<input value={fantasia} onChange={(e) => setFantasia(e.target.value)} placeholder={t('fin.fantasia_ph')} /></label>}
       <div className="cores-grid">
-        <label className="campo">{tipoPessoa === 'PJ' ? 'CNPJ' : 'CPF'}<input value={documento} onChange={(e) => setDoc(tipoPessoa === 'PJ' ? mascaraCnpj(e.target.value) : e.target.value)} placeholder={t('fin.doc_ph')} /></label>
-        <label className="campo">{t('pessoa.telefone')}<input value={telefone} onChange={(e) => setTel(e.target.value)} /></label>
+        <label className="campo">{tipoPessoa === 'PJ' ? 'CNPJ' : 'CPF'}
+          {tipoPessoa === 'PJ'
+            ? <div className="campo-com-botao">
+                <input value={documento} onChange={(e) => setDoc(mascaraCnpj(e.target.value))} placeholder="00.000.000/0000-00" />
+                <button type="button" className="btn-ghost btn-mini" disabled={buscandoCnpj} onClick={buscarDoc}>{buscandoCnpj ? '...' : t('clientes.buscar_cnpj')}</button>
+              </div>
+            : <input value={documento} onChange={(e) => setDoc(e.target.value)} placeholder={t('fin.doc_ph')} />}
+        </label>
+        <label className="campo">{t('fin.celular')}<input value={telefone} onChange={(e) => setTel(e.target.value)} placeholder="+55" /></label>
       </div>
-      <label className="campo">{t('pessoa.email')}<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></label>
+      <div className="cores-grid">
+        <label className="campo">{t('pessoa.email')}<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></label>
+        <label className="campo">{t('fin.uf')}
+          <select value={uf} onChange={(e) => setUf(e.target.value)}>
+            <option value="">UF...</option>{UFS.map((u) => <option key={u} value={u}>{u}</option>)}
+          </select>
+        </label>
+      </div>
+      <div className="cores-grid">
+        <label className="campo">{t('clientes.cidade')}<input value={cidade} onChange={(e) => setCidade(e.target.value)} /></label>
+        <label className="campo">CEP<input value={cep} onChange={(e) => setCep(mascaraCep(e.target.value))} onBlur={cepLookup} placeholder="00000-000" maxLength={9} /></label>
+      </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
-      <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv || nome.trim().length < 2} onClick={salvar}>{t('common.salvar')}</button></div>
+      <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv || nome.trim().length < 2} onClick={salvar}>{t('fin.salvar_cliente')}</button></div>
     </div></div>
   );
 
