@@ -108,7 +108,7 @@ export function ModalNovaPessoa({ tipo, onFechar, onCriado }: {
         <label className="campo">CNPJ
           <div className="campo-com-botao">
             <input value={documento} onChange={(e) => setDoc(mascaraCnpj(e.target.value))} placeholder="00.000.000/0000-00" />
-            <button type="button" className="btn-ghost btn-mini" disabled={buscandoCnpj} onClick={buscarDoc}>{buscandoCnpj ? '...' : t('clientes.buscar')}</button>
+            <button type="button" className="btn-ghost btn-mini" disabled={buscandoCnpj} onClick={buscarDoc}>{buscandoCnpj ? '...' : t('clientes.buscar_cnpj')}</button>
           </div>
         </label>
         <label className="campo">{t('fin.celular')}<input value={telefone} onChange={(e) => setTel(e.target.value)} placeholder="+55" /></label>

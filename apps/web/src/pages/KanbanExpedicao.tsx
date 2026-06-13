@@ -93,7 +93,7 @@ export function KanbanExpedicao() {
                 {cards.map((p) => (
                   <div key={p.id} className="pk-card" draggable
                     onDragStart={() => setArrastando(p.id)} onDragEnd={() => setArrastando(null)}
-                    onClick={() => nav('/comercial/pedidos/' + p.id)}>
+                    onClick={() => nav('/comercial/pedidos/' + p.id + '?exp=1')}>
                     <div className="pk-card-top"><b className="pk-num">{numeroPedido(p.numero)}</b><span className="pk-data">{new Date(p.criadoEm).toLocaleDateString('pt-BR')}</span></div>
                     <div className="pk-cli">{p.clienteNome ?? '—'}</div>
                     <div className="pk-meta"><span className={pillForma(p.formaPagamento)}>{p.formaPagamento ?? '—'}</span><span className="pk-tot">{moeda(p.total)}</span></div>

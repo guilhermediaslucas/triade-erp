@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
@@ -7,6 +7,7 @@ import { useToast } from '../components/Toast.js';
 import { corStatus, moeda, numeroPedido, PROXIMOS, type StatusPedido } from '../lib/pedido.js';
 import { ModalDataEntrega, ModalFormaEnvio } from '../components/ExpedicaoModais.js';
 import { BotaoEscanear } from '../components/BotaoEscanear.js';
+import { useAutoBip } from '../lib/useAutoBip.js';
 
 interface ItemLote { lote: string; validade: string | null; }
 interface Item { produtoNome: string; quantidade: number; precoUnitario: number; subtotal: number; lotes?: ItemLote[]; }
@@ -21,11 +22,16 @@ interface Pedido {
   formaPagamento: string | null; observacao: string | null; enderecoEntrega: string | null;
   formaEntrega: string; motoboyNome: string | null; distanciaKm: number | null;
   formaEnvio: string | null; formaEnvioDetalhe: string | null; entregueEm: string | null;
+  separadoPor: string | null; separadoEm: string | null; expedidoPor: string | null; expedidoEm: string | null;
   subtotal: number; frete: number; total: number; criadoEm: string; itens: Item[];
 }
 
 export function PedidoDetalhe() {
   const { id } = useParams();
+  // Separação/movimentação só são permitidas quando o detalhe é aberto pela
+  // Expedição (Estoque). Pelo Comercial o detalhe é SOMENTE LEITURA.
+  const [sp] = useSearchParams();
+  const modoExpedicao = sp.get('exp') === '1';
   const { token, temCapability } = useAuth();
   const { t } = useI18n();
   const toast = useToast();
@@ -75,6 +81,7 @@ export function PedidoDetalhe() {
     if (codigos.includes(cod)) { setSepErro('etiqueta.duplicada_leitura'); setScan(''); return; }
     setCodigos((cs) => [...cs, cod]); setScan(''); scanRef.current?.focus();
   }
+  const { aoDigitar, aoEnter } = useAutoBip(bipar);
   const totalItens = p ? p.itens.reduce((a, i) => a + i.quantidade, 0) : 0;
   async function confirmarSeparacao() {
     setSepErro(null);
@@ -133,6 +140,8 @@ export function PedidoDetalhe() {
           <div><span className="det-l">{t('entrega.forma')}</span><div>{entregaTexto}</div></div>
           {p.formaEnvio && <div><span className="det-l">{t('pedido.forma_envio')}</span><div>{p.formaEnvio}{p.formaEnvioDetalhe ? ' · ' + p.formaEnvioDetalhe : ''}</div></div>}
           {p.entregueEm && <div><span className="det-l">{t('pedido.entregue_em')}</span><div>{new Date(p.entregueEm + 'T00:00:00').toLocaleDateString('pt-BR')}</div></div>}
+          {p.separadoPor && <div><span className="det-l">{t('pedido.separado_por')}</span><div>{p.separadoPor}{p.separadoEm ? ' · ' + new Date(p.separadoEm).toLocaleString('pt-BR') : ''}</div></div>}
+          {p.expedidoPor && <div><span className="det-l">{t('pedido.expedido_por')}</span><div>{p.expedidoPor}{p.expedidoEm ? ' · ' + new Date(p.expedidoEm).toLocaleString('pt-BR') : ''}</div></div>}
           <div style={{ gridColumn: '1 / -1' }}><span className="det-l">{t('pedidos.endereco')}</span><div>{p.enderecoEntrega ?? '—'}</div></div>
           {p.observacao && <div style={{ gridColumn: '1 / -1' }}><span className="det-l">{t('pedidos.obs')}</span><div>{p.observacao}</div></div>}
         </div>
@@ -161,7 +170,7 @@ export function PedidoDetalhe() {
           <div><span>{t('pedidos.frete')}</span><b>{moeda(p.frete)}</b></div>
           <div className="total-grande"><span>{t('pedidos.total')}</span><b>{moeda(p.total)}</b></div>
         </div>
-        {podeGerenciar && proximos.length > 0 && (
+        {modoExpedicao && podeGerenciar && proximos.length > 0 && (
           <div className="acoes-status">
             {proximos.map((s) => (
               s === 'separacao'
@@ -185,8 +194,8 @@ export function PedidoDetalhe() {
             <label className="campo">
               {t('etq.bipe')} <span className="muted">· {codigos.length} / {totalItens} {t('etq.bipados')}</span>
               <input ref={scanRef} value={scan} autoComplete="off" placeholder={t('etq.bipe_ph')}
-                onChange={(e) => setScan(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); bipar(scan); } }} />
+                onChange={(e) => aoDigitar(e.target.value, setScan)}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); aoEnter(scan); } }} />
             </label>
             <div style={{ marginTop: 6 }}><BotaoEscanear onLido={bipar} /></div>
             {codigos.length > 0 && (

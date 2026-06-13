@@ -3,6 +3,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { BotaoEscanear } from '../components/BotaoEscanear.js';
+import { useAutoBip } from '../lib/useAutoBip.js';
 
 interface PrecoProduto { produtoId: string; produtoNome: string; ativo: boolean; }
 interface Marca { id: string; nome: string; ativo: boolean; }
@@ -40,6 +41,7 @@ export function EntradaEstoque() {
     scanRef.current?.focus();
   }
   const remover = (cod: string) => setCodigos((cs) => cs.filter((c) => c !== cod));
+  const { aoDigitar, aoEnter } = useAutoBip(bipar);
 
   async function salvar() {
     setErro(null); setOk(false); setSalv(true);
@@ -77,8 +79,8 @@ export function EntradaEstoque() {
         <label className="campo">
           {t('etq.bipe')} <span className="muted">· {codigos.length} {t('etq.bipados')}</span>
           <input ref={scanRef} value={scan} autoComplete="off" placeholder={t('etq.bipe_ph')}
-            onChange={(e) => setScan(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); bipar(scan); } }} />
+            onChange={(e) => aoDigitar(e.target.value, setScan)}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); aoEnter(scan); } }} />
         </label>
         <div style={{ marginTop: 6 }}><BotaoEscanear onLido={bipar} /></div>
         {codigos.length > 0 && (

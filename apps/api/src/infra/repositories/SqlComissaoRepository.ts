@@ -38,7 +38,7 @@ export class SqlComissaoRepository implements ComissaoRepository {
               COALESCE(SUM(p.total),0) vendido,
               COALESCE(SUM(p.total * (${taxa}) / 100.0),0) comissao
          FROM "${s}".vendedor v
-         JOIN "${s}".pedido p ON p.vendedor_id = v.id AND p.status NOT IN ('orcamento','cancelado')
+         JOIN "${s}".pedido p ON p.vendedor_id = v.id AND p.status = 'entregue'
         WHERE ($1::date IS NULL OR p.criado_em::date >= $1)
           AND ($2::date IS NULL OR p.criado_em::date <= $2)
         GROUP BY v.id, v.nome

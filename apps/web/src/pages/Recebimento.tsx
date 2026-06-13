@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
 import { BotaoEscanear } from '../components/BotaoEscanear.js';
+import { useAutoBip } from '../lib/useAutoBip.js';
 
 interface Pend { id: string; fornecedorNome: string | null; produtoNome: string; quantidade: number; custoUnitario: number; total: number; nf: string | null; criadoEm: string; }
 interface Marca { id: string; nome: string; ativo: boolean; }
@@ -111,6 +112,8 @@ function LoteBloco({ idx, b, marcas, podeRemover, onPatch, onBipar, onRemoverCod
   const { t } = useI18n();
   const [scan, setScan] = useState('');
   const scanRef = useRef<HTMLInputElement>(null);
+  const biparLote = (v: string) => { if (onBipar(v)) { setScan(''); scanRef.current?.focus(); } };
+  const { aoDigitar, aoEnter } = useAutoBip(biparLote);
   return (
     <div className="card" style={{ marginBottom: 10, background: 'var(--card-2, #fafafa)' }}>
       <div className="page-head" style={{ marginBottom: 6 }}>
@@ -129,8 +132,8 @@ function LoteBloco({ idx, b, marcas, podeRemover, onPatch, onBipar, onRemoverCod
       <label className="campo">
         {t('etq.bipe')} <span className="muted">· {b.codigos.length} {t('etq.bipados')}</span>
         <input ref={scanRef} value={scan} autoComplete="off" placeholder={t('etq.bipe_ph')}
-          onChange={(e) => setScan(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (onBipar(scan)) { setScan(''); scanRef.current?.focus(); } } }} />
+          onChange={(e) => aoDigitar(e.target.value, setScan)}
+          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); aoEnter(scan); } }} />
       </label>
       <div style={{ marginTop: 6 }}><BotaoEscanear onLido={(v) => onBipar(v)} /></div>
       {b.codigos.length > 0 && (

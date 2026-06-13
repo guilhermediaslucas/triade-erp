@@ -85,6 +85,8 @@ export class SqlPedidoRepository implements PedidoRepository {
       distanciaKm: r.distancia_km != null ? Number(r.distancia_km) : null,
       formaEnvio: r.forma_envio ?? null, formaEnvioDetalhe: r.forma_envio_detalhe ?? null,
       entregueEm: r.entregue_em ? new Date(r.entregue_em).toISOString().slice(0, 10) : null,
+      separadoPor: r.separado_por ?? null, separadoEm: r.separado_em ? new Date(r.separado_em).toISOString() : null,
+      expedidoPor: r.expedido_por ?? null, expedidoEm: r.expedido_em ? new Date(r.expedido_em).toISOString() : null,
       subtotal: Number(r.subtotal), frete: Number(r.frete), total: Number(r.total),
       condicaoParcelas: r.condicao_parcelas ?? 1, condicaoIntervalo: r.condicao_intervalo ?? 30, criadoEm: new Date(r.criado_em),
       itens: itens.map((i: any) => ({
@@ -106,6 +108,14 @@ export class SqlPedidoRepository implements PedidoRepository {
   async definirEntrega(schema: string, id: string, entregueEm: string): Promise<void> {
     const s = validarSchema(schema);
     await this.ds.query(`UPDATE "${s}".pedido SET entregue_em = $2 WHERE id = $1`, [id, entregueEm]);
+  }
+  async logSeparacao(schema: string, id: string, ator: string | null): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(`UPDATE "${s}".pedido SET separado_por = $2, separado_em = now() WHERE id = $1`, [id, ator]);
+  }
+  async logExpedicao(schema: string, id: string, ator: string | null): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(`UPDATE "${s}".pedido SET expedido_por = $2, expedido_em = now() WHERE id = $1`, [id, ator]);
   }
 
   async somaEmAberto(schema: string, clienteId: string, excetoPedidoId: string): Promise<number> {

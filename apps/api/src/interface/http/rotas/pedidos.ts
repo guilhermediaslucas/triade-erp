@@ -20,10 +20,10 @@ export function rotasPedidos(deps: Dependencias): Router {
     try { res.status(201).json(await deps.pedidosService.criar(sch(req), req.body ?? {})); } catch (e) { tratarErro(res, e); }
   });
   r.patch('/pedidos/:id/status', aut, az('comercial.pedido.gerenciar'), async (req, res: Response) => {
-    try { const b = req.body ?? {}; await deps.pedidosService.mudarStatus(sch(req), req.params.id!, b.status, { formaEnvio: b.formaEnvio, formaEnvioDetalhe: b.formaEnvioDetalhe, entregueEm: b.entregueEm }); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+    try { const b = req.body ?? {}; await deps.pedidosService.mudarStatus(sch(req), req.params.id!, b.status, { formaEnvio: b.formaEnvio, formaEnvioDetalhe: b.formaEnvioDetalhe, entregueEm: b.entregueEm }, req.usuario?.nome ?? null); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });
   r.post('/pedidos/:id/separar', aut, az('comercial.pedido.gerenciar'), async (req, res: Response) => {
-    try { await deps.pedidosService.separarBipando(sch(req), req.params.id!, (req.body ?? {}).codigos); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+    try { await deps.pedidosService.separarBipando(sch(req), req.params.id!, (req.body ?? {}).codigos, req.usuario?.nome ?? null); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });
   return r;
 }

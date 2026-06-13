@@ -117,7 +117,7 @@ export class PedidosService {
     return { id, numero };
   }
 
-  async mudarStatus(schema: string, id: string, novo: StatusPedido, dados?: { formaEnvio?: any; formaEnvioDetalhe?: any; entregueEm?: any }): Promise<void> {
+  async mudarStatus(schema: string, id: string, novo: StatusPedido, dados?: { formaEnvio?: any; formaEnvioDetalhe?: any; entregueEm?: any }, ator?: string | null): Promise<void> {
     const pedido = await this.pedidos.buscarPorId(schema, id);
     if (!pedido) throw new ErroAplicacao('pedido.nao_encontrado', 404);
     const permitidos = TRANSICOES[pedido.status] ?? [];
@@ -155,7 +155,10 @@ export class PedidosService {
     }
 
     await this.pedidos.mudarStatus(schema, id, novo);
-    if (novo === 'expedido') await this.pedidos.definirExpedicao(schema, id, formaEnvio, (String(dados?.formaEnvioDetalhe ?? '').trim()) || null);
+    if (novo === 'expedido') {
+      await this.pedidos.definirExpedicao(schema, id, formaEnvio, (String(dados?.formaEnvioDetalhe ?? '').trim()) || null);
+      await this.pedidos.logExpedicao(schema, id, ator ?? null);
+    }
     if (novo === 'entregue') await this.pedidos.definirEntrega(schema, id, entregueEm);
 
     // Gate por forma de pagamento (espelha o mockup): Cartão/Dinheiro liberam direto
@@ -169,7 +172,7 @@ export class PedidosService {
   // Separacao por BIPAGEM: le a etiqueta de cada item; o codigo traz produto/lote/validade.
   // Casa com o pedido pelo produto, da baixa do lote especifico da etiqueta e consome a etiqueta.
   // Exige que TODOS os itens sejam bipados na quantidade certa. Move o pedido para 'separacao'.
-  async separarBipando(schema: string, id: string, codigosRaw: any): Promise<void> {
+  async separarBipando(schema: string, id: string, codigosRaw: any, ator?: string | null): Promise<void> {
     const pedido = await this.pedidos.buscarPorId(schema, id);
     if (!pedido) throw new ErroAplicacao('pedido.nao_encontrado', 404);
     if (!(TRANSICOES[pedido.status] ?? []).includes('separacao')) throw new ErroAplicacao('pedido.transicao_invalida', 400);
@@ -204,5 +207,6 @@ export class PedidosService {
       await this.etiquetas.consumir(schema, r.codigo, 'saida');
     }
     await this.pedidos.mudarStatus(schema, id, 'separacao');
+    await this.pedidos.logSeparacao(schema, id, ator ?? null);
   }
 }

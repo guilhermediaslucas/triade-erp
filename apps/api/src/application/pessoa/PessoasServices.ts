@@ -7,9 +7,10 @@ function exigeNome(n: string): string {
   if (!n || n.trim().length < 2) throw new ErroAplicacao('cadastro.nome_invalido', 400);
   return n.trim();
 }
-function exigeDoc(d: string): string {
-  if (!d || d.trim().length < 3) throw new ErroAplicacao('pessoa.documento_invalido', 400);
-  return d.trim();
+// Documento é OPCIONAL (espelha o mockup): cliente/fornecedor podem ser salvos
+// só com o nome; CPF/CNPJ pode ser preenchido depois. Vazio vira string vazia.
+function docOpcional(d: any): string {
+  return d == null ? '' : String(d).trim();
 }
 const limpo = (v: any): string | null => (v && String(v).trim() !== '' ? String(v).trim() : null);
 
@@ -37,7 +38,7 @@ export class ClientesService {
     const enderecos = montarEnderecos(e?.enderecos);
     return {
       tipoPessoa, nome: exigeNome(e?.nome), fantasia: tipoPessoa === 'PJ' ? limpo(e?.fantasia) : null,
-      documento: exigeDoc(e?.documento), email: limpo(e?.email), telefone: limpo(e?.telefone), limiteCredito: limite,
+      documento: docOpcional(e?.documento), email: limpo(e?.email), telefone: limpo(e?.telefone), limiteCredito: limite,
       enderecos,
     };
   }
@@ -56,7 +57,7 @@ export class FornecedoresService {
   constructor(private readonly repo: FornecedorRepository) {}
   listar(s: string): Promise<Fornecedor[]> { return this.repo.listar(s); }
   private montar(e: any): NovoFornecedor {
-    return { nome: exigeNome(e?.nome), fantasia: limpo(e?.fantasia), documento: exigeDoc(e?.documento), email: limpo(e?.email), telefone: limpo(e?.telefone), cep: limpo(e?.cep), cidade: limpo(e?.cidade), uf: limpo(e?.uf) };
+    return { nome: exigeNome(e?.nome), fantasia: limpo(e?.fantasia), documento: docOpcional(e?.documento), email: limpo(e?.email), telefone: limpo(e?.telefone), cep: limpo(e?.cep), cidade: limpo(e?.cidade), uf: limpo(e?.uf) };
   }
   criar(s: string, e: any): Promise<string> { return this.repo.criar(s, this.montar(e)); }
   async editar(s: string, id: string, e: any): Promise<void> {

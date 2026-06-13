@@ -537,4 +537,14 @@ export const tenantMigrations: MigracaoTenant[] = [
       );
     `,
   },
+  {
+    // Log de quem separou e quem expediu o pedido (data/hora).
+    nome: '038_pedido_log_separacao_expedicao',
+    sql: (s) => `
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS separado_por text;
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS separado_em timestamptz;
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS expedido_por text;
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS expedido_em timestamptz;
+    `,
+  },
 ];

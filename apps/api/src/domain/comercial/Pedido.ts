@@ -34,6 +34,10 @@ export interface Pedido {
   formaEnvio: string | null;          // definida ao expedir (catálogo Formas de entrega)
   formaEnvioDetalhe: string | null;   // ex.: código de rastreio / nome do motoboy
   entregueEm: string | null;          // data de entrega (definida ao mover p/ Entregue)
+  separadoPor: string | null;         // log: quem separou o pedido
+  separadoEm: string | null;          // log: data/hora ISO da separação
+  expedidoPor: string | null;         // log: quem expediu o pedido
+  expedidoEm: string | null;          // log: data/hora ISO da expedição
   subtotal: number;
   frete: number;
   total: number;
@@ -73,5 +77,7 @@ export interface PedidoRepository {
   mudarStatus(schema: string, id: string, status: StatusPedido): Promise<void>;
   definirExpedicao(schema: string, id: string, formaEnvio: string, detalhe: string | null): Promise<void>;
   definirEntrega(schema: string, id: string, entregueEm: string): Promise<void>;
+  logSeparacao(schema: string, id: string, ator: string | null): Promise<void>;
+  logExpedicao(schema: string, id: string, ator: string | null): Promise<void>;
   somaEmAberto(schema: string, clienteId: string, excetoPedidoId: string): Promise<number>;
 }

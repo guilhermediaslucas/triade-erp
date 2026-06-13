@@ -65,6 +65,13 @@ export function NovoPedido() {
   const [erro, setErro] = useState<string | null>(null);
   const [salv, setSalv] = useState(false);
   const [novoCli, setNovoCli] = useState(false);
+  const [novoMb, setNovoMb] = useState(false);
+  const recarregarMotoboys = (nomeSel?: string) =>
+    api.get<Motoboy[]>('/motoboys', token!).then((l) => {
+      const ativos = l.filter((x) => x.ativo);
+      setMotoboys(ativos);
+      if (nomeSel) { const m = ativos.find((x) => x.nome === nomeSel); if (m) setMotoboyId(m.id); }
+    }).catch(() => {});
 
   useEffect(() => {
     Promise.all([
@@ -228,6 +235,7 @@ export function NovoPedido() {
             </select>
           </label>
           {novoCli && <ModalNovaPessoa tipo="cliente" onFechar={() => setNovoCli(false)} onCriado={(nome) => { setNovoCli(false); recarregarClientes(nome); }} />}
+          {novoMb && <ModalNovoMotoboy onFechar={() => setNovoMb(false)} onCriado={(nome) => { setNovoMb(false); recarregarMotoboys(nome); }} />}
           <label className="campo">{t('pedidos.vendedor')}
             <select value={vendedorId} onChange={(e) => setVendedorId(e.target.value)}>
               <option value="">—</option>{vendedores.map((v) => <option key={v.id} value={v.id}>{v.nome}</option>)}
@@ -322,11 +330,12 @@ export function NovoPedido() {
             <select value={formaEntrega} onChange={(e) => setFormaEntrega(e.target.value as Forma)} style={{ maxWidth: 180 }}>
               {FORMAS.map((f) => <option key={f} value={f}>{t('entrega.' + f)}</option>)}
             </select>
-            {formaEntrega === 'motoboy' && (
+            {formaEntrega === 'motoboy' && (<>
               <select value={motoboyId} onChange={(e) => setMotoboyId(e.target.value)} style={{ maxWidth: 180 }}>
                 <option value="">{t('entrega.motoboy')}…</option>{motoboys.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
               </select>
-            )}
+              <button type="button" className="btn-link" style={{ fontSize: 12 }} onClick={() => setNovoMb(true)}>+ {t('pedidos.cadastrar_motoboy')}</button>
+            </>)}
           </div>
           <div className="tl-row">
             {freteMemo && <span className="muted" style={{ fontSize: 12, marginRight: 'auto' }}>{freteMemo}</span>}
@@ -343,5 +352,27 @@ export function NovoPedido() {
         <button className="btn-ghost" onClick={() => nav('/comercial/pedidos')}>{t('common.cancelar')}</button>
       </div>
     </div>
+  );
+}
+
+// Cadastro rápido de motoboy sem sair do pedido (destrava quando a empresa ainda
+// não tem motoboys cadastrados; o frete fica atribuído a ele na Gestão de fretes).
+function ModalNovoMotoboy({ onFechar, onCriado }: { onFechar: () => void; onCriado: (nome: string) => void }) {
+  const { token } = useAuth(); const { t } = useI18n();
+  const [nome, setNome] = useState(''); const [telefone, setTel] = useState('');
+  const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
+  async function salvar() {
+    setErro(null); setSalv(true);
+    try { await api.post('/motoboys', { nome, telefone }, token!); onCriado(nome.trim()); }
+    catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
+  }
+  return (
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 420 }}>
+      <h2>{t('pedidos.novo_motoboy')}</h2>
+      <label className="campo">{t('fin.nome')}<input value={nome} onChange={(e) => setNome(e.target.value)} autoFocus /></label>
+      <label className="campo">{t('pessoa.telefone')}<input value={telefone} onChange={(e) => setTel(e.target.value)} /></label>
+      {erro && <div className="alerta-erro">{t(erro)}</div>}
+      <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv || nome.trim().length < 2} onClick={salvar}>{t('common.salvar')}</button></div>
+    </div></div>
   );
 }

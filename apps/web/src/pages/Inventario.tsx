@@ -5,6 +5,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { baixarExcel } from '../lib/excel.js';
 import { BotaoEscanear } from '../components/BotaoEscanear.js';
+import { useAutoBip } from '../lib/useAutoBip.js';
 
 interface Faltante { codigo: string; produtoNome: string; lote: string | null; validade: string | null; }
 interface Resultado { id: string; esperadas: number; encontradas: number; faltantes: number; desconhecidas: number; baixouPerda: boolean; faltantesDetalhe: Faltante[]; }
@@ -38,6 +39,7 @@ export function Inventario() {
     if (!codigos.includes(c)) setCodigos((cs) => [...cs, c]);
     setScan(''); scanRef.current?.focus();
   }
+  const { aoDigitar, aoEnter } = useAutoBip(bipar);
   async function finalizar(baixarPerda: boolean) {
     setErro(null); setSalv(true);
     try {
@@ -79,8 +81,8 @@ export function Inventario() {
               <label className="campo">
                 {t('inv.bipe')} <span className="muted">· {codigos.length} {t('etq.bipados')}</span>
                 <input ref={scanRef} value={scan} autoComplete="off" placeholder={t('etq.bipe_ph')}
-                  onChange={(e) => setScan(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); bipar(scan); } }} />
+                  onChange={(e) => aoDigitar(e.target.value, setScan)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); aoEnter(scan); } }} />
               </label>
               <div style={{ marginTop: 6 }}><BotaoEscanear onLido={bipar} /></div>
               {codigos.length > 0 && (
