@@ -163,14 +163,14 @@ export function Contas({ tipo }: { tipo: Tipo }) {
       <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t(tipo === 'receber' ? 'fin.receber' : 'fin.pagar')}</h1><div className="muted page-sub">{t('fin.sub')}</div></div></div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="kpi-row" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
-        <div className={'card kpi-mock clicavel' + (fKpi === 'aberto' ? ' kpi-ativo' : '')} role="button" tabIndex={0} onClick={() => toggleKpi('aberto')} onKeyDown={(e) => e.key === 'Enter' && toggleKpi('aberto')}><div className="kpi-ic tint-gr">{tipo === 'receber' ? '💰' : '💸'}</div><div className="kpi-body"><div className="kpi-lbl">{t(tipo === 'receber' ? 'fin.aberto_receber' : 'fin.aberto_pagar')}</div><div className="kpi-val">{abrevMoeda(kpis.total)}</div><div className="kpi-delta">{kpis.qtd} {t('fin.titulos')}</div></div></div>
-        <div className={'card kpi-mock clicavel' + (fKpi === 'vence7' ? ' kpi-ativo' : '')} role="button" tabIndex={0} onClick={() => toggleKpi('vence7')} onKeyDown={(e) => e.key === 'Enter' && toggleKpi('vence7')}><div className="kpi-ic tint-or">⏳</div><div className="kpi-body"><div className="kpi-lbl">{t('fin.vence7')}</div><div className="kpi-val">{abrevMoeda(kpis.totalVence7)}</div><div className="kpi-delta">{kpis.qtdVence7} {t('fin.titulos')}</div></div></div>
-        <div className={'card kpi-mock clicavel' + (fKpi === 'vencido' ? ' kpi-ativo' : '')} role="button" tabIndex={0} onClick={() => toggleKpi('vencido')} onKeyDown={(e) => e.key === 'Enter' && toggleKpi('vencido')}><div className="kpi-ic tint-rd">⚠️</div><div className="kpi-body"><div className="kpi-lbl">{t('fin.vencidos')}</div><div className="kpi-val">{abrevMoeda(kpis.totalVenc)}</div><div className="kpi-delta alerta">{kpis.qtdVenc} {t('fin.titulos')}</div></div></div>
-        <div className={'card kpi-mock clicavel' + (fKpi === 'boletos' ? ' kpi-ativo' : '')} role="button" tabIndex={0} onClick={() => toggleKpi('boletos')} onKeyDown={(e) => e.key === 'Enter' && toggleKpi('boletos')}><div className="kpi-ic tint-bl">📄</div><div className="kpi-body"><div className="kpi-lbl">{t('fin.boletos_abertos')}</div><div className="kpi-val">{kpis.boletos}</div><div className="kpi-delta">{t('fin.titulos')}</div></div></div>
+        <div className={'card kpi-mock clicavel' + (fKpi === 'aberto' ? ' kpi-ativo' : '')} role="button" tabIndex={0} onClick={() => toggleKpi('aberto')} onKeyDown={(e) => e.key === 'Enter' && toggleKpi('aberto')}><div className="kpi-ic tint-gr"><Ic name="i-dollar" className="sm" /></div><div className="kpi-body"><div className="kpi-lbl">{t(tipo === 'receber' ? 'fin.aberto_receber' : 'fin.aberto_pagar')}</div><div className="kpi-val">{abrevMoeda(kpis.total)}</div><div className="kpi-delta">{kpis.qtd} {t('fin.titulos')}</div></div></div>
+        <div className={'card kpi-mock clicavel' + (fKpi === 'vence7' ? ' kpi-ativo' : '')} role="button" tabIndex={0} onClick={() => toggleKpi('vence7')} onKeyDown={(e) => e.key === 'Enter' && toggleKpi('vence7')}><div className="kpi-ic tint-or"><Ic name="i-clock" className="sm" /></div><div className="kpi-body"><div className="kpi-lbl">{t('fin.vence7')}</div><div className="kpi-val">{abrevMoeda(kpis.totalVence7)}</div><div className="kpi-delta">{kpis.qtdVence7} {t('fin.titulos')}</div></div></div>
+        <div className={'card kpi-mock clicavel' + (fKpi === 'vencido' ? ' kpi-ativo' : '')} role="button" tabIndex={0} onClick={() => toggleKpi('vencido')} onKeyDown={(e) => e.key === 'Enter' && toggleKpi('vencido')}><div className="kpi-ic tint-rd"><Ic name="i-alert" className="sm" /></div><div className="kpi-body"><div className="kpi-lbl">{t('fin.vencidos')}</div><div className="kpi-val">{abrevMoeda(kpis.totalVenc)}</div><div className="kpi-delta alerta">{kpis.qtdVenc} {t('fin.titulos')}</div></div></div>
+        <div className={'card kpi-mock clicavel' + (fKpi === 'boletos' ? ' kpi-ativo' : '')} role="button" tabIndex={0} onClick={() => toggleKpi('boletos')} onKeyDown={(e) => e.key === 'Enter' && toggleKpi('boletos')}><div className="kpi-ic tint-bl"><Ic name="i-receipt" className="sm" /></div><div className="kpi-body"><div className="kpi-lbl">{t('fin.boletos_abertos')}</div><div className="kpi-val">{kpis.boletos}</div><div className="kpi-delta">{t('fin.titulos')}</div></div></div>
       </div>
 
       <div className="contas-toolbar">
-        <span className="busca-box-tb"><span className="lupa">🔎</span><input value={fQ} onChange={(e) => setFQ(e.target.value)} placeholder={t('fin.f_busca')} /></span>
+        <span className="busca-box-tb"><span className="lupa"><Ic name="i-search" className="sm" /></span><input value={fQ} onChange={(e) => setFQ(e.target.value)} placeholder={t('fin.f_busca')} /></span>
         <span className="muted" style={{ fontSize: 12 }}>{t('fin.status')}:</span>
         {(['todos', 'aberto', 'vencido', 'pago'] as const).map((s) => (
           <button key={s} className={'chip-f' + (fSit === s ? ' ativo' : '')} onClick={() => setFSit(s)}>{t(s === 'todos' ? 'fin.f_todos' : s === 'aberto' ? 'fin.a_vencer' : 'fin.' + s)}</button>
@@ -179,17 +179,17 @@ export function Contas({ tipo }: { tipo: Tipo }) {
           <option value="">{tipo === 'receber' ? t('fin.todos_clientes') : t('fin.todos_fornecedores')}</option>
           {pessoas.map((p) => <option key={p} value={p}>{p}</option>)}
         </select>
-        <button className="btn-ghost" onClick={() => setFiltroAberto((v) => !v)}>⚙ {t('fin.filtros')} {temFiltro ? '•' : '0'}</button>
-        <button className="btn-ghost" onClick={() => setColsAberto((v) => !v)}>▦ {t('fin.colunas')}</button>
+        <button className="btn-ghost" onClick={() => setFiltroAberto((v) => !v)}><Ic name="i-gear" className="sm" /> {t('fin.filtros')} {temFiltro ? '•' : '0'}</button>
+        <button className="btn-ghost" onClick={() => setColsAberto((v) => !v)}><Ic name="i-grid" className="sm" /> {t('fin.colunas')}</button>
       </div>
 
       <div className="contas-acoes">
         {pode && <button className="btn-primary" onClick={() => setNovo(true)}>+ {t('fin.novo_lanc_btn')}</button>}
-        {pode && <button className="btn-acao verde" disabled={abertosSel.length === 0} onClick={() => setBaixaMassa(true)}>✓ {t('fin.baixar_sel')}{abertosSel.length > 0 ? ` (${abertosSel.length})` : ''}</button>}
-        {pode && <button className="btn-acao vermelho" disabled={sel.size === 0} onClick={excluirMassa}>🗑 {t('fin.excluir_sel')}</button>}
-        {pode && <button className="btn-ghost" disabled={!umAberto} onClick={() => umAberto && abrirParcelar(umAberto, 'replicar')}>＋ {t('parcelar.multiplicar')}</button>}
-        {pode && <button className="btn-ghost" disabled={!umAberto} onClick={() => umAberto && abrirParcelar(umAberto, 'dividir')}>▤ {t('parcelar.acao')}</button>}
-        {filtrados.length > 0 && <button className="btn-acao verde" onClick={() => exportar('xlsx')}>⬇ {t('rel.exportar_xlsx')}</button>}
+        {pode && <button className="btn-acao verde" disabled={abertosSel.length === 0} onClick={() => setBaixaMassa(true)}><Ic name="i-check" className="sm" /> {t('fin.baixar_sel')}{abertosSel.length > 0 ? ` (${abertosSel.length})` : ''}</button>}
+        {pode && <button className="btn-acao vermelho" disabled={sel.size === 0} onClick={excluirMassa}><Ic name="i-trash" className="sm" /> {t('fin.excluir_sel')}</button>}
+        {pode && <button className="btn-ghost" disabled={!umAberto} onClick={() => umAberto && abrirParcelar(umAberto, 'replicar')}><Ic name="i-plus" className="sm" /> {t('parcelar.multiplicar')}</button>}
+        {pode && <button className="btn-ghost" disabled={!umAberto} onClick={() => umAberto && abrirParcelar(umAberto, 'dividir')}><Ic name="i-rows" className="sm" /> {t('parcelar.acao')}</button>}
+        {filtrados.length > 0 && <button className="btn-acao verde" onClick={() => exportar('xlsx')}><Ic name="i-download" className="sm" /> {t('rel.exportar_xlsx')}</button>}
       </div>
 
       {filtroAberto && (

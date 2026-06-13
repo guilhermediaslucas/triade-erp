@@ -4,6 +4,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { abrevMoeda, corStatus, moeda, numeroPedido, type StatusPedido } from '../lib/pedido.js';
+import { Ic } from '../components/Icones.js';
 
 interface Resumo {
   vendasDia: number; vendasDiaDeltaPct: number | null;
@@ -46,7 +47,7 @@ function Delta({ pct, suf }: { pct: number | null; suf?: string }) {
   const { t } = useI18n();
   if (pct === null) return <div className="delta up">{t('dash.novo_periodo')}{suf ? ' · ' + suf : ''}</div>;
   const up = pct >= 0;
-  return <div className={'delta ' + (up ? 'up' : 'down')}>{up ? '▲' : '▼'} {pctBR(pct)}%{suf ? ' ' + suf : ''}</div>;
+  return <div className={'delta ' + (up ? 'up' : 'down')}><Ic name={up ? 'i-arrow-up' : 'i-arrow-down'} className="sm" /> {pctBR(pct)}%{suf ? ' ' + suf : ''}</div>;
 }
 
 function GraficoLinha({ pontos, anteriores, onPick }: { pontos: { mes: string; total: number }[]; anteriores: number[]; onPick?: (mes: string) => void }) {
@@ -132,24 +133,24 @@ export function Dashboard() {
   const fmtData = (s: string) => new Date(s).toLocaleDateString('pt-BR');
 
   const kpis: { tipo: string; ic: string; tint: string; lbl: string; raw: number; moeda: boolean; pct?: number | null; suf?: string; sub?: string }[] = [
-    { tipo: 'dia', ic: '🛒', tint: 'tint-pp', lbl: t('dash.vendas_dia'), raw: d.vendasDia, moeda: true, pct: d.vendasDiaDeltaPct, suf: t('dash.vs_ontem') },
-    { tipo: 'semana', ic: '🕐', tint: 'tint-bl', lbl: t('dash.vendas_semana'), raw: d.vendasSemana, moeda: true, pct: d.vendasSemanaDeltaPct, suf: t('dash.vs_semana') },
-    { tipo: 'mes', ic: '📈', tint: 'tint-gr', lbl: t('dash.vendas_mes'), raw: d.vendasMes, moeda: true, pct: d.vendasMesDeltaPct, suf: t('dash.vs_mes') },
-    { tipo: 'ano', ic: '💲', tint: 'tint-or', lbl: t('dash.vendas_ano'), raw: d.vendasAno, moeda: true, pct: d.vendasAnoDeltaPct, suf: t('dash.vs_ano') },
-    { tipo: 'clientes', ic: '👥', tint: 'tint-in', lbl: t('dash.clientes_ativos'), raw: d.clientesAtivos, moeda: false, sub: d.clientesAtivos.toLocaleString('pt-BR') + ' ' + t('dash.cli_ativos_total') },
+    { tipo: 'dia', ic: 'i-cart', tint: 'tint-pp', lbl: t('dash.vendas_dia'), raw: d.vendasDia, moeda: true, pct: d.vendasDiaDeltaPct, suf: t('dash.vs_ontem') },
+    { tipo: 'semana', ic: 'i-clock', tint: 'tint-bl', lbl: t('dash.vendas_semana'), raw: d.vendasSemana, moeda: true, pct: d.vendasSemanaDeltaPct, suf: t('dash.vs_semana') },
+    { tipo: 'mes', ic: 'i-chart', tint: 'tint-gr', lbl: t('dash.vendas_mes'), raw: d.vendasMes, moeda: true, pct: d.vendasMesDeltaPct, suf: t('dash.vs_mes') },
+    { tipo: 'ano', ic: 'i-dollar', tint: 'tint-or', lbl: t('dash.vendas_ano'), raw: d.vendasAno, moeda: true, pct: d.vendasAnoDeltaPct, suf: t('dash.vs_ano') },
+    { tipo: 'clientes', ic: 'i-users', tint: 'tint-in', lbl: t('dash.clientes_ativos'), raw: d.clientesAtivos, moeda: false, sub: d.clientesAtivos.toLocaleString('pt-BR') + ' ' + t('dash.cli_ativos_total') },
   ];
   const avisos = [
-    { ic: '🧾', tint: 'tint-rd', n: qtd('orcamento'), txt: t('dash.av_orcamento'), to: '/comercial/pedidos', cap: 'comercial.pedido.listar' },
-    { ic: '⏳', tint: 'tint-or', n: qtd('aguardando_pagamento'), txt: t('dash.av_aguardando'), to: '/comercial/pedidos', cap: 'comercial.pedido.listar' },
-    { ic: '📦', tint: 'tint-bl', n: d.estoqueBaixo, txt: t('dash.av_estoque'), to: '/estoque/posicao', cap: 'estoque.saldo.ver' },
-    { ic: '🧾', tint: 'tint-in', n: d.receberVencido > 0 ? abrevMoeda(d.receberVencido) : '0', txt: t('dash.av_receber_venc'), to: '/financeiro/receber', cap: 'financeiro.receber.listar' },
+    { ic: 'i-receipt', tint: 'tint-rd', n: qtd('orcamento'), txt: t('dash.av_orcamento'), to: '/comercial/pedidos', cap: 'comercial.pedido.listar' },
+    { ic: 'i-clock', tint: 'tint-or', n: qtd('aguardando_pagamento'), txt: t('dash.av_aguardando'), to: '/comercial/pedidos', cap: 'comercial.pedido.listar' },
+    { ic: 'i-box', tint: 'tint-bl', n: d.estoqueBaixo, txt: t('dash.av_estoque'), to: '/estoque/posicao', cap: 'estoque.saldo.ver' },
+    { ic: 'i-receipt', tint: 'tint-in', n: d.receberVencido > 0 ? abrevMoeda(d.receberVencido) : '0', txt: t('dash.av_receber_venc'), to: '/financeiro/receber', cap: 'financeiro.receber.listar' },
   ].filter((a) => temCapability(a.cap));
   const acoes = [
-    { ic: '🛒', tint: 'tint-pp', txt: t('dash.qa_novo_pedido'), to: '/comercial/pedidos/novo', cap: 'comercial.pedido.criar' },
-    { ic: '🧑‍⚕️', tint: 'tint-bl', txt: t('dash.qa_novo_cliente'), to: '/cadastros/clientes', cap: 'cadastros.cliente.listar' },
-    { ic: '💰', tint: 'tint-gr', txt: t('dash.a_receber'), to: '/financeiro/receber', cap: 'financeiro.receber.listar' },
-    { ic: '🧾', tint: 'tint-or', txt: t('dash.a_pagar'), to: '/financeiro/pagar', cap: 'financeiro.pagar.listar' },
-    { ic: '📥', tint: 'tint-in', txt: t('dash.qa_entrada'), to: '/estoque/entrada', cap: 'estoque.entrada.criar' },
+    { ic: 'i-cart', tint: 'tint-pp', txt: t('dash.qa_novo_pedido'), to: '/comercial/pedidos/novo', cap: 'comercial.pedido.criar' },
+    { ic: 'i-user', tint: 'tint-bl', txt: t('dash.qa_novo_cliente'), to: '/cadastros/clientes', cap: 'cadastros.cliente.listar' },
+    { ic: 'i-dollar', tint: 'tint-gr', txt: t('dash.a_receber'), to: '/financeiro/receber', cap: 'financeiro.receber.listar' },
+    { ic: 'i-receipt', tint: 'tint-or', txt: t('dash.a_pagar'), to: '/financeiro/pagar', cap: 'financeiro.pagar.listar' },
+    { ic: 'i-download', tint: 'tint-in', txt: t('dash.qa_entrada'), to: '/estoque/entrada', cap: 'estoque.entrada.criar' },
   ].filter((a) => temCapability(a.cap));
 
   return (
@@ -162,7 +163,7 @@ export function Dashboard() {
             onClick={() => navigate('/dashboard/serie/' + k.tipo)}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/dashboard/serie/' + k.tipo); } }}>
             <div className="kpi">
-              <div className={'kpi-ic ' + k.tint}>{k.ic}</div>
+              <div className={'kpi-ic ' + k.tint}><Ic name={k.ic} /></div>
               <div><div className="lbl">{k.lbl}</div><div className="val"><AnimaNum to={k.raw} moeda={k.moeda} /></div>{k.sub ? <div className="delta">{k.sub}</div> : <Delta pct={k.pct ?? null} suf={k.suf} />}</div>
             </div>
           </div>
@@ -190,7 +191,7 @@ export function Dashboard() {
             {d.topProdutos.length === 0 && <div className="it" style={{ color: 'var(--muted)' }}>{t('dash.sem_vendas')}</div>}
             {d.topProdutos.map((p) => (
               <div key={p.nome} className="it">
-                <div className="thumb">💧</div>
+                <div className="thumb"><Ic name="i-drop" /></div>
                 <div><div className="nm">{p.nome}</div><div className="meta">{abrevMoeda(p.valor)}</div></div>
                 <div className="qt">{p.quantidade.toLocaleString('pt-BR')} {t('dash.un')}</div>
               </div>
@@ -226,7 +227,7 @@ export function Dashboard() {
           <div className="alerts">
             {avisos.map((a) => (
               <Link key={a.txt} to={a.to} className="alert">
-                <div className="top"><div className={'kpi-ic sm ' + a.tint}>{a.ic}</div><div className="big">{a.n}</div></div>
+                <div className="top"><div className={'kpi-ic sm ' + a.tint}><Ic name={a.ic} className="sm" /></div><div className="big">{a.n}</div></div>
                 <div className="txt">{a.txt}</div><span className="lnk">{t('dash.ver_todos')} →</span>
               </Link>
             ))}
@@ -236,7 +237,7 @@ export function Dashboard() {
           <div className="card-head"><h3>{t('dash.acoes')}</h3></div>
           <div className="quick">
             {acoes.map((a) => (
-              <Link key={a.txt + a.to} to={a.to} className="qbtn"><span className={'qi ' + a.tint}>{a.ic}</span>{a.txt}</Link>
+              <Link key={a.txt + a.to} to={a.to} className="qbtn"><span className={'qi ' + a.tint}><Ic name={a.ic} className="sm" /></span>{a.txt}</Link>
             ))}
           </div>
         </div>
@@ -312,9 +313,9 @@ function DrillModal({ mes, onFechar }: { mes: string; onFechar: () => void }) {
       {!dd && !erro && <div className="muted">{t('common.carregando')}</div>}
       {dd && (<>
         <div className="kpi-row" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: 14 }}>
-          <div className="card kpi-mock"><div className="kpi-ic tint-pp">$</div><div><div className="kpi-lbl">{t('dash.drill_faturado')}</div><div className="kpi-val">{moeda(dd.total)}</div></div></div>
-          <div className="card kpi-mock"><div className="kpi-ic tint-bl">#</div><div><div className="kpi-lbl">{t('dash.drill_pedidos')}</div><div className="kpi-val">{dd.pedidos}</div></div></div>
-          <div className="card kpi-mock"><div className="kpi-ic tint-gr">~</div><div><div className="kpi-lbl">{t('dash.drill_ticket')}</div><div className="kpi-val">{moeda(dd.ticketMedio)}</div></div></div>
+          <div className="card kpi-mock"><div className="kpi-ic tint-pp"><Ic name="i-dollar" className="sm" /></div><div><div className="kpi-lbl">{t('dash.drill_faturado')}</div><div className="kpi-val">{moeda(dd.total)}</div></div></div>
+          <div className="card kpi-mock"><div className="kpi-ic tint-bl"><Ic name="i-receipt" className="sm" /></div><div><div className="kpi-lbl">{t('dash.drill_pedidos')}</div><div className="kpi-val">{dd.pedidos}</div></div></div>
+          <div className="card kpi-mock"><div className="kpi-ic tint-gr"><Ic name="i-chart" className="sm" /></div><div><div className="kpi-lbl">{t('dash.drill_ticket')}</div><div className="kpi-val">{moeda(dd.ticketMedio)}</div></div></div>
         </div>
         <div className="perm-titulo">{t('dash.drill_top_clientes')}</div>
         <div className="lst">

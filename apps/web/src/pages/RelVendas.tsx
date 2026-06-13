@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Ic } from '../components/Icones.js';
 import { moeda, numeroPedido } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel } from '../lib/excel.js';
@@ -43,7 +44,7 @@ export function RelVendas() {
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       {d && <>
         <div className="kpis">
-          <div className="kpi-card kpi-mock"><div className="kpi-ic tint-gr">💰</div><div><div className="kpi-l">{t('rel.total_vendas')}</div><div className="kpi-v">{moeda(d.total)}</div><div className="kpi-s">{d.quantidade} {t('pedidos.titulo').toLowerCase()}</div></div></div>
+          <div className="kpi-card kpi-mock"><div className="kpi-ic tint-gr"><Ic name="i-dollar" className="sm" /></div><div><div className="kpi-l">{t('rel.total_vendas')}</div><div className="kpi-v">{moeda(d.total)}</div><div className="kpi-s">{d.quantidade} {t('pedidos.titulo').toLowerCase()}</div></div></div>
         </div>
         <div className="dash-grid2">
           <div className="card pad0"><table className="tabela">

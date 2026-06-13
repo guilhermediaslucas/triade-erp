@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
+import { Ic } from './Icones.js';
 
 type Tipo = 'ok' | 'erro';
 interface Item { id: number; msg: string; tipo: Tipo; }
@@ -28,7 +29,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div className="toast-wrap">
         {itens.map((it) => (
           <div key={it.id} className={'toast-item ' + it.tipo}>
-            <span className="toast-ic">{it.tipo === 'ok' ? '✓' : '!'}</span>{it.msg}
+            <span className="toast-ic"><Ic name={it.tipo === 'ok' ? 'i-check' : 'i-alert'} className="sm" /></span>{it.msg}
           </div>
         ))}
       </div>

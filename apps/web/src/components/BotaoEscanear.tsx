@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useI18n } from '../i18n/I18nContext.js';
 import { escanearCodigo, scannerNativo } from '../lib/scanner.js';
+import { Ic } from './Icones.js';
 
 // Botão "Escanear" que abre a câmera e devolve o código lido via onLido().
 // Só aparece no app nativo (Android/iOS); no navegador some (usa-se o leitor
@@ -16,7 +17,7 @@ export function BotaoEscanear({ onLido }: { onLido: (codigo: string) => void }) 
   }
   return (
     <button type="button" className="btn-ghost btn-mini" disabled={lendo} onClick={escanear}>
-      {lendo ? '...' : '📷 ' + t('scan.escanear')}
+      {lendo ? '...' : <><Ic name="i-camera" className="sm" /> {t('scan.escanear')}</>}
     </button>
   );
 }
