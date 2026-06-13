@@ -45,3 +45,15 @@ temp/
 
 # Excecao: a URL publica da API no build do site pode ir para o repo
 !apps/web/.env.production
+
+# Capacitor (apps Android/iOS) — versionar android/ e ios/, ignorar artefatos
+apps/web/android/.gradle/
+apps/web/android/app/build/
+apps/web/android/build/
+apps/web/android/local.properties
+apps/web/ios/App/Pods/
+apps/web/ios/App/build/
+apps/web/ios/App/output/
+*.apk
+*.aab
+*.ipa

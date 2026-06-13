@@ -230,7 +230,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
 
       {pode && sel.size > 0 && <div className="muted" style={{ fontSize: 12, marginBottom: 8 }}>{t('bulk.selecionados').replace('{n}', String(sel.size))} · <button className="btn-link" onClick={() => setSel(new Set())}>{t('bulk.limpar')}</button></div>}
 
-      <div className="card pad0"><table className="tabela">
+      <div className="card pad0"><table className="tabela tabela-cards">
         <thead><tr>
           {pode && <th style={{ width: 34 }}><input type="checkbox" checked={filtrados.length > 0 && sel.size === filtrados.length} onChange={toggleTodos} /></th>}
           {thR('numero', t('fin.numero'))}{thR('descricao', t('fin.descricao'))}{!oc('cat') && thR('cat', t('catfin.titulo_s'))}{!oc('pessoa') && thR('pessoa', tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor'))}{!oc('doc') && thR('doc', t('fin.documento'))}{!oc('emissao') && thR('emissao', t('fin.emissao'))}{!oc('venc') && thR('venc', t('fin.vencimento'))}{!oc('baixa') && thR('baixa', t('fin.baixa'))}{!oc('valor') && thR('valor', t('fin.valor'))}{!oc('vendedor') && thR('vendedor', t('fin.vendedor'))}{!oc('sit') && thR('sit', t('fin.situacao'))}<th style={{ textAlign: 'center' }}>{t('fin.previsto')}</th><th>{t('usuarios.acoes')}</th>
@@ -240,18 +240,18 @@ export function Contas({ tipo }: { tipo: Tipo }) {
           {filtrados.map((tt) => { const sit = situacao(tt); return (
             <tr key={tt.id} className={(sel.has(tt.id) ? 'linha-sel ' : '') + (tt.previsto ? 'linha-previsto' : '')} style={{ cursor: 'pointer' }} onDoubleClick={() => setVerT(tt)} title={t('fin.ver_detalhe')}>
               {pode && <td><input type="checkbox" checked={sel.has(tt.id)} onChange={() => toggle(tt.id)} /></td>}
-              <td style={{ fontWeight: 700 }}>{tt.numero}</td>
-              <td>{tt.descricao}{tt.origem === 'pedido' && <span className="tag-origem">{t('fin.do_pedido')}</span>}</td>
-              {!oc('cat') && <td>{tt.categoriaFinanceiraNome ?? '—'}</td>}
-              {!oc('pessoa') && <td>{tt.pessoaNome ?? '—'}</td>}
-              {!oc('doc') && <td>{tt.tipoDocumento ?? '—'}</td>}
-              {!oc('emissao') && <td>{(tt.emissao || tt.criadoEm) ? new Date((tt.emissao ? tt.emissao + 'T00:00:00' : tt.criadoEm)).toLocaleDateString('pt-BR') : '—'}</td>}
-              {!oc('venc') && <td>{new Date(tt.vencimento + 'T00:00:00').toLocaleDateString('pt-BR')}</td>}
-              {!oc('baixa') && <td>{tt.pagoEm ? new Date(tt.pagoEm).toLocaleDateString('pt-BR') : '—'}</td>}
-              {!oc('valor') && <td>{moeda(tt.valor)}</td>}
-              {!oc('vendedor') && <td>{tt.vendedorNome ?? '—'}</td>}
-              {!oc('sit') && <td><span className={'pill ' + (sit === 'pago' ? 'st-verde' : sit === 'vencido' ? 'st-vermelho' : 'st-laranja')}>{t('fin.' + sit)}</span></td>}
-              <td style={{ textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
+              <td data-label={t('fin.numero')} style={{ fontWeight: 700 }}>{tt.numero}</td>
+              <td data-label={t('fin.descricao')}>{tt.descricao}{tt.origem === 'pedido' && <span className="tag-origem">{t('fin.do_pedido')}</span>}</td>
+              {!oc('cat') && <td data-label={t('catfin.titulo_s')}>{tt.categoriaFinanceiraNome ?? '—'}</td>}
+              {!oc('pessoa') && <td data-label={tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor')}>{tt.pessoaNome ?? '—'}</td>}
+              {!oc('doc') && <td data-label={t('fin.documento')}>{tt.tipoDocumento ?? '—'}</td>}
+              {!oc('emissao') && <td data-label={t('fin.emissao')}>{(tt.emissao || tt.criadoEm) ? new Date((tt.emissao ? tt.emissao + 'T00:00:00' : tt.criadoEm)).toLocaleDateString('pt-BR') : '—'}</td>}
+              {!oc('venc') && <td data-label={t('fin.vencimento')}>{new Date(tt.vencimento + 'T00:00:00').toLocaleDateString('pt-BR')}</td>}
+              {!oc('baixa') && <td data-label={t('fin.baixa')}>{tt.pagoEm ? new Date(tt.pagoEm).toLocaleDateString('pt-BR') : '—'}</td>}
+              {!oc('valor') && <td data-label={t('fin.valor')}>{moeda(tt.valor)}</td>}
+              {!oc('vendedor') && <td data-label={t('fin.vendedor')}>{tt.vendedorNome ?? '—'}</td>}
+              {!oc('sit') && <td data-label={t('fin.situacao')}><span className={'pill ' + (sit === 'pago' ? 'st-verde' : sit === 'vencido' ? 'st-vermelho' : 'st-laranja')}>{t('fin.' + sit)}</span></td>}
+              <td data-label={t('fin.previsto')} style={{ textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
                 {tt.status === 'aberto'
                   ? <input type="checkbox" checked={tt.previsto} disabled={!pode} onChange={() => alternarPrevisto(tt)} title={t('fin.previsto_hint')} />
                   : <span className="muted">—</span>}

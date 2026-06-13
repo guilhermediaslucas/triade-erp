@@ -579,3 +579,126 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
 .dash-footer { color: var(--muted2); font-size: 12px; text-align: center; padding: 18px 0 4px; }
 @media (max-width: 1100px) { .dash-row.c5, .dash-row.c2, .dash-row.d2, .dash-row.d3, .alerts { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 680px) { .dash-row.c5, .dash-row.c2, .dash-row.c3, .dash-row.d2, .dash-row.d3, .alerts, .quick { grid-template-columns: 1fr; } }
+
+/* =====================================================================
+   Camada RESPONSIVA (mobile) — só ativa abaixo do breakpoint.
+   No desktop nada muda: todas as regras vivem dentro de @media.
+   ===================================================================== */
+/* Elementos só-mobile ficam escondidos no desktop */
+.topbar-menu { display: none; }
+.sidebar-backdrop { display: none; }
+
+@media (max-width: 860px) {
+  /* --- Sidebar vira drawer off-canvas --- */
+  .sidebar {
+    position: fixed; top: 0; left: 0; height: 100dvh;
+    width: min(284px, 84vw); z-index: 1200;
+    transform: translateX(-100%); transition: transform .22s ease;
+    box-shadow: 0 0 40px rgba(0,0,0,.35);
+  }
+  .app-shell.menu-aberto .sidebar { transform: translateX(0); }
+  .sidebar-backdrop {
+    display: block; position: fixed; inset: 0; z-index: 1150;
+    background: rgba(15,23,42,.5); opacity: 0; pointer-events: none;
+    transition: opacity .22s ease;
+  }
+  .app-shell.menu-aberto .sidebar-backdrop { opacity: 1; pointer-events: auto; }
+  .app-main { width: 100%; }
+
+  /* --- Botão hambúrguer na topbar --- */
+  .topbar-menu {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; flex: none; padding: 0;
+    background: var(--bg); border: 1px solid var(--borda); border-radius: 10px;
+    color: var(--ink); cursor: pointer;
+  }
+  .topbar-menu:hover { border-color: var(--accent); }
+
+  /* --- Topbar compacta --- */
+  .topbar { height: 58px; gap: 10px; padding: 0 14px; }
+  .topbar-busca { flex: 1 1 auto; max-width: none; padding: 9px 11px; }
+  .topbar-busca-ph, .topbar-busca kbd { display: none; }
+  .topbar-dir { gap: 8px; }
+  .topbar-user { font-size: 0; gap: 0; }   /* esconde o nome, mantém o avatar */
+  .topbar-user .avatar, .topbar-user .avatar-ph { font-size: 13px; }
+  .btn-sair { padding: 7px 10px; }
+  .emp-pill { max-width: 130px; }
+
+  /* --- Conteúdo: menos respiro lateral --- */
+  .conteudo { padding: 16px 14px; }
+  .page-titulo { font-size: 19px; }
+  .card { padding: 16px; }
+
+  /* --- Grids de 2 colunas empilham --- */
+  .form-grid, .det-grid, .emp-grid { grid-template-columns: 1fr; }
+  .perm-grid { grid-template-columns: 1fr; }
+
+  /* --- Totais / linhas de total alinham à esquerda p/ caber --- */
+  .tl-row { justify-content: space-between; }
+  .tl-row b { min-width: 0; }
+
+  /* --- Modal vira "bottom sheet" (sobe de baixo, largura cheia) --- */
+  .modal-fundo { place-items: end stretch; padding: 0; }
+  .modal {
+    max-width: none; width: 100%; max-height: 92dvh;
+    border-radius: 16px 16px 0 0;
+    animation: sheet-up .22s ease-out;
+  }
+  .modal-lg { max-width: none; }
+
+  /* --- Alvos de toque maiores nas ações de lista --- */
+  .acao-ic { width: 38px; height: 38px; }
+  .chip-f { padding: 8px 14px; }
+  .btn-acao { padding: 9px 13px; }
+
+  /* --- Toolbar/busca das telas ocupa a largura toda --- */
+  .busca-box-tb { max-width: none; flex-basis: 100%; }
+}
+@keyframes sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+/* ---------------------------------------------------------------------
+   Tabela -> Cards no mobile (opt-in via classe .tabela-cards).
+   Cada <tr> vira um card; cada <td data-label="..."> mostra o rótulo.
+   No desktop fica como tabela normal (regras só dentro do @media).
+   --------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  /* tira a moldura do card-container quando ele só embrulha a tabela-cards */
+  .card.pad0:has(.tabela-cards) { border: 0; box-shadow: none; background: transparent; overflow: visible; }
+
+  table.tabela-cards, table.tabela-cards tbody, table.tabela-cards tr, table.tabela-cards td { display: block; width: auto; }
+  table.tabela-cards thead { display: none; }
+  table.tabela-cards tr {
+    border: 1px solid var(--borda); border-radius: 12px;
+    padding: 4px 14px; margin: 0 0 10px; background: var(--card);
+    box-shadow: var(--shadow);
+  }
+  table.tabela-cards tr.linha-inativa { opacity: .6; }
+  table.tabela-cards td {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    padding: 9px 0; border: 0; border-bottom: 1px solid var(--line2, #f2f3f8);
+    text-align: right; width: auto;
+  }
+  table.tabela-cards tr td:last-child { border-bottom: 0; }
+  table.tabela-cards td::before {
+    content: attr(data-label);
+    font-size: 11px; text-transform: uppercase; letter-spacing: .4px;
+    color: var(--muted); font-weight: 700; text-align: left; flex: none;
+    white-space: nowrap;
+  }
+  /* tds sem rótulo (checkbox / ações) usam a largura toda e alinham à direita */
+  table.tabela-cards td:not([data-label]) { justify-content: flex-end; }
+  table.tabela-cards td:not([data-label])::before { content: none; }
+  /* linha de "nenhum registro" (colSpan) vira card central simples */
+  table.tabela-cards td.vazio { justify-content: center; text-align: center; }
+  table.tabela-cards td.vazio::before { content: none; }
+  /* esconde a alça de redimensionar coluna no mobile (não faz sentido) */
+  table.tabela-cards .col-resize { display: none; }
+}
+
+@media (max-width: 520px) {
+  /* Telas muito estreitas: KPIs e cards de KPI em 1 coluna */
+  .kpi-row { grid-template-columns: 1fr; }
+  .kpi-card { min-width: 0; flex: 1 1 100%; }
+  .kpis { gap: 10px; }
+  .alerts { grid-template-columns: 1fr; }
+}

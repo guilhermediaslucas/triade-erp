@@ -125,12 +125,16 @@ export function Layout({ children }: { children: ReactNode }) {
   const [abertos, setAbertos] = useState<Set<number>>(() => new Set());
   const [sairOpen, setSairOpen] = useState(false);
   const [senhaOpen, setSenhaOpen] = useState(false);
+  // Drawer mobile: a sidebar vira off-canvas abaixo do breakpoint (CSS). Fecha ao navegar.
+  const [menuAberto, setMenuAberto] = useState(false);
+  const fecharMenu = () => setMenuAberto(false);
   const toggleGrupo = (gi: number) => setAbertos((cur) => { const n = new Set(cur); n.has(gi) ? n.delete(gi) : n.add(gi); return n; });
 
   return (
-    <div className="app-shell">
+    <div className={'app-shell' + (menuAberto ? ' menu-aberto' : '')}>
       <SpriteIcones />
       <BuscaGlobal />
+      <div className="sidebar-backdrop" onClick={fecharMenu} />
       <aside className="sidebar">
         <div className="sidebar-brand">
           {branding?.logo
@@ -148,7 +152,7 @@ export function Layout({ children }: { children: ReactNode }) {
             // Grupo sem rótulo = itens soltos (Dashboard) — ícone + label.
             if (!g.rotulo) {
               return g.secoes.flatMap((se) => se.itens.filter(visivel).map((it) => (
-                <NavLink key={it.to} to={it.to} end={it.to === '/'}
+                <NavLink key={it.to} to={it.to} end={it.to === '/'} onClick={fecharMenu}
                   className={({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')}>
                   {it.icone && <Ic name={it.icone} />}<span>{t(it.rotulo)}</span>
                 </NavLink>
@@ -171,7 +175,7 @@ export function Layout({ children }: { children: ReactNode }) {
                         <Fragment key={si}>
                           {se.sublabel && <div className="nav-sublabel">{t(se.sublabel)}</div>}
                           {itens.map((it) => (
-                            <NavLink key={it.to} to={it.to}
+                            <NavLink key={it.to} to={it.to} onClick={fecharMenu}
                               className={({ isActive }) => (isActive ? 'nav-subitem active' : 'nav-subitem')}>
                               {t(it.rotulo)}
                             </NavLink>
@@ -195,6 +199,9 @@ export function Layout({ children }: { children: ReactNode }) {
       </aside>
       <div className="app-main">
         <header className="topbar">
+          <button type="button" className="topbar-menu" onClick={() => setMenuAberto((v) => !v)} aria-label={t('menu.principal')}>
+            <Ic name={menuAberto ? 'i-x' : 'i-menu'} />
+          </button>
           <button type="button" className="topbar-busca" onClick={() => window.dispatchEvent(new Event('abrir-busca'))} title="Ctrl+K">
             <Ic name="i-search" className="sm" />
             <span className="topbar-busca-ph">{t('busca.placeholder')}</span>

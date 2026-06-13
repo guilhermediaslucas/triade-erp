@@ -56,7 +56,7 @@ export function Clientes() {
         {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
-      <div className="card pad0"><table className="tabela">
+      <div className="card pad0"><table className="tabela tabela-cards">
         <thead><tr><th>{t('clientes.col_cliente')}</th><th>{t('pessoa.documento')}</th><th>{t('clientes.cidade')}</th><th>{t('clientes.em_aberto')}</th><th>{t('fin.status')}</th><th style={{ textAlign: 'right' }}>{t('usuarios.acoes')}</th></tr></thead>
         <tbody>
           {filtrados.length === 0 && <tr><td colSpan={6} className="vazio">{t('common.nenhum')}</td></tr>}
@@ -65,11 +65,11 @@ export function Clientes() {
             const abrir = () => setEdit({ ...c, fantasia: c.fantasia ?? '', email: c.email ?? '', telefone: c.telefone ?? '', enderecos: c.enderecos.map((e) => ({ ...endVazio(), ...e, cep: e.cep ?? '', logradouro: e.logradouro ?? '', numero: e.numero ?? '', complemento: e.complemento ?? '', bairro: e.bairro ?? '', cidade: e.cidade ?? '', uf: e.uf ?? '' })) });
             return (
               <tr key={c.id} className={c.ativo ? '' : 'linha-inativa'}>
-                <td><b>{c.nome}</b>{c.fantasia ? <span className="muted"> · {c.fantasia}</span> : null}</td>
-                <td>{c.documento || '—'}</td>
-                <td>{fav ? `${fav.cidade ?? ''}${fav.uf ? '/' + fav.uf : ''}` : '—'}</td>
-                <td>{c.emAberto > 0 ? <b>{moeda(c.emAberto)}</b> : <span className="muted">{moeda(0)}</span>}</td>
-                <td><span className={c.ativo ? 'pill-ok' : 'pill-off'}>{c.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
+                <td data-label={t('clientes.col_cliente')}><b>{c.nome}</b>{c.fantasia ? <span className="muted"> · {c.fantasia}</span> : null}</td>
+                <td data-label={t('pessoa.documento')}>{c.documento || '—'}</td>
+                <td data-label={t('clientes.cidade')}>{fav ? `${fav.cidade ?? ''}${fav.uf ? '/' + fav.uf : ''}` : '—'}</td>
+                <td data-label={t('clientes.em_aberto')}>{c.emAberto > 0 ? <b>{moeda(c.emAberto)}</b> : <span className="muted">{moeda(0)}</span>}</td>
+                <td data-label={t('fin.status')}><span className={c.ativo ? 'pill-ok' : 'pill-off'}>{c.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
                 <td style={{ textAlign: 'right' }}><span className="acoes-ic">
                   <button className="acao-ic" title={t('common.editar')} onClick={abrir}><Ic name="i-edit" className="sm" /></button>
                   {pode && <button className="acao-ic danger" title={c.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternar(c)}><Ic name="i-trash" className="sm" /></button>}
