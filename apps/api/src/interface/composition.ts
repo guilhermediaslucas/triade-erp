@@ -112,7 +112,7 @@ export function montarDependencias() {
     vendedoresService: new VendedoresService(vendedoresRepo),
     motoboysService: new MotoboysService(motoboysRepo),
     precosService: new PrecosService(precoBaseRepo, precoClienteRepo),
-    freteService: new FreteService(freteConfigRepo),
+    freteService: new FreteService(freteConfigRepo, empresasRepo),
     gestaoFretesService: new GestaoFretesService(new SqlGestaoFreteRepository(AppDataSource), tituloRepo),
     pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, precoClienteRepo, clientesRepo, estoqueRepo, etiquetaRepo, tituloRepo, condicaoRepo, motoboysRepo),
     condicoesService: new CondicoesService(condicaoRepo),

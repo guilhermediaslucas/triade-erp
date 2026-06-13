@@ -1,6 +1,16 @@
 import type { FreteConfig, FreteConfigRepository, FormaEntrega } from '../../domain/comercial/FreteConfig.js';
 import { FORMAS_ENTREGA } from '../../domain/comercial/FreteConfig.js';
+import type { EmpresaRepository } from '../../domain/empresa/EmpresaRepository.js';
+import type { Empresa } from '../../domain/empresa/Empresa.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
+
+// Monta o endereço de origem a partir do cadastro da empresa (Dados da empresa).
+function origemDaEmpresa(e: Empresa | null): string {
+  if (!e) return '';
+  const partes = [e.logradouro, e.bairro, [e.cidade, e.uf].filter(Boolean).join(' - '), e.cep]
+    .map((p) => (p ?? '').trim()).filter(Boolean);
+  return partes.join(', ');
+}
 
 export interface FreteCalculo { frete: number; distanciaKm: number | null; memo: string | null; }
 
@@ -35,7 +45,7 @@ const r2 = (n: number) => Math.round(n * 100) / 100;
 const txt = (v: any): string | null => (v != null && String(v).trim()) || null;
 
 export class FreteService {
-  constructor(private readonly config: FreteConfigRepository) {}
+  constructor(private readonly config: FreteConfigRepository, private readonly empresas: EmpresaRepository) {}
 
   obterConfig(schema: string): Promise<FreteConfig> { return this.config.obter(schema); }
 
@@ -53,7 +63,7 @@ export class FreteService {
   // - retirada: 0
   // - motoboy: distância (Google Maps se configurado, senão estimada) × km_rate, com mínimo
   // - correios/transportadora: valor manual (>= 0)
-  async calcular(schema: string, e: any): Promise<FreteCalculo> {
+  async calcular(schema: string, codigoEmpresa: string, e: any): Promise<FreteCalculo> {
     const forma = String(e?.formaEntrega ?? 'retirada') as FormaEntrega;
     if (!FORMAS_ENTREGA.includes(forma)) throw new ErroAplicacao('frete.forma_invalida', 400);
 
@@ -62,9 +72,12 @@ export class FreteService {
     if (forma === 'motoboy') {
       const cfg = await this.config.obter(schema);
       const destino = String(e?.cep ?? '');
+      // Origem = endereço de Dados da empresa (fallback: CEP de origem da config de frete).
+      const empresa = await this.empresas.buscarPorCodigo(codigoEmpresa).catch(() => null);
+      const origem = origemDaEmpresa(empresa) || (cfg.cepOrigem ?? '');
       let km = simularKm(destino);
       let via = 'estimado';
-      const g = await distanciaGoogleKm(cfg.cepOrigem ?? '', destino);
+      const g = await distanciaGoogleKm(origem, destino);
       if (g != null) { km = g; via = 'Google Maps'; }
       const bruto = r2(km * cfg.kmRate);
       const frete = Math.max(bruto, cfg.minMotoboy);

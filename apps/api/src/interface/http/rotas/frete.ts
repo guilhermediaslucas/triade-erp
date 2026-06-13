@@ -18,7 +18,7 @@ export function rotasFrete(deps: Dependencias): Router {
   });
   // Cálculo usado pelo Novo pedido (qualquer um que possa criar pedido).
   r.post('/frete/calcular', aut, az('comercial.pedido.criar'), async (req, res: Response) => {
-    try { res.json(await deps.freteService.calcular(sch(req), req.body ?? {})); } catch (e) { tratarErro(res, e); }
+    try { res.json(await deps.freteService.calcular(sch(req), req.usuario!.empresa, req.body ?? {})); } catch (e) { tratarErro(res, e); }
   });
   return r;
 }
