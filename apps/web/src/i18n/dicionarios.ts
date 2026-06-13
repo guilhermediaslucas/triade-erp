@@ -1858,6 +1858,8 @@ Object.assign(pt, {
   'pedidos.end_novo': 'Informar um novo endereço', 'pedidos.end_salvar': 'Salvar este endereço no cadastro do cliente',
   'pedidos.complemento': 'Complemento', 'pedidos.complemento_ph': 'Sala, andar...',
   'pedidos.excluir_sel': 'Excluir selecionados', 'pedidos.itens_sel': 'item(ns) selecionado(s)', 'pedidos.total_sel': 'Total selecionado',
+  'pedidos.crumb_editar': 'Comercial / Pedidos / Editar orçamento', 'pedidos.editar': 'Editar orçamento', 'pedidos.sub_editar': 'Ajuste os itens e dados antes de virar pedido',
+  'pedidos.end_manter': 'Manter endereço atual', 'pedidos.confirmar_virar': 'Confirmar pedido', 'pedidos.salvar_alteracoes': 'Salvar alterações',
 });
 Object.assign(en, {
   'pedidos.crumb_novo': 'Sales / Orders / New', 'pedidos.sub_novo': 'Customer, items and payment',
@@ -1870,6 +1872,8 @@ Object.assign(en, {
   'pedidos.end_novo': 'Enter a new address', 'pedidos.end_salvar': 'Save this address to the customer record',
   'pedidos.complemento': 'Complement', 'pedidos.complemento_ph': 'Suite, floor...',
   'pedidos.excluir_sel': 'Delete selected', 'pedidos.itens_sel': 'item(s) selected', 'pedidos.total_sel': 'Selected total',
+  'pedidos.crumb_editar': 'Sales / Orders / Edit quote', 'pedidos.editar': 'Edit quote', 'pedidos.sub_editar': 'Adjust items and details before turning it into an order',
+  'pedidos.end_manter': 'Keep current address', 'pedidos.confirmar_virar': 'Confirm order', 'pedidos.salvar_alteracoes': 'Save changes',
 });
 Object.assign(es, {
   'pedidos.crumb_novo': 'Comercial / Pedidos / Nuevo', 'pedidos.sub_novo': 'Cliente, ítems y forma de pago',
@@ -1882,11 +1886,13 @@ Object.assign(es, {
   'pedidos.end_novo': 'Informar una nueva dirección', 'pedidos.end_salvar': 'Guardar esta dirección en el registro del cliente',
   'pedidos.complemento': 'Complemento', 'pedidos.complemento_ph': 'Sala, piso...',
   'pedidos.excluir_sel': 'Eliminar seleccionados', 'pedidos.itens_sel': 'ítem(s) seleccionado(s)', 'pedidos.total_sel': 'Total seleccionado',
+  'pedidos.crumb_editar': 'Comercial / Pedidos / Editar presupuesto', 'pedidos.editar': 'Editar presupuesto', 'pedidos.sub_editar': 'Ajusta los ítems y datos antes de convertirlo en pedido',
+  'pedidos.end_manter': 'Mantener dirección actual', 'pedidos.confirmar_virar': 'Confirmar pedido', 'pedidos.salvar_alteracoes': 'Guardar cambios',
 });
 
-Object.assign(pt, { 'pedido.workflow': 'Workflow', 'pedido.titulo': 'Pedido', 'pedido.lote': 'Lote', 'pedido.validade': 'Validade' });
-Object.assign(en, { 'pedido.workflow': 'Workflow', 'pedido.titulo': 'Order', 'pedido.lote': 'Batch', 'pedido.validade': 'Expiry' });
-Object.assign(es, { 'pedido.workflow': 'Flujo', 'pedido.titulo': 'Pedido', 'pedido.lote': 'Lote', 'pedido.validade': 'Validez' });
+Object.assign(pt, { 'pedido.workflow': 'Workflow', 'pedido.titulo': 'Pedido', 'pedido.lote': 'Lote', 'pedido.validade': 'Validade', 'pedido.editar': 'Editar', 'pedido.so_orcamento_edita': 'Só é possível editar enquanto o pedido está em orçamento.' });
+Object.assign(en, { 'pedido.workflow': 'Workflow', 'pedido.titulo': 'Order', 'pedido.lote': 'Batch', 'pedido.validade': 'Expiry', 'pedido.editar': 'Edit', 'pedido.so_orcamento_edita': 'You can only edit while the order is a quote.' });
+Object.assign(es, { 'pedido.workflow': 'Flujo', 'pedido.titulo': 'Pedido', 'pedido.lote': 'Lote', 'pedido.validade': 'Validez', 'pedido.editar': 'Editar', 'pedido.so_orcamento_edita': 'Solo se puede editar mientras el pedido es un presupuesto.' });
 
 Object.assign(pt, { 'entrada.card': 'Dados da entrada', 'nota.card': 'Dados da nota', 'perda.card': 'Dados da baixa' });
 Object.assign(en, { 'entrada.card': 'Entry details', 'nota.card': 'Note details', 'perda.card': 'Write-off details' });

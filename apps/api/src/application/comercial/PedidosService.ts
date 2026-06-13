@@ -57,7 +57,9 @@ export class PedidosService {
     return p;
   }
 
-  async criar(schema: string, e: any): Promise<{ id: string; numero: number }> {
+  // Monta e valida o NovoPedido (preços/itens/frete/endereço) a partir do corpo da
+  // requisição. Reusado pelo criar e pelo editar (orçamento).
+  private async montar(schema: string, e: any): Promise<NovoPedido> {
     if (!e?.clienteId) throw new ErroAplicacao('pedido.cliente_obrigatorio', 400);
     const cliente = await this.clientes.buscarPorId(schema, e.clienteId);
     if (!cliente) throw new ErroAplicacao('pedido.cliente_obrigatorio', 400);
@@ -100,16 +102,32 @@ export class PedidosService {
       if (fav) endereco = enderecoTexto(fav);
     }
 
-    const novo: NovoPedido = {
+    return {
       clienteId: cliente.id, vendedorId: e?.vendedorId || null,
       formaPagamento: (e?.formaPagamento && String(e.formaPagamento).trim()) || null,
       observacao: (e?.observacao && String(e.observacao).trim()) || null,
       enderecoEntrega: endereco, formaEntrega, motoboyId, distanciaKm,
       frete, itens, subtotal, total, condicaoParcelas: condParcelas, condicaoIntervalo: condIntervalo,
     };
+  }
+
+  async criar(schema: string, e: any): Promise<{ id: string; numero: number }> {
+    const novo = await this.montar(schema, e);
     const numero = await this.pedidos.proximoNumero(schema);
     const id = await this.pedidos.criar(schema, numero, novo);
     return { id, numero };
+  }
+
+  // Edita um pedido — só permitido enquanto ele é ORÇAMENTO (rascunho). Recalcula
+  // preços/itens/totais com a tabela de preço atual e regrava. Depois disso o usuário
+  // pode confirmar (orçamento → aguardando pagamento) e ele "vira pedido".
+  async editar(schema: string, id: string, e: any): Promise<{ id: string }> {
+    const pedido = await this.pedidos.buscarPorId(schema, id);
+    if (!pedido) throw new ErroAplicacao('pedido.nao_encontrado', 404);
+    if (pedido.status !== 'orcamento') throw new ErroAplicacao('pedido.so_orcamento_edita', 400);
+    const novo = await this.montar(schema, e);
+    await this.pedidos.editar(schema, id, novo);
+    return { id };
   }
 
   async mudarStatus(schema: string, id: string, novo: StatusPedido, dados?: { formaEnvio?: any; formaEnvioDetalhe?: any; entregueEm?: any; motoboyId?: any }, ator?: string | null): Promise<void> {

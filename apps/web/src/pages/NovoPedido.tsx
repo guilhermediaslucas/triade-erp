@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
@@ -21,6 +21,7 @@ interface NovoEndereco { logradouro: string; numero: string; complemento: string
 const FORMAS = ['retirada', 'motoboy', 'correios', 'transportadora'] as const;
 type Forma = typeof FORMAS[number];
 const NOVO = '__novo__';
+const ATUAL = '__atual__'; // (edição) manter o endereço já salvo no pedido
 
 function endTexto(e: Endereco): string {
   const p1 = [e.logradouro, e.numero].filter(Boolean).join(', ');
@@ -41,6 +42,10 @@ export function NovoPedido() {
   const { token } = useAuth();
   const { t } = useI18n();
   const nav = useNavigate();
+  const { id: pedidoId } = useParams();         // presente = modo edição (orçamento)
+  const editando = !!pedidoId;
+  const [enderecoAtual, setEnderecoAtual] = useState<string | null>(null);
+  const [condAlvo, setCondAlvo] = useState<{ parcelas: number; intervalo: number } | null>(null);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [vendedores, setVendedores] = useState<Vendedor[]>([]);
   const [condicoes, setCondicoes] = useState<Condicao[]>([]);
@@ -78,6 +83,35 @@ export function NovoPedido() {
     /* eslint-disable-next-line */
   }, []);
 
+  // Modo edição: carrega o pedido (orçamento) e preenche o formulário.
+  useEffect(() => {
+    if (!pedidoId) return;
+    api.get<any>('/pedidos/' + pedidoId, token!).then((p) => {
+      setClienteId(p.clienteId ?? '');
+      setVendedorId(p.vendedorId ?? '');
+      setFormaPagamento(p.formaPagamento ?? 'Pix');
+      setObs(p.observacao ?? '');
+      setFormaEntrega((FORMAS as readonly string[]).includes(p.formaEntrega) ? p.formaEntrega : 'retirada');
+      setFrete(String(p.frete ?? 0));
+      setDistanciaKm(p.distanciaKm ?? null);
+      setEnderecoAtual(p.enderecoEntrega ?? null);
+      setEndSel(p.enderecoEntrega ? ATUAL : NOVO);
+      if (p.condicaoParcelas && p.condicaoParcelas > 1) setCondAlvo({ parcelas: p.condicaoParcelas, intervalo: p.condicaoIntervalo ?? 30 });
+      const its = Array.isArray(p.itens) ? p.itens.filter((it: any) => it.produtoId) : [];
+      setItens(its.length ? its.map((it: any) => ({ produtoId: it.produtoId, quantidade: String(it.quantidade) })) : [{ produtoId: '', quantidade: '1' }]);
+    }).catch((e) => setErro((e as ErroApi).chaveI18n));
+    /* eslint-disable-next-line */
+  }, [pedidoId]);
+
+  // (edição) Casa de volta a condição de pagamento pelo nº de parcelas, quando as condições carregam.
+  useEffect(() => {
+    if (!condAlvo || condicoes.length === 0) return;
+    const c = condicoes.find((x) => x.parcelas === condAlvo.parcelas);
+    if (c) setCondicaoId(c.id);
+    setCondAlvo(null);
+    /* eslint-disable-next-line */
+  }, [condicoes, condAlvo]);
+
   // Recarrega a lista de clientes após cadastro inline e já seleciona o novo (por nome).
   const recarregarClientes = (nomeSel?: string) =>
     api.get<Cliente[]>('/clientes', token!).then((c) => {
@@ -101,15 +135,18 @@ export function NovoPedido() {
     setNovoEnd(endVazio()); setSalvarEnd(false);
   }
 
-  // Texto e CEP do endereço efetivo (salvo escolhido ou o novo digitado).
+  // Texto e CEP do endereço efetivo (salvo escolhido, o novo digitado, ou o atual em edição).
   const usandoNovo = endSel === NOVO;
+  const usandoAtual = endSel === ATUAL;
   useEffect(() => {
+    if (usandoAtual) return;                       // mantém o frete já carregado do pedido
     if (usandoNovo) setCep(novoEnd.cep || null);
     else { const e = ends[Number(endSel)]; setCep(e?.cep ?? null); }
     /* eslint-disable-next-line */
   }, [endSel, novoEnd.cep]);
 
   function enderecoEfetivo(): string {
+    if (usandoAtual) return enderecoAtual ?? '';
     if (usandoNovo) return novoEndTexto(novoEnd);
     const e = ends[Number(endSel)];
     return e ? endTexto(e) : '';
@@ -125,6 +162,7 @@ export function NovoPedido() {
     let vivo = true;
     async function calc() {
       if (formaEntrega === 'retirada') { setFrete('0'); setDistanciaKm(null); setFreteMemo(null); return; }
+      if (usandoAtual) return;                     // (edição) preserva o frete salvo enquanto mantém o endereço atual (motoboy/correios)
       if (formaEntrega === 'motoboy') {
         try {
           const r = await api.post<FreteCalculo>('/frete/calcular', { formaEntrega: 'motoboy', cep }, token!);
@@ -179,13 +217,20 @@ export function NovoPedido() {
     try { await api.put('/clientes/' + cliente.id, corpo, token!); } catch { /* ignora */ }
   }
 
-  // "Salvar como orçamento": só cria (status fica em orçamento) e volta à lista.
+  // Cria (novo) ou edita (orçamento existente) e devolve o id.
+  async function salvar(): Promise<string> {
+    if (editando) { await api.put('/pedidos/' + pedidoId, corpoPedido(), token!); return pedidoId!; }
+    const r = await api.post<{ id: string }>('/pedidos', corpoPedido(), token!);
+    return r.id;
+  }
+
+  // "Salvar como orçamento": só salva (status fica em orçamento) e vai ao detalhe.
   async function salvarOrcamento() {
     setErro(null); setSalv(true);
     try {
-      const r = await api.post<{ id: string }>('/pedidos', corpoPedido(), token!);
+      const id = await salvar();
       await talvezSalvarEndereco();
-      nav('/comercial/pedidos/' + r.id);
+      nav('/comercial/pedidos/' + id);
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
 
@@ -196,10 +241,10 @@ export function NovoPedido() {
   async function criarPedido() {
     setErro(null); setSalv(true);
     try {
-      const r = await api.post<{ id: string }>('/pedidos', corpoPedido(), token!);
+      const id = await salvar();
       await talvezSalvarEndereco();
-      try { await api.patch('/pedidos/' + r.id + '/status', { status: 'aguardando_pagamento' }, token!); } catch { /* confirma no detalhe */ }
-      nav('/comercial/pedidos/' + r.id);
+      try { await api.patch('/pedidos/' + id + '/status', { status: 'aguardando_pagamento' }, token!); } catch { /* confirma no detalhe */ }
+      nav('/comercial/pedidos/' + id);
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
 
@@ -207,8 +252,8 @@ export function NovoPedido() {
 
   return (
     <div>
-      <div className="crumb">{t('pedidos.crumb_novo')}</div>
-      <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('pedidos.novo')}</h1><div className="muted page-sub">{t('pedidos.sub_novo')}</div></div></div>
+      <div className="crumb">{editando ? t('pedidos.crumb_editar') : t('pedidos.crumb_novo')}</div>
+      <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{editando ? t('pedidos.editar') : t('pedidos.novo')}</h1><div className="muted page-sub">{editando ? t('pedidos.sub_editar') : t('pedidos.sub_novo')}</div></div></div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
 
       <div className="card" style={{ maxWidth: 'none' }}>
@@ -248,6 +293,7 @@ export function NovoPedido() {
         <label className="campo full" style={{ marginBottom: usandoNovo ? 12 : 0 }}>{t('pedidos.end_cliente')}
           <select value={endSel} disabled={!cliente} onChange={(e) => setEndSel(e.target.value)}>
             {!cliente && <option value="">{t('pedidos.end_selecione_cliente')}</option>}
+            {editando && enderecoAtual && <option value={ATUAL}>{t('pedidos.end_manter')}: {enderecoAtual}</option>}
             {ends.map((e, i) => <option key={i} value={i}>{endTexto(e) || '—'}{e.favorito ? ' (' + t('clientes.favorito').toLowerCase() + ')' : ''}</option>)}
             <option value={NOVO}>+ {t('pedidos.end_novo')}</option>
           </select>
@@ -330,8 +376,8 @@ export function NovoPedido() {
       </div>
 
       <div className="form-actions">
-        <button className="btn-primary" disabled={bloqueado} onClick={criarPedido}>{t('pedidos.criar')}</button>
-        <button className="btn-ghost" disabled={bloqueado} onClick={salvarOrcamento}>{t('pedidos.salvar_orcamento')}</button>
+        <button className="btn-primary" disabled={bloqueado} onClick={criarPedido}>{editando ? t('pedidos.confirmar_virar') : t('pedidos.criar')}</button>
+        <button className="btn-ghost" disabled={bloqueado} onClick={salvarOrcamento}>{editando ? t('pedidos.salvar_alteracoes') : t('pedidos.salvar_orcamento')}</button>
         <button className="btn-ghost" onClick={() => nav('/comercial/pedidos')}>{t('common.cancelar')}</button>
       </div>
     </div>

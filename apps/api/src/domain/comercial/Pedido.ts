@@ -72,6 +72,7 @@ export interface NovoPedido {
 export interface PedidoRepository {
   proximoNumero(schema: string): Promise<number>;
   criar(schema: string, numero: number, p: NovoPedido): Promise<string>;
+  editar(schema: string, id: string, p: NovoPedido): Promise<void>;
   listar(schema: string): Promise<PedidoResumo[]>;
   buscarPorId(schema: string, id: string): Promise<Pedido | null>;
   mudarStatus(schema: string, id: string, status: StatusPedido): Promise<void>;

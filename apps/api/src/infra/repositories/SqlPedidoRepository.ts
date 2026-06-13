@@ -33,6 +33,27 @@ export class SqlPedidoRepository implements PedidoRepository {
     return id;
   }
 
+  // Edita um pedido (só usado enquanto está em orçamento): atualiza os dados e
+  // recria os itens. O número e o status (orçamento) não mudam aqui.
+  async editar(schema: string, id: string, p: NovoPedido): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(
+      `UPDATE "${s}".pedido
+          SET cliente_id = $2, vendedor_id = $3, forma_pagamento = $4, observacao = $5, endereco_entrega = $6,
+              forma_entrega = $7, motoboy_id = $8, distancia_km = $9, subtotal = $10, frete = $11, total = $12,
+              condicao_parcelas = $13, condicao_intervalo = $14
+        WHERE id = $1`,
+      [id, p.clienteId, p.vendedorId, p.formaPagamento, p.observacao, p.enderecoEntrega,
+       p.formaEntrega, p.motoboyId, p.distanciaKm, p.subtotal, p.frete, p.total, p.condicaoParcelas, p.condicaoIntervalo]);
+    await this.ds.query(`DELETE FROM "${s}".pedido_item WHERE pedido_id = $1`, [id]);
+    for (const it of p.itens) {
+      await this.ds.query(
+        `INSERT INTO "${s}".pedido_item (id, pedido_id, produto_id, produto_nome, quantidade, preco_unitario, subtotal)
+         VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+        [randomUUID(), id, it.produtoId, it.produtoNome, it.quantidade, it.precoUnitario, it.subtotal]);
+    }
+  }
+
   async listar(schema: string): Promise<PedidoResumo[]> {
     const s = validarSchema(schema);
     const linhas = await this.ds.query(

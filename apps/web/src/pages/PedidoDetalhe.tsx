@@ -40,6 +40,7 @@ export function PedidoDetalhe() {
   const [p, setP] = useState<Pedido | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const podeGerenciar = temCapability('comercial.pedido.gerenciar');
+  const podeCriar = temCapability('comercial.pedido.criar');
   const [formas, setFormas] = useState<string[]>([]);
   const [motoboys, setMotoboys] = useState<{ id: string; nome: string; ativo: boolean }[]>([]);
   const [modal, setModal] = useState<'envio' | 'entrega' | null>(null);
@@ -111,6 +112,9 @@ export function PedidoDetalhe() {
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <span className={'pill ' + corStatus(p.status)} style={{ fontSize: 13 }}>{t('status.' + p.status)}</span>
+          {p.status === 'orcamento' && podeCriar && (
+            <button className="btn-primary" onClick={() => nav('/comercial/pedidos/' + p.id + '/editar')}><Ic name="i-edit" className="sm" /> {t('pedido.editar')}</button>
+          )}
           <button className="btn-ghost" onClick={() => nav('/comercial/pedidos/' + p.id + '/romaneio')}><Ic name="i-print" className="sm" /> {t('romaneio.titulo')}</button>
           <button className="btn-ghost" onClick={() => nav('/comercial/pedidos')}>← {t('pedidos.voltar')}</button>
         </div>
