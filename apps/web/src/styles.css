@@ -262,6 +262,10 @@ a { text-decoration: none; color: inherit; }
 .tv-data { font-size: 15px; color: #9aa1b1; text-transform: capitalize; margin-top: 2px; }
 .tv-upd { font-size: 12px; color: #6b7280; margin-top: 6px; }
 .tv-sair { margin-top: 8px; background: #1b1f27; color: #cbd2e0; border: 1px solid #2a2f3a; border-radius: 8px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
+.tv-acoes { display: flex; gap: 8px; justify-content: flex-end; align-items: center; }
+.tv-acoes .tv-sair { margin-top: 8px; }
+.tv-icbtn { display: inline-flex; align-items: center; justify-content: center; padding: 6px 9px; line-height: 0; }
+.tv-icbtn:hover { background: #20252f; }
 .tv-load { font-size: 22px; color: #9aa1b1; padding: 60px; text-align: center; }
 .tv-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 18px; }
 .tv-kpi { background: #171a21; border: 1px solid #232834; border-radius: 18px; padding: 22px 26px; }

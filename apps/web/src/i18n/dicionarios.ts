@@ -1603,9 +1603,9 @@ Object.assign(es, {
 });
 
 // --- Modo escuro ---
-Object.assign(pt, { 'tema.alternar': 'Alternar tema claro/escuro' });
-Object.assign(en, { 'tema.alternar': 'Toggle light/dark theme' });
-Object.assign(es, { 'tema.alternar': 'Alternar tema claro/oscuro' });
+Object.assign(pt, { 'tema.alternar': 'Alternar tema claro/escuro', 'tela.cheia': 'Tela cheia' });
+Object.assign(en, { 'tema.alternar': 'Toggle light/dark theme', 'tela.cheia': 'Fullscreen' });
+Object.assign(es, { 'tema.alternar': 'Alternar tema claro/oscuro', 'tela.cheia': 'Pantalla completa' });
 
 // --- Seletor de empresa (admin do sistema) ---
 Object.assign(pt, { 'emp.trocar': 'Trocar empresa (admin do sistema)', 'emp.titulo': 'Trocar empresa', 'emp.vazio': 'Nenhuma empresa.' });

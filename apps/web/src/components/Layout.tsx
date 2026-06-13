@@ -6,6 +6,7 @@ import { useBranding } from '../branding/BrandingContext.js';
 import { BuscaGlobal } from './BuscaGlobal.js';
 import { Avatar } from './Avatar.js';
 import { Sino } from './Sino.js';
+import { BotaoTelaCheia } from './BotaoTelaCheia.js';
 import { useTema } from '../theme/ThemeContext.js';
 import { EmpresaSwitcher } from './EmpresaSwitcher.js';
 import { Ic, SpriteIcones } from './Icones.js';
@@ -209,6 +210,7 @@ export function Layout({ children }: { children: ReactNode }) {
           </button>
           <div className="topbar-dir">
             <EmpresaSwitcher />
+            <BotaoTelaCheia />
             <button className="btn-tema" onClick={alternar} title={t('tema.alternar')}><Ic name={escuro ? 'i-sun' : 'i-moon'} className="sm" /></button>
             <Sino />
             <button type="button" className="topbar-user" onClick={() => setSenhaOpen(true)} title={t('senha.trocar')} style={{ background: 'none', border: 0, cursor: 'pointer', fontFamily: 'inherit' }}>
