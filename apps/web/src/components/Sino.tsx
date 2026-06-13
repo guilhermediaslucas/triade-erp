@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { useToast } from './Toast.js';
 import { Ic } from './Icones.js';
 
 interface Grupo { chave: string; icone: string; qtd: number; to: string; }
@@ -16,14 +17,28 @@ function diasAteValidade(v: string | null): number | null {
 export function Sino() {
   const { token, temCapability } = useAuth();
   const { t } = useI18n();
+  const toast = useToast();
   const nav = useNavigate();
   const [grupos, setGrupos] = useState<Grupo[]>([]);
   const [aberto, setAberto] = useState(false);
+  // Última contagem de "aguardando separação" — para disparar toast quando aumenta.
+  const prevSepRef = useRef<number | null>(null);
 
   async function carregar() {
     if (!token) return;
     const out: Grupo[] = [];
     try {
+      // Pedidos aguardando separação (status aprovado) — para quem tem acesso à Expedição.
+      if (temCapability('comercial.pedido.gerenciar')) {
+        const peds = await api.get<{ status: string }[]>('/pedidos', token).catch(() => null);
+        if (peds) {
+          const sep = peds.filter((p) => p.status === 'aprovado').length;
+          if (sep > 0) out.push({ chave: 'sino.aguardando_separacao', icone: 'i-box', qtd: sep, to: '/estoque/expedicao' });
+          // Toast só quando AUMENTA (chegou pedido novo) e não na primeira carga.
+          if (prevSepRef.current !== null && sep > prevSepRef.current) toast(t('sino.toast_nova_separacao'));
+          prevSepRef.current = sep;
+        }
+      }
       if (temCapability('financeiro.receber.listar')) {
         const ag = await api.get<{ linhas: { diasAtraso: number }[] }>('/financeiro/aging-receber', token).catch(() => null);
         const venc = ag ? ag.linhas.filter((l) => l.diasAtraso > 0).length : 0;
@@ -47,7 +62,13 @@ export function Sino() {
     } catch { /* silencioso */ }
     setGrupos(out);
   }
-  useEffect(() => { carregar(); /* eslint-disable-next-line */ }, [token]);
+  useEffect(() => {
+    prevSepRef.current = null;          // zera o baseline ao trocar de sessão/empresa
+    carregar();
+    const id = setInterval(carregar, 60000);   // atualização automática (ao vivo)
+    return () => clearInterval(id);
+    /* eslint-disable-next-line */
+  }, [token]);
 
   const total = grupos.reduce((a, g) => a + g.qtd, 0);
   function ir(to: string) { setAberto(false); nav(to); }

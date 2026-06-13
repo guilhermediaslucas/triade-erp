@@ -155,7 +155,10 @@ export function Dashboard() {
 
   return (
     <div>
-      <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('dashboard.titulo')}</h1><div className="muted page-sub">{t('dash.subtitulo')}</div></div></div>
+      <div className="page-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('dashboard.titulo')}</h1><div className="muted page-sub">{t('dash.subtitulo')}</div></div>
+        <button className="btn-ghost" onClick={() => navigate('/dashboard/tv')}><Ic name="i-chart" className="sm" /> {t('tv.botao')}</button>
+      </div>
 
       <div className="dash-row c5">
         {kpis.map((k) => (

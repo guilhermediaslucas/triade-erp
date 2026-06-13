@@ -8,6 +8,7 @@ import { ThemeProvider } from './theme/ThemeContext.js';
 import { Login } from './pages/Login.js';
 import { Dashboard } from './pages/Dashboard.js';
 import { DashboardSerie } from './pages/DashboardSerie.js';
+import { DashboardTV } from './pages/DashboardTV.js';
 import { Usuarios } from './pages/Usuarios.js';
 import { Perfis } from './pages/Perfis.js';
 import { DadosEmpresa } from './pages/DadosEmpresa.js';
@@ -76,6 +77,7 @@ export function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/" element={<Protegida><Dashboard /></Protegida>} />
                 <Route path="/dashboard/serie/:tipo" element={<Protegida cap="dashboard.ver"><DashboardSerie /></Protegida>} />
+                <Route path="/dashboard/tv" element={<ProtectedRoute capability="dashboard.ver"><DashboardTV /></ProtectedRoute>} />
                 <Route path="/notificacoes" element={<Protegida><Notificacoes /></Protegida>} />
                 <Route path="/acesso/usuarios" element={<Protegida cap="acesso.usuario.listar"><Usuarios /></Protegida>} />
                 <Route path="/acesso/perfis" element={<Protegida cap="acesso.perfil.listar"><Perfis /></Protegida>} />

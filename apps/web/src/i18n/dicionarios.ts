@@ -417,7 +417,7 @@ Object.assign(pt, {
   'pedidos.itens': 'Itens', 'pedidos.add_item': 'Adicionar item', 'pedidos.escolha_produto': 'Escolha o produto',
   'pedidos.subtotal': 'Subtotal', 'pedidos.frete': 'Frete', 'pedidos.obs': 'Observação', 'pedidos.salvar': 'Criar pedido',
   'pedidos.voltar': 'Voltar', 'pedidos.qtd': 'Qtd', 'pedidos.preco_unit': 'Preço unit.',
-  'status.orcamento': 'Orçamento', 'status.aguardando_pagamento': 'Aguardando pagamento', 'status.aprovado': 'Pagamento aprovado',
+  'status.orcamento': 'Orçamento', 'status.aguardando_pagamento': 'Aguardando pagamento', 'status.aprovado': 'Aguardando separação',
   'status.separacao': 'Em separação', 'status.expedido': 'Expedido', 'status.entregue': 'Entregue', 'status.cancelado': 'Cancelado',
   'pedidos.acao.aguardando_pagamento': 'Confirmar pedido', 'pedidos.acao.aprovado': 'Aprovar pagamento',
   'pedidos.acao.separacao': 'Enviar p/ separação', 'pedidos.acao.expedido': 'Marcar expedido', 'pedidos.acao.entregue': 'Marcar entregue',
@@ -436,7 +436,7 @@ Object.assign(en, {
   'pedidos.itens': 'Items', 'pedidos.add_item': 'Add item', 'pedidos.escolha_produto': 'Choose product',
   'pedidos.subtotal': 'Subtotal', 'pedidos.frete': 'Shipping', 'pedidos.obs': 'Notes', 'pedidos.salvar': 'Create order',
   'pedidos.voltar': 'Back', 'pedidos.qtd': 'Qty', 'pedidos.preco_unit': 'Unit price',
-  'status.orcamento': 'Quote', 'status.aguardando_pagamento': 'Awaiting payment', 'status.aprovado': 'Payment approved',
+  'status.orcamento': 'Quote', 'status.aguardando_pagamento': 'Awaiting payment', 'status.aprovado': 'Awaiting picking',
   'status.separacao': 'Picking', 'status.expedido': 'Shipped', 'status.entregue': 'Delivered', 'status.cancelado': 'Canceled',
   'pedidos.acao.aguardando_pagamento': 'Confirm order', 'pedidos.acao.aprovado': 'Approve payment',
   'pedidos.acao.separacao': 'Send to picking', 'pedidos.acao.expedido': 'Mark shipped', 'pedidos.acao.entregue': 'Mark delivered',
@@ -455,7 +455,7 @@ Object.assign(es, {
   'pedidos.itens': 'Ítems', 'pedidos.add_item': 'Agregar ítem', 'pedidos.escolha_produto': 'Elige el producto',
   'pedidos.subtotal': 'Subtotal', 'pedidos.frete': 'Flete', 'pedidos.obs': 'Observación', 'pedidos.salvar': 'Crear pedido',
   'pedidos.voltar': 'Volver', 'pedidos.qtd': 'Cant.', 'pedidos.preco_unit': 'Precio unit.',
-  'status.orcamento': 'Presupuesto', 'status.aguardando_pagamento': 'Esperando pago', 'status.aprovado': 'Pago aprobado',
+  'status.orcamento': 'Presupuesto', 'status.aguardando_pagamento': 'Esperando pago', 'status.aprovado': 'Esperando preparación',
   'status.separacao': 'En preparación', 'status.expedido': 'Expedido', 'status.entregue': 'Entregado', 'status.cancelado': 'Cancelado',
   'pedidos.acao.aguardando_pagamento': 'Confirmar pedido', 'pedidos.acao.aprovado': 'Aprobar pago',
   'pedidos.acao.separacao': 'Enviar a preparación', 'pedidos.acao.expedido': 'Marcar expedido', 'pedidos.acao.entregue': 'Marcar entregado',
@@ -1263,9 +1263,9 @@ Object.assign(es, {
 });
 
 // --- Refinamento: Sino de notificações ---
-Object.assign(pt, { 'sino.titulo': 'Notificações', 'sino.vazio': 'Nada pendente. Tudo em dia!', 'sino.titulos_vencidos': 'Títulos a receber vencidos', 'sino.lotes_vencendo': 'Lotes vencendo (30 d)', 'sino.estoque_baixo': 'Produtos com estoque baixo', 'sino.pendencia_baixa': 'Pedidos aguardando baixa (Pix/Boleto)', 'sino.ver_todas': 'Ver todas', 'notif.crumb': 'Notificações', 'notif.titulo': 'Notificações', 'notif.sub': 'Avisos e pendências da operação', 'notif.vazio': 'Nada pendente. Tudo em dia!' });
-Object.assign(en, { 'sino.titulo': 'Notifications', 'sino.vazio': 'Nothing pending. All caught up!', 'sino.titulos_vencidos': 'Overdue receivables', 'sino.lotes_vencendo': 'Lots expiring (30 d)', 'sino.estoque_baixo': 'Low-stock products', 'sino.pendencia_baixa': 'Orders awaiting receipt (Pix/Boleto)', 'sino.ver_todas': 'See all', 'notif.crumb': 'Notifications', 'notif.titulo': 'Notifications', 'notif.sub': 'Operation alerts and pending items', 'notif.vazio': 'Nothing pending. All caught up!' });
-Object.assign(es, { 'sino.titulo': 'Notificaciones', 'sino.vazio': 'Nada pendiente. ¡Todo al día!', 'sino.titulos_vencidos': 'Cobranzas vencidas', 'sino.lotes_vencendo': 'Lotes por vencer (30 d)', 'sino.estoque_baixo': 'Productos con stock bajo', 'sino.pendencia_baixa': 'Pedidos esperando cobro (Pix/Boleto)', 'sino.ver_todas': 'Ver todas', 'notif.crumb': 'Notificaciones', 'notif.titulo': 'Notificaciones', 'notif.sub': 'Avisos y pendientes de la operación', 'notif.vazio': '¡Nada pendiente. Todo al día!' });
+Object.assign(pt, { 'sino.titulo': 'Notificações', 'sino.vazio': 'Nada pendente. Tudo em dia!', 'sino.titulos_vencidos': 'Títulos a receber vencidos', 'sino.lotes_vencendo': 'Lotes vencendo (30 d)', 'sino.estoque_baixo': 'Produtos com estoque baixo', 'sino.pendencia_baixa': 'Pedidos aguardando baixa (Pix/Boleto)', 'sino.aguardando_separacao': 'Pedidos aguardando separação', 'sino.toast_nova_separacao': 'Novo pedido aguardando separação', 'sino.ver_todas': 'Ver todas', 'notif.crumb': 'Notificações', 'notif.titulo': 'Notificações', 'notif.sub': 'Avisos e pendências da operação', 'notif.vazio': 'Nada pendente. Tudo em dia!' });
+Object.assign(en, { 'sino.titulo': 'Notifications', 'sino.vazio': 'Nothing pending. All caught up!', 'sino.titulos_vencidos': 'Overdue receivables', 'sino.lotes_vencendo': 'Lots expiring (30 d)', 'sino.estoque_baixo': 'Low-stock products', 'sino.pendencia_baixa': 'Orders awaiting receipt (Pix/Boleto)', 'sino.aguardando_separacao': 'Orders awaiting picking', 'sino.toast_nova_separacao': 'New order awaiting picking', 'sino.ver_todas': 'See all', 'notif.crumb': 'Notifications', 'notif.titulo': 'Notifications', 'notif.sub': 'Operation alerts and pending items', 'notif.vazio': 'Nothing pending. All caught up!' });
+Object.assign(es, { 'sino.titulo': 'Notificaciones', 'sino.vazio': 'Nada pendiente. ¡Todo al día!', 'sino.titulos_vencidos': 'Cobranzas vencidas', 'sino.lotes_vencendo': 'Lotes por vencer (30 d)', 'sino.estoque_baixo': 'Productos con stock bajo', 'sino.pendencia_baixa': 'Pedidos esperando cobro (Pix/Boleto)', 'sino.aguardando_separacao': 'Pedidos esperando preparación', 'sino.toast_nova_separacao': 'Nuevo pedido esperando preparación', 'sino.ver_todas': 'Ver todas', 'notif.crumb': 'Notificaciones', 'notif.titulo': 'Notificaciones', 'notif.sub': 'Avisos y pendientes de la operación', 'notif.vazio': '¡Nada pendiente. Todo al día!' });
 
 // --- Refinamento: Ações em massa ---
 Object.assign(pt, {
@@ -1617,6 +1617,10 @@ Object.assign(es, { 'auth.sem_empresas': 'Ninguna empresa activa para acceder.' 
 // --- Dashboard fiel ao mockup ---
 Object.assign(pt, {
   'dash.subtitulo': 'Visão geral da operação',
+  'tv.botao': 'Modo TV', 'tv.titulo': 'Painel de Vendas', 'tv.atualizado': 'Atualizado às', 'tv.sair': 'Sair',
+  'tv.dia': 'Vendas hoje', 'tv.semana': 'Vendas na semana', 'tv.mes': 'Vendas no mês', 'tv.ano': 'Vendas no ano',
+  'tv.receber': 'A receber em aberto', 'tv.caixa': 'Saldo em caixa', 'tv.aguard_sep': 'Aguardando separação', 'tv.estoque_baixo': 'Estoque baixo',
+  'tv.top_produtos': 'Produtos mais vendidos', 'tv.recentes': 'Pedidos recentes',
   'dash.avisos': 'Avisos e pendências', 'dash.acoes': 'Ações rápidas',
   'dash.av_orcamento': 'Pedidos em orçamento', 'dash.av_aguardando': 'Pedidos aguardando pagamento',
   'dash.av_estoque': 'Produtos com estoque baixo', 'dash.av_receber_venc': 'A receber vencido',
@@ -1640,6 +1644,10 @@ Object.assign(pt, {
 });
 Object.assign(en, {
   'dash.subtitulo': 'Operations overview',
+  'tv.botao': 'TV mode', 'tv.titulo': 'Sales Panel', 'tv.atualizado': 'Updated at', 'tv.sair': 'Exit',
+  'tv.dia': 'Sales today', 'tv.semana': 'Sales this week', 'tv.mes': 'Sales this month', 'tv.ano': 'Sales this year',
+  'tv.receber': 'Open receivables', 'tv.caixa': 'Cash balance', 'tv.aguard_sep': 'Awaiting picking', 'tv.estoque_baixo': 'Low stock',
+  'tv.top_produtos': 'Best sellers', 'tv.recentes': 'Recent orders',
   'dash.avisos': 'Alerts & pending', 'dash.acoes': 'Quick actions',
   'dash.av_orcamento': 'Orders in quote', 'dash.av_aguardando': 'Orders awaiting payment',
   'dash.av_estoque': 'Low-stock products', 'dash.av_receber_venc': 'Overdue receivables',
@@ -1663,6 +1671,10 @@ Object.assign(en, {
 });
 Object.assign(es, {
   'dash.subtitulo': 'Visión general de la operación',
+  'tv.botao': 'Modo TV', 'tv.titulo': 'Panel de Ventas', 'tv.atualizado': 'Actualizado a las', 'tv.sair': 'Salir',
+  'tv.dia': 'Ventas de hoy', 'tv.semana': 'Ventas de la semana', 'tv.mes': 'Ventas del mes', 'tv.ano': 'Ventas del año',
+  'tv.receber': 'Por cobrar abierto', 'tv.caixa': 'Saldo en caja', 'tv.aguard_sep': 'Esperando preparación', 'tv.estoque_baixo': 'Stock bajo',
+  'tv.top_produtos': 'Más vendidos', 'tv.recentes': 'Pedidos recientes',
   'dash.avisos': 'Avisos y pendientes', 'dash.acoes': 'Acciones rápidas',
   'dash.av_orcamento': 'Pedidos en presupuesto', 'dash.av_aguardando': 'Pedidos esperando pago',
   'dash.av_estoque': 'Productos con stock bajo', 'dash.av_receber_venc': 'Por cobrar vencido',
