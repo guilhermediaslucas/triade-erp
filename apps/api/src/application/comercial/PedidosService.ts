@@ -83,18 +83,13 @@ export class PedidosService {
     const subtotal = Math.round(itens.reduce((acc, i) => acc + i.subtotal, 0) * 100) / 100;
 
     // Forma de entrega + frete. O cálculo do frete é feito no front (via /frete/calcular);
-    // aqui validamos a forma, o motoboy e normalizamos (retirada sempre zera o frete).
+    // aqui validamos a forma e normalizamos (retirada sempre zera o frete).
+    // O MOTOBOY NÃO é escolhido no pedido — ele é definido na EXPEDIÇÃO (etapa Expedido),
+    // e é ali que o frete passa a ser atribuído ao motoboy (Gestão de fretes).
     const formaEntrega = String(e?.formaEntrega ?? 'retirada');
     if (!FORMAS_ENTREGA.includes(formaEntrega as any)) throw new ErroAplicacao('frete.forma_invalida', 400);
-    let motoboyId: string | null = null;
-    let distanciaKm: number | null = null;
-    if (formaEntrega === 'motoboy') {
-      motoboyId = (e?.motoboyId && String(e.motoboyId).trim()) || null;
-      if (!motoboyId) throw new ErroAplicacao('pedido.motoboy_obrigatorio', 400);
-      const mb = await this.motoboys.buscarPorId(schema, motoboyId);
-      if (!mb) throw new ErroAplicacao('pedido.motoboy_invalido', 400);
-      distanciaKm = e?.distanciaKm != null && Number.isFinite(Number(e.distanciaKm)) ? Number(e.distanciaKm) : null;
-    }
+    const motoboyId: string | null = null;
+    const distanciaKm: number | null = formaEntrega === 'motoboy' && e?.distanciaKm != null && Number.isFinite(Number(e.distanciaKm)) ? Number(e.distanciaKm) : null;
     const freteInformado = Number(e?.frete ?? 0) || 0;
     const frete = formaEntrega === 'retirada' ? 0 : (freteInformado >= 0 ? freteInformado : 0);
     const total = Math.round((subtotal + frete) * 100) / 100;
@@ -117,7 +112,7 @@ export class PedidosService {
     return { id, numero };
   }
 
-  async mudarStatus(schema: string, id: string, novo: StatusPedido, dados?: { formaEnvio?: any; formaEnvioDetalhe?: any; entregueEm?: any }, ator?: string | null): Promise<void> {
+  async mudarStatus(schema: string, id: string, novo: StatusPedido, dados?: { formaEnvio?: any; formaEnvioDetalhe?: any; entregueEm?: any; motoboyId?: any }, ator?: string | null): Promise<void> {
     const pedido = await this.pedidos.buscarPorId(schema, id);
     if (!pedido) throw new ErroAplicacao('pedido.nao_encontrado', 404);
     const permitidos = TRANSICOES[pedido.status] ?? [];
@@ -128,6 +123,16 @@ export class PedidosService {
     const entregueEm = dados?.entregueEm && /^\d{4}-\d{2}-\d{2}$/.test(String(dados.entregueEm)) ? String(dados.entregueEm) : '';
     if (novo === 'expedido' && !formaEnvio) throw new ErroAplicacao('pedido.forma_envio_obrigatoria', 400);
     if (novo === 'entregue' && !entregueEm) throw new ErroAplicacao('pedido.data_entrega_obrigatoria', 400);
+
+    // Entrega por MOTOBOY: o motoboy é escolhido AGORA (na expedição), de um cadastro
+    // existente. O frete do pedido passa a ser atribuído a ele (Gestão de fretes).
+    let motoboyExpedicao: string | null = null;
+    if (novo === 'expedido' && pedido.formaEntrega === 'motoboy') {
+      motoboyExpedicao = (dados?.motoboyId && String(dados.motoboyId).trim()) || null;
+      if (!motoboyExpedicao) throw new ErroAplicacao('pedido.motoboy_obrigatorio', 400);
+      const mb = await this.motoboys.buscarPorId(schema, motoboyExpedicao);
+      if (!mb) throw new ErroAplicacao('pedido.motoboy_invalido', 400);
+    }
 
     // Confirmar (orçamento → aguardando pagamento) comita crédito: checa limite.
     if (novo === 'aguardando_pagamento' && pedido.clienteId) {
@@ -157,6 +162,7 @@ export class PedidosService {
     await this.pedidos.mudarStatus(schema, id, novo);
     if (novo === 'expedido') {
       await this.pedidos.definirExpedicao(schema, id, formaEnvio, (String(dados?.formaEnvioDetalhe ?? '').trim()) || null);
+      if (motoboyExpedicao) await this.pedidos.definirMotoboy(schema, id, motoboyExpedicao);
       await this.pedidos.logExpedicao(schema, id, ator ?? null);
     }
     if (novo === 'entregue') await this.pedidos.definirEntrega(schema, id, entregueEm);

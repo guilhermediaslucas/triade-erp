@@ -7,7 +7,8 @@ import { moeda, numeroPedido, PROXIMOS, type StatusPedido } from '../lib/pedido.
 import { ModalDataEntrega, ModalFormaEnvio } from '../components/ExpedicaoModais.js';
 import { Ic } from '../components/Icones.js';
 
-interface PedidoResumo { id: string; numero: number; clienteNome: string | null; vendedorNome: string | null; status: StatusPedido; total: number; criadoEm: string; formaPagamento: string | null; }
+interface PedidoResumo { id: string; numero: number; clienteNome: string | null; vendedorNome: string | null; status: StatusPedido; total: number; criadoEm: string; formaPagamento: string | null; formaEntrega: string; }
+interface MotoboyItem { id: string; nome: string; ativo: boolean; }
 
 // Colunas do pipeline (cores/ícones/labels espelham o mockup de Expedição).
 const COLUNAS: { s: StatusPedido; cor: string; ic: string; label: string }[] = [
@@ -36,6 +37,7 @@ export function KanbanExpedicao() {
   const [arrastando, setArrastando] = useState<string | null>(null);
   const [sobre, setSobre] = useState<StatusPedido | null>(null);
   const [formas, setFormas] = useState<string[]>([]);
+  const [motoboys, setMotoboys] = useState<MotoboyItem[]>([]);
   const [pend, setPend] = useState<{ tipo: 'envio' | 'entrega'; id: string; numero: number } | null>(null);
   const [de, setDe] = useState(''); const [ate, setAte] = useState('');
   const [filtro, setFiltro] = useState<{ de: string; ate: string }>({ de: '', ate: '' });
@@ -45,6 +47,7 @@ export function KanbanExpedicao() {
   useEffect(() => {
     carregar();
     if (temCapability('cadastros.forma_entrega.listar')) api.get<{ nome: string; ativo: boolean }[]>('/formas-entrega', token!).then((l) => setFormas(l.filter((f) => f.ativo).map((f) => f.nome))).catch(() => {});
+    if (temCapability('cadastros.motoboy.listar')) api.get<MotoboyItem[]>('/motoboys', token!).then((l) => setMotoboys(l.filter((m) => m.ativo))).catch(() => {});
     /* eslint-disable-next-line */
   }, []);
 
@@ -104,8 +107,12 @@ export function KanbanExpedicao() {
           );
         })}
       </div>
-      {pend?.tipo === 'envio' && <ModalFormaEnvio numero={pend.numero} formas={formas} onFechar={() => setPend(null)}
-        onConfirmar={(forma, det) => { const x = pend; setPend(null); patch(x.id, 'expedido', { formaEnvio: forma, formaEnvioDetalhe: det }); }} />}
+      {pend?.tipo === 'envio' && (() => {
+        const ped = itens.find((p) => p.id === pend.id);
+        const pedirMotoboy = ped?.formaEntrega === 'motoboy';
+        return <ModalFormaEnvio numero={pend.numero} formas={formas} motoboys={motoboys} pedirMotoboy={pedirMotoboy} onFechar={() => setPend(null)}
+          onConfirmar={(forma, det, motoboyId) => { const x = pend; setPend(null); patch(x.id, 'expedido', { formaEnvio: forma, formaEnvioDetalhe: det, ...(motoboyId ? { motoboyId } : {}) }); }} />;
+      })()}
       {pend?.tipo === 'entrega' && <ModalDataEntrega numero={pend.numero} onFechar={() => setPend(null)}
         onConfirmar={(data) => { const x = pend; setPend(null); patch(x.id, 'entregue', { entregueEm: data }); }} />}
     </div>

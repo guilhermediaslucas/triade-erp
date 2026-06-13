@@ -49,7 +49,7 @@ export interface Pedido {
 
 export interface PedidoResumo {
   id: string; numero: number; clienteNome: string | null; vendedorNome: string | null;
-  status: StatusPedido; total: number; criadoEm: Date;
+  status: StatusPedido; total: number; criadoEm: Date; formaEntrega: string;
 }
 
 export interface NovoPedido {
@@ -76,6 +76,7 @@ export interface PedidoRepository {
   buscarPorId(schema: string, id: string): Promise<Pedido | null>;
   mudarStatus(schema: string, id: string, status: StatusPedido): Promise<void>;
   definirExpedicao(schema: string, id: string, formaEnvio: string, detalhe: string | null): Promise<void>;
+  definirMotoboy(schema: string, id: string, motoboyId: string): Promise<void>;
   definirEntrega(schema: string, id: string, entregueEm: string): Promise<void>;
   logSeparacao(schema: string, id: string, ator: string | null): Promise<void>;
   logExpedicao(schema: string, id: string, ator: string | null): Promise<void>;

@@ -40,6 +40,7 @@ export function PedidoDetalhe() {
   const [erro, setErro] = useState<string | null>(null);
   const podeGerenciar = temCapability('comercial.pedido.gerenciar');
   const [formas, setFormas] = useState<string[]>([]);
+  const [motoboys, setMotoboys] = useState<{ id: string; nome: string; ativo: boolean }[]>([]);
   const [modal, setModal] = useState<'envio' | 'entrega' | null>(null);
 
   // Separação por bipagem
@@ -53,6 +54,7 @@ export function PedidoDetalhe() {
   useEffect(() => {
     carregar();
     if (temCapability('cadastros.forma_entrega.listar')) api.get<{ nome: string; ativo: boolean }[]>('/formas-entrega', token!).then((l) => setFormas(l.filter((f) => f.ativo).map((f) => f.nome))).catch(() => {});
+    if (temCapability('cadastros.motoboy.listar')) api.get<{ id: string; nome: string; ativo: boolean }[]>('/motoboys', token!).then((l) => setMotoboys(l.filter((m) => m.ativo))).catch(() => {});
     /* eslint-disable-next-line */
   }, [id]);
 
@@ -215,8 +217,8 @@ export function PedidoDetalhe() {
         </div>
       )}
 
-      {modal === 'envio' && <ModalFormaEnvio numero={p.numero} formas={formas} inicial={{ forma: p.formaEnvio, detalhe: p.formaEnvioDetalhe }}
-        onFechar={() => setModal(null)} onConfirmar={(forma, det) => { setModal(null); patchStatus('expedido', { formaEnvio: forma, formaEnvioDetalhe: det }); }} />}
+      {modal === 'envio' && <ModalFormaEnvio numero={p.numero} formas={formas} motoboys={motoboys} pedirMotoboy={p.formaEntrega === 'motoboy'} inicial={{ forma: p.formaEnvio, detalhe: p.formaEnvioDetalhe }}
+        onFechar={() => setModal(null)} onConfirmar={(forma, det, motoboyId) => { setModal(null); patchStatus('expedido', { formaEnvio: forma, formaEnvioDetalhe: det, ...(motoboyId ? { motoboyId } : {}) }); }} />}
       {modal === 'entrega' && <ModalDataEntrega numero={p.numero} inicial={p.entregueEm}
         onFechar={() => setModal(null)} onConfirmar={(data) => { setModal(null); patchStatus('entregue', { entregueEm: data }); }} />}
     </div>
