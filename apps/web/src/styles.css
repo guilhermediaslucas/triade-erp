@@ -754,8 +754,9 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
   .topbar-menu:hover { border-color: var(--accent); }
 
   /* --- Topbar compacta --- */
-  .topbar { height: 58px; gap: 10px; padding: 0 14px; }
-  .topbar-busca { flex: 1 1 auto; max-width: none; padding: 9px 11px; }
+  .topbar { height: 58px; gap: 8px; padding: 0 12px; }
+  .topbar-busca { flex: 1 1 0; min-width: 0; max-width: none; padding: 9px 11px; }
+  .topbar-dir { min-width: 0; flex: none; }
   .topbar-busca-ph, .topbar-busca kbd { display: none; }
   .topbar-dir { gap: 8px; }
   .topbar-user { font-size: 0; gap: 0; }   /* esconde o nome, mantém o avatar */

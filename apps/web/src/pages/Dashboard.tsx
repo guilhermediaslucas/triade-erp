@@ -4,6 +4,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { abrevMoeda, corStatus, moeda, numeroPedido, type StatusPedido } from '../lib/pedido.js';
+import { Capacitor } from '@capacitor/core';
 import { Ic } from '../components/Icones.js';
 
 interface Resumo {
@@ -157,7 +158,7 @@ export function Dashboard() {
     <div>
       <div className="page-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('dashboard.titulo')}</h1><div className="muted page-sub">{t('dash.subtitulo')}</div></div>
-        <button className="btn-ghost" onClick={() => navigate('/dashboard/tv')}><Ic name="i-chart" className="sm" /> {t('tv.botao')}</button>
+        {!Capacitor.isNativePlatform() && <button className="btn-ghost" onClick={() => navigate('/dashboard/tv')}><Ic name="i-chart" className="sm" /> {t('tv.botao')}</button>}
       </div>
 
       <div className="dash-row c5">

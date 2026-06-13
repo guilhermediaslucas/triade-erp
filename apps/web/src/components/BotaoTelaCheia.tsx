@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { useI18n } from '../i18n/I18nContext.js';
 import { Ic } from './Icones.js';
 
@@ -21,6 +22,8 @@ export function BotaoTelaCheia({ className }: { className?: string }) {
     } catch { /* alguns navegadores bloqueiam — ignora */ }
   }
 
+  // No app nativo a janela já abre cheia — o botão de tela cheia não faz sentido.
+  if (Capacitor.isNativePlatform()) return null;
   return (
     <button className={className ?? 'btn-tema'} onClick={alternar} title={t('tela.cheia')} aria-label={t('tela.cheia')}>
       <Ic name={cheia ? 'i-compress' : 'i-expand'} className="sm" />
