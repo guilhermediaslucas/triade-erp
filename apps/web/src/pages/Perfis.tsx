@@ -4,6 +4,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { Ic } from '../components/Icones.js';
+import { FiltroLista, aplicarFiltro, type FiltroStatus } from '../components/FiltroLista.js';
 
 interface Perfil { id: string; nome: string; descricao: string; ativo: boolean; capabilities: string[]; }
 
@@ -15,6 +16,9 @@ export function Perfis() {
   const [erro, setErro] = useState<string | null>(null);
   const [editando, setEditando] = useState<Perfil | null>(null);
   const [novo, setNovo] = useState(false);
+  const [busca, setBusca] = useState('');
+  const [fStatus, setFStatus] = useState<FiltroStatus>('todos');
+  const filtrados = aplicarFiltro(perfis, busca, fStatus, (p) => p.nome + ' ' + p.descricao);
 
   const porModulo = useMemo(() => {
     const m: Record<string, Capability[]> = {};
@@ -51,12 +55,13 @@ export function Perfis() {
         {podeGerenciar && <button className="btn-primary" onClick={abrirNovo}>+ {t('perfis.novo')}</button>}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
+      <FiltroLista busca={busca} onBusca={setBusca} status={fStatus} onStatus={setFStatus} />
       <div className="card pad0">
         <table className="tabela">
           <thead><tr><th>{t('perfis.nome')}</th><th>{t('perfis.modulos')}</th><th>{t('perfis.permissoes')}</th><th>{t('usuarios.situacao')}</th><th></th></tr></thead>
           <tbody>
-            {perfis.length === 0 && <tr><td colSpan={5} className="vazio">{t('common.nenhum')}</td></tr>}
-            {perfis.map((p) => (
+            {filtrados.length === 0 && <tr><td colSpan={5} className="vazio">{t('common.nenhum')}</td></tr>}
+            {filtrados.map((p) => (
               <tr key={p.id}>
                 <td>{p.nome}{p.descricao && <div className="muted" style={{ fontSize: 12 }}>{p.descricao}</div>}</td>
                 <td className="muted">{modulosDe(p.capabilities)}</td>

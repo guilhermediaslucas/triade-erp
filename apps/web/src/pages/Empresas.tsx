@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { FiltroLista, aplicarFiltro, type FiltroStatus } from '../components/FiltroLista.js';
 
 interface EmpresaResumo { codigo: string; nome: string; fantasia: string; ativo: boolean; }
 const VAZIO = { nome: '', fantasia: '', adminNome: '', adminEmail: '', adminSenha: '' };
@@ -15,6 +16,9 @@ export function Empresas() {
   const [ok, setOk] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
   const [editando, setEditando] = useState<EmpresaResumo | null>(null);
+  const [busca, setBusca] = useState('');
+  const [fStatus, setFStatus] = useState<FiltroStatus>('todos');
+  const filtradas = aplicarFiltro(empresas, busca, fStatus, (e) => e.nome + ' ' + e.fantasia);
 
   async function carregar() {
     try { setEmpresas(await api.get<EmpresaResumo[]>('/empresas', token!)); }
@@ -46,12 +50,13 @@ export function Empresas() {
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       {ok && <div className="alerta-ok">{t(ok)}</div>}
 
+      <FiltroLista busca={busca} onBusca={setBusca} status={fStatus} onStatus={setFStatus} />
       <div className="card pad0" style={{ marginBottom: 24 }}>
         <table className="tabela">
           <thead><tr><th>{t('empresas.nome')}</th><th>{t('empresas.fantasia')}</th><th>{t('usuarios.situacao')}</th><th style={{ width: 160 }}>{t('empresas.acoes')}</th></tr></thead>
           <tbody>
-            {empresas.length === 0 && <tr><td colSpan={4} className="vazio">{t('common.nenhum')}</td></tr>}
-            {empresas.map((e) => (
+            {filtradas.length === 0 && <tr><td colSpan={4} className="vazio">{t('common.nenhum')}</td></tr>}
+            {filtradas.map((e) => (
               <tr key={e.codigo}>
                 <td>{e.nome}</td>
                 <td>{e.fantasia}</td>

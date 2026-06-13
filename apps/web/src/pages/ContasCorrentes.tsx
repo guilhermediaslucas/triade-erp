@@ -3,6 +3,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
+import { FiltroLista, aplicarFiltro, type FiltroStatus } from '../components/FiltroLista.js';
 
 interface Conta { id: string; nome: string; banco: string | null; saldoInicial: number; ativo: boolean; saldo?: number; }
 const vazio = (): Conta => ({ id: '', nome: '', banco: '', saldoInicial: 0, ativo: true });
@@ -14,6 +15,9 @@ export function ContasCorrentes() {
   const [itens, setItens] = useState<Conta[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [edit, setEdit] = useState<Conta | null>(null);
+  const [busca, setBusca] = useState('');
+  const [fStatus, setFStatus] = useState<FiltroStatus>('todos');
+  const filtrados = aplicarFiltro(itens, busca, fStatus, (c) => c.nome + ' ' + (c.banco ?? ''));
 
   async function carregar() { try { setItens(await api.get('/contas-correntes/saldos', token!)); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
   useEffect(() => { carregar(); /* eslint-disable-next-line */ }, []);
@@ -24,8 +28,9 @@ export function ContasCorrentes() {
       <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('cc.titulo')}</h1><div className="muted page-sub">{t('cc.sub')}</div></div>
         {pode && <button className="btn-primary" onClick={() => setEdit(vazio())}>+ {t('cc.nova')}</button>}</div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
+      <FiltroLista busca={busca} onBusca={setBusca} status={fStatus} onStatus={setFStatus} />
       <div className="dash-cards">
-        {itens.map((c) => (
+        {filtrados.map((c) => (
           <div key={c.id} className="dash-card">
             <div className="dash-l">{c.nome}{c.banco ? ' · ' + c.banco : ''}</div>
             <div className="dash-v" style={{ color: (c.saldo ?? 0) >= 0 ? '#15803d' : '#b91c1c' }}>{moeda(c.saldo ?? 0)}</div>
