@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Ic } from '../components/Icones.js';
 import { corStatus, moeda, numeroPedido, type StatusPedido } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel } from '../lib/excel.js';
@@ -52,8 +53,8 @@ export function RelPedidos() {
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="kpi-row" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
-        <div className="card kpi-mock"><div className="kpi-ic tint-pp">🧾</div><div className="kpi-body"><div className="kpi-lbl">{t('relped.qtd')}</div><div className="kpi-val">{linhas.length}</div></div></div>
-        <div className="card kpi-mock"><div className="kpi-ic tint-gr">💰</div><div className="kpi-body"><div className="kpi-lbl">{t('relped.total')}</div><div className="kpi-val">{moeda(total)}</div></div></div>
+        <div className="card kpi-mock"><div className="kpi-ic tint-pp"><Ic name="i-receipt" className="sm" /></div><div className="kpi-body"><div className="kpi-lbl">{t('relped.qtd')}</div><div className="kpi-val">{linhas.length}</div></div></div>
+        <div className="card kpi-mock"><div className="kpi-ic tint-gr"><Ic name="i-dollar" className="sm" /></div><div className="kpi-body"><div className="kpi-lbl">{t('relped.total')}</div><div className="kpi-val">{moeda(total)}</div></div></div>
       </div>
       <div className="card pad0"><table className="tabela">
         <thead><tr><th>{t('pedidos.numero')}</th><th>{t('pedidos.data')}</th><th>{t('pedidos.cliente')}</th><th>{t('pedidos.vendedor')}</th><th>{t('entrega.forma')}</th><th>{t('pedido.forma_envio')}</th><th>{t('pedidos.status')}</th><th>{t('pedido.entregue_em')}</th><th>{t('pedidos.total')}</th></tr></thead>

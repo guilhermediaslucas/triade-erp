@@ -2,6 +2,7 @@ import { Fragment, useEffect, useMemo, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Ic } from '../components/Icones.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel } from '../lib/excel.js';
 
@@ -67,10 +68,10 @@ export function RelInventarios() {
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="kpis">
-        <div className="kpi-card kpi-mock"><div className="kpi-ic tint-bl">🔢</div><div><div className="kpi-l">{t('relinv.kpi_total')}</div><div className="kpi-v">{linhas.length}</div></div></div>
-        <div className="kpi-card kpi-mock"><div className="kpi-ic tint-pp">🎯</div><div><div className="kpi-l">{t('relinv.kpi_acur')}</div><div className="kpi-v">{acurMedia}%</div></div></div>
-        <div className="kpi-card kpi-vermelho kpi-mock"><div className="kpi-ic tint-rd">⚠️</div><div><div className="kpi-l">{t('relinv.kpi_falt')}</div><div className="kpi-v">{totalFalt}</div></div></div>
-        <div className="kpi-card kpi-mock"><div className="kpi-ic tint-or">📉</div><div><div className="kpi-l">{t('relinv.kpi_baixados')}</div><div className="kpi-v">{totalBaixados}</div></div></div>
+        <div className="kpi-card kpi-mock"><div className="kpi-ic tint-bl"><Ic name="i-rows" className="sm" /></div><div><div className="kpi-l">{t('relinv.kpi_total')}</div><div className="kpi-v">{linhas.length}</div></div></div>
+        <div className="kpi-card kpi-mock"><div className="kpi-ic tint-pp"><Ic name="i-check" className="sm" /></div><div><div className="kpi-l">{t('relinv.kpi_acur')}</div><div className="kpi-v">{acurMedia}%</div></div></div>
+        <div className="kpi-card kpi-vermelho kpi-mock"><div className="kpi-ic tint-rd"><Ic name="i-alert" className="sm" /></div><div><div className="kpi-l">{t('relinv.kpi_falt')}</div><div className="kpi-v">{totalFalt}</div></div></div>
+        <div className="kpi-card kpi-mock"><div className="kpi-ic tint-or"><Ic name="i-chart" className="sm" /></div><div><div className="kpi-l">{t('relinv.kpi_baixados')}</div><div className="kpi-v">{totalBaixados}</div></div></div>
       </div>
       <div className="card pad0"><table className="tabela">
         <thead><tr><th>{t('inv.data')}</th><th>{t('inv.responsavel')}</th><th>{t('inv.esperadas')}</th><th>{t('inv.encontradas')}</th><th>{t('inv.faltantes')}</th><th>{t('relinv.acuracidade')}</th><th>{t('inv.baixa')}</th><th></th></tr></thead>

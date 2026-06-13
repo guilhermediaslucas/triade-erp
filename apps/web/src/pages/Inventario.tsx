@@ -5,6 +5,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { baixarExcel } from '../lib/excel.js';
 import { BotaoEscanear } from '../components/BotaoEscanear.js';
+import { Ic } from '../components/Icones.js';
 import { useAutoBip } from '../lib/useAutoBip.js';
 
 interface Faltante { codigo: string; produtoNome: string; lote: string | null; validade: string | null; }
@@ -73,7 +74,7 @@ export function Inventario() {
                 <label className="campo">{t('inv.responsavel')}<input value={responsavel} onChange={(e) => setResponsavel(e.target.value)} /></label>
               </div>
               <div className="modal-acoes" style={{ justifyContent: 'flex-start' }}>
-                <button className="btn-primary" onClick={iniciar}>✓ {t('inv.iniciar_btn')}</button>
+                <button className="btn-primary" onClick={iniciar}><Ic name="i-check" className="sm" /> {t('inv.iniciar_btn')}</button>
               </div>
             </>
           ) : (
@@ -115,7 +116,7 @@ export function Inventario() {
       <div className="card pad0">
         <div className="card-head" style={{ padding: '16px 18px 4px', display: 'flex', alignItems: 'center', gap: 8 }}>
           <h3 style={{ marginRight: 'auto' }}>{t('inv.realizados')}</h3>
-          {hist.length > 0 && <button className="btn-acao verde" onClick={exportar}>⬇ {t('rel.exportar_xlsx')}</button>}
+          {hist.length > 0 && <button className="btn-acao verde" onClick={exportar}><Ic name="i-download" className="sm" /> {t('rel.exportar_xlsx')}</button>}
         </div>
         <table className="tabela">
           <thead><tr><th>{t('inv.data')}</th><th>{t('inv.responsavel')}</th><th>{t('inv.esperadas')}</th><th>{t('inv.encontradas')}</th><th>{t('inv.faltantes')}</th><th>{t('inv.baixa')}</th><th style={{ textAlign: 'right' }}>{t('inv.detalhe')}</th></tr></thead>

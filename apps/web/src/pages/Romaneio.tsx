@@ -5,6 +5,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useBranding } from '../branding/BrandingContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda, numeroPedido } from '../lib/pedido.js';
+import { Ic, SpriteIcones } from '../components/Icones.js';
 
 interface Item { produtoNome: string; quantidade: number; precoUnitario: number; subtotal: number; }
 interface Pedido {
@@ -33,9 +34,10 @@ export function Romaneio() {
 
   return (
     <>
+      <SpriteIcones />
       <div className="romaneio-toolbar no-print">
         <button className="btn-ghost" onClick={() => nav('/comercial/pedidos/' + p.id)}>← {t('pedidos.voltar')}</button>
-        <button className="btn-primary" onClick={() => window.print()}>🖨️ {t('romaneio.imprimir')}</button>
+        <button className="btn-primary" onClick={() => window.print()}><Ic name="i-print" className="sm" /> {t('romaneio.imprimir')}</button>
       </div>
 
       <div className="romaneio-wrap">

@@ -53,7 +53,7 @@ export function Comissoes() {
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       {ok && <div className="alerta-ok">{ok}</div>}
-      <div className="kpi-row" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}><div className="card kpi-mock"><div className="kpi-ic tint-pp">🧮</div><div className="kpi-body"><div className="kpi-lbl">{t('com.total')}</div><div className="kpi-val">{moeda(total)}</div></div></div></div>
+      <div className="kpi-row" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}><div className="card kpi-mock"><div className="kpi-ic tint-pp"><Ic name="i-dollar" className="sm" /></div><div className="kpi-body"><div className="kpi-lbl">{t('com.total')}</div><div className="kpi-val">{moeda(total)}</div></div></div></div>
       <div className="card pad0" style={{ marginBottom: 16 }}><table className="tabela">
         <thead><tr><th>{t('pedidos.vendedor')}</th><th>{t('com.vendido')}</th><th>{t('com.pct')}</th><th>{t('com.comissao')}</th></tr></thead>
         <tbody>

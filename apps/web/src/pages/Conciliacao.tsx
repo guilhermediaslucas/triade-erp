@@ -3,6 +3,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { useToast } from '../components/Toast.js';
+import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel } from '../lib/excel.js';
@@ -102,8 +103,8 @@ export function Conciliacao() {
         </label>
         <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
         <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
-        <button className="btn-primary" onClick={() => gerar()}>🔎 {t('fluxo.filtrar')}</button>
-        <button className="btn-ghost" onClick={() => { setDe(primeiroDia()); setAte(hoje()); }}>✕ {t('fluxo.limpar')}</button>
+        <button className="btn-primary" onClick={() => gerar()}><Ic name="i-search" className="sm" /> {t('fluxo.filtrar')}</button>
+        <button className="btn-ghost" onClick={() => { setDe(primeiroDia()); setAte(hoje()); }}><Ic name="i-x" className="sm" /> {t('fluxo.limpar')}</button>
         {pode && <>
           <button className="btn-ghost" onClick={() => fileRef.current?.click()}>{t('concil.importar')}</button>
           <input ref={fileRef} type="file" accept=".ofx,.csv,.txt" style={{ display: 'none' }} onChange={aoEscolherArquivo} />
@@ -121,11 +122,11 @@ export function Conciliacao() {
       {resp && resp.linhas.length > 0 && (
         <>
           <div className="kpi-row">
-            <div className="card kpi-mock"><div className="kpi-ic tint-gr">💰</div><div className="kpi-body"><div className="kpi-lbl">{t('concil.entradas')}</div><div className="kpi-val">{moeda(resp.totalEntradas)}</div></div></div>
-            <div className="card kpi-mock"><div className="kpi-ic tint-rd">💸</div><div className="kpi-body"><div className="kpi-lbl">{t('concil.saidas')}</div><div className="kpi-val">{moeda(resp.totalSaidas)}</div></div></div>
-            <div className="card kpi-mock"><div className="kpi-ic tint-bl">📊</div><div className="kpi-body"><div className="kpi-lbl">{t('concil.saldo_mov')}</div><div className="kpi-val">{moeda(resp.saldoMovimento)}</div></div></div>
-            <div className="card kpi-mock"><div className="kpi-ic tint-gr">✅</div><div className="kpi-body"><div className="kpi-lbl">{t('concil.conciliados')}</div><div className="kpi-val">{resp.qtdConciliado}</div></div></div>
-            <div className="card kpi-mock"><div className="kpi-ic tint-or">⏳</div><div className="kpi-body"><div className="kpi-lbl">{t('concil.pendentes')}</div><div className="kpi-val">{resp.qtdPendente}</div></div></div>
+            <div className="card kpi-mock"><div className="kpi-ic tint-gr"><Ic name="i-dollar" className="sm" /></div><div className="kpi-body"><div className="kpi-lbl">{t('concil.entradas')}</div><div className="kpi-val">{moeda(resp.totalEntradas)}</div></div></div>
+            <div className="card kpi-mock"><div className="kpi-ic tint-rd"><Ic name="i-dollar" className="sm" /></div><div className="kpi-body"><div className="kpi-lbl">{t('concil.saidas')}</div><div className="kpi-val">{moeda(resp.totalSaidas)}</div></div></div>
+            <div className="card kpi-mock"><div className="kpi-ic tint-bl"><Ic name="i-chart" className="sm" /></div><div className="kpi-body"><div className="kpi-lbl">{t('concil.saldo_mov')}</div><div className="kpi-val">{moeda(resp.saldoMovimento)}</div></div></div>
+            <div className="card kpi-mock"><div className="kpi-ic tint-gr"><Ic name="i-check" className="sm" /></div><div className="kpi-body"><div className="kpi-lbl">{t('concil.conciliados')}</div><div className="kpi-val">{resp.qtdConciliado}</div></div></div>
+            <div className="card kpi-mock"><div className="kpi-ic tint-or"><Ic name="i-clock" className="sm" /></div><div className="kpi-body"><div className="kpi-lbl">{t('concil.pendentes')}</div><div className="kpi-val">{resp.qtdPendente}</div></div></div>
           </div>
 
           <div className="card" style={{ maxWidth: 560, marginBottom: 16 }}>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Ic } from './Icones.js';
 
 interface Emp { codigo: string; nome: string; fantasia: string; ativo: boolean; }
 
@@ -23,7 +24,7 @@ export function EmpresaSwitcher() {
   return (
     <div className="emp-switch">
       <button className="emp-pill" onClick={() => setAberto((v) => !v)} title={t('emp.trocar')}>
-        🏢 <span>{atual?.fantasia ?? usuario?.empresa}</span> <small>▾</small>
+        <Ic name="i-shop" className="sm" /> <span>{atual?.fantasia ?? usuario?.empresa}</span> <small>▾</small>
       </button>
       {aberto && (
         <>

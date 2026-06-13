@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel } from '../lib/excel.js';
@@ -54,8 +55,8 @@ export function RelFavorecidos() {
         {filtrados.length > 0 && <><button className="btn-ghost" onClick={() => exportar('csv')}>{t('rel.exportar_csv')}</button> <button className="btn-ghost" onClick={() => exportar('xlsx')}>{t('rel.exportar_xlsx')}</button></>}
       </div>
       <div className="kpi-row" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
-        <div className="card kpi-mock"><div className="kpi-ic tint-pp">🧾</div><div className="kpi-body"><div className="kpi-lbl">{t('relfav.qtd')}</div><div className="kpi-val">{filtrados.length}</div></div></div>
-        <div className="card kpi-mock"><div className="kpi-ic tint-gr">💸</div><div className="kpi-body"><div className="kpi-lbl">{t('relfav.total')}</div><div className="kpi-val">{moeda(total)}</div></div></div>
+        <div className="card kpi-mock"><div className="kpi-ic tint-pp"><Ic name="i-receipt" className="sm" /></div><div className="kpi-body"><div className="kpi-lbl">{t('relfav.qtd')}</div><div className="kpi-val">{filtrados.length}</div></div></div>
+        <div className="card kpi-mock"><div className="kpi-ic tint-gr"><Ic name="i-dollar" className="sm" /></div><div className="kpi-body"><div className="kpi-lbl">{t('relfav.total')}</div><div className="kpi-val">{moeda(total)}</div></div></div>
       </div>
       <div className="card pad0"><table className="tabela">
         <thead><tr><th>{t('relfav.favorecido')}</th><th>{t('fin.descricao')}</th><th>{t('fin.valor')}</th><th>{t('fin.vencimento')}</th><th>{t('fin.situacao')}</th><th>{t('relfav.pago_em')}</th></tr></thead>

@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 
 type TipoSerie = 'dia' | 'semana' | 'mes' | 'ano' | 'clientes';
@@ -102,9 +103,9 @@ export function DashboardSerie() {
 
       {s && <>
         <div className="dash-row c3" style={{ marginTop: 12 }}>
-          <div className="card"><div className="kpi"><div className="kpi-ic tint-pp">📊</div><div><div className="lbl">{t('dash.serie_total')}</div><div className="val">{fmt(total)}</div></div></div></div>
-          <div className="card"><div className="kpi"><div className="kpi-ic tint-bl">🕐</div><div><div className="lbl">{t('dash.serie_media')}</div><div className="val">{fmt(media)}</div></div></div></div>
-          <div className="card"><div className="kpi"><div className="kpi-ic tint-gr">⬆️</div><div><div className="lbl">{t('dash.serie_pico')}</div><div className="val">{fmt(pico)}</div></div></div></div>
+          <div className="card"><div className="kpi"><div className="kpi-ic tint-pp"><Ic name="i-chart" className="sm" /></div><div><div className="lbl">{t('dash.serie_total')}</div><div className="val">{fmt(total)}</div></div></div></div>
+          <div className="card"><div className="kpi"><div className="kpi-ic tint-bl"><Ic name="i-clock" className="sm" /></div><div><div className="lbl">{t('dash.serie_media')}</div><div className="val">{fmt(media)}</div></div></div></div>
+          <div className="card"><div className="kpi"><div className="kpi-ic tint-gr"><Ic name="i-arrow-up" className="sm" /></div><div><div className="lbl">{t('dash.serie_pico')}</div><div className="val">{fmt(pico)}</div></div></div></div>
         </div>
         <div className="card" style={{ marginTop: 12 }}>
           <div className="card-head"><h3>{titulo}</h3></div>

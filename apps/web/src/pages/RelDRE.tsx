@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel } from '../lib/excel.js';
@@ -57,9 +58,9 @@ export function RelDRE() {
       {d && (
         <>
           <div className="kpis">
-            <div className="kpi-card kpi-mock"><div className="kpi-ic tint-gr">💰</div><div><div className="kpi-l">{t('dre.receitas')}</div><div className="kpi-v" style={{ color: '#166534' }}>{moeda(d.totalReceitas)}</div></div></div>
-            <div className="kpi-card kpi-mock"><div className="kpi-ic tint-or">🧾</div><div><div className="kpi-l">{t('dre.despesas')}</div><div className="kpi-v" style={{ color: '#b91c1c' }}>{moeda(d.totalDespesas)}</div></div></div>
-            <div className="kpi-card kpi-mock"><div className="kpi-ic tint-pp">✅</div><div><div className="kpi-l">{t('dre.resultado')}</div><div className="kpi-v" style={{ color: d.resultado >= 0 ? '#166534' : '#b91c1c' }}>{moeda(d.resultado)}</div></div></div>
+            <div className="kpi-card kpi-mock"><div className="kpi-ic tint-gr"><Ic name="i-dollar" className="sm" /></div><div><div className="kpi-l">{t('dre.receitas')}</div><div className="kpi-v" style={{ color: '#166534' }}>{moeda(d.totalReceitas)}</div></div></div>
+            <div className="kpi-card kpi-mock"><div className="kpi-ic tint-or"><Ic name="i-receipt" className="sm" /></div><div><div className="kpi-l">{t('dre.despesas')}</div><div className="kpi-v" style={{ color: '#b91c1c' }}>{moeda(d.totalDespesas)}</div></div></div>
+            <div className="kpi-card kpi-mock"><div className="kpi-ic tint-pp"><Ic name="i-check" className="sm" /></div><div><div className="kpi-l">{t('dre.resultado')}</div><div className="kpi-v" style={{ color: d.resultado >= 0 ? '#166534' : '#b91c1c' }}>{moeda(d.resultado)}</div></div></div>
           </div>
           <div className="cores-grid" style={{ alignItems: 'start' }}>
             <div className="card pad0">

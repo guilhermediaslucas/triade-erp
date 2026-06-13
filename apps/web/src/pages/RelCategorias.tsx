@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel } from '../lib/excel.js';
@@ -34,7 +35,7 @@ export function RelCategorias() {
         {linhas.length > 0 && <><button className="btn-ghost" onClick={() => baixarCsv('vendas_categoria_' + de + '_' + ate, [t('produtos.categoria'), t('rel.qtd'), t('rel.total')], linhas.map((l) => [l.categoria, l.quantidade, l.total]))}>{t('rel.exportar_csv')}</button> <button className="btn-ghost" onClick={() => baixarExcel('vendas_categoria_' + de + '_' + ate, [t('produtos.categoria'), t('rel.qtd'), t('rel.total')], linhas.map((l) => [l.categoria, l.quantidade, l.total]))}>{t('rel.exportar_xlsx')}</button></>}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
-      <div className="kpis"><div className="kpi-card kpi-mock"><div className="kpi-ic tint-gr">💰</div><div><div className="kpi-l">{t('com.total')}</div><div className="kpi-v">{moeda(total)}</div></div></div></div>
+      <div className="kpis"><div className="kpi-card kpi-mock"><div className="kpi-ic tint-gr"><Ic name="i-dollar" className="sm" /></div><div><div className="kpi-l">{t('com.total')}</div><div className="kpi-v">{moeda(total)}</div></div></div></div>
       <div className="card pad0"><table className="tabela">
         <thead><tr><th>{t('produtos.categoria')}</th><th>{t('rel.qtd')}</th><th></th><th>{t('rel.total')}</th></tr></thead>
         <tbody>

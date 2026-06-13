@@ -2,47 +2,48 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Ic } from './Icones.js';
 
 interface Destino { rotulo: string; icone: string; to: string; cap?: string; soSuperAdmin?: boolean; }
 
 // Telas navegáveis (espelha o menu). Filtradas por capability do usuário.
 const DESTINOS: Destino[] = [
-  { rotulo: 'menu.dashboard', icone: '▦', to: '/', cap: 'dashboard.ver' },
-  { rotulo: 'menu.pedidos', icone: '🧾', to: '/comercial/pedidos', cap: 'comercial.pedido.listar' },
-  { rotulo: 'menu.novo_pedido', icone: '➕', to: '/comercial/pedidos/novo', cap: 'comercial.pedido.criar' },
-  { rotulo: 'menu.precos', icone: '🏷️', to: '/comercial/precos', cap: 'comercial.preco.listar' },
-  { rotulo: 'menu.expedicao', icone: '🚚', to: '/estoque/expedicao', cap: 'comercial.pedido.gerenciar' },
-  { rotulo: 'menu.posicao', icone: '📦', to: '/estoque/posicao', cap: 'estoque.saldo.ver' },
-  { rotulo: 'menu.entrada', icone: '📥', to: '/estoque/entrada', cap: 'estoque.entrada.criar' },
-  { rotulo: 'menu.recebimento', icone: '📦', to: '/estoque/recebimento', cap: 'estoque.entrada.criar' },
-  { rotulo: 'menu.baixa', icone: '📉', to: '/estoque/baixa', cap: 'estoque.baixa.criar' },
-  { rotulo: 'menu.inventario', icone: '🔎', to: '/estoque/inventario', cap: 'estoque.inventario.ver' },
-  { rotulo: 'menu.gestao_fretes', icone: '🛣️', to: '/logistica/fretes', cap: 'logistica.frete.ver' },
-  { rotulo: 'menu.receber', icone: '💰', to: '/financeiro/receber', cap: 'financeiro.receber.listar' },
-  { rotulo: 'menu.pagar', icone: '💸', to: '/financeiro/pagar', cap: 'financeiro.pagar.listar' },
-  { rotulo: 'menu.aging', icone: '📅', to: '/financeiro/aging-receber', cap: 'financeiro.receber.listar' },
-  { rotulo: 'menu.fluxo', icone: '📊', to: '/financeiro/fluxo', cap: 'financeiro.fluxo.ver' },
-  { rotulo: 'menu.dre', icone: '📋', to: '/financeiro/dre', cap: 'financeiro.fluxo.ver' },
-  { rotulo: 'menu.nota', icone: '🧾', to: '/financeiro/nota', cap: 'financeiro.compra.criar' },
-  { rotulo: 'menu.comissoes', icone: '🧮', to: '/financeiro/comissoes', cap: 'financeiro.comissao.ver' },
-  { rotulo: 'menu.rel_vendas', icone: '📈', to: '/relatorios/vendas', cap: 'relatorios.ver' },
-  { rotulo: 'menu.rel_produtos', icone: '🏆', to: '/relatorios/produtos', cap: 'relatorios.ver' },
-  { rotulo: 'menu.rel_categorias', icone: '🧩', to: '/relatorios/vendas-categoria', cap: 'relatorios.ver' },
-  { rotulo: 'menu.rel_validade', icone: '⏳', to: '/relatorios/validade', cap: 'relatorios.ver' },
-  { rotulo: 'menu.rel_parado', icone: '🐢', to: '/relatorios/estoque-parado', cap: 'relatorios.ver' },
-  { rotulo: 'menu.condicoes', icone: '💳', to: '/cadastros/condicoes', cap: 'cadastros.condicao.listar' },
-  { rotulo: 'menu.clientes', icone: '🧑‍⚕️', to: '/cadastros/clientes', cap: 'cadastros.cliente.listar' },
-  { rotulo: 'menu.fornecedores', icone: '🏭', to: '/cadastros/fornecedores', cap: 'cadastros.fornecedor.listar' },
-  { rotulo: 'menu.vendedores', icone: '💼', to: '/cadastros/vendedores', cap: 'cadastros.vendedor.listar' },
-  { rotulo: 'menu.motoboys', icone: '🛵', to: '/cadastros/motoboys', cap: 'cadastros.motoboy.listar' },
-  { rotulo: 'menu.produtos', icone: '📦', to: '/cadastros/produtos', cap: 'cadastros.produto.listar' },
-  { rotulo: 'menu.categorias', icone: '🏷️', to: '/cadastros/categorias', cap: 'cadastros.categoria.listar' },
-  { rotulo: 'menu.marcas', icone: '™️', to: '/cadastros/marcas', cap: 'cadastros.marca.listar' },
-  { rotulo: 'menu.contas_correntes', icone: '🏦', to: '/cadastros/contas-correntes', cap: 'cadastros.conta.listar' },
-  { rotulo: 'menu.usuarios', icone: '👤', to: '/acesso/usuarios', cap: 'acesso.usuario.listar' },
-  { rotulo: 'menu.perfis', icone: '🔑', to: '/acesso/perfis', cap: 'acesso.perfil.listar' },
-  { rotulo: 'menu.empresa', icone: '🏢', to: '/config/empresa', cap: 'acesso.empresa.editar' },
-  { rotulo: 'menu.empresas', icone: '🏬', to: '/superadmin/empresas', soSuperAdmin: true },
+  { rotulo: 'menu.dashboard', icone: 'i-grid', to: '/', cap: 'dashboard.ver' },
+  { rotulo: 'menu.pedidos', icone: 'i-receipt', to: '/comercial/pedidos', cap: 'comercial.pedido.listar' },
+  { rotulo: 'menu.novo_pedido', icone: 'i-plus', to: '/comercial/pedidos/novo', cap: 'comercial.pedido.criar' },
+  { rotulo: 'menu.precos', icone: 'i-tag', to: '/comercial/precos', cap: 'comercial.preco.listar' },
+  { rotulo: 'menu.expedicao', icone: 'i-truck', to: '/estoque/expedicao', cap: 'comercial.pedido.gerenciar' },
+  { rotulo: 'menu.posicao', icone: 'i-box', to: '/estoque/posicao', cap: 'estoque.saldo.ver' },
+  { rotulo: 'menu.entrada', icone: 'i-download', to: '/estoque/entrada', cap: 'estoque.entrada.criar' },
+  { rotulo: 'menu.recebimento', icone: 'i-box', to: '/estoque/recebimento', cap: 'estoque.entrada.criar' },
+  { rotulo: 'menu.baixa', icone: 'i-arrow-down', to: '/estoque/baixa', cap: 'estoque.baixa.criar' },
+  { rotulo: 'menu.inventario', icone: 'i-search', to: '/estoque/inventario', cap: 'estoque.inventario.ver' },
+  { rotulo: 'menu.gestao_fretes', icone: 'i-truck', to: '/logistica/fretes', cap: 'logistica.frete.ver' },
+  { rotulo: 'menu.receber', icone: 'i-dollar', to: '/financeiro/receber', cap: 'financeiro.receber.listar' },
+  { rotulo: 'menu.pagar', icone: 'i-dollar', to: '/financeiro/pagar', cap: 'financeiro.pagar.listar' },
+  { rotulo: 'menu.aging', icone: 'i-clock', to: '/financeiro/aging-receber', cap: 'financeiro.receber.listar' },
+  { rotulo: 'menu.fluxo', icone: 'i-chart', to: '/financeiro/fluxo', cap: 'financeiro.fluxo.ver' },
+  { rotulo: 'menu.dre', icone: 'i-clip', to: '/financeiro/dre', cap: 'financeiro.fluxo.ver' },
+  { rotulo: 'menu.nota', icone: 'i-receipt', to: '/financeiro/nota', cap: 'financeiro.compra.criar' },
+  { rotulo: 'menu.comissoes', icone: 'i-dollar', to: '/financeiro/comissoes', cap: 'financeiro.comissao.ver' },
+  { rotulo: 'menu.rel_vendas', icone: 'i-chart', to: '/relatorios/vendas', cap: 'relatorios.ver' },
+  { rotulo: 'menu.rel_produtos', icone: 'i-chart', to: '/relatorios/produtos', cap: 'relatorios.ver' },
+  { rotulo: 'menu.rel_categorias', icone: 'i-grid', to: '/relatorios/vendas-categoria', cap: 'relatorios.ver' },
+  { rotulo: 'menu.rel_validade', icone: 'i-clock', to: '/relatorios/validade', cap: 'relatorios.ver' },
+  { rotulo: 'menu.rel_parado', icone: 'i-clock', to: '/relatorios/estoque-parado', cap: 'relatorios.ver' },
+  { rotulo: 'menu.condicoes', icone: 'i-dollar', to: '/cadastros/condicoes', cap: 'cadastros.condicao.listar' },
+  { rotulo: 'menu.clientes', icone: 'i-user', to: '/cadastros/clientes', cap: 'cadastros.cliente.listar' },
+  { rotulo: 'menu.fornecedores', icone: 'i-shop', to: '/cadastros/fornecedores', cap: 'cadastros.fornecedor.listar' },
+  { rotulo: 'menu.vendedores', icone: 'i-user', to: '/cadastros/vendedores', cap: 'cadastros.vendedor.listar' },
+  { rotulo: 'menu.motoboys', icone: 'i-truck', to: '/cadastros/motoboys', cap: 'cadastros.motoboy.listar' },
+  { rotulo: 'menu.produtos', icone: 'i-box', to: '/cadastros/produtos', cap: 'cadastros.produto.listar' },
+  { rotulo: 'menu.categorias', icone: 'i-tag', to: '/cadastros/categorias', cap: 'cadastros.categoria.listar' },
+  { rotulo: 'menu.marcas', icone: 'i-tag', to: '/cadastros/marcas', cap: 'cadastros.marca.listar' },
+  { rotulo: 'menu.contas_correntes', icone: 'i-dollar', to: '/cadastros/contas-correntes', cap: 'cadastros.conta.listar' },
+  { rotulo: 'menu.usuarios', icone: 'i-user', to: '/acesso/usuarios', cap: 'acesso.usuario.listar' },
+  { rotulo: 'menu.perfis', icone: 'i-key', to: '/acesso/perfis', cap: 'acesso.perfil.listar' },
+  { rotulo: 'menu.empresa', icone: 'i-shop', to: '/config/empresa', cap: 'acesso.empresa.editar' },
+  { rotulo: 'menu.empresas', icone: 'i-shop', to: '/superadmin/empresas', soSuperAdmin: true },
 ];
 
 function normaliza(s: string): string {
@@ -98,7 +99,7 @@ export function BuscaGlobal() {
           {filtrados.map((d, i) => (
             <button key={d.to} className={'busca-item' + (i === sel ? ' sel' : '')}
               onMouseEnter={() => setSel(i)} onClick={() => ir(d.to)}>
-              <span className="busca-ic">{d.icone}</span>{d.label}
+              <span className="busca-ic"><Ic name={d.icone} className="sm" /></span>{d.label}
             </button>
           ))}
         </div>

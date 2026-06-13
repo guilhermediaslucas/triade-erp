@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 import { Ic } from '../components/Icones.js';
 
@@ -98,7 +99,7 @@ export function BaixaPerda() {
 
       <div className="form-actions">
         <button className="btn-ghost" onClick={() => nav(-1)}>{t('common.cancelar')}</button>
-        <button className="btn-primary" disabled={salv || !loteId || qtdN < 1} onClick={salvar}>🗑 {t('perda.confirmar')}</button>
+        <button className="btn-primary" disabled={salv || !loteId || qtdN < 1} onClick={salvar}><Ic name="i-trash" className="sm" /> {t('perda.confirmar')}</button>
       </div>
     </div>
   );

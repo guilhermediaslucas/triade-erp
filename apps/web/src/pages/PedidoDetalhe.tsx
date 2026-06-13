@@ -7,6 +7,7 @@ import { useToast } from '../components/Toast.js';
 import { corStatus, moeda, numeroPedido, PROXIMOS, type StatusPedido } from '../lib/pedido.js';
 import { ModalDataEntrega, ModalFormaEnvio } from '../components/ExpedicaoModais.js';
 import { BotaoEscanear } from '../components/BotaoEscanear.js';
+import { Ic } from '../components/Icones.js';
 import { useAutoBip } from '../lib/useAutoBip.js';
 
 interface ItemLote { lote: string; validade: string | null; }
@@ -94,7 +95,7 @@ export function PedidoDetalhe() {
   if (!p) return <div className="muted">{erro ? t(erro) : t('common.carregando')}</div>;
   const proximos = PROXIMOS[p.status];
   const WF = ['orcamento', 'aguardando_pagamento', 'aprovado', 'separacao', 'expedido', 'entregue'];
-  const WF_IC = ['📝', '⏳', '✅', '📦', '🚚', '🏁'];
+  const WF_IC = ['i-edit', 'i-clock', 'i-check', 'i-box', 'i-truck', 'i-flag'];
   const wfAtual = WF.indexOf(p.status);
   const entregaTexto = t('entrega.' + p.formaEntrega)
     + (p.formaEntrega === 'motoboy' && p.motoboyNome ? ' · ' + p.motoboyNome : '')
@@ -110,7 +111,7 @@ export function PedidoDetalhe() {
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <span className={'pill ' + corStatus(p.status)} style={{ fontSize: 13 }}>{t('status.' + p.status)}</span>
-          <button className="btn-ghost" onClick={() => nav('/comercial/pedidos/' + p.id + '/romaneio')}>🖨️ {t('romaneio.titulo')}</button>
+          <button className="btn-ghost" onClick={() => nav('/comercial/pedidos/' + p.id + '/romaneio')}><Ic name="i-print" className="sm" /> {t('romaneio.titulo')}</button>
           <button className="btn-ghost" onClick={() => nav('/comercial/pedidos')}>← {t('pedidos.voltar')}</button>
         </div>
       </div>
@@ -124,7 +125,7 @@ export function PedidoDetalhe() {
               <Fragment key={st}>
                 {i > 0 && <div className={'wf-line' + (i <= wfAtual ? ' on' : '')} />}
                 <div className="wf-step">
-                  <div className={'kpi-ic ' + (i < wfAtual ? 'tint-gr' : i === wfAtual ? 'tint-pp wf-atual' : 'tint-bl wf-futuro')}>{WF_IC[i]}</div>
+                  <div className={'kpi-ic ' + (i < wfAtual ? 'tint-gr' : i === wfAtual ? 'tint-pp wf-atual' : 'tint-bl wf-futuro')}><Ic name={WF_IC[i]!} className="sm" /></div>
                   <div className={'wf-lbl' + (i === wfAtual ? ' on' : i > wfAtual ? ' off' : '')}>{t('status.' + st)}</div>
                 </div>
               </Fragment>
@@ -176,7 +177,7 @@ export function PedidoDetalhe() {
           <div className="acoes-status">
             {proximos.map((s) => (
               s === 'separacao'
-                ? <button key={s} className="btn-primary" onClick={abrirSeparacao}>🏷️ {t('sep.acao')}</button>
+                ? <button key={s} className="btn-primary" onClick={abrirSeparacao}><Ic name="i-tag" className="sm" /> {t('sep.acao')}</button>
                 : <button key={s} className={s === 'cancelado' ? 'btn-ghost' : 'btn-primary'} onClick={() => mudar(s)}>{t('pedidos.acao.' + s)}</button>
             ))}
           </div>

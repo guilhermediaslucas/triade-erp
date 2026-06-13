@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarExcel } from '../lib/excel.js';
 
@@ -69,8 +70,8 @@ export function FluxoCaixa() {
       <div className="contas-toolbar" style={{ alignItems: 'flex-end' }}>
         <label className="campo" style={{ margin: 0 }}>{t('fluxo.data_ini')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} style={{ maxWidth: 180 }} /></label>
         <label className="campo" style={{ margin: 0 }}>{t('fluxo.data_fim')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} style={{ maxWidth: 180 }} /></label>
-        <button className="btn-primary" onClick={() => carregar()}>🔎 {t('fluxo.filtrar')}</button>
-        <button className="btn-ghost" onClick={() => { setDe(''); setAte(''); carregar('', ''); }}>✕ {t('fluxo.limpar')}</button>
+        <button className="btn-primary" onClick={() => carregar()}><Ic name="i-search" className="sm" /> {t('fluxo.filtrar')}</button>
+        <button className="btn-ghost" onClick={() => { setDe(''); setAte(''); carregar('', ''); }}><Ic name="i-x" className="sm" /> {t('fluxo.limpar')}</button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 14, marginBottom: 14 }}>
@@ -124,7 +125,7 @@ export function FluxoCaixa() {
         <div className="card-head" style={{ padding: '16px 18px 4px', display: 'flex', alignItems: 'center', gap: 8 }}>
           <h3 style={{ marginRight: 'auto' }}>{t('fluxo.lancamentos')}{semanaSel != null && dados.semanas[semanaSel] ? ` · ${dados.semanas[semanaSel]!.rotulo}` : ''}</h3>
           {semanaSel != null && <button className="btn-link" onClick={() => setSemanaSel(null)}>{t('fluxo.limpar')}</button>}
-          {mostrados.length > 0 && <button className="btn-acao verde" onClick={exportar}>⬇ {t('rel.exportar_xlsx')}</button>}
+          {mostrados.length > 0 && <button className="btn-acao verde" onClick={exportar}><Ic name="i-download" className="sm" /> {t('rel.exportar_xlsx')}</button>}
         </div>
         <table className="tabela">
           <thead><tr><th style={{ width: 34 }}><input type="checkbox" checked={todosMarcados} onChange={toggleTodos} /></th><th>{t('fluxo.tipo')}</th><th>{t('fin.numero')}</th><th>{t('fin.descricao')}</th><th>{t('fluxo.cli_forn')}</th><th>{t('fluxo.conta')}</th><th>{t('fluxo.data_caixa')}</th><th>{t('fluxo.prev_efet')}</th><th>{t('fin.situacao')}</th><th style={{ textAlign: 'right' }}>{t('fin.valor')}</th></tr></thead>

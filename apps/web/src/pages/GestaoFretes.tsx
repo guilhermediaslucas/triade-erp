@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarExcel } from '../lib/excel.js';
 
@@ -66,7 +67,7 @@ export function GestaoFretes() {
         <div className="toolbar" style={{ alignItems: 'flex-end' }}>
           <label className="campo" style={{ margin: 0 }}>{t('motoboys.km_rate')}<input type="number" min="0" step="0.01" value={kmRate} disabled={!podeParam} onChange={(e) => setKmRate(e.target.value)} style={{ maxWidth: 220 }} /></label>
           <label className="campo" style={{ margin: 0 }}>{t('motoboys.min_motoboy')}<input type="number" min="0" step="0.01" value={minMotoboy} disabled={!podeParam} onChange={(e) => setMinMotoboy(e.target.value)} style={{ maxWidth: 220 }} /></label>
-          {podeParam && <button className="btn-primary" onClick={salvarParam}>✓ {t('gfrete.salvar_param')}</button>}
+          {podeParam && <button className="btn-primary" onClick={salvarParam}><Ic name="i-check" className="sm" /> {t('gfrete.salvar_param')}</button>}
         </div>
       </div>
 
@@ -74,9 +75,9 @@ export function GestaoFretes() {
         <label className="campo" style={{ margin: 0 }}>{t('pedidos.data_de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} style={{ maxWidth: 170 }} /></label>
         <label className="campo" style={{ margin: 0 }}>{t('pedidos.data_ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} style={{ maxWidth: 170 }} /></label>
         <label className="campo" style={{ margin: 0 }}>{t('gfrete.venc1')}<input type="date" value={venc} onChange={(e) => setVenc(e.target.value)} style={{ maxWidth: 170 }} /></label>
-        <button className="btn-primary" onClick={gerar}>🔎 {t('pedidos.filtrar')}</button>
+        <button className="btn-primary" onClick={gerar}><Ic name="i-search" className="sm" /> {t('pedidos.filtrar')}</button>
         <span style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
-          {linhas.length > 0 && <button className="btn-acao verde" onClick={exportar}>⬇ {t('rel.exportar_xlsx')}</button>}
+          {linhas.length > 0 && <button className="btn-acao verde" onClick={exportar}><Ic name="i-download" className="sm" /> {t('rel.exportar_xlsx')}</button>}
           {podeFechar && <button className="btn-primary" disabled={!venc || total <= 0} onClick={fechar}>$ {t('gfrete.gerar_titulos_motoboy')}</button>}
         </span>
       </div>

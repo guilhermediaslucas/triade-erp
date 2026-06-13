@@ -91,7 +91,7 @@ export function NotaEntrada() {
 
       <div className="form-actions">
         <button className="btn-ghost" onClick={() => nav(-1)}>{t('common.cancelar')}</button>
-        <button className="btn-primary" disabled={salv || !produtoId} onClick={salvar}>✓ {t('nota.lancar')}</button>
+        <button className="btn-primary" disabled={salv || !produtoId} onClick={salvar}><Ic name="i-check" className="sm" /> {t('nota.lancar')}</button>
       </div>
     </div>
   );

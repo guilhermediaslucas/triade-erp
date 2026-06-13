@@ -6,6 +6,7 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
 import { mascaraCep, buscarCep, UFS } from '../lib/br.js';
 import { ModalNovaPessoa } from '../components/SeletorPessoa.js';
+import { Ic } from '../components/Icones.js';
 
 interface Endereco { cep: string | null; logradouro: string | null; numero: string | null; complemento?: string | null; bairro: string | null; cidade: string | null; uf: string | null; favorito: boolean; }
 interface Cliente { id: string; tipoPessoa: string; nome: string; fantasia: string | null; documento: string; email: string | null; telefone: string | null; limiteCredito: number; ativo: boolean; enderecos: Endereco[]; }
@@ -248,7 +249,7 @@ export function NovoPedido() {
           <select value={endSel} disabled={!cliente} onChange={(e) => setEndSel(e.target.value)}>
             {!cliente && <option value="">{t('pedidos.end_selecione_cliente')}</option>}
             {ends.map((e, i) => <option key={i} value={i}>{endTexto(e) || '—'}{e.favorito ? ' (' + t('clientes.favorito').toLowerCase() + ')' : ''}</option>)}
-            <option value={NOVO}>➕ {t('pedidos.end_novo')}</option>
+            <option value={NOVO}>+ {t('pedidos.end_novo')}</option>
           </select>
         </label>
         {usandoNovo && (
@@ -302,7 +303,7 @@ export function NovoPedido() {
                 <td><input type="number" min="0" step="1" value={it.quantidade} onChange={(e) => setItem(i, 'quantidade', e.target.value)} style={{ width: 90 }} /></td>
                 <td>{moeda(precoDe(it.produtoId))}</td>
                 <td><b>{moeda(subDe(it))}</b></td>
-                <td><button type="button" className="btn-link" onClick={() => delItem(i)}>✕</button></td>
+                <td><button type="button" className="btn-link" onClick={() => delItem(i)} aria-label={t('common.remover')}><Ic name="i-x" className="sm" /></button></td>
               </tr>
             ))}
           </tbody>
