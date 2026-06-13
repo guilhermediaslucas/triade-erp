@@ -303,6 +303,15 @@ a { text-decoration: none; color: inherit; }
 .tv-bar-fill { display: block; height: 100%; border-radius: 8px; }
 .tv-bar-q { width: 50px; text-align: right; font-variant-numeric: tabular-nums; }
 @media (max-width: 1100px) { .tv-kpis, .tv-mid { grid-template-columns: repeat(2, 1fr); } .tv-cols { grid-template-columns: 1fr; } .tv-bar-nm { width: 130px; } }
+/* Painel TV de Expedição (4 colunas) */
+.tve-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.tve-col { border-top: 4px solid #888; }
+.tve-h { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.tve-ct { font-size: 52px; font-weight: 800; color: #e6e8ee; line-height: 1; margin-bottom: 12px; font-variant-numeric: tabular-nums; }
+.tve-lst { display: flex; flex-direction: column; gap: 8px; }
+.tve-lin { display: flex; flex-direction: column; gap: 1px; padding: 8px 10px; background: #1b2029; border-radius: 9px; font-size: 16px; }
+.tve-lin b { color: #fff; } .tve-lin span { color: #9aa1b1; font-size: 14px; }
+@media (max-width: 1100px) { .tve-board { grid-template-columns: repeat(2, 1fr); } }
 .pk-cli { font-size: 12px; color: var(--muted); margin: 3px 0; }
 .pk-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
 .pk-tot { font-size: 14px; font-weight: 800; color: var(--accent2, var(--accent)); }

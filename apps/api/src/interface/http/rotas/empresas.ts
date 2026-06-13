@@ -3,6 +3,8 @@ import type { Dependencias } from '../../composition.js';
 import { criarAutenticar } from '../middlewares/autenticar.js';
 import { exigirSuperAdmin } from '../middlewares/exigirSuperAdmin.js';
 import { tratarErro } from '../responder.js';
+import { AppDataSource } from '../../../infra/db/data-source.js';
+import { garantirPerfisPadrao } from '../../../infra/db/perfisPadraoSeed.js';
 
 export function rotasEmpresas(deps: Dependencias): Router {
   const r = Router();
@@ -24,6 +26,8 @@ export function rotasEmpresas(deps: Dependencias): Router {
         codigo: b.codigo, nome: b.nome, fantasia: b.fantasia,
         adminNome: b.adminNome, adminEmail: b.adminEmail, adminSenha: b.adminSenha,
       });
+      // Perfis padrão (Diretor/Comercial/Financeiro/Estoque + Gestão à Vista) + usuários TV.
+      try { await garantirPerfisPadrao(AppDataSource, saida.schema, saida.codigo); } catch (err) { console.warn('[empresas] perfis padrão:', err); }
       res.status(201).json(saida);
     } catch (e) { tratarErro(res, e); }
   });

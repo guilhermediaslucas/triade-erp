@@ -68,7 +68,49 @@ export const CAPABILITIES: Capability[] = [
   { id: 'relatorios.validade.ver',         moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.validade' },
   { id: 'relatorios.parado.ver',           moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.parado' },
   { id: 'relatorios.perdas.ver',           moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.perdas' },
+  { id: 'painel.tv_comercial', moduloChave: 'cap.modulo.painel', labelChave: 'cap.painel.tv_comercial' },
+  { id: 'painel.tv_expedicao', moduloChave: 'cap.modulo.painel', labelChave: 'cap.painel.tv_expedicao' },
 ];
 
 export const CAPABILITY_IDS: string[] = CAPABILITIES.map((c) => c.id);
 export function capabilityExiste(id: string): boolean { return CAPABILITY_IDS.includes(id); }
+
+// ===== Perfis padrão (criados em toda empresa, atuais e novas) =====
+const REL_COMERCIAL = ['relatorios.ver', 'relatorios.vendas.ver', 'relatorios.pedidos.ver', 'relatorios.produtos.ver', 'relatorios.categorias.ver', 'relatorios.abc.ver'];
+
+export interface PerfilPadrao {
+  nome: string;
+  descricao: string;
+  caps: string[] | 'TODAS';
+  usuario?: { prefixoEmail: string };   // se definido, cria um usuário (login cai no painel TV)
+}
+
+export const PERFIS_PADRAO: PerfilPadrao[] = [
+  { nome: 'Diretor', descricao: 'Acesso total ao sistema', caps: 'TODAS' },
+  {
+    nome: 'Comercial', descricao: 'Apenas Comercial e relatórios comerciais',
+    caps: ['dashboard.ver', 'comercial.preco.listar', 'comercial.preco.gerenciar', 'comercial.pedido.listar', 'comercial.pedido.criar', 'comercial.pedido.gerenciar',
+      'comercial.crm.ver', 'comercial.crm.gerenciar', 'cadastros.cliente.listar', 'cadastros.cliente.gerenciar', 'cadastros.produto.listar', 'cadastros.vendedor.listar', ...REL_COMERCIAL],
+  },
+  {
+    nome: 'Financeiro', descricao: 'Apenas Financeiro e cadastros financeiros',
+    caps: ['dashboard.ver', 'financeiro.receber.listar', 'financeiro.receber.gerenciar', 'financeiro.pagar.listar', 'financeiro.pagar.gerenciar',
+      'financeiro.fluxo.ver', 'financeiro.compra.criar', 'financeiro.comissao.ver', 'financeiro.comissao.gerenciar', 'financeiro.conciliacao.ver', 'financeiro.conciliacao.gerenciar',
+      'cadastros.catfin.listar', 'cadastros.catfin.gerenciar', 'cadastros.conta.listar', 'cadastros.conta.gerenciar', 'cadastros.tipodoc.listar', 'cadastros.tipodoc.gerenciar',
+      'cadastros.banco.listar', 'cadastros.banco.gerenciar', 'cadastros.favorecido.listar', 'cadastros.favorecido.gerenciar'],
+  },
+  {
+    nome: 'Estoque', descricao: 'Apenas Estoque/Expedição',
+    caps: ['dashboard.ver', 'estoque.saldo.ver', 'estoque.entrada.criar', 'estoque.baixa.criar', 'estoque.inventario.ver', 'estoque.inventario.gerenciar',
+      'comercial.pedido.listar', 'comercial.pedido.gerenciar', 'financeiro.compra.criar', 'cadastros.produto.listar', 'cadastros.marca.listar', 'cadastros.marca.gerenciar',
+      'cadastros.forma_entrega.listar', 'cadastros.motoboy.listar', 'relatorios.ver', 'relatorios.validade.ver', 'relatorios.parado.ver', 'relatorios.perdas.ver'],
+  },
+  {
+    nome: 'Gestão à Vista Comercial', descricao: 'Painel de vendas em TV (somente leitura)',
+    caps: ['painel.tv_comercial', 'dashboard.ver', 'estoque.saldo.ver'], usuario: { prefixoEmail: 'tv-comercial' },
+  },
+  {
+    nome: 'Gestão à Vista Estoque/Expedição', descricao: 'Painel de expedição em TV (somente leitura)',
+    caps: ['painel.tv_expedicao', 'comercial.pedido.listar', 'estoque.saldo.ver', 'financeiro.compra.criar'], usuario: { prefixoEmail: 'tv-expedicao' },
+  },
+];

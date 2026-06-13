@@ -584,4 +584,39 @@ export const tenantMigrations: MigracaoTenant[] = [
       );
     `,
   },
+  {
+    // Seed padrão: tipos de documento (idempotente).
+    nome: '041_seed_tipos_documento',
+    sql: (s) => `
+      INSERT INTO "${s}".tipo_documento (id, nome, ativo)
+      SELECT gen_random_uuid(), v.nome, true
+      FROM (VALUES ('NF-e'), ('NFS-e'), ('Fatura'), ('Boleto'), ('Recibo')) AS v(nome)
+      WHERE NOT EXISTS (SELECT 1 FROM "${s}".tipo_documento t WHERE t.nome = v.nome);
+    `,
+  },
+  {
+    // Seed padrão: categorias financeiras (do mockup).
+    nome: '042_seed_categorias_financeiras',
+    sql: (s) => `
+      INSERT INTO "${s}".categoria_financeira (id, nome, tipo, ativo)
+      SELECT gen_random_uuid(), v.nome, v.tipo, true
+      FROM (VALUES
+        ('Vendas', 'receita'), ('Serviços', 'receita'),
+        ('Mercadoria', 'despesa'), ('Frete', 'despesa'), ('Despesa fixa', 'despesa'), ('Outros', 'despesa')
+      ) AS v(nome, tipo)
+      WHERE NOT EXISTS (SELECT 1 FROM "${s}".categoria_financeira c WHERE c.nome = v.nome);
+    `,
+  },
+  {
+    // Seed padrão: condições de pagamento.
+    nome: '043_seed_condicoes_pagamento',
+    sql: (s) => `
+      INSERT INTO "${s}".condicao_pagamento (id, nome, parcelas, intervalo_dias, ativo)
+      SELECT gen_random_uuid(), v.nome, v.parcelas, v.intervalo, true
+      FROM (VALUES
+        ('À vista', 1, 0), ('30 dias', 1, 30), ('30/60', 2, 30), ('30/60/90', 3, 30)
+      ) AS v(nome, parcelas, intervalo)
+      WHERE NOT EXISTS (SELECT 1 FROM "${s}".condicao_pagamento cp WHERE cp.nome = v.nome);
+    `,
+  },
 ];
