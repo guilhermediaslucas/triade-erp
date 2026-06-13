@@ -21,18 +21,27 @@ interface ItemEstoque { produtoNome: string; disponivel: number; abaixoMinimo: b
 
 const REFRESH_MS = 45000;
 
-// Gráfico de barras (vendas por dia) — SVG, sem dependência.
+// Gráfico de barras (vendas por dia) — SVG, sem dependência. Mostra os dias no eixo X.
 function Barras({ labels, data }: { labels: string[]; data: number[] }) {
-  const W = 300, H = 130, padB = 16;
+  const W = 320, H = 140, padB = 22;
   const n = Math.max(1, data.length);
   const max = Math.max(1, ...data);
-  const bw = (W / n) * 0.62;
+  const bw = (W / n) * 0.6;
+  const passo = Math.ceil(n / 7);   // no máx ~7 rótulos p/ não sobrepor
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 150 }} role="img">
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 160 }} role="img">
+      <line x1="0" y1={H - padB} x2={W} y2={H - padB} stroke="var(--tvborda)" strokeWidth="1" />
       {data.map((v, i) => {
-        const h = (v / max) * (H - padB);
+        const h = (v / max) * (H - padB - 6);
         const cx = (W / n) * (i + 0.5);
-        return <rect key={i} x={cx - bw / 2} y={H - padB - h} width={bw} height={h} rx="2" fill="#4ade80"><title>{labels[i]}: {moeda(v)}</title></rect>;
+        return (
+          <g key={i}>
+            <rect x={cx - bw / 2} y={H - padB - h} width={bw} height={h} rx="2" fill="#16a34a"><title>{labels[i]}: {moeda(v)}</title></rect>
+            {(i % passo === 0 || i === n - 1) && (
+              <text x={cx} y={H - 6} fontSize="9" textAnchor="middle" fill="var(--tvmuted)">{labels[i]}</text>
+            )}
+          </g>
+        );
       })}
     </svg>
   );
