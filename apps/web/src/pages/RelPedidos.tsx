@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { CabecalhoRelatorio } from '../components/CabecalhoRelatorio.js';
 import { Ic } from '../components/Icones.js';
 import { corStatus, moeda, numeroPedido, type StatusPedido } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
@@ -38,6 +39,7 @@ export function RelPedidos() {
 
   return (
     <div>
+      <CabecalhoRelatorio titulo={t('relped.titulo')} />
       <div className="crumb">{t('relped.crumb')}</div><h1 className="page-titulo">{t('relped.titulo')}</h1><p className="muted page-sub">{t('relped.sub')}</p>
       <div className="rel-filtro">
         <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>

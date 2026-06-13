@@ -2,6 +2,7 @@ import { Fragment, useEffect, useMemo, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { CabecalhoRelatorio } from '../components/CabecalhoRelatorio.js';
 import { Ic } from '../components/Icones.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel } from '../lib/excel.js';
@@ -52,6 +53,7 @@ export function RelInventarios() {
 
   return (
     <div>
+      <CabecalhoRelatorio titulo={t('relinv.titulo')} />
       <div className="crumb">{t('rel.crumb_inv')}</div><h1 className="page-titulo">{t('relinv.titulo')}</h1>
       <p className="muted" style={{ marginTop: -8 }}>{t('relinv.sub')}</p>
       <div className="rel-filtro">

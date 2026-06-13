@@ -50,7 +50,7 @@ export function Romaneio() {
           </div>
           <div style={{ textAlign: 'right' }}>
             <h1 className="rom-titulo">{t('romaneio.titulo')}</h1>
-            <div className="rom-marca" style={{ marginTop: 4 }}>TRIADE</div>
+            <div className="rom-wordmark" style={{ marginTop: 4 }}>TR<span className="rm-i">Í</span>ADE <span className="rm-erp">ERP</span></div>
           </div>
         </div>
 

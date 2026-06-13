@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { CabecalhoRelatorio } from '../components/CabecalhoRelatorio.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel } from '../lib/excel.js';
@@ -32,6 +33,7 @@ export function RelAbc() {
 
   return (
     <div>
+      <CabecalhoRelatorio titulo={t(por === 'clientes' ? 'abc.titulo_clientes' : 'abc.titulo')} />
       <div className="crumb">{t('rel.crumb_abc')}</div><h1 className="page-titulo">{t(por === 'clientes' ? 'abc.titulo_clientes' : 'abc.titulo')}</h1>
       <p className="muted" style={{ marginTop: -8 }}>{t('abc.sub')}</p>
       <div className="toolbar">

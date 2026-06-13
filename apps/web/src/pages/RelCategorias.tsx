@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { CabecalhoRelatorio } from '../components/CabecalhoRelatorio.js';
 import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
@@ -27,6 +28,7 @@ export function RelCategorias() {
 
   return (
     <div>
+      <CabecalhoRelatorio titulo={t('rel.categorias')} />
       <div className="crumb">{t('rel.crumb_categorias')}</div><h1 className="page-titulo">{t('rel.categorias')}</h1>
       <div className="rel-filtro">
         <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>

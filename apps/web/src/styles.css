@@ -346,6 +346,20 @@ a { text-decoration: none; color: inherit; }
 .rom-head { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #111; padding-bottom: 12px; margin-bottom: 16px; }
 .rom-logo { max-height: 56px; max-width: 220px; object-fit: contain; }
 .rom-marca { font-weight: 800; letter-spacing: 1px; font-size: 20px; }
+/* Wordmark TRÍADE ERP (romaneio + relatórios) */
+.rom-wordmark, .rel-wordmark { font-weight: 800; letter-spacing: 1px; font-size: 20px; color: #1f2430; }
+.rel-wordmark { font-size: 16px; }
+.rom-wordmark .rm-i, .rel-wordmark .rm-i { color: #dc2626; }
+.rom-wordmark .rm-erp, .rel-wordmark .rm-erp { font-weight: 700; letter-spacing: 3px; font-size: .8em; color: #6b7280; }
+/* Cabeçalho dos relatórios na tela: logo empresa (esq) + TRÍADE ERP (dir) */
+.rel-cab { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 14px; margin-bottom: 14px; background: var(--card, #fff); border: 1px solid var(--borda, #ececf2); border-radius: 14px; }
+.rel-cab-esq { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.rel-cab-logo { max-height: 40px; max-width: 180px; object-fit: contain; }
+.rel-cab-fantasia { font-weight: 700; font-size: 16px; color: var(--ink, #1f2430); }
+.rel-cab-fantasia-sm { font-size: 13px; color: var(--muted, #8a90a2); }
+.rel-cab-titulo { font-weight: 700; font-size: 15px; color: var(--ink, #1f2430); text-align: center; flex: 1; }
+.rel-cab-dir { display: flex; align-items: center; }
+@media (max-width: 640px) { .rel-cab-titulo { display: none; } .rel-cab { padding: 8px 12px; } }
 .rom-titulo { font-size: 22px; font-weight: 700; margin: 0; }
 .rom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; margin-bottom: 18px; }
 .rom-grid .l { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #555; }

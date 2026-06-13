@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { CabecalhoRelatorio } from '../components/CabecalhoRelatorio.js';
 import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
@@ -40,6 +41,7 @@ export function RelDRE() {
 
   return (
     <div>
+      <CabecalhoRelatorio titulo={t('dre.titulo')} />
       <div className="crumb">{t('rel.crumb_dre')}</div><h1 className="page-titulo">{t('dre.titulo')}</h1>
       <p className="muted" style={{ marginTop: -8 }}>{t('dre.sub')}</p>
       <div className="rel-filtro">

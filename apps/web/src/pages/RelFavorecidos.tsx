@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { CabecalhoRelatorio } from '../components/CabecalhoRelatorio.js';
 import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
@@ -43,6 +44,7 @@ export function RelFavorecidos() {
   if (erro) return <div className="alerta-erro">{t(erro)}</div>;
   return (
     <div>
+      <CabecalhoRelatorio titulo={t('relfav.titulo')} />
       <div className="crumb">{t('relfav.crumb')}</div><h1 className="page-titulo">{t('relfav.titulo')}</h1><p className="muted page-sub">{t('relfav.sub')}</p>
       <div className="rel-filtro">
         <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>

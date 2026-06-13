@@ -13,10 +13,17 @@ export function BrandingProvider({ children }: { children: ReactNode }) {
   const { idiomas, setIdioma } = useI18n();
   const [branding, setBranding] = useState<Branding | null>(null);
 
-  function definir(b: Branding) { setBranding(b); aplicarTema(b); }
+  function definir(b: Branding) {
+    setBranding(b); aplicarTema(b);
+    // Persiste logo/fantasia p/ o gerador de Excel (lib/excel.ts) embutir no relatório.
+    try {
+      if (b.logo) localStorage.setItem('triade_logo', b.logo); else localStorage.removeItem('triade_logo');
+      if (b.fantasia) localStorage.setItem('triade_fantasia', b.fantasia); else localStorage.removeItem('triade_fantasia');
+    } catch { /* ignora */ }
+  }
 
   useEffect(() => {
-    if (!token) { setBranding(null); aplicarTema(null); return; }
+    if (!token) { setBranding(null); aplicarTema(null); try { localStorage.removeItem('triade_logo'); } catch { /* ignora */ } return; }
     api.get<Branding>('/empresa', token).then((b) => {
       definir(b);
       // Se o usuario ainda nao escolheu idioma manualmente, usa o padrao da empresa.

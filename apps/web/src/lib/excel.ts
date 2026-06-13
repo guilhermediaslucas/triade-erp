@@ -42,12 +42,13 @@ function styles(accent: string): string {
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
 <numFmts count="1"><numFmt numFmtId="164" formatCode="&quot;R$&quot;\\ #,##0.00"/></numFmts>
-<fonts count="5">
+<fonts count="6">
 <font><sz val="11"/><name val="Calibri"/></font>
 <font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font>
 <font><b/><sz val="15"/><color rgb="FF${accent}"/><name val="Calibri"/></font>
 <font><sz val="9"/><color rgb="FF6B7280"/><name val="Calibri"/></font>
 <font><b/><sz val="11"/><name val="Calibri"/></font>
+<font><b/><sz val="13"/><color rgb="FFDC2626"/><name val="Calibri"/></font>
 </fonts>
 <fills count="4">
 <fill><patternFill patternType="none"/></fill>
@@ -61,7 +62,7 @@ function styles(accent: string): string {
 <border><top style="medium"><color rgb="FF${accent}"/></top></border>
 </borders>
 <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
-<cellXfs count="10">
+<cellXfs count="12">
 <xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
 <xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>
 <xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/>
@@ -72,12 +73,14 @@ function styles(accent: string): string {
 <xf numFmtId="164" fontId="0" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right"/></xf>
 <xf numFmtId="0" fontId="4" fillId="0" borderId="2" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right"/></xf>
 <xf numFmtId="164" fontId="4" fillId="3" borderId="2" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right"/></xf>
+<xf numFmtId="0" fontId="4" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment vertical="center"/></xf>
+<xf numFmtId="0" fontId="5" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>
 </cellXfs>
 <cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
 </styleSheet>`;
 }
 
-function planilhaXml(titulo: string, cabecalho: string[], linhas: (string | number)[][]): string {
+function planilhaXml(titulo: string, cabecalho: string[], linhas: (string | number)[][], temImagem: boolean): string {
   const ncols = Math.max(1, cabecalho.length);
   const lastCol = colLetra(ncols - 1);
   const valCol = cabecalho.map((h) => ehValorCol(h));
@@ -89,15 +92,20 @@ function planilhaXml(titulo: string, cabecalho: string[], linhas: (string | numb
   const cTexto = (ref: string, v: string | number, s: number) => `<c r="${ref}" s="${s}" t="inlineStr"><is><t xml:space="preserve">${esc(v)}</t></is></c>`;
   const cNum = (ref: string, v: number, s: number) => `<c r="${ref}" s="${s}"><v>${v}</v></c>`;
 
-  // Linhas 1 (título) e 2 (subtítulo) mescladas; cabeçalho na linha 3; dados a partir da 4.
+  // Cabeçalho de marca: linha 1 = empresa (esquerda) + TRÍADE ERP (direita).
+  // Quando há logo (imagem), a esquerda fica para a imagem (flutua sobre A1).
+  // Linha 2 = título (mesclada), linha 3 = subtítulo (mesclada), linha 4 = colunas, dados a partir da 5.
   const rows: string[] = [];
-  rows.push(`<row r="1">${cTexto('A1', titulo, 2)}</row>`);
-  rows.push(`<row r="2">${cTexto('A2', sub, 3)}</row>`);
-  rows.push(`<row r="3">${cabecalho.map((h, c) => cTexto(colLetra(c) + '3', h, 1)).join('')}</row>`);
+  const cantoEsq = (!temImagem && emp) ? cTexto('A1', emp, 10) : '';
+  const triade = ncols >= 2 ? cTexto(lastCol + '1', 'TRÍADE ERP', 11) : '';
+  rows.push(`<row r="1" ht="${temImagem ? 34 : 20}" customHeight="1">${cantoEsq}${triade}</row>`);
+  rows.push(`<row r="2">${cTexto('A2', titulo, 2)}</row>`);
+  rows.push(`<row r="3">${cTexto('A3', sub, 3)}</row>`);
+  rows.push(`<row r="4">${cabecalho.map((h, c) => cTexto(colLetra(c) + '4', h, 1)).join('')}</row>`);
 
   const somas = new Array(ncols).fill(0);
   linhas.forEach((linha, i) => {
-    const r = i + 4;
+    const r = i + 5;
     const zebra = i % 2 === 1;
     const cells = linha.map((v, c) => {
       const ref = colLetra(c) + r;
@@ -111,7 +119,7 @@ function planilhaXml(titulo: string, cabecalho: string[], linhas: (string | numb
   // Linha de Total nas colunas de valor.
   const temTotal = valCol.some(Boolean) && linhas.length > 0;
   if (temTotal) {
-    const r = linhas.length + 4;
+    const r = linhas.length + 5;
     const cells = cabecalho.map((_, c) => {
       const ref = colLetra(c) + r;
       if (valCol[c]) return cNum(ref, Math.round(somas[c] * 100) / 100, 9);
@@ -120,12 +128,42 @@ function planilhaXml(titulo: string, cabecalho: string[], linhas: (string | numb
     rows.push(`<row r="${r}">${cells}</row>`);
   }
 
+  const merges = ncols >= 2 ? `<mergeCells count="2"><mergeCell ref="A2:${lastCol}2"/><mergeCell ref="A3:${lastCol}3"/></mergeCells>` : '';
+  const drawing = temImagem ? '<drawing r:id="rId1"/>' : '';
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${rows.join('')}</sheetData><mergeCells count="2"><mergeCell ref="A1:${lastCol}1"/><mergeCell ref="A2:${lastCol}2"/></mergeCells></worksheet>`;
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheetViews><sheetView showGridLines="0" workbookViewId="0"/></sheetViews><sheetData>${rows.join('')}</sheetData>${merges}${drawing}</worksheet>`;
 }
 
-const CONTENT_TYPES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>`;
+interface LogoImg { ext: string; mime: string; bytes: Uint8Array; }
+// Lê a logo da empresa (data URI raster) persistida pelo BrandingContext.
+function parseLogo(): LogoImg | null {
+  try {
+    const uri = localStorage.getItem('triade_logo');
+    if (!uri) return null;
+    const m = /^data:image\/(png|jpe?g|gif);base64,([A-Za-z0-9+/=]+)$/i.exec(uri);
+    if (!m) return null; // svg/sem logo → cabeçalho fica em texto
+    const ext = m[1]!.toLowerCase() === 'jpeg' || m[1]!.toLowerCase() === 'jpg' ? 'jpg' : m[1]!.toLowerCase();
+    const mime = ext === 'jpg' ? 'jpeg' : ext;
+    const bin = atob(m[2]!);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return { ext, mime, bytes };
+  } catch { return null; }
+}
+
+function contentTypes(img: LogoImg | null): string {
+  const extra = img
+    ? `<Default Extension="${img.ext}" ContentType="image/${img.mime}"/><Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/>`
+    : '';
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>${extra}<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>`;
+}
+const DRAWING_XML = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><xdr:oneCellAnchor><xdr:from><xdr:col>0</xdr:col><xdr:colOff>45720</xdr:colOff><xdr:row>0</xdr:row><xdr:rowOff>27432</xdr:rowOff></xdr:from><xdr:ext cx="1500000" cy="400000"/><xdr:pic><xdr:nvPicPr><xdr:cNvPr id="2" name="LogoEmpresa"/><xdr:cNvPicPr><a:picLocks noChangeAspect="1"/></xdr:cNvPicPr></xdr:nvPicPr><xdr:blipFill><a:blip xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:embed="rId1"/><a:stretch><a:fillRect/></a:stretch></xdr:blipFill><xdr:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="1500000" cy="400000"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic><xdr:clientData/></xdr:oneCellAnchor></xdr:wsDr>`;
+const SHEET_RELS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing1.xml"/></Relationships>`;
+const drawingRels = (img: LogoImg) => `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/image1.${img.ext}"/></Relationships>`;
 const RELS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`;
 const WORKBOOK = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -160,14 +198,24 @@ function zip(arquivos: { nome: string; dados: Uint8Array }[]): Uint8Array {
 
 export function gerarXlsx(cabecalho: string[], linhas: (string | number)[][], titulo = 'Relatório'): Uint8Array {
   const txt = (s: string) => ENC.encode(s);
-  return zip([
-    { nome: '[Content_Types].xml', dados: txt(CONTENT_TYPES) },
+  const img = parseLogo();
+  const partes: { nome: string; dados: Uint8Array }[] = [
+    { nome: '[Content_Types].xml', dados: txt(contentTypes(img)) },
     { nome: '_rels/.rels', dados: txt(RELS) },
     { nome: 'xl/workbook.xml', dados: txt(WORKBOOK) },
     { nome: 'xl/_rels/workbook.xml.rels', dados: txt(WB_RELS) },
     { nome: 'xl/styles.xml', dados: txt(styles(accentHex())) },
-    { nome: 'xl/worksheets/sheet1.xml', dados: txt(planilhaXml(titulo, cabecalho, linhas)) },
-  ]);
+    { nome: 'xl/worksheets/sheet1.xml', dados: txt(planilhaXml(titulo, cabecalho, linhas, !!img)) },
+  ];
+  if (img) {
+    partes.push(
+      { nome: 'xl/worksheets/_rels/sheet1.xml.rels', dados: txt(SHEET_RELS) },
+      { nome: 'xl/drawings/drawing1.xml', dados: txt(DRAWING_XML) },
+      { nome: 'xl/drawings/_rels/drawing1.xml.rels', dados: txt(drawingRels(img)) },
+      { nome: 'xl/media/image1.' + img.ext, dados: img.bytes },
+    );
+  }
+  return zip(partes);
 }
 
 export function baixarExcel(nome: string, cabecalho: string[], linhas: (string | number)[][]): void {
