@@ -24,14 +24,19 @@ echo     pelo menos uma vez, ou me avise o caminho onde instalou o Android Studi
 :java_ok
 echo Java: %JAVA_HOME%
 
-echo === [1/2] Atualizando o build do front no projeto nativo...
+echo === [1/3] Recompilando o front (pega as mudancas de codigo)...
+call npm run build -w @triade/web
+if errorlevel 1 goto erro
+
+echo.
+echo === [2/3] Sincronizando o build com o projeto nativo...
 pushd apps\web
 call npx cap sync android
 popd
 if errorlevel 1 goto erro
 
 echo.
-echo === [2/2] Compilando o APK de teste (debug)... pode demorar alguns minutos
+echo === [3/3] Compilando o APK de teste (debug)... pode demorar alguns minutos
 pushd apps\web\android
 call gradlew.bat assembleDebug
 popd

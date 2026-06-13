@@ -665,6 +665,9 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
   .topbar-user .avatar, .topbar-user .avatar-ph { font-size: 13px; }
   .btn-sair { padding: 7px 10px; }
   .emp-pill { max-width: 130px; }
+  /* Dropdown de trocar empresa: fixa abaixo da topbar e ocupa a largura da tela
+     (no celular ele vazava pra esquerda por causa do right:0 + largura fixa). */
+  .emp-menu { position: fixed; left: 10px; right: 10px; top: 64px; width: auto; max-width: none; }
 
   /* --- Conteúdo: menos respiro lateral --- */
   .conteudo { padding: 16px 14px; }
