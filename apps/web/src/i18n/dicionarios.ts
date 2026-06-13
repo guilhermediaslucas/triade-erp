@@ -811,17 +811,17 @@ Object.assign(es, {
 Object.assign(pt, {
   'camp.titulo': 'Campanhas', 'camp.gerenciar': 'Campanhas', 'camp.motivo': 'Motivo', 'camp.periodo': 'Período',
   'camp.vigente': 'Vigente', 'camp.encerrada': 'Encerrada', 'camp.vazia': 'Nenhuma campanha.', 'camp.nova': 'Nova campanha',
-  'camp.add': 'Adicionar campanha', 'campanha.periodo_invalido': 'Período inválido (data final antes da inicial).',
+  'camp.add': 'Adicionar campanha', 'camp.editar': 'Editar', 'camp.editando': 'Editar campanha', 'camp.salvar': 'Salvar alterações', 'camp.cancelar_edicao': 'Cancelar edição', 'campanha.periodo_invalido': 'Período inválido (data final antes da inicial).',
 });
 Object.assign(en, {
   'camp.titulo': 'Campaigns', 'camp.gerenciar': 'Campaigns', 'camp.motivo': 'Reason', 'camp.periodo': 'Period',
   'camp.vigente': 'Active', 'camp.encerrada': 'Ended', 'camp.vazia': 'No campaigns.', 'camp.nova': 'New campaign',
-  'camp.add': 'Add campaign', 'campanha.periodo_invalido': 'Invalid period (end before start).',
+  'camp.add': 'Add campaign', 'camp.editar': 'Edit', 'camp.editando': 'Edit campaign', 'camp.salvar': 'Save changes', 'camp.cancelar_edicao': 'Cancel edit', 'campanha.periodo_invalido': 'Invalid period (end before start).',
 });
 Object.assign(es, {
   'camp.titulo': 'Campañas', 'camp.gerenciar': 'Campañas', 'camp.motivo': 'Motivo', 'camp.periodo': 'Período',
   'camp.vigente': 'Vigente', 'camp.encerrada': 'Finalizada', 'camp.vazia': 'Sin campañas.', 'camp.nova': 'Nueva campaña',
-  'camp.add': 'Agregar campaña', 'campanha.periodo_invalido': 'Período inválido (fin antes del inicio).',
+  'camp.add': 'Agregar campaña', 'camp.editar': 'Editar', 'camp.editando': 'Editar campaña', 'camp.salvar': 'Guardar cambios', 'camp.cancelar_edicao': 'Cancelar edición', 'campanha.periodo_invalido': 'Período inválido (fin antes del inicio).',
 });
 
 // --- Refinamento: condições de pagamento ---

@@ -16,6 +16,7 @@ export interface Campanha {
 export interface PrecoBaseRepository {
   listarCampanhas(schema: string, produtoId: string): Promise<Campanha[]>;
   criarCampanha(schema: string, produtoId: string, preco: number, motivo: string | null, de: string, ate: string): Promise<void>;
+  atualizarCampanha(schema: string, id: string, preco: number, motivo: string | null, de: string, ate: string): Promise<void>;
   removerCampanha(schema: string, id: string): Promise<void>;
   listar(schema: string): Promise<PrecoProduto[]>;
   definir(schema: string, produtoId: string, preco: number): Promise<void>;

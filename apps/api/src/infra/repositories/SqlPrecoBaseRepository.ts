@@ -67,6 +67,12 @@ export class SqlPrecoBaseRepository implements PrecoBaseRepository {
       `INSERT INTO "${s}".preco_campanha (id, produto_id, preco, motivo, de, ate)
        VALUES ($1,$2,$3,$4,$5,$6)`, [randomUUID(), produtoId, preco, motivo, de, ate]);
   }
+  async atualizarCampanha(schema: string, id: string, preco: number, motivo: string | null, de: string, ate: string): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(
+      `UPDATE "${s}".preco_campanha SET preco = $2, motivo = $3, de = $4, ate = $5 WHERE id = $1`,
+      [id, preco, motivo, de, ate]);
+  }
   async removerCampanha(schema: string, id: string): Promise<void> {
     const s = validarSchema(schema);
     await this.ds.query(`DELETE FROM "${s}".preco_campanha WHERE id = $1`, [id]);

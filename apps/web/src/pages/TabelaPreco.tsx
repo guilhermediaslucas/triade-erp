@@ -170,12 +170,23 @@ function ModalCampanhas({ produto, pode, onFechar }: { produto: PrecoProduto; po
   const { token } = useAuth(); const { t } = useI18n();
   const [itens, setItens] = useState<Campanha[]>([]);
   const [preco, setPreco] = useState(''); const [motivo, setMotivo] = useState(''); const [de, setDe] = useState(''); const [ate, setAte] = useState('');
+  const [editId, setEditId] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const fmt = (d: string) => new Date(d + 'T00:00:00').toLocaleDateString('pt-BR');
   async function carregar() { try { setItens(await api.get('/precos/campanhas/' + produto.produtoId, token!)); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
   useEffect(() => { carregar(); /* eslint-disable-next-line */ }, []);
-  async function add() { setErro(null); try { await api.post('/precos/campanhas/' + produto.produtoId, { preco: Number(preco), motivo, de, ate }, token!); setPreco(''); setMotivo(''); setDe(''); setAte(''); carregar(); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
-  async function rem(id: string) { try { await api.del('/precos/campanhas/item/' + id, token!); carregar(); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
+  function limpar() { setPreco(''); setMotivo(''); setDe(''); setAte(''); setEditId(null); }
+  function editar(c: Campanha) { setEditId(c.id); setPreco(String(c.preco)); setMotivo(c.motivo ?? ''); setDe(c.de); setAte(c.ate); setErro(null); }
+  async function salvar() {
+    setErro(null);
+    const corpo = { preco: Number(preco), motivo, de, ate };
+    try {
+      if (editId) await api.put('/precos/campanhas/item/' + editId, corpo, token!);
+      else await api.post('/precos/campanhas/' + produto.produtoId, corpo, token!);
+      limpar(); carregar();
+    } catch (e) { setErro((e as ErroApi).chaveI18n); }
+  }
+  async function rem(id: string) { try { await api.del('/precos/campanhas/item/' + id, token!); if (editId === id) limpar(); carregar(); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
   return (
     <div className="modal-fundo"><div className="modal modal-lg" onClick={(e) => e.stopPropagation()}>
       <h2>{t('camp.titulo')} — {produto.produtoNome}</h2>
@@ -186,12 +197,15 @@ function ModalCampanhas({ produto, pode, onFechar }: { produto: PrecoProduto; po
           {itens.map((c) => (<tr key={c.id}>
             <td>{moeda(c.preco)}</td><td>{c.motivo ?? '—'}</td><td>{fmt(c.de)} – {fmt(c.ate)}</td>
             <td>{c.vigente ? <span className="pill st-verde">{t('camp.vigente')}</span> : <span className="pill st-cinza">{t('camp.encerrada')}</span>}</td>
-            <td className="acoes">{pode && <button className="btn-link" onClick={() => rem(c.id)}>{t('clientes.remover')}</button>}</td>
+            <td className="acoes">{pode && <span style={{ display: 'inline-flex', gap: 12 }}>
+              <button className="btn-link" onClick={() => editar(c)}>{t('camp.editar')}</button>
+              <button className="btn-link" onClick={() => rem(c.id)}>{t('clientes.remover')}</button>
+            </span>}</td>
           </tr>))}
         </tbody>
       </table>
       {pode && <>
-        <div className="perm-titulo">{t('camp.nova')}</div>
+        <div className="perm-titulo">{editId ? t('camp.editando') : t('camp.nova')}</div>
         <div className="cores-grid">
           <label className="campo">{t('rel.total')}<input type="number" step="0.01" min="0" value={preco} onChange={(e) => setPreco(e.target.value)} /></label>
           <label className="campo">{t('camp.motivo')}<input value={motivo} onChange={(e) => setMotivo(e.target.value)} placeholder="Ex.: Black Friday" /></label>
@@ -201,7 +215,12 @@ function ModalCampanhas({ produto, pode, onFechar }: { produto: PrecoProduto; po
           <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
         </div>
         {erro && <div className="alerta-erro">{t(erro)}</div>}
-        <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.fechar')}</button><button className="btn-primary" disabled={!preco || !de || !ate} onClick={add}>{t('camp.add')}</button></div>
+        <div className="modal-acoes">
+          {editId
+            ? <button className="btn-ghost" onClick={limpar}>{t('camp.cancelar_edicao')}</button>
+            : <button className="btn-ghost" onClick={onFechar}>{t('common.fechar')}</button>}
+          <button className="btn-primary" disabled={!preco || !de || !ate} onClick={salvar}>{editId ? t('camp.salvar') : t('camp.add')}</button>
+        </div>
       </>}
     </div></div>
   );

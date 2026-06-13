@@ -27,6 +27,9 @@ export function rotasPrecos(deps: Dependencias): Router {
   r.post('/precos/campanhas/:produtoId', aut, az('comercial.preco.gerenciar'), async (req, res: Response) => {
     try { await deps.precosService.criarCampanha(sch(req), req.params.produtoId!, req.body ?? {}); res.status(201).json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });
+  r.put('/precos/campanhas/item/:id', aut, az('comercial.preco.gerenciar'), async (req, res: Response) => {
+    try { await deps.precosService.atualizarCampanha(sch(req), req.params.id!, req.body ?? {}); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
   r.delete('/precos/campanhas/item/:id', aut, az('comercial.preco.gerenciar'), async (req, res: Response) => {
     try { await deps.precosService.removerCampanha(sch(req), req.params.id!); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });
