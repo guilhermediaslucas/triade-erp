@@ -37,14 +37,14 @@ export function Condicoes() {
         <div className="busca-box-tb"><Ic name="i-search" className="sm" /><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('cond.buscar')} /></div>
         {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
       </div>
-      <div className="card pad0"><table className="tabela">
+      <div className="card pad0"><table className="tabela tabela-cards">
         <thead><tr><th>{t('categorias.nome')}</th><th>{t('cond.parcelas')}</th><th>{t('cond.intervalo')}</th><th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
         <tbody>
           {filtrados.length === 0 && <tr><td colSpan={5} className="vazio">{t('common.nenhum')}</td></tr>}
           {filtrados.map((c) => (
             <tr key={c.id} className={c.ativo ? '' : 'linha-inativa'}>
-              <td>{c.nome}</td><td>{c.parcelas}x</td><td>{c.intervaloDias} {t('cond.dias')}</td>
-              <td><span className={c.ativo ? 'pill-ok' : 'pill-off'}>{c.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
+              <td data-label={t('categorias.nome')}>{c.nome}</td><td data-label={t('cond.parcelas')}>{c.parcelas}x</td><td data-label={t('cond.intervalo')}>{c.intervaloDias} {t('cond.dias')}</td>
+              <td data-label={t('usuarios.situacao')}><span className={c.ativo ? 'pill-ok' : 'pill-off'}>{c.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
               <td style={{ textAlign: 'right' }}><span className="acoes-ic">{pode && <><button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...c })}><Ic name="i-edit" className="sm" /></button><button className="acao-ic danger" title={c.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternar(c)}><Ic name="i-trash" className="sm" /></button></>}</span></td>
             </tr>
           ))}

@@ -51,16 +51,16 @@ export function Favorecidos() {
         {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
       </div>
       <div className="card pad0">
-        <table className="tabela">
+        <table className="tabela tabela-cards">
           <thead><tr><th>{t('favorecidos.nome_fantasia')}</th><th>{t('favorecidos.tipo')}</th><th>{t('favorecidos.documento')}</th><th>{t('favorecidos.pix')}</th><th style={{ textAlign: 'right' }}>{t('usuarios.acoes')}</th></tr></thead>
           <tbody>
             {filtrados.length === 0 && <tr><td colSpan={5} className="vazio">{t('common.nenhum')}</td></tr>}
             {filtrados.map((f) => (
               <tr key={f.id} className={f.ativo ? '' : 'linha-inativa'}>
-                <td><b>{f.nome}</b></td>
-                <td>{f.tipoPessoa}</td>
-                <td>{f.documento ?? '—'}</td>
-                <td>{f.chavePix ?? '—'}</td>
+                <td data-label={t('favorecidos.nome_fantasia')}><b>{f.nome}</b></td>
+                <td data-label={t('favorecidos.tipo')}>{f.tipoPessoa}</td>
+                <td data-label={t('favorecidos.documento')}>{f.documento ?? '—'}</td>
+                <td data-label={t('favorecidos.pix')}>{f.chavePix ?? '—'}</td>
                 <td style={{ textAlign: 'right' }}><span className="acoes-ic">
                   <button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...f, documento: f.documento ?? '', chavePix: f.chavePix ?? '', banco: f.banco ?? '', agencia: f.agencia ?? '', conta: f.conta ?? '', observacao: f.observacao ?? '' })}><Ic name="i-edit" className="sm" /></button>
                   {pode && <button className="acao-ic danger" title={f.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternar(f)}><Ic name="i-trash" className="sm" /></button>}

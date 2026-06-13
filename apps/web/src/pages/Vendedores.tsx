@@ -37,16 +37,16 @@ export function Vendedores() {
         {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
-      <div className="card pad0"><table className="tabela">
+      <div className="card pad0"><table className="tabela tabela-cards">
         <thead><tr><th>{t('vendedores.col_vend')}</th><th>{t('pessoa.email')}</th><th>{t('pessoa.telefone')}</th><th>{t('vendedores.regiao_s')}</th><th>{t('vendedores.vendas_mes')}</th><th>{t('vendedores.meta_s')}</th><th>{t('vendedores.comissao_s')}</th><th>{t('fin.status')}</th><th style={{ textAlign: 'right' }}>{t('usuarios.acoes')}</th></tr></thead>
         <tbody>
           {filtrados.length === 0 && <tr><td colSpan={9} className="vazio">{t('common.nenhum')}</td></tr>}
           {filtrados.map((v) => (
             <tr key={v.id} className={v.ativo ? '' : 'linha-inativa'}>
-              <td><b>{v.nome}</b></td><td>{v.email || '—'}</td><td>{v.telefone || '—'}</td><td>{v.regiao ?? '—'}</td>
-              <td>{v.vendasMes > 0 ? <b>{moeda(v.vendasMes)}</b> : <span className="muted">{moeda(0)}</span>}</td><td>{moeda(v.metaMensal)}</td>
-              <td>{v.segueRegraGeral ? t('vendedores.regra_geral_curta') : v.comissaoPercentual + '%'}</td>
-              <td><span className={v.ativo ? 'pill-ok' : 'pill-off'}>{v.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
+              <td data-label={t('vendedores.col_vend')}><b>{v.nome}</b></td><td data-label={t('pessoa.email')}>{v.email || '—'}</td><td data-label={t('pessoa.telefone')}>{v.telefone || '—'}</td><td data-label={t('vendedores.regiao_s')}>{v.regiao ?? '—'}</td>
+              <td data-label={t('vendedores.vendas_mes')}>{v.vendasMes > 0 ? <b>{moeda(v.vendasMes)}</b> : <span className="muted">{moeda(0)}</span>}</td><td data-label={t('vendedores.meta_s')}>{moeda(v.metaMensal)}</td>
+              <td data-label={t('vendedores.comissao_s')}>{v.segueRegraGeral ? t('vendedores.regra_geral_curta') : v.comissaoPercentual + '%'}</td>
+              <td data-label={t('fin.status')}><span className={v.ativo ? 'pill-ok' : 'pill-off'}>{v.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
               <td style={{ textAlign: 'right' }}><span className="acoes-ic">
                 <button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...v, email: v.email ?? '', telefone: v.telefone ?? '', regiao: v.regiao ?? '' })}><Ic name="i-edit" className="sm" /></button>
                 {pode && <button className="acao-ic danger" title={v.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternar(v)}><Ic name="i-trash" className="sm" /></button>}

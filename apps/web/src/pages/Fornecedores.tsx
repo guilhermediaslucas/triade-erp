@@ -37,15 +37,15 @@ export function Fornecedores() {
         {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
-      <div className="card pad0"><table className="tabela">
+      <div className="card pad0"><table className="tabela tabela-cards">
         <thead><tr><th>{t('pessoa.fantasia')}</th><th>{t('pessoa.razao')}</th><th>CNPJ</th><th>{t('forn.cidade_uf')}</th><th>{t('pessoa.telefone')}</th><th style={{ textAlign: 'right' }}>{t('usuarios.acoes')}</th></tr></thead>
         <tbody>
           {filtrados.length === 0 && <tr><td colSpan={6} className="vazio">{t('common.nenhum')}</td></tr>}
           {filtrados.map((f) => (
             <tr key={f.id} className={f.ativo ? '' : 'linha-inativa'}>
-              <td><b>{f.fantasia || f.nome}</b></td>
-              <td>{f.nome}</td>
-              <td>{f.documento || '—'}</td><td>{f.cidade ? `${f.cidade}${f.uf ? '/' + f.uf : ''}` : '—'}</td><td>{f.telefone ?? '—'}</td>
+              <td data-label={t('pessoa.fantasia')}><b>{f.fantasia || f.nome}</b></td>
+              <td data-label={t('pessoa.razao')}>{f.nome}</td>
+              <td data-label="CNPJ">{f.documento || '—'}</td><td data-label={t('forn.cidade_uf')}>{f.cidade ? `${f.cidade}${f.uf ? '/' + f.uf : ''}` : '—'}</td><td data-label={t('pessoa.telefone')}>{f.telefone ?? '—'}</td>
               <td style={{ textAlign: 'right' }}><span className="acoes-ic">
                 <button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...f, fantasia: f.fantasia ?? '', email: f.email ?? '', telefone: f.telefone ?? '', cep: f.cep ?? '', cidade: f.cidade ?? '', uf: f.uf ?? '' })}><Ic name="i-edit" className="sm" /></button>
                 {pode && <button className="acao-ic danger" title={f.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternar(f)}><Ic name="i-trash" className="sm" /></button>}

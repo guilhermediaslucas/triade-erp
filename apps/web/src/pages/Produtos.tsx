@@ -64,16 +64,16 @@ export function Produtos() {
         ))}
       </div>
 
-      <div className="card pad0"><table className="tabela">
+      <div className="card pad0"><table className="tabela tabela-cards">
         <thead><tr><th>{t('produtos.nome')}</th><th>{t('produtos.categoria')}</th><th>{t('produtos.unidade')}</th><th>{t('produtos.minimo')}</th><th>{t('produtos.local')}</th><th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
         <tbody>
           {lista.length === 0 && <tr><td colSpan={7} className="vazio">{t('common.nenhum')}</td></tr>}
           {lista.map((p) => (
             <tr key={p.id} className={p.ativo ? '' : 'linha-inativa'}>
-              <td>{p.nome}</td>
-              <td>{p.categoriaNome ? <span className={'pill ' + tintDe(p.categoriaId)}>{p.categoriaNome}</span> : '—'}</td>
-              <td>{p.unidade}</td><td>{p.estoqueMinimo}</td><td>{p.localizacao ?? '—'}</td>
-              <td><span className={p.ativo ? 'pill-ok' : 'pill-off'}>{p.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
+              <td data-label={t('produtos.nome')}>{p.nome}</td>
+              <td data-label={t('produtos.categoria')}>{p.categoriaNome ? <span className={'pill ' + tintDe(p.categoriaId)}>{p.categoriaNome}</span> : '—'}</td>
+              <td data-label={t('produtos.unidade')}>{p.unidade}</td><td data-label={t('produtos.minimo')}>{p.estoqueMinimo}</td><td data-label={t('produtos.local')}>{p.localizacao ?? '—'}</td>
+              <td data-label={t('usuarios.situacao')}><span className={p.ativo ? 'pill-ok' : 'pill-off'}>{p.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
               <td style={{ textAlign: 'right' }}><span className="acoes-ic">{pode && <>
                 <button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...p, categoriaId: p.categoriaId ?? '', localizacao: p.localizacao ?? '', registroAnvisa: p.registroAnvisa ?? '' })}><Ic name="i-edit" className="sm" /></button>
                 <button className="acao-ic danger" title={p.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternar(p)}><Ic name="i-trash" className="sm" /></button>

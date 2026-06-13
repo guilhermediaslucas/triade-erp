@@ -52,7 +52,7 @@ export function Usuarios() {
         {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
       </div>
       <div className="card pad0">
-        <table className="tabela">
+        <table className="tabela tabela-cards">
           <thead><tr>
             <th>{t('usuarios.nome')}</th><th>{t('usuarios.email')}</th><th>{t('usuarios.perfil')}</th>
             <th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th>
@@ -61,10 +61,10 @@ export function Usuarios() {
             {filtrados.length === 0 && <tr><td colSpan={5} className="vazio">{t('common.nenhum')}</td></tr>}
             {filtrados.map((u) => (
               <tr key={u.id} className={u.ativo ? '' : 'linha-inativa'}>
-                <td><span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><Avatar nome={u.nome} foto={u.foto} tamanho={26} />{u.nome}</span></td>
-                <td>{u.email}</td>
-                <td>{u.perfilNome ? <span className="pill">{u.perfilNome}</span> : <span className="muted">{t('usuarios.sem_perfil')}</span>}</td>
-                <td><span className={u.ativo ? 'pill-ok' : 'pill-off'}>{u.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
+                <td data-label={t('usuarios.nome')}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><Avatar nome={u.nome} foto={u.foto} tamanho={26} />{u.nome}</span></td>
+                <td data-label={t('usuarios.email')}>{u.email}</td>
+                <td data-label={t('usuarios.perfil')}>{u.perfilNome ? <span className="pill">{u.perfilNome}</span> : <span className="muted">{t('usuarios.sem_perfil')}</span>}</td>
+                <td data-label={t('usuarios.situacao')}><span className={u.ativo ? 'pill-ok' : 'pill-off'}>{u.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
                 <td style={{ textAlign: 'right' }}>
                   {podeGerenciar && <span className="acoes-ic">
                     <button className="acao-ic" title={t('common.editar')} onClick={() => setForm({ aberto: true, editandoId: u.id })}><Ic name="i-edit" className="sm" /></button>

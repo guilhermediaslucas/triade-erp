@@ -52,15 +52,15 @@ export function Empresas() {
 
       <FiltroLista busca={busca} onBusca={setBusca} status={fStatus} onStatus={setFStatus} />
       <div className="card pad0" style={{ marginBottom: 24 }}>
-        <table className="tabela">
+        <table className="tabela tabela-cards">
           <thead><tr><th>{t('empresas.nome')}</th><th>{t('empresas.fantasia')}</th><th>{t('usuarios.situacao')}</th><th style={{ width: 160 }}>{t('empresas.acoes')}</th></tr></thead>
           <tbody>
             {filtradas.length === 0 && <tr><td colSpan={4} className="vazio">{t('common.nenhum')}</td></tr>}
             {filtradas.map((e) => (
               <tr key={e.codigo}>
-                <td>{e.nome}</td>
-                <td>{e.fantasia}</td>
-                <td><span className={e.ativo ? 'pill-ok' : 'pill-off'}>{e.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
+                <td data-label={t('empresas.nome')}>{e.nome}</td>
+                <td data-label={t('empresas.fantasia')}>{e.fantasia}</td>
+                <td data-label={t('usuarios.situacao')}><span className={e.ativo ? 'pill-ok' : 'pill-off'}>{e.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
                 <td>
                   <button className="btn-link" onClick={() => setEditando(e)}>{t('empresas.editar')}</button>
                   {' · '}

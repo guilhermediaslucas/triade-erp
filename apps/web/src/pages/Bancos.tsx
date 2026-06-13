@@ -45,14 +45,14 @@ export function Bancos() {
         {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
       </div>
       <div className="card pad0">
-        <table className="tabela">
+        <table className="tabela tabela-cards">
           <thead><tr><th>{t('bancos.nome')}</th><th>{t('fin.status')}</th><th style={{ textAlign: 'right' }}>{t('usuarios.acoes')}</th></tr></thead>
           <tbody>
             {filtrados.length === 0 && <tr><td colSpan={3} className="vazio">{t('common.nenhum')}</td></tr>}
             {filtrados.map((m) => (
               <tr key={m.id} className={m.ativo ? '' : 'linha-inativa'}>
-                <td>{m.nome}</td>
-                <td><span className={m.ativo ? 'pill-ok' : 'pill-off'}>{m.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
+                <td data-label={t('bancos.nome')}>{m.nome}</td>
+                <td data-label={t('fin.status')}><span className={m.ativo ? 'pill-ok' : 'pill-off'}>{m.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
                 <td style={{ textAlign: 'right' }}><span className="acoes-ic">{pode && <>
                   <button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...m })}><Ic name="i-edit" className="sm" /></button>
                   <button className="acao-ic danger" title={m.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternar(m)}><Ic name="i-trash" className="sm" /></button>

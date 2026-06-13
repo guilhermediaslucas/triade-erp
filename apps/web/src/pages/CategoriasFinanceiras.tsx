@@ -48,15 +48,15 @@ export function CategoriasFinanceiras() {
         {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
       </div>
       <div className="card pad0">
-        <table className="tabela">
+        <table className="tabela tabela-cards">
           <thead><tr><th>{t('catfin.nome')}</th><th>{t('catfin.tipo')}</th><th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
           <tbody>
             {filtrados.length === 0 && <tr><td colSpan={4} className="vazio">{t('common.nenhum')}</td></tr>}
             {filtrados.map((c) => (
               <tr key={c.id} className={c.ativo ? '' : 'linha-inativa'}>
-                <td>{c.nome}</td>
-                <td><span className={'pill ' + (c.tipo === 'receita' ? 'st-verde' : 'st-laranja')}>{t('catfin.' + c.tipo)}</span></td>
-                <td><span className={c.ativo ? 'pill-ok' : 'pill-off'}>{c.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
+                <td data-label={t('catfin.nome')}>{c.nome}</td>
+                <td data-label={t('catfin.tipo')}><span className={'pill ' + (c.tipo === 'receita' ? 'st-verde' : 'st-laranja')}>{t('catfin.' + c.tipo)}</span></td>
+                <td data-label={t('usuarios.situacao')}><span className={c.ativo ? 'pill-ok' : 'pill-off'}>{c.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
                 <td style={{ textAlign: 'right' }}><span className="acoes-ic">{pode && <>
                   <button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...c })}><Ic name="i-edit" className="sm" /></button>
                   <button className="acao-ic danger" title={c.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternar(c)}><Ic name="i-trash" className="sm" /></button>

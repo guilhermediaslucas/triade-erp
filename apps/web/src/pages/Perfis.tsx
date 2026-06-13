@@ -57,16 +57,16 @@ export function Perfis() {
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <FiltroLista busca={busca} onBusca={setBusca} status={fStatus} onStatus={setFStatus} />
       <div className="card pad0">
-        <table className="tabela">
+        <table className="tabela tabela-cards">
           <thead><tr><th>{t('perfis.nome')}</th><th>{t('perfis.modulos')}</th><th>{t('perfis.permissoes')}</th><th>{t('usuarios.situacao')}</th><th></th></tr></thead>
           <tbody>
             {filtrados.length === 0 && <tr><td colSpan={5} className="vazio">{t('common.nenhum')}</td></tr>}
             {filtrados.map((p) => (
               <tr key={p.id}>
-                <td>{p.nome}{p.descricao && <div className="muted" style={{ fontSize: 12 }}>{p.descricao}</div>}</td>
-                <td className="muted">{modulosDe(p.capabilities)}</td>
-                <td>{p.capabilities.length} {t('perfis.qtd_permissoes')}</td>
-                <td><span className={p.ativo ? 'pill-ok' : 'pill-off'}>{p.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
+                <td data-label={t('perfis.nome')}>{p.nome}{p.descricao && <div className="muted" style={{ fontSize: 12 }}>{p.descricao}</div>}</td>
+                <td data-label={t('perfis.modulos')} className="muted">{modulosDe(p.capabilities)}</td>
+                <td data-label={t('perfis.permissoes')}>{p.capabilities.length} {t('perfis.qtd_permissoes')}</td>
+                <td data-label={t('usuarios.situacao')}><span className={p.ativo ? 'pill-ok' : 'pill-off'}>{p.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
                 <td style={{ textAlign: 'right' }}>
                   {podeGerenciar && <span className="acoes-ic"><button className="acao-ic" title={t('common.editar')} onClick={() => abrirEdicao(p)}><Ic name="i-edit" className="sm" /></button></span>}
                 </td>
