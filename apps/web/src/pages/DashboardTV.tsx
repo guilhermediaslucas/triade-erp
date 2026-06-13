@@ -94,7 +94,7 @@ export function DashboardTV() {
           <div className="tv-kpis-col">
             <div className="tv-kpi"><div className="tv-kpi-lbl">{t('tv.dia')}</div><div className="tv-kpi-val">{moedaTV(d.vendasDia)}</div></div>
             <div className="tv-kpi"><div className="tv-kpi-lbl">{t('tv.semana')}</div><div className="tv-kpi-val">{moedaTV(d.vendasSemana)}</div></div>
-            <div className="tv-kpi tv-destaque"><div className="tv-kpi-lbl">{t('tv.mes')}</div><div className="tv-kpi-val">{moedaTV(d.vendasMes)}</div></div>
+            <div className="tv-kpi"><div className="tv-kpi-lbl">{t('tv.mes')}</div><div className="tv-kpi-val">{moedaTV(d.vendasMes)}</div></div>
           </div>
         </div>
       )}
