@@ -60,6 +60,7 @@ a { text-decoration: none; color: inherit; }
 .brand-logo { font-size: 26px; font-weight: 800; letter-spacing: .5px; color: #fff; line-height: 1; }
 .brand-logo span { color: #e1483b; }
 .brand-tag { font-size: 10px; letter-spacing: 4px; color: rgba(255,255,255,.45); font-weight: 600; }
+.brand-empresa { font-size: 18px; font-weight: 800; color: #fff; line-height: 1.15; }
 /* ícones SVG line-style (espelham o mockup) */
 .ic { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 .ic.sm { width: 16px; height: 16px; }

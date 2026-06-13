@@ -135,7 +135,9 @@ export function Layout({ children }: { children: ReactNode }) {
         <div className="sidebar-brand">
           {branding?.logo
             ? <img src={branding.logo} alt={fantasia} className="sidebar-logo" />
-            : <><div className="brand-logo">TR<span>Í</span>ADE</div><div className="brand-tag">E R P</div></>}
+            : fantasia
+              ? <div className="brand-empresa">{fantasia}</div>
+              : null}
         </div>
         <nav className="nav">
           <div className="nav-label">{t('menu.principal')}</div>
