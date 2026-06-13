@@ -46,6 +46,42 @@ export class ComprasService {
   }
 
   listarPendentes(schema: string): Promise<Recebimento[]> { return this.recebimentos.listarPendentes(schema); }
+  listarNotas(schema: string, de: any, ate: any): Promise<Recebimento[]> {
+    const lim = (v: any) => (v && /^\d{4}-\d{2}-\d{2}$/.test(String(v))) ? String(v) : null;
+    return this.recebimentos.listar(schema, lim(de), lim(ate));
+  }
+
+  // Editar nota — só enquanto pendente (não recebida). Atualiza a nota e o título a pagar vinculado.
+  async editarNota(schema: string, id: string, e: any): Promise<void> {
+    const rec = await this.recebimentos.buscarPorId(schema, id);
+    if (!rec) throw new ErroAplicacao('recebimento.nao_encontrado', 404);
+    if (rec.status !== 'pendente') throw new ErroAplicacao('recebimento.so_pendente', 400);
+    const quantidade = Number(e?.quantidade);
+    if (!Number.isFinite(quantidade) || quantidade <= 0) throw new ErroAplicacao('estoque.qtd_invalida', 400);
+    const custo = Number(e?.custoUnitario);
+    if (!Number.isFinite(custo) || custo < 0) throw new ErroAplicacao('estoque.custo_invalido', 400);
+    const fornecedorNome = (e?.fornecedorNome && String(e.fornecedorNome).trim()) || null;
+    const nf = (e?.nf && String(e.nf).trim()) || null;
+    const serie = (e?.serie && String(e.serie).trim()) || null;
+    const numeroDocumento = nf ? (serie ? `${nf} / ${serie}` : nf) : serie;
+    const isoOk = (v: any) => (v && /^\d{4}-\d{2}-\d{2}$/.test(String(v))) ? String(v) : null;
+    const vencimento = isoOk(e?.vencimento) ?? venc30();
+    const total = Math.round(quantidade * custo * 100) / 100;
+    await this.recebimentos.atualizar(schema, id, { fornecedorNome, quantidade, custoUnitario: custo, total, nf });
+    if (rec.tituloId) {
+      const descricao = 'Compra' + (fornecedorNome ? ' - ' + fornecedorNome : '') + (nf ? ' (NF ' + nf + ')' : '');
+      await this.titulos.atualizarCompra(schema, rec.tituloId, { descricao, pessoaNome: fornecedorNome, valor: total, vencimento, numeroDocumento });
+    }
+  }
+
+  // Excluir nota — só enquanto pendente. Remove a nota e o título a pagar que ela gerou.
+  async excluirNota(schema: string, id: string): Promise<void> {
+    const rec = await this.recebimentos.buscarPorId(schema, id);
+    if (!rec) throw new ErroAplicacao('recebimento.nao_encontrado', 404);
+    if (rec.status !== 'pendente') throw new ErroAplicacao('recebimento.so_pendente', 400);
+    if (rec.tituloId) await this.titulos.excluir(schema, rec.tituloId);
+    await this.recebimentos.excluir(schema, id);
+  }
 
   // Recebe a pendência em N lotes, cada um com marca (obrigatória) + bipagem das etiquetas.
   // A soma das quantidades bipadas (todos os lotes) deve bater com a quantidade da nota.

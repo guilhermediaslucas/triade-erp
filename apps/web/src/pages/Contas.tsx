@@ -136,7 +136,9 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   // Títulos previstos (provisão) não podem ser baixados — ficam fora da baixa em massa.
   const abertosSel = selecionados.filter((x) => x.status === 'aberto' && !x.previsto);
   // Multiplicar/Parcelar agem sobre 1 título em aberto selecionado.
-  const umAberto = abertosSel.length === 1 ? abertosSel[0] : null;
+  // Previstos PODEM ser multiplicados/parcelados (só não podem ser baixados), por isso não filtra previsto aqui.
+  const abertosTodos = selecionados.filter((x) => x.status === 'aberto');
+  const umAberto = abertosTodos.length === 1 ? abertosTodos[0] : null;
   function abrirParcelar(tt: Titulo, modo: 'dividir' | 'replicar') { setParcelarModo(modo); setParcelarT(tt); }
 
   async function cancelar(tt: Titulo) {
@@ -231,7 +233,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
 
       {pode && sel.size > 0 && <div className="muted" style={{ fontSize: 12, marginBottom: 8 }}>{t('bulk.selecionados').replace('{n}', String(sel.size))} · <button className="btn-link" onClick={() => setSel(new Set())}>{t('bulk.limpar')}</button></div>}
 
-      <div className="card pad0"><table className="tabela tabela-cards">
+      <div className="card pad0"><table className="tabela">
         <thead><tr>
           {pode && <th style={{ width: 34 }}><input type="checkbox" checked={filtrados.length > 0 && sel.size === filtrados.length} onChange={toggleTodos} /></th>}
           {thR('numero', t('fin.numero'))}{thR('descricao', t('fin.descricao'))}{!oc('cat') && thR('cat', t('catfin.titulo_s'))}{!oc('pessoa') && thR('pessoa', tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor'))}{!oc('doc') && thR('doc', t('fin.documento'))}{!oc('emissao') && thR('emissao', t('fin.emissao'))}{!oc('venc') && thR('venc', t('fin.vencimento'))}{!oc('baixa') && thR('baixa', t('fin.baixa'))}{!oc('valor') && thR('valor', t('fin.valor'))}{!oc('vendedor') && thR('vendedor', t('fin.vendedor'))}{!oc('sit') && thR('sit', t('fin.situacao'))}<th style={{ textAlign: 'center' }}>{t('fin.previsto')}</th><th>{t('usuarios.acoes')}</th>

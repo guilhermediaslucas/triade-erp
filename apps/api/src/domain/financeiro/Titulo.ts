@@ -48,6 +48,7 @@ export interface TituloRepository {
   definirPrevisto(schema: string, id: string, previsto: boolean): Promise<void>;
   cancelarBaixa(schema: string, id: string): Promise<void>;
   excluir(schema: string, id: string): Promise<void>;
+  atualizarCompra(schema: string, id: string, dados: { descricao: string; pessoaNome: string | null; valor: number; vencimento: string; numeroDocumento: string | null }): Promise<void>;
   criarParcelasDePedido(schema: string, descricao: string, pessoaNome: string | null, valorTotal: number, pedidoId: string, parcelas: number, intervaloDias: number): Promise<void>;
   conciliacao(schema: string, contaCorrenteId: string, de: string | null, ate: string | null): Promise<LinhaConciliacao[]>;
   definirConciliado(schema: string, id: string, conciliado: boolean): Promise<void>;

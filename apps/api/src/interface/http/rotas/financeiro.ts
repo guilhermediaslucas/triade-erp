@@ -52,6 +52,15 @@ export function rotasFinanceiro(deps: Dependencias): Router {
   r.post('/financeiro/nota', autF, azF('financeiro.compra.criar'), async (req, res) => {
     try { res.status(201).json(await deps.comprasService.lancarNota(req.usuario!.schema, req.body ?? {})); } catch (e) { tratarErro(res, e); }
   });
+  r.get('/financeiro/notas', autF, azF('financeiro.compra.criar'), async (req, res) => {
+    try { res.json(await deps.comprasService.listarNotas(req.usuario!.schema, req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
+  });
+  r.put('/financeiro/nota/:id', autF, azF('financeiro.compra.criar'), async (req, res) => {
+    try { await deps.comprasService.editarNota(req.usuario!.schema, req.params.id!, req.body ?? {}); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
+  r.delete('/financeiro/nota/:id', autF, azF('financeiro.compra.criar'), async (req, res) => {
+    try { await deps.comprasService.excluirNota(req.usuario!.schema, req.params.id!); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
   r.get('/financeiro/conciliacao', autF, azF('financeiro.conciliacao.ver'), async (req, res) => {
     try { res.json(await deps.financeiroService.conciliacao(req.usuario!.schema, req.query.contaId, req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
   });

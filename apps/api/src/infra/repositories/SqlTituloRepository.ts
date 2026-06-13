@@ -118,6 +118,12 @@ export class SqlTituloRepository implements TituloRepository {
     const s = validarSchema(schema);
     await this.ds.query(`DELETE FROM "${s}".titulo WHERE id=$1`, [id]);
   }
+  async atualizarCompra(schema: string, id: string, d: { descricao: string; pessoaNome: string | null; valor: number; vencimento: string; numeroDocumento: string | null }): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(
+      `UPDATE "${s}".titulo SET descricao=$2, pessoa_nome=$3, valor=$4, vencimento=$5, numero_documento=$6 WHERE id=$1`,
+      [id, d.descricao, d.pessoaNome, d.valor, d.vencimento, d.numeroDocumento]);
+  }
   async criarParcelasDePedido(schema: string, descricao: string, pessoaNome: string | null, valorTotal: number, pedidoId: string, parcelas: number, intervaloDias: number): Promise<void> {
     const s = validarSchema(schema);
     const n = Math.max(1, parcelas);

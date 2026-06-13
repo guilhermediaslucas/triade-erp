@@ -1,13 +1,13 @@
 import { randomUUID } from 'node:crypto';
 import type { DataSource } from 'typeorm';
-import type { Recebimento, RecebimentoRepository } from '../../domain/financeiro/Recebimento.js';
+import type { AtualizacaoRecebimento, Recebimento, RecebimentoRepository } from '../../domain/financeiro/Recebimento.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 function map(r: any): Recebimento {
   return {
     id: r.id, fornecedorNome: r.fornecedor_nome ?? null, produtoId: r.produto_id ?? null, produtoNome: r.produto_nome,
     quantidade: Number(r.quantidade), custoUnitario: Number(r.custo_unitario), total: Number(r.total),
-    nf: r.nf ?? null, status: r.status, criadoEm: new Date(r.criado_em).toISOString(),
+    nf: r.nf ?? null, status: r.status, criadoEm: new Date(r.criado_em).toISOString(), tituloId: r.titulo_id ?? null,
   };
 }
 
@@ -33,5 +33,22 @@ export class SqlRecebimentoRepository implements RecebimentoRepository {
   async marcarRecebido(schema: string, id: string): Promise<void> {
     const s = validarSchema(schema);
     await this.ds.query(`UPDATE "${s}".recebimento SET status = 'recebido' WHERE id = $1`, [id]);
+  }
+  async listar(schema: string, de: string | null, ate: string | null): Promise<Recebimento[]> {
+    const s = validarSchema(schema);
+    return (await this.ds.query(
+      `SELECT * FROM "${s}".recebimento
+        WHERE ($1::date IS NULL OR criado_em::date >= $1) AND ($2::date IS NULL OR criado_em::date <= $2)
+        ORDER BY criado_em DESC`, [de, ate])).map(map);
+  }
+  async atualizar(schema: string, id: string, r: AtualizacaoRecebimento): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(
+      `UPDATE "${s}".recebimento SET fornecedor_nome = $2, quantidade = $3, custo_unitario = $4, total = $5, nf = $6 WHERE id = $1`,
+      [id, r.fornecedorNome, r.quantidade, r.custoUnitario, r.total, r.nf]);
+  }
+  async excluir(schema: string, id: string): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(`DELETE FROM "${s}".recebimento WHERE id = $1`, [id]);
   }
 }

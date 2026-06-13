@@ -215,6 +215,7 @@ a { text-decoration: none; color: inherit; }
 .totais > div { display:flex; flex-direction:column; align-items:flex-end; gap:2px; font-size:13px; color:var(--muted); }
 .totais input { padding:7px 9px; border:1px solid var(--borda); border-radius:7px; }
 .total-grande b { font-size:20px; color:var(--ink); }
+@media (max-width: 640px) { .totais { gap: 6px; } .totais > div { flex-direction: row; width: 100%; justify-content: space-between; align-items: baseline; } }
 .det-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px 22px; font-size:14px; }
 .det-l { font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:var(--muted); }
 .acoes-status { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; padding-top:16px; border-top:1px solid var(--borda); }
@@ -595,7 +596,7 @@ body.theme-dark .pk-pill.cartao { background: #3a1f25; color: #fca5a5; }
 .dash-quick { display: flex; flex-direction: column; gap: 8px; }
 .dash-qbtn { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--borda); border-radius: 12px; text-decoration: none; color: var(--ink); font-weight: 600; font-size: 14px; transition: border-color .12s, background .12s; }
 .dash-qbtn:hover { border-color: var(--accent, #7b61ff); background: var(--accent-soft, #f3effe); }
-@media (max-width: 1100px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 1100px) { .kpi-row { grid-template-columns: repeat(2, 1fr) !important; } }
 
 /* ===== Padrão de tela do mockup (crumb + toolbar + chips) ===== */
 .crumb { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
@@ -839,8 +840,8 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
 }
 
 @media (max-width: 520px) {
-  /* Telas muito estreitas: KPIs e cards de KPI em 1 coluna */
-  .kpi-row { grid-template-columns: 1fr; }
+  /* Telas muito estreitas: KPIs em 2 colunas (!important vence o grid inline das telas que cortavam) */
+  .kpi-row { grid-template-columns: repeat(2, 1fr) !important; }
   .kpi-card { min-width: 0; flex: 1 1 100%; }
   .kpis { gap: 10px; }
   .alerts { grid-template-columns: 1fr; }
