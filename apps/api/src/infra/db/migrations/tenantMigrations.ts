@@ -547,4 +547,14 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS expedido_em timestamptz;
     `,
   },
+  {
+    // Composição do valor na baixa do título: desconto, multa e juros.
+    // O valor efetivo de caixa = valor - desconto + multa + juros.
+    nome: '039_titulo_desconto_multa_juros',
+    sql: (s) => `
+      ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS desconto numeric(14,2) NOT NULL DEFAULT 0;
+      ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS multa numeric(14,2) NOT NULL DEFAULT 0;
+      ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS juros numeric(14,2) NOT NULL DEFAULT 0;
+    `,
+  },
 ];

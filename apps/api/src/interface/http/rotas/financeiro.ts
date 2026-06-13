@@ -17,7 +17,7 @@ function registrar(r: Router, deps: Dependencias, tipo: TipoTitulo, capBase: str
     try { res.status(201).json({ id: await deps.financeiroService.criar(sch(req), tipo, req.body ?? {}) }); } catch (e) { tratarErro(res, e); }
   });
   r.patch(`${base}/:id/baixar`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
-    try { const b = req.body ?? {}; await deps.financeiroService.baixar(sch(req), req.params.id!, b.formaPagamento ?? null, b.contaCorrenteId ?? null, b.dataBaixa ?? null); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+    try { const b = req.body ?? {}; await deps.financeiroService.baixar(sch(req), req.params.id!, b.formaPagamento ?? null, b.contaCorrenteId ?? null, b.dataBaixa ?? null, { desconto: b.desconto, multa: b.multa, juros: b.juros }); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });
   r.patch(`${base}/:id/cancelar`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
     try { await deps.financeiroService.cancelarBaixa(sch(req), req.params.id!); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }

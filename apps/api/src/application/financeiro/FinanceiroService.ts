@@ -68,7 +68,9 @@ export class FinanceiroService {
       if (de && dataCaixa < de) return;
       if (ate && dataCaixa > ate) return;
       const situacao: 'baixado' | 'vencido' | 'aberto' = pago ? 'baixado' : (dataCaixa < hoje ? 'vencido' : 'aberto');
-      lancamentos.push({ id: t.id, tipo, numero: t.numero, descricao: t.descricao, pessoaNome: t.pessoaNome, conta: t.contaCorrenteNome, dataCaixa, previsto: t.previsto, situacao, valor: t.valor });
+      // Valor efetivo de caixa = valor - desconto + multa + juros (em aberto os ajustes são 0).
+      const valorEfetivo = r2(t.valor - (t.desconto ?? 0) + (t.multa ?? 0) + (t.juros ?? 0));
+      lancamentos.push({ id: t.id, tipo, numero: t.numero, descricao: t.descricao, pessoaNome: t.pessoaNome, conta: t.contaCorrenteNome, dataCaixa, previsto: t.previsto, situacao, valor: valorEfetivo });
     };
     for (const t of receber) add(t, 'entrada');
     for (const t of pagar) add(t, 'saida');
@@ -178,13 +180,18 @@ export class FinanceiroService {
     await this.repo.definirPrevisto(schema, id, !!previsto);
   }
 
-  async baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null, dataBaixa?: string | null): Promise<void> {
+  async baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null, dataBaixa?: string | null, ajustesRaw?: { desconto?: any; multa?: any; juros?: any }): Promise<void> {
     const t = await this.repo.buscarPorId(schema, id);
     if (!t) throw new ErroAplicacao('financeiro.nao_encontrado', 404);
     if (t.status === 'pago') throw new ErroAplicacao('financeiro.ja_pago', 409);
     if (t.previsto) throw new ErroAplicacao('financeiro.previsto_nao_baixa', 400);
     const data = dataBaixa && /^\d{4}-\d{2}-\d{2}$/.test(String(dataBaixa)) ? String(dataBaixa) : null;
-    await this.repo.baixar(schema, id, (formaPagamento && String(formaPagamento).trim()) || null, contaCorrenteId || null, data);
+    // Composição do valor: desconto/multa/juros ≥ 0 e total a baixar não pode ficar negativo.
+    const num = (v: any) => { const n = Number(v ?? 0); return Number.isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : NaN; };
+    const desconto = num(ajustesRaw?.desconto), multa = num(ajustesRaw?.multa), juros = num(ajustesRaw?.juros);
+    if (Number.isNaN(desconto) || Number.isNaN(multa) || Number.isNaN(juros)) throw new ErroAplicacao('financeiro.valor_invalido', 400);
+    if (t.valor - desconto + multa + juros < 0) throw new ErroAplicacao('financeiro.baixa_negativa', 400);
+    await this.repo.baixar(schema, id, (formaPagamento && String(formaPagamento).trim()) || null, contaCorrenteId || null, data, { desconto, multa, juros });
     // Confirmação do recebimento do título de um pedido (Pix/Boleto) libera o pedido:
     // aguardando_pagamento → aprovado, ficando disponível para Separação no Kanban.
     if (this.pedidos && t.origem === 'pedido' && t.pedidoId) {

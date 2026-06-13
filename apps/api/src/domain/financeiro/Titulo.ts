@@ -13,8 +13,13 @@ export interface Titulo {
   numeroDocumento: string | null; // nº do documento (NF/boleto)
   emissao: string | null;         // data de emissão (ISO YYYY-MM-DD)
   contaCorrenteNome: string | null; // conta corrente da baixa (quando pago)
+  desconto: number;   // composição da baixa (R$)
+  multa: number;      // composição da baixa (R$)
+  juros: number;      // composição da baixa (R$)
   criadoEm: string;
 }
+// Ajustes da baixa (composição do valor). Valor efetivo = valor - desconto + multa + juros.
+export interface AjustesBaixa { desconto: number; multa: number; juros: number; }
 export interface NovoTitulo {
   tipo: TipoTitulo; descricao: string; pessoaNome: string | null; valor: number; vencimento: string;
   categoriaFinanceiraId?: string | null;
@@ -39,7 +44,7 @@ export interface TituloRepository {
   listar(schema: string, tipo: TipoTitulo): Promise<Titulo[]>;
   buscarPorId(schema: string, id: string): Promise<Titulo | null>;
   criar(schema: string, t: NovoTitulo, origem: string, pedidoId: string | null): Promise<string>;
-  baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null, dataBaixa?: string | null): Promise<void>;
+  baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null, dataBaixa?: string | null, ajustes?: AjustesBaixa): Promise<void>;
   definirPrevisto(schema: string, id: string, previsto: boolean): Promise<void>;
   cancelarBaixa(schema: string, id: string): Promise<void>;
   excluir(schema: string, id: string): Promise<void>;

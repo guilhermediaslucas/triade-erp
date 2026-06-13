@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { DataSource } from 'typeorm';
-import type { LinhaConciliacao, MovimentoFluxo, NovoTitulo, PagoAgrupado, Titulo, TipoTitulo, TituloRepository } from '../../domain/financeiro/Titulo.js';
+import type { AjustesBaixa, LinhaConciliacao, MovimentoFluxo, NovoTitulo, PagoAgrupado, Titulo, TipoTitulo, TituloRepository } from '../../domain/financeiro/Titulo.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 const iso = (d: any) => (d ? new Date(d).toISOString() : null);
@@ -25,6 +25,9 @@ function map(r: any): Titulo {
     numeroDocumento: r.numero_documento ?? null,
     emissao: r.emissao ? dataISO(r.emissao) : null,
     contaCorrenteNome: r.conta_corrente_nome ?? null,
+    desconto: r.desconto != null ? Number(r.desconto) : 0,
+    multa: r.multa != null ? Number(r.multa) : 0,
+    juros: r.juros != null ? Number(r.juros) : 0,
     criadoEm: iso(r.criado_em)!,
   };
 }
@@ -96,10 +99,12 @@ export class SqlTituloRepository implements TituloRepository {
       [id, t.tipo, t.descricao, t.pessoaNome, t.valor, t.vencimento, origem, pedidoId, t.categoriaFinanceiraId ?? null, t.favorecidoId ?? null, t.previsto === true, t.tipoDocumento ?? null, t.numeroDocumento ?? null, t.emissao ?? null]);
     return id;
   }
-  async baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null, dataBaixa?: string | null): Promise<void> {
+  async baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null, dataBaixa?: string | null, ajustes?: AjustesBaixa): Promise<void> {
     const s = validarSchema(schema);
-    // Data da baixa: usa a informada (YYYY-MM-DD) ou agora.
-    await this.ds.query(`UPDATE "${s}".titulo SET status='pago', forma_pagamento=$2, conta_corrente_id=$3, pago_em=COALESCE($4::timestamptz, now()) WHERE id=$1`, [id, formaPagamento, contaCorrenteId, dataBaixa || null]);
+    // Data da baixa: usa a informada (YYYY-MM-DD) ou agora. Grava a composição (desconto/multa/juros).
+    await this.ds.query(
+      `UPDATE "${s}".titulo SET status='pago', forma_pagamento=$2, conta_corrente_id=$3, pago_em=COALESCE($4::timestamptz, now()), desconto=$5, multa=$6, juros=$7 WHERE id=$1`,
+      [id, formaPagamento, contaCorrenteId, dataBaixa || null, ajustes?.desconto ?? 0, ajustes?.multa ?? 0, ajustes?.juros ?? 0]);
   }
   async definirPrevisto(schema: string, id: string, previsto: boolean): Promise<void> {
     const s = validarSchema(schema);
@@ -107,7 +112,7 @@ export class SqlTituloRepository implements TituloRepository {
   }
   async cancelarBaixa(schema: string, id: string): Promise<void> {
     const s = validarSchema(schema);
-    await this.ds.query(`UPDATE "${s}".titulo SET status='aberto', forma_pagamento=NULL, conta_corrente_id=NULL, pago_em=NULL WHERE id=$1`, [id]);
+    await this.ds.query(`UPDATE "${s}".titulo SET status='aberto', forma_pagamento=NULL, conta_corrente_id=NULL, pago_em=NULL, desconto=0, multa=0, juros=0 WHERE id=$1`, [id]);
   }
   async excluir(schema: string, id: string): Promise<void> {
     const s = validarSchema(schema);
@@ -131,7 +136,9 @@ export class SqlTituloRepository implements TituloRepository {
   async conciliacao(schema: string, contaCorrenteId: string, de: string | null, ate: string | null): Promise<LinhaConciliacao[]> {
     const s = validarSchema(schema);
     const linhas = await this.ds.query(
-      `SELECT id, tipo, descricao, pessoa_nome, valor, pago_em, conciliado
+      `SELECT id, tipo, descricao, pessoa_nome,
+              (valor - COALESCE(desconto,0) + COALESCE(multa,0) + COALESCE(juros,0)) AS valor,
+              pago_em, conciliado
          FROM "${s}".titulo
         WHERE status = 'pago' AND conta_corrente_id = $1
           AND ($2::date IS NULL OR pago_em::date >= $2)

@@ -16,8 +16,8 @@ export class SqlContaCorrenteRepository implements ContaCorrenteRepository {
     const linhas = await this.ds.query(
       `SELECT c.*,
               c.saldo_inicial
-                + COALESCE((SELECT SUM(valor) FROM "${s}".titulo t WHERE t.conta_corrente_id=c.id AND t.status='pago' AND t.tipo='receber'),0)
-                - COALESCE((SELECT SUM(valor) FROM "${s}".titulo t WHERE t.conta_corrente_id=c.id AND t.status='pago' AND t.tipo='pagar'),0) AS saldo
+                + COALESCE((SELECT SUM(t.valor - COALESCE(t.desconto,0) + COALESCE(t.multa,0) + COALESCE(t.juros,0)) FROM "${s}".titulo t WHERE t.conta_corrente_id=c.id AND t.status='pago' AND t.tipo='receber'),0)
+                - COALESCE((SELECT SUM(t.valor - COALESCE(t.desconto,0) + COALESCE(t.multa,0) + COALESCE(t.juros,0)) FROM "${s}".titulo t WHERE t.conta_corrente_id=c.id AND t.status='pago' AND t.tipo='pagar'),0) AS saldo
          FROM "${s}".conta_corrente c WHERE c.ativo = true ORDER BY c.nome`);
     return linhas.map((r: any) => ({ ...map(r), saldo: Number(r.saldo) }));
   }

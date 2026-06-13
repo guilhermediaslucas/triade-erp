@@ -10,7 +10,7 @@ import { ModalNovaPessoa } from '../components/SeletorPessoa.js';
 import { Ic } from '../components/Icones.js';
 
 type Tipo = 'receber' | 'pagar';
-interface Titulo { id: string; numero: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; vendedorNome: string | null; previsto: boolean; tipoDocumento: string | null; numeroDocumento: string | null; emissao: string | null; criadoEm: string; pagoEm: string | null; }
+interface Titulo { id: string; numero: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; vendedorNome: string | null; previsto: boolean; tipoDocumento: string | null; numeroDocumento: string | null; emissao: string | null; criadoEm: string; pagoEm: string | null; desconto: number; multa: number; juros: number; }
 interface TipoDoc { id: string; nome: string; ativo: boolean; }
 interface CatFin { id: string; nome: string; tipo: 'receita' | 'despesa'; ativo: boolean; }
 
@@ -294,6 +294,10 @@ function ModalVerTitulo({ tipo, titulo, onFechar }: { tipo: Tipo; titulo: Titulo
       {linha(t('fin.vencimento'), fmtData(titulo.vencimento))}
       {linha(t('fin.situacao'), <span className={'pill ' + (sit === 'pago' ? 'st-verde' : sit === 'vencido' ? 'st-vermelho' : 'st-laranja')}>{t('fin.' + sit)}</span>)}
       {titulo.status === 'pago' && linha(t('pedidos.forma_pgto'), titulo.formaPagamento ?? '—')}
+      {titulo.status === 'pago' && titulo.desconto > 0 && linha(t('fin.desconto'), moeda(titulo.desconto))}
+      {titulo.status === 'pago' && titulo.multa > 0 && linha(t('fin.multa'), moeda(titulo.multa))}
+      {titulo.status === 'pago' && titulo.juros > 0 && linha(t('fin.juros'), moeda(titulo.juros))}
+      {titulo.status === 'pago' && (titulo.desconto > 0 || titulo.multa > 0 || titulo.juros > 0) && linha(t('fin.total_baixar'), <b>{moeda(titulo.valor - titulo.desconto + titulo.multa + titulo.juros)}</b>)}
       {linha(t('fin.previsto'), titulo.previsto ? t('common.sim') : t('common.nao'))}
       {titulo.tipoDocumento && linha(t('tipodoc.titulo_s'), titulo.tipoDocumento)}
       {titulo.numeroDocumento && linha(t('fin.num_documento'), titulo.numeroDocumento)}
@@ -394,32 +398,55 @@ function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos:
   const { token, temCapability } = useAuth(); const { t } = useI18n();
   const [forma, setForma] = useState('Pix'); const [contaId, setContaId] = useState('');
   const [dataBaixa, setDataBaixa] = useState(new Date().toISOString().slice(0, 10));
+  const [desconto, setDesconto] = useState('0'); const [multa, setMulta] = useState('0'); const [juros, setJuros] = useState('0');
   const [contas, setContas] = useState<{ id: string; nome: string }[]>([]);
   const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
   const totalSel = titulos.reduce((a, x) => a + x.valor, 0);
   const massa = titulos.length > 1;
+  // Composição (só no título único): total a baixar = valor - desconto + multa + juros.
+  const nD = Math.max(0, Number(desconto) || 0), nM = Math.max(0, Number(multa) || 0), nJ = Math.max(0, Number(juros) || 0);
+  const totalBaixar = Math.round((totalSel - nD + nM + nJ) * 100) / 100;
   useEffect(() => { if (temCapability('cadastros.conta.listar')) api.get<{ id: string; nome: string }[]>('/contas-correntes', token!).then(setContas).catch(() => {}); /* eslint-disable-next-line */ }, []);
   async function salvar() {
     setErro(null); setSalv(true);
     let ok = 0;
     for (const tt of titulos) {
-      try { await api.patch('/financeiro/' + tipo + '/' + tt.id + '/baixar', { formaPagamento: forma, contaCorrenteId: contaId || null, dataBaixa }, token!); ok++; }
+      // Composição só se aplica a baixa individual; em massa vai sem ajustes.
+      const corpo = massa
+        ? { formaPagamento: forma, contaCorrenteId: contaId || null, dataBaixa }
+        : { formaPagamento: forma, contaCorrenteId: contaId || null, dataBaixa, desconto: nD, multa: nM, juros: nJ };
+      try { await api.patch('/financeiro/' + tipo + '/' + tt.id + '/baixar', corpo, token!); ok++; }
       catch (e) { if (!massa) { setErro((e as ErroApi).chaveI18n); setSalv(false); return; } }
     }
     onSalvo(ok);
   }
   return (
-    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-fundo"><div className="modal modal-lg" onClick={(e) => e.stopPropagation()}>
       <h2>{t('fin.baixar')} — {massa ? `${titulos.length} ${t('fin.titulos')} · ` : ''}{moeda(totalSel)}</h2>
-      <label className="campo">{t('fin.data_baixa')}<input type="date" value={dataBaixa} onChange={(e) => setDataBaixa(e.target.value)} /></label>
-      <label className="campo">{t('pedidos.forma_pgto')}
-        <select value={forma} onChange={(e) => setForma(e.target.value)}><option>Pix</option><option>Boleto</option><option>Cartão</option><option>Dinheiro</option><option>Transferência</option></select>
-      </label>
+      <div className="cores-grid">
+        <label className="campo">{t('fin.data_baixa')}<input type="date" value={dataBaixa} onChange={(e) => setDataBaixa(e.target.value)} /></label>
+        <label className="campo">{t('pedidos.forma_pgto')}
+          <select value={forma} onChange={(e) => setForma(e.target.value)}><option>Pix</option><option>Boleto</option><option>Cartão</option><option>Dinheiro</option><option>Transferência</option></select>
+        </label>
+      </div>
       {contas.length > 0 && <label className="campo">{t('cc.conta')}
         <select value={contaId} onChange={(e) => setContaId(e.target.value)}><option value="">{t('cc.nenhuma')}</option>{contas.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}</select>
       </label>}
+      {!massa && (<>
+        <div className="perm-titulo" style={{ marginTop: 6 }}>{t('fin.composicao')}</div>
+        <div className="cores-grid">
+          <label className="campo">{t('fin.valor_original')}<input value={moeda(totalSel)} readOnly style={{ background: 'var(--bg)', fontWeight: 600 }} /></label>
+          <label className="campo">{t('fin.desconto')}<input type="number" min="0" step="0.01" value={desconto} onChange={(e) => setDesconto(e.target.value)} /></label>
+          <label className="campo">{t('fin.multa')}<input type="number" min="0" step="0.01" value={multa} onChange={(e) => setMulta(e.target.value)} /></label>
+          <label className="campo">{t('fin.juros')}<input type="number" min="0" step="0.01" value={juros} onChange={(e) => setJuros(e.target.value)} /></label>
+        </div>
+        <div className="tl-row tl-total" style={{ marginTop: 6 }}>
+          <span className="muted">{t('fin.total_baixar')}</span>
+          <b style={{ fontSize: 20, color: totalBaixar < 0 ? '#e1483b' : 'var(--accent)' }}>{moeda(totalBaixar)}</b>
+        </div>
+      </>)}
       {erro && <div className="alerta-erro">{t(erro)}</div>}
-      <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv} onClick={salvar}>{t('fin.confirmar_baixa')}</button></div>
+      <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv || (!massa && totalBaixar < 0)} onClick={salvar}>{t('fin.confirmar_baixa')}</button></div>
     </div></div>
   );
 }

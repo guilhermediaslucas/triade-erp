@@ -586,7 +586,7 @@ Object.assign(pt, {
   'fin.favorecido_cliente': 'Favorecido / Cliente', 'fin.boletos_abertos': 'Boletos abertos', 'fin.a_vencer': 'A vencer',
   'fin.todos_clientes': 'Todos clientes', 'fin.todos_favorecidos': 'Todos favorecidos',
   'fin.valor': 'Valor', 'fin.situacao': 'Situação', 'fin.aberto': 'Em aberto', 'fin.vencido': 'Vencido', 'fin.pago': 'Pago',
-  'fin.baixar': 'Baixar', 'fin.cancelar_baixa': 'Cancelar baixa', 'fin.confirmar_baixa': 'Confirmar baixa', 'fin.data_baixa': 'Data da baixa',
+  'fin.baixar': 'Baixar', 'fin.cancelar_baixa': 'Cancelar baixa', 'fin.confirmar_baixa': 'Confirmar baixa', 'fin.data_baixa': 'Data da baixa', 'fin.composicao': 'Composição do valor', 'fin.valor_original': 'Valor original', 'fin.desconto': 'Desconto (R$)', 'fin.multa': 'Multa (R$)', 'fin.juros': 'Juros (R$)', 'fin.total_baixar': 'Total a baixar',
   'fin.aberto_receber': 'A receber (em aberto)', 'fin.aberto_pagar': 'A pagar (em aberto)', 'fin.vencidos': 'Vencidos',
   'fin.titulos': 'título(s)', 'fin.do_pedido': 'do pedido',
   'financeiro.descricao_invalida': 'Informe uma descrição.', 'financeiro.valor_invalido': 'Valor inválido.',
@@ -614,7 +614,7 @@ Object.assign(en, {
   'fin.favorecido_cliente': 'Payee / Customer', 'fin.boletos_abertos': 'Open invoices', 'fin.a_vencer': 'Upcoming',
   'fin.todos_clientes': 'All customers', 'fin.todos_favorecidos': 'All payees',
   'fin.valor': 'Amount', 'fin.situacao': 'Status', 'fin.aberto': 'Open', 'fin.vencido': 'Overdue', 'fin.pago': 'Paid',
-  'fin.baixar': 'Settle', 'fin.cancelar_baixa': 'Undo settlement', 'fin.confirmar_baixa': 'Confirm settlement', 'fin.data_baixa': 'Settlement date',
+  'fin.baixar': 'Settle', 'fin.cancelar_baixa': 'Undo settlement', 'fin.confirmar_baixa': 'Confirm settlement', 'fin.data_baixa': 'Settlement date', 'fin.composicao': 'Amount composition', 'fin.valor_original': 'Original amount', 'fin.desconto': 'Discount (R$)', 'fin.multa': 'Penalty (R$)', 'fin.juros': 'Interest (R$)', 'fin.total_baixar': 'Total to settle',
   'fin.aberto_receber': 'Receivable (open)', 'fin.aberto_pagar': 'Payable (open)', 'fin.vencidos': 'Overdue',
   'fin.titulos': 'entry(ies)', 'fin.do_pedido': 'from order',
   'financeiro.descricao_invalida': 'Provide a description.', 'financeiro.valor_invalido': 'Invalid amount.',
@@ -642,7 +642,7 @@ Object.assign(es, {
   'fin.favorecido_cliente': 'Beneficiario / Cliente', 'fin.boletos_abertos': 'Boletos abiertos', 'fin.a_vencer': 'Por vencer',
   'fin.todos_clientes': 'Todos los clientes', 'fin.todos_favorecidos': 'Todos los beneficiarios',
   'fin.valor': 'Valor', 'fin.situacao': 'Estado', 'fin.aberto': 'Abierto', 'fin.vencido': 'Vencido', 'fin.pago': 'Pagado',
-  'fin.baixar': 'Liquidar', 'fin.cancelar_baixa': 'Cancelar liquidación', 'fin.confirmar_baixa': 'Confirmar liquidación', 'fin.data_baixa': 'Fecha de baja',
+  'fin.baixar': 'Liquidar', 'fin.cancelar_baixa': 'Cancelar liquidación', 'fin.confirmar_baixa': 'Confirmar liquidación', 'fin.data_baixa': 'Fecha de baja', 'fin.composicao': 'Composición del valor', 'fin.valor_original': 'Valor original', 'fin.desconto': 'Descuento (R$)', 'fin.multa': 'Multa (R$)', 'fin.juros': 'Intereses (R$)', 'fin.total_baixar': 'Total a liquidar',
   'fin.aberto_receber': 'A cobrar (abierto)', 'fin.aberto_pagar': 'A pagar (abierto)', 'fin.vencidos': 'Vencidos',
   'fin.titulos': 'título(s)', 'fin.do_pedido': 'del pedido',
   'financeiro.descricao_invalida': 'Indica una descripción.', 'financeiro.valor_invalido': 'Valor inválido.',
@@ -1938,6 +1938,7 @@ Object.assign(pt, {
   'fin.previsto_label': 'Lançamento previsto (provisão — não pode ser baixado)',
   'fin.toast_previsto': 'Marcado como previsto', 'fin.toast_efetivo': 'Marcado como efetivo',
   'financeiro.previsto_nao_baixa': 'Título previsto não pode ser baixado. Marque como efetivo primeiro.',
+  'financeiro.baixa_negativa': 'O total a baixar não pode ser negativo. Revise desconto/multa/juros.',
   'financeiro.previsto_so_aberto': 'Só títulos em aberto podem ser marcados como previsto.',
 });
 Object.assign(en, {
@@ -1945,6 +1946,7 @@ Object.assign(en, {
   'fin.previsto_label': 'Forecast entry (provision — cannot be settled)',
   'fin.toast_previsto': 'Marked as forecast', 'fin.toast_efetivo': 'Marked as actual',
   'financeiro.previsto_nao_baixa': 'A forecast title cannot be settled. Mark it as actual first.',
+  'financeiro.baixa_negativa': 'The amount to settle cannot be negative. Check discount/penalty/interest.',
   'financeiro.previsto_so_aberto': 'Only open titles can be marked as forecast.',
 });
 Object.assign(es, {
@@ -1952,6 +1954,7 @@ Object.assign(es, {
   'fin.previsto_label': 'Asiento previsto (provisión — no se puede dar de baja)',
   'fin.toast_previsto': 'Marcado como previsto', 'fin.toast_efetivo': 'Marcado como efectivo',
   'financeiro.previsto_nao_baixa': 'Un título previsto no se puede dar de baja. Márcalo como efectivo primero.',
+  'financeiro.baixa_negativa': 'El total a liquidar no puede ser negativo. Revisa descuento/multa/intereses.',
   'financeiro.previsto_so_aberto': 'Solo los títulos abiertos pueden marcarse como previstos.',
 });
 
