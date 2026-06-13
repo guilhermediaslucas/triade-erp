@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Ic } from './Icones.js';
 import { useI18n } from '../i18n/I18nContext.js';
 
@@ -12,7 +13,7 @@ export function FiltroLista({ busca, onBusca, status, onStatus, placeholder, sem
   onStatus?: (s: FiltroStatus) => void;
   placeholder?: string;
   semStatus?: boolean;
-  extra?: React.ReactNode;
+  extra?: ReactNode;
 }) {
   const { t } = useI18n();
   return (
