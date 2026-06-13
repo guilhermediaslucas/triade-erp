@@ -15,6 +15,17 @@ export class SqlEstoqueRepository implements EstoqueRepository {
          FROM "${s}".estoque_lote el
          LEFT JOIN "${s}".marca m ON m.id = el.marca_id
         WHERE el.quantidade > 0 ORDER BY el.validade NULLS LAST`);
+    // Reservado = quantidade comprometida em pedidos JÁ confirmados mas ainda NÃO
+    // separados (aguardando pagamento / aprovado). Depois da separação a baixa é
+    // física (sai do saldo); orçamento é rascunho e não reserva.
+    const reservas = await this.ds.query(
+      `SELECT pi.produto_id, COALESCE(SUM(pi.quantidade),0) AS q
+         FROM "${s}".pedido_item pi
+         JOIN "${s}".pedido p ON p.id = pi.pedido_id
+        WHERE p.status IN ('aguardando_pagamento','aprovado')
+        GROUP BY pi.produto_id`);
+    const reservaPorProduto = new Map<string, number>();
+    for (const r of reservas) reservaPorProduto.set(r.produto_id, Number(r.q));
     return produtos.map((p: any) => {
       const ls: LotePosicao[] = lotes.filter((l: any) => l.produto_id === p.id).map((l: any) => ({
         id: l.id, lote: l.lote ?? null,
@@ -23,9 +34,11 @@ export class SqlEstoqueRepository implements EstoqueRepository {
         marca: l.marca ?? null,
       }));
       const saldo = ls.reduce((a, l) => a + l.quantidade, 0);
+      const reservado = reservaPorProduto.get(p.id) ?? 0;
       return {
         produtoId: p.id, produtoNome: p.nome, unidade: p.unidade, estoqueMinimo: p.estoque_minimo,
         saldo, abaixoMinimo: saldo < p.estoque_minimo, lotes: ls,
+        reservado, disponivel: saldo - reservado,
       };
     });
   }

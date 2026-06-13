@@ -86,8 +86,8 @@ export function NovoPedido() {
     });
     // Saldo disponível por produto (informativo no ato do pedido). Pode falhar se o
     // usuário não tiver a permissão de ver estoque — nesse caso simplesmente não mostra.
-    api.get<{ produtoId: string; saldo: number }[]>('/estoque', token!)
-      .then((l) => { const m: Record<string, number> = {}; l.forEach((x) => { m[x.produtoId] = x.saldo; }); setEstoque(m); setEstoqueOk(true); })
+    api.get<{ produtoId: string; disponivel: number }[]>('/estoque', token!)
+      .then((l) => { const m: Record<string, number> = {}; l.forEach((x) => { m[x.produtoId] = x.disponivel; }); setEstoque(m); setEstoqueOk(true); })
       .catch(() => setEstoqueOk(false));
     /* eslint-disable-next-line */
   }, []);

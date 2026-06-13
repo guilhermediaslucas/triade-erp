@@ -5,6 +5,8 @@ export interface LotePosicao {
 export interface PosicaoProduto {
   produtoId: string; produtoNome: string; unidade: string; estoqueMinimo: number;
   saldo: number; abaixoMinimo: boolean; lotes: LotePosicao[];
+  reservado: number;   // comprometido em pedidos confirmados ainda não separados
+  disponivel: number;  // saldo - reservado
 }
 export interface EntradaEstoque {
   produtoId: string; lote: string | null; validade: string | null; quantidade: number; custoUnitario: number;
