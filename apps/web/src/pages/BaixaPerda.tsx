@@ -5,7 +5,6 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
-import { Ic } from '../components/Icones.js';
 
 interface Lote { id: string; lote: string | null; validade: string | null; quantidade: number; custoUnitario: number; }
 interface Posicao { produtoId: string; produtoNome: string; lotes: Lote[]; }
