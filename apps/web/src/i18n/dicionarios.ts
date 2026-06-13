@@ -1638,7 +1638,7 @@ Object.assign(pt, {
   'dash.kpi_drill': 'Clique para ver o gráfico do período',
   'dash.serie_crumb': 'Gráfico do período', 'dash.serie_total': 'Total do período', 'dash.serie_media': 'Média', 'dash.serie_pico': 'Pico',
   'dash.serie_vazio': 'Sem vendas no período.', 'dash.serie_limpar': 'Últimos 30 dias', 'dash.serie_tipo_invalido': 'Período inválido.',
-  'dash.itens_vendas': 'Vendas que compõem o valor', 'dash.itens_clientes': 'Clientes ativos', 'dash.col_pedido': 'Pedido', 'dash.col_status': 'Status',
+  'dash.itens_vendas': 'Vendas que compõem o valor', 'dash.itens_clientes': 'Clientes ativos', 'dash.col_status': 'Status',
   'dash.serie_dia': 'Vendas do dia — diário (últimos 30 dias)', 'dash.serie_semana': 'Vendas da semana — últimas 12 semanas',
   'dash.serie_mes': 'Vendas do mês — últimos 12 meses', 'dash.serie_ano': 'Vendas do ano — últimos 5 anos', 'dash.serie_clientes': 'Clientes ativos — total atual',
 });
@@ -1665,7 +1665,7 @@ Object.assign(en, {
   'dash.kpi_drill': 'Click to see the period chart',
   'dash.serie_crumb': 'Period chart', 'dash.serie_total': 'Period total', 'dash.serie_media': 'Average', 'dash.serie_pico': 'Peak',
   'dash.serie_vazio': 'No sales in the period.', 'dash.serie_limpar': 'Last 30 days', 'dash.serie_tipo_invalido': 'Invalid period.',
-  'dash.itens_vendas': 'Sales that make up the value', 'dash.itens_clientes': 'Active customers', 'dash.col_pedido': 'Order', 'dash.col_status': 'Status',
+  'dash.itens_vendas': 'Sales that make up the value', 'dash.itens_clientes': 'Active customers', 'dash.col_status': 'Status',
   'dash.serie_dia': 'Sales today — daily (last 30 days)', 'dash.serie_semana': 'Weekly sales — last 12 weeks',
   'dash.serie_mes': 'Monthly sales — last 12 months', 'dash.serie_ano': 'Yearly sales — last 5 years', 'dash.serie_clientes': 'Active customers — current total',
 });
@@ -1692,7 +1692,7 @@ Object.assign(es, {
   'dash.kpi_drill': 'Haz clic para ver el gráfico del período',
   'dash.serie_crumb': 'Gráfico del período', 'dash.serie_total': 'Total del período', 'dash.serie_media': 'Promedio', 'dash.serie_pico': 'Pico',
   'dash.serie_vazio': 'Sin ventas en el período.', 'dash.serie_limpar': 'Últimos 30 días', 'dash.serie_tipo_invalido': 'Período inválido.',
-  'dash.itens_vendas': 'Ventas que componen el valor', 'dash.itens_clientes': 'Clientes activos', 'dash.col_pedido': 'Pedido', 'dash.col_status': 'Estado',
+  'dash.itens_vendas': 'Ventas que componen el valor', 'dash.itens_clientes': 'Clientes activos', 'dash.col_status': 'Estado',
   'dash.serie_dia': 'Ventas del día — diario (últimos 30 días)', 'dash.serie_semana': 'Ventas de la semana — últimas 12 semanas',
   'dash.serie_mes': 'Ventas del mes — últimos 12 meses', 'dash.serie_ano': 'Ventas del año — últimos 5 años', 'dash.serie_clientes': 'Clientes activos — total actual',
 });
