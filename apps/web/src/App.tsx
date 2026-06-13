@@ -100,15 +100,15 @@ export function App() {
                 <Route path="/financeiro/fluxo" element={<Protegida cap="financeiro.fluxo.ver"><FluxoCaixa /></Protegida>} />
                 <Route path="/financeiro/pagar" element={<Protegida cap="financeiro.pagar.listar"><Contas tipo="pagar" /></Protegida>} />
                 <Route path="/relatorios" element={<Protegida cap="relatorios.ver"><Relatorios /></Protegida>} />
-                <Route path="/relatorios/vendas" element={<Protegida cap="relatorios.ver"><RelVendas /></Protegida>} />
-                <Route path="/relatorios/pedidos" element={<Protegida cap="relatorios.ver"><RelPedidos /></Protegida>} />
+                <Route path="/relatorios/vendas" element={<Protegida cap="relatorios.vendas.ver"><RelVendas /></Protegida>} />
+                <Route path="/relatorios/pedidos" element={<Protegida cap="relatorios.pedidos.ver"><RelPedidos /></Protegida>} />
                 <Route path="/relatorios/reembolsos" element={<Protegida cap="financeiro.pagar.listar"><RelFavorecidos /></Protegida>} />
-                <Route path="/relatorios/produtos" element={<Protegida cap="relatorios.ver"><RelProdutos /></Protegida>} />
-                <Route path="/relatorios/vendas-categoria" element={<Protegida cap="relatorios.ver"><RelCategorias /></Protegida>} />
-                <Route path="/relatorios/curva-abc" element={<Protegida cap="relatorios.ver"><RelAbc /></Protegida>} />
-                <Route path="/relatorios/validade" element={<Protegida cap="relatorios.ver"><RelValidade /></Protegida>} />
-                <Route path="/relatorios/estoque-parado" element={<Protegida cap="relatorios.ver"><RelEstoqueParado /></Protegida>} />
-                <Route path="/relatorios/perdas" element={<Protegida cap="relatorios.ver"><RelPerdas /></Protegida>} />
+                <Route path="/relatorios/produtos" element={<Protegida cap="relatorios.produtos.ver"><RelProdutos /></Protegida>} />
+                <Route path="/relatorios/vendas-categoria" element={<Protegida cap="relatorios.categorias.ver"><RelCategorias /></Protegida>} />
+                <Route path="/relatorios/curva-abc" element={<Protegida cap="relatorios.abc.ver"><RelAbc /></Protegida>} />
+                <Route path="/relatorios/validade" element={<Protegida cap="relatorios.validade.ver"><RelValidade /></Protegida>} />
+                <Route path="/relatorios/estoque-parado" element={<Protegida cap="relatorios.parado.ver"><RelEstoqueParado /></Protegida>} />
+                <Route path="/relatorios/perdas" element={<Protegida cap="relatorios.perdas.ver"><RelPerdas /></Protegida>} />
                 <Route path="/relatorios/inventarios" element={<Protegida cap="estoque.inventario.ver"><RelInventarios /></Protegida>} />
                 <Route path="/cadastros/contas-correntes" element={<Protegida cap="cadastros.conta.listar"><ContasCorrentes /></Protegida>} />
                 <Route path="/cadastros/categorias-financeiras" element={<Protegida cap="cadastros.catfin.listar"><CategoriasFinanceiras /></Protegida>} />

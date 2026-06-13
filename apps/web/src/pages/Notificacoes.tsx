@@ -28,7 +28,7 @@ export function Notificacoes() {
           const pend = rec ? rec.filter((x) => x.origem === 'pedido' && x.status === 'aberto').length : 0;
           if (pend > 0) out.push({ chave: 'sino.pendencia_baixa', icone: 'i-receipt', tint: 'tint-or', qtd: pend, to: '/financeiro/receber' });
         }
-        if (temCapability('relatorios.ver')) {
+        if (temCapability('relatorios.validade.ver')) {
           const lotes = await api.get<{ validade: string | null }[]>('/relatorios/validade-lotes', token).catch(() => null);
           const vencendo = lotes ? lotes.filter((l) => { const d = diasAteValidade(l.validade); return d !== null && d <= 30; }).length : 0;
           if (vencendo > 0) out.push({ chave: 'sino.lotes_vencendo', icone: 'i-clock', tint: 'tint-or', qtd: vencendo, to: '/relatorios/validade' });

@@ -9,28 +9,28 @@ export function rotasRelatorios(deps: Dependencias): Router {
   const aut = criarAutenticar(deps.tokens);
   const az = criarAutorizar(deps.usuariosRepo);
   const sch = (req: Request) => req.usuario!.schema;
-  r.get('/relatorios/vendas', aut, az('relatorios.ver'), async (req, res: Response) => {
+  r.get('/relatorios/vendas', aut, az('relatorios.vendas.ver'), async (req, res: Response) => {
     try { res.json(await deps.relatoriosService.vendas(sch(req), req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
   });
-  r.get('/relatorios/produtos-vendidos', aut, az('relatorios.ver'), async (req, res: Response) => {
+  r.get('/relatorios/produtos-vendidos', aut, az('relatorios.produtos.ver'), async (req, res: Response) => {
     try { res.json(await deps.relatoriosService.produtosVendidos(sch(req), req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
   });
-  r.get('/relatorios/vendas-categoria', aut, az('relatorios.ver'), async (req, res: Response) => {
+  r.get('/relatorios/vendas-categoria', aut, az('relatorios.categorias.ver'), async (req, res: Response) => {
     try { res.json(await deps.relatoriosService.vendasPorCategoria(sch(req), req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
   });
-  r.get('/relatorios/curva-abc', aut, az('relatorios.ver'), async (req, res: Response) => {
+  r.get('/relatorios/curva-abc', aut, az('relatorios.abc.ver'), async (req, res: Response) => {
     try { res.json(await deps.relatoriosService.curvaAbc(sch(req), req.query.de, req.query.ate, req.query.por)); } catch (e) { tratarErro(res, e); }
   });
-  r.get('/relatorios/validade-lotes', aut, az('relatorios.ver'), async (req, res: Response) => {
+  r.get('/relatorios/validade-lotes', aut, az('relatorios.validade.ver'), async (req, res: Response) => {
     try { res.json(await deps.relatoriosService.validadeLotes(sch(req))); } catch (e) { tratarErro(res, e); }
   });
-  r.get('/relatorios/estoque-parado', aut, az('relatorios.ver'), async (req, res: Response) => {
+  r.get('/relatorios/estoque-parado', aut, az('relatorios.parado.ver'), async (req, res: Response) => {
     try { res.json(await deps.relatoriosService.estoqueParado(sch(req))); } catch (e) { tratarErro(res, e); }
   });
-  r.get('/relatorios/perdas-estoque', aut, az('relatorios.ver'), async (req, res: Response) => {
+  r.get('/relatorios/perdas-estoque', aut, az('relatorios.perdas.ver'), async (req, res: Response) => {
     try { res.json(await deps.relatoriosService.perdasEstoque(sch(req), req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
   });
-  r.get('/relatorios/pedidos', aut, az('relatorios.ver'), async (req, res: Response) => {
+  r.get('/relatorios/pedidos', aut, az('relatorios.pedidos.ver'), async (req, res: Response) => {
     try { res.json(await deps.relatoriosService.pedidos(sch(req), req.query.de, req.query.ate, req.query.status)); } catch (e) { tratarErro(res, e); }
   });
   return r;

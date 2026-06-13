@@ -15,19 +15,19 @@ const GRUPOS: Grupo[] = [
   {
     chave: 'comercial', titulo: 'rel.g_comercial', desc: 'rel.g_comercial_d', icone: 'i-cart', tint: 'tint-bl',
     itens: [
-      { rotulo: 'menu.rel_vendas', to: '/relatorios/vendas', cap: 'relatorios.ver' },
-      { rotulo: 'menu.rel_pedidos', to: '/relatorios/pedidos', cap: 'relatorios.ver' },
-      { rotulo: 'menu.rel_produtos', to: '/relatorios/produtos', cap: 'relatorios.ver' },
-      { rotulo: 'menu.rel_categorias', to: '/relatorios/vendas-categoria', cap: 'relatorios.ver' },
-      { rotulo: 'menu.rel_abc', to: '/relatorios/curva-abc', cap: 'relatorios.ver' },
+      { rotulo: 'menu.rel_vendas', to: '/relatorios/vendas', cap: 'relatorios.vendas.ver' },
+      { rotulo: 'menu.rel_pedidos', to: '/relatorios/pedidos', cap: 'relatorios.pedidos.ver' },
+      { rotulo: 'menu.rel_produtos', to: '/relatorios/produtos', cap: 'relatorios.produtos.ver' },
+      { rotulo: 'menu.rel_categorias', to: '/relatorios/vendas-categoria', cap: 'relatorios.categorias.ver' },
+      { rotulo: 'menu.rel_abc', to: '/relatorios/curva-abc', cap: 'relatorios.abc.ver' },
     ],
   },
   {
     chave: 'estoque', titulo: 'rel.g_estoque', desc: 'rel.g_estoque_d', icone: 'i-box', tint: 'tint-pp',
     itens: [
-      { rotulo: 'menu.rel_validade', to: '/relatorios/validade', cap: 'relatorios.ver' },
-      { rotulo: 'menu.rel_parado', to: '/relatorios/estoque-parado', cap: 'relatorios.ver' },
-      { rotulo: 'menu.rel_perdas', to: '/relatorios/perdas', cap: 'relatorios.ver' },
+      { rotulo: 'menu.rel_validade', to: '/relatorios/validade', cap: 'relatorios.validade.ver' },
+      { rotulo: 'menu.rel_parado', to: '/relatorios/estoque-parado', cap: 'relatorios.parado.ver' },
+      { rotulo: 'menu.rel_perdas', to: '/relatorios/perdas', cap: 'relatorios.perdas.ver' },
       { rotulo: 'menu.rel_inventarios', to: '/relatorios/inventarios', cap: 'estoque.inventario.ver' },
     ],
   },

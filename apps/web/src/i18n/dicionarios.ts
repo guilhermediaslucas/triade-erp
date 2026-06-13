@@ -573,7 +573,8 @@ Object.assign(es, {
 // --- Fase 5A: Financeiro ---
 Object.assign(pt, {
   'menu.financeiro': 'Financeiro', 'menu.receber': 'Contas a receber', 'menu.pagar': 'Contas a pagar',
-  'cap.modulo.financeiro': 'Financeiro', 'cap.modulo.relatorios': 'Relatórios', 'cap.relatorios.ver': 'Ver relatórios',
+  'cap.modulo.financeiro': 'Financeiro', 'cap.modulo.relatorios': 'Relatórios', 'cap.relatorios.ver': 'Acessar Relatórios',
+  'cap.relatorios.vendas': 'Relatório de vendas', 'cap.relatorios.pedidos': 'Relatório de pedidos', 'cap.relatorios.produtos': 'Produtos mais vendidos', 'cap.relatorios.categorias': 'Vendas por categoria', 'cap.relatorios.abc': 'Curva ABC', 'cap.relatorios.validade': 'Validade de lotes', 'cap.relatorios.parado': 'Estoque parado', 'cap.relatorios.perdas': 'Perdas de estoque',
   'cap.financeiro.receber.listar': 'Ver contas a receber', 'cap.financeiro.receber.gerenciar': 'Gerenciar contas a receber',
   'cap.financeiro.pagar.listar': 'Ver contas a pagar', 'cap.financeiro.pagar.gerenciar': 'Gerenciar contas a pagar',
   'fin.receber': 'Contas a receber', 'fin.pagar': 'Contas a pagar', 'fin.novo': 'Novo título',
@@ -601,7 +602,8 @@ Object.assign(pt, {
 });
 Object.assign(en, {
   'menu.financeiro': 'Finance', 'menu.receber': 'Receivables', 'menu.pagar': 'Payables',
-  'cap.modulo.financeiro': 'Finance', 'cap.modulo.relatorios': 'Reports', 'cap.relatorios.ver': 'View reports',
+  'cap.modulo.financeiro': 'Finance', 'cap.modulo.relatorios': 'Reports', 'cap.relatorios.ver': 'Access Reports',
+  'cap.relatorios.vendas': 'Sales report', 'cap.relatorios.pedidos': 'Orders report', 'cap.relatorios.produtos': 'Best-selling products', 'cap.relatorios.categorias': 'Sales by category', 'cap.relatorios.abc': 'ABC curve', 'cap.relatorios.validade': 'Lot expiry', 'cap.relatorios.parado': 'Stalled stock', 'cap.relatorios.perdas': 'Stock losses',
   'cap.financeiro.receber.listar': 'View receivables', 'cap.financeiro.receber.gerenciar': 'Manage receivables',
   'cap.financeiro.pagar.listar': 'View payables', 'cap.financeiro.pagar.gerenciar': 'Manage payables',
   'fin.receber': 'Receivables', 'fin.pagar': 'Payables', 'fin.novo': 'New entry',
@@ -629,7 +631,8 @@ Object.assign(en, {
 });
 Object.assign(es, {
   'menu.financeiro': 'Finanzas', 'menu.receber': 'Cuentas a cobrar', 'menu.pagar': 'Cuentas a pagar',
-  'cap.modulo.financeiro': 'Finanzas', 'cap.modulo.relatorios': 'Informes', 'cap.relatorios.ver': 'Ver informes',
+  'cap.modulo.financeiro': 'Finanzas', 'cap.modulo.relatorios': 'Informes', 'cap.relatorios.ver': 'Acceder a Informes',
+  'cap.relatorios.vendas': 'Informe de ventas', 'cap.relatorios.pedidos': 'Informe de pedidos', 'cap.relatorios.produtos': 'Productos más vendidos', 'cap.relatorios.categorias': 'Ventas por categoría', 'cap.relatorios.abc': 'Curva ABC', 'cap.relatorios.validade': 'Vencimiento de lotes', 'cap.relatorios.parado': 'Stock parado', 'cap.relatorios.perdas': 'Pérdidas de stock',
   'cap.financeiro.receber.listar': 'Ver cuentas a cobrar', 'cap.financeiro.receber.gerenciar': 'Gestionar cuentas a cobrar',
   'cap.financeiro.pagar.listar': 'Ver cuentas a pagar', 'cap.financeiro.pagar.gerenciar': 'Gestionar cuentas a pagar',
   'fin.receber': 'Cuentas a cobrar', 'fin.pagar': 'Cuentas a pagar', 'fin.novo': 'Nuevo título',
@@ -764,7 +767,6 @@ Object.assign(es, {
 // --- Fase 6B: Relatórios ---
 Object.assign(pt, {
   'menu.relatorios': 'Relatórios', 'menu.rel_vendas': 'Vendas', 'menu.rel_produtos': 'Produtos mais vendidos',
-  'cap.modulo.relatorios': 'Relatórios', 'cap.relatorios.ver': 'Ver relatórios',
   'rel.vendas': 'Relatório de vendas', 'rel.produtos': 'Produtos mais vendidos',
   'rel.de': 'De', 'rel.ate': 'Até', 'rel.gerar': 'Gerar', 'rel.exportar': 'Exportar CSV',
   'rel.total_vendas': 'Total de vendas', 'rel.por_vendedor': 'Total por vendedor', 'rel.vazio': 'Nenhuma venda no período.',
@@ -772,7 +774,6 @@ Object.assign(pt, {
 });
 Object.assign(en, {
   'menu.relatorios': 'Reports', 'menu.rel_vendas': 'Sales', 'menu.rel_produtos': 'Best sellers',
-  'cap.modulo.relatorios': 'Reports', 'cap.relatorios.ver': 'View reports',
   'rel.vendas': 'Sales report', 'rel.produtos': 'Best-selling products',
   'rel.de': 'From', 'rel.ate': 'To', 'rel.gerar': 'Generate', 'rel.exportar': 'Export CSV',
   'rel.total_vendas': 'Total sales', 'rel.por_vendedor': 'Total by sales rep', 'rel.vazio': 'No sales in the period.',
@@ -780,7 +781,6 @@ Object.assign(en, {
 });
 Object.assign(es, {
   'menu.relatorios': 'Informes', 'menu.rel_vendas': 'Ventas', 'menu.rel_produtos': 'Más vendidos',
-  'cap.modulo.relatorios': 'Informes', 'cap.relatorios.ver': 'Ver informes',
   'rel.vendas': 'Informe de ventas', 'rel.produtos': 'Productos más vendidos',
   'rel.de': 'Desde', 'rel.ate': 'Hasta', 'rel.gerar': 'Generar', 'rel.exportar': 'Exportar CSV',
   'rel.total_vendas': 'Total de ventas', 'rel.por_vendedor': 'Total por vendedor', 'rel.vazio': 'Sin ventas en el período.',

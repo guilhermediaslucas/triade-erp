@@ -58,6 +58,14 @@ export const CAPABILITIES: Capability[] = [
   { id: 'financeiro.conciliacao.ver',      moduloChave: 'cap.modulo.financeiro', labelChave: 'cap.financeiro.conciliacao.ver' },
   { id: 'financeiro.conciliacao.gerenciar', moduloChave: 'cap.modulo.financeiro', labelChave: 'cap.financeiro.conciliacao.gerenciar' },
   { id: 'relatorios.ver',                  moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.ver' },
+  { id: 'relatorios.vendas.ver',           moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.vendas' },
+  { id: 'relatorios.pedidos.ver',          moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.pedidos' },
+  { id: 'relatorios.produtos.ver',         moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.produtos' },
+  { id: 'relatorios.categorias.ver',       moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.categorias' },
+  { id: 'relatorios.abc.ver',              moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.abc' },
+  { id: 'relatorios.validade.ver',         moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.validade' },
+  { id: 'relatorios.parado.ver',           moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.parado' },
+  { id: 'relatorios.perdas.ver',           moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.perdas' },
 ];
 
 export const CAPABILITY_IDS: string[] = CAPABILITIES.map((c) => c.id);
