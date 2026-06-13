@@ -10,8 +10,19 @@ cd /d "%~dp0\.."
 
 if not exist "apps\web\android\gradlew.bat" (
   echo *** Projeto Android nao encontrado. Rode antes: scripts\app-android.bat ***
+  pause
   exit /b 1
 )
+
+REM --- Garante um Java 17 (o do Android Studio, "jbr") para o gradle ---
+if exist "%JAVA_HOME%\bin\java.exe" goto java_ok
+if exist "C:\Program Files\Android\Android Studio\jbr\bin\java.exe" set "JAVA_HOME=C:\Program Files\Android\Android Studio\jbr" & goto java_ok
+if exist "%LOCALAPPDATA%\Programs\Android Studio\jbr\bin\java.exe" set "JAVA_HOME=%LOCALAPPDATA%\Programs\Android Studio\jbr" & goto java_ok
+if exist "%ProgramFiles%\Android\Android Studio\jbr\bin\java.exe" set "JAVA_HOME=%ProgramFiles%\Android\Android Studio\jbr" & goto java_ok
+echo *** Nao encontrei o Java do Android Studio (jbr). Abra o app pelo Android Studio
+echo     pelo menos uma vez, ou me avise o caminho onde instalou o Android Studio.
+:java_ok
+echo Java: %JAVA_HOME%
 
 echo === [1/2] Atualizando o build do front no projeto nativo...
 pushd apps\web
@@ -40,9 +51,16 @@ echo     (a 1a vez o Android pede para "permitir fontes desconhecidas").
 echo ============================================================
 goto fim
 
+echo.
+pause
+goto fim
+
 :erro
 echo.
-echo *** ERRO na etapa acima. Verifique a mensagem. ***
+echo *** ERRO na etapa acima. Leia a mensagem em vermelho/amarelo acima. ***
+echo.
+pause
+endlocal
 exit /b 1
 
 :fim
