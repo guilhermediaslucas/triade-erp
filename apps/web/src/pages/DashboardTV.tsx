@@ -38,7 +38,7 @@ function Barras({ labels, data }: { labels: string[]; data: number[] }) {
           <g key={i}>
             <rect x={cx - bw / 2} y={H - padB - h} width={bw} height={h} rx="2" fill="#16a34a"><title>{labels[i]}: {moeda(v)}</title></rect>
             {(i % passo === 0 || i === n - 1) && (
-              <text x={cx} y={H - 8} fontSize="11" textAnchor="middle" fill="var(--tvmuted)">{labels[i]}</text>
+              <text x={cx} y={H - 6} fontSize="16" textAnchor="middle" fill="var(--tvink)">{labels[i]}</text>
             )}
           </g>
         );
