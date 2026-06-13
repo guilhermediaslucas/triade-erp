@@ -254,52 +254,54 @@ a { text-decoration: none; color: inherit; }
 .tl-item:last-child { border-bottom: 0; }
 .tl-nm { font-size: 14px; color: var(--ink, #1f2430); }
 
-/* ===== Modo TV (painel de vendas em tela cheia) ===== */
-.tv { min-height: 100vh; background: #0e1016; color: #e6e8ee; padding: 28px 34px; box-sizing: border-box; font-family: "Segoe UI", Inter, system-ui, sans-serif; }
-.tv-top { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #232834; padding-bottom: 16px; margin-bottom: 22px; }
+/* ===== Modo TV (painel em tela cheia) — tokens que trocam com o tema ===== */
+.tv { --tvbg:#0e1016; --tvcard:#171a21; --tvborda:#232834; --tvink:#e6e8ee; --tvmuted:#9aa1b1; --tvbtn:#1b1f27; --tvbtnb:#2a2f3a; --tvline:#21262f; --tvchip:#232a36;
+  min-height: 100vh; background: var(--tvbg); color: var(--tvink); padding: 28px 34px; box-sizing: border-box; font-family: "Segoe UI", Inter, system-ui, sans-serif; }
+body:not(.theme-dark) .tv { --tvbg:#f4f5fa; --tvcard:#ffffff; --tvborda:#e6e8ee; --tvink:#1f2430; --tvmuted:#6b7280; --tvbtn:#ffffff; --tvbtnb:#e6e8ee; --tvline:#eef0f4; --tvchip:#eef0f5; }
+.tv-top { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--tvborda); padding-bottom: 16px; margin-bottom: 22px; }
 .tv-marca { display: flex; align-items: center; gap: 16px; }
 .tv-logo { max-height: 56px; max-width: 220px; object-fit: contain; }
 .tv-titulo { font-size: 26px; font-weight: 800; letter-spacing: .3px; }
-.tv-empresa { font-size: 16px; color: #9aa1b1; }
+.tv-empresa { font-size: 16px; color: var(--tvmuted); }
 .tv-top-dir { text-align: right; }
 .tv-relogio { font-size: 34px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; }
-.tv-data { font-size: 15px; color: #9aa1b1; text-transform: capitalize; margin-top: 2px; }
-.tv-upd { font-size: 12px; color: #6b7280; margin-top: 6px; }
-.tv-sair { margin-top: 8px; background: #1b1f27; color: #cbd2e0; border: 1px solid #2a2f3a; border-radius: 8px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
+.tv-data { font-size: 15px; color: var(--tvmuted); text-transform: capitalize; margin-top: 2px; }
+.tv-upd { font-size: 12px; color: var(--tvmuted); margin-top: 6px; }
+.tv-sair { margin-top: 8px; background: var(--tvbtn); color: var(--tvink); border: 1px solid var(--tvbtnb); border-radius: 8px; padding: 6px 12px; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
 .tv-acoes { display: flex; gap: 8px; justify-content: flex-end; align-items: center; }
 .tv-acoes .tv-sair { margin-top: 8px; }
 .tv-icbtn { display: inline-flex; align-items: center; justify-content: center; padding: 6px 9px; line-height: 0; }
-.tv-icbtn:hover { background: #20252f; }
-.tv-load { font-size: 22px; color: #9aa1b1; padding: 60px; text-align: center; }
+.tv-icbtn:hover, .tv-sair:hover { filter: brightness(1.15); }
+.tv-load { font-size: 22px; color: var(--tvmuted); padding: 60px; text-align: center; }
 .tv-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 18px; }
-.tv-kpi { background: #171a21; border: 1px solid #232834; border-radius: 18px; padding: 22px 26px; }
-.tv-kpi.tv-destaque { background: linear-gradient(135deg, #1f2937 0%, #111827 100%); border-color: #dc2626; }
-.tv-kpi-lbl { font-size: 17px; color: #9aa1b1; text-transform: uppercase; letter-spacing: 1px; }
-.tv-kpi-val { font-size: 46px; font-weight: 800; margin-top: 8px; color: #4ade80; font-variant-numeric: tabular-nums; }
+.tv-kpi { background: var(--tvcard); border: 1px solid var(--tvborda); border-radius: 18px; padding: 22px 26px; }
+.tv-kpi.tv-destaque { border-color: #dc2626; }
+.tv-kpi-lbl { font-size: 17px; color: var(--tvmuted); text-transform: uppercase; letter-spacing: 1px; }
+.tv-kpi-val { font-size: 46px; font-weight: 800; margin-top: 8px; color: #16a34a; font-variant-numeric: tabular-nums; }
 .tv-mid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 18px; }
 .tv-mini { padding: 16px 22px; }
-.tv-mini-lbl { font-size: 15px; color: #9aa1b1; }
+.tv-mini-lbl { font-size: 15px; color: var(--tvmuted); }
 .tv-mini-val { font-size: 30px; font-weight: 800; margin-top: 4px; font-variant-numeric: tabular-nums; }
-.tv-mini-val.tv-alerta { color: #f87171; }
+.tv-mini-val.tv-alerta { color: #e1483b; }
 .tv-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-.tv-card { background: #171a21; border: 1px solid #232834; border-radius: 18px; padding: 18px 22px; }
+.tv-card { background: var(--tvcard); border: 1px solid var(--tvborda); border-radius: 18px; padding: 18px 22px; }
 .tv-card-h { font-size: 19px; font-weight: 700; margin-bottom: 12px; }
-.tv-lin { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #21262f; font-size: 19px; }
+.tv-lin { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--tvline); font-size: 19px; }
 .tv-lin:last-child { border-bottom: 0; }
-.tv-rank { width: 30px; height: 30px; flex: none; display: inline-flex; align-items: center; justify-content: center; background: #232a36; border-radius: 9px; font-weight: 800; font-size: 15px; }
+.tv-rank { width: 30px; height: 30px; flex: none; display: inline-flex; align-items: center; justify-content: center; background: var(--tvchip); border-radius: 9px; font-weight: 800; font-size: 15px; }
 .tv-lin-nm { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.tv-lin-q { color: #9aa1b1; min-width: 44px; text-align: right; }
-.tv-lin-st { color: #9aa1b1; font-size: 15px; }
-.tv-lin-v { font-weight: 700; color: #4ade80; min-width: 120px; text-align: right; font-variant-numeric: tabular-nums; }
-.tv-vazio { color: #6b7280; padding: 14px 0; }
+.tv-lin-q { color: var(--tvmuted); min-width: 44px; text-align: right; }
+.tv-lin-st { color: var(--tvmuted); font-size: 15px; }
+.tv-lin-v { font-weight: 700; color: #16a34a; min-width: 120px; text-align: right; font-variant-numeric: tabular-nums; }
+.tv-vazio { color: var(--tvmuted); padding: 14px 0; }
 .tv-wordmark { font-weight: 800; }
 .tv-rm-i { color: #dc2626; }
-.tv-rm-erp { color: #6b7280; font-size: .7em; letter-spacing: 2px; }
-.tv-sep { color: #e6e8ee; }
+.tv-rm-erp { color: var(--tvmuted); font-size: .7em; letter-spacing: 2px; }
+.tv-sep { color: var(--tvink); }
 .tv-mid2 { grid-template-columns: repeat(2, 1fr); max-width: 560px; }
 .tv-bar-lin { display: flex; align-items: center; gap: 12px; padding: 9px 0; font-size: 18px; }
 .tv-bar-nm { width: 200px; flex: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.tv-bar-track { flex: 1; height: 16px; background: #232a36; border-radius: 8px; overflow: hidden; }
+.tv-bar-track { flex: 1; height: 16px; background: var(--tvchip); border-radius: 8px; overflow: hidden; }
 .tv-bar-fill { display: block; height: 100%; border-radius: 8px; }
 .tv-bar-q { width: 50px; text-align: right; font-variant-numeric: tabular-nums; }
 @media (max-width: 1100px) { .tv-kpis, .tv-mid { grid-template-columns: repeat(2, 1fr); } .tv-cols { grid-template-columns: 1fr; } .tv-bar-nm { width: 130px; } }
@@ -307,10 +309,10 @@ a { text-decoration: none; color: inherit; }
 .tve-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 .tve-col { border-top: 4px solid #888; }
 .tve-h { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
-.tve-ct { font-size: 52px; font-weight: 800; color: #e6e8ee; line-height: 1; margin-bottom: 12px; font-variant-numeric: tabular-nums; }
+.tve-ct { font-size: 52px; font-weight: 800; color: var(--tvink); line-height: 1; margin-bottom: 12px; font-variant-numeric: tabular-nums; }
 .tve-lst { display: flex; flex-direction: column; gap: 8px; }
-.tve-lin { display: flex; flex-direction: column; gap: 1px; padding: 8px 10px; background: #1b2029; border-radius: 9px; font-size: 16px; }
-.tve-lin b { color: #fff; } .tve-lin span { color: #9aa1b1; font-size: 14px; }
+.tve-lin { display: flex; flex-direction: column; gap: 1px; padding: 8px 10px; background: var(--tvchip); border-radius: 9px; font-size: 16px; }
+.tve-lin b { color: var(--tvink); } .tve-lin span { color: var(--tvmuted); font-size: 14px; }
 @media (max-width: 1100px) { .tve-board { grid-template-columns: repeat(2, 1fr); } }
 .pk-cli { font-size: 12px; color: var(--muted); margin: 3px 0; }
 .pk-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }

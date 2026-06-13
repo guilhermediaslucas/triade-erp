@@ -5,7 +5,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useBranding } from '../branding/BrandingContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda, numeroPedido } from '../lib/pedido.js';
-import { BotaoTelaCheia } from '../components/BotaoTelaCheia.js';
+import { TVAcoes } from '../components/TVAcoes.js';
 import { SpriteIcones } from '../components/Icones.js';
 
 // Painel de vendas em "Modo TV": tela cheia, sem menu, números grandes e
@@ -94,10 +94,7 @@ export function DashboardTV() {
           <div className="tv-relogio">{hhmmss(hora)}</div>
           <div className="tv-data">{hora.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })}</div>
           {atualizado && <div className="tv-upd">{t('tv.atualizado')} {hhmmss(atualizado)}</div>}
-          <div className="tv-acoes">
-            <BotaoTelaCheia className="tv-sair tv-icbtn" />
-            <button className="tv-sair" onClick={() => nav('/')}>{t('tv.sair')} (Esc)</button>
-          </div>
+          <TVAcoes />
         </div>
       </div>
 

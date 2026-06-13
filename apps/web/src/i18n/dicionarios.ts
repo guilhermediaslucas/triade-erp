@@ -1687,7 +1687,7 @@ Object.assign(es, { 'auth.sem_empresas': 'Ninguna empresa activa para acceder.' 
 // --- Dashboard fiel ao mockup ---
 Object.assign(pt, {
   'dash.subtitulo': 'Visão geral da operação',
-  'tv.botao': 'Modo TV', 'tv.titulo': 'Painel de Vendas', 'tv.atualizado': 'Atualizado às', 'tv.sair': 'Sair',
+  'tv.botao': 'Modo TV', 'tv.titulo': 'Painel de Vendas', 'tv.atualizado': 'Atualizado às', 'tv.sair': 'Sair', 'tv.sair_conta': 'Sair da conta',
   'tv.dia': 'Vendas hoje', 'tv.semana': 'Vendas na semana', 'tv.mes': 'Vendas no mês', 'tv.ano': 'Vendas no ano',
   'tv.receber': 'A receber em aberto', 'tv.caixa': 'Saldo em caixa', 'tv.aguard_sep': 'Aguardando separação', 'tv.estoque_baixo': 'Estoque baixo',
   'tv.top_produtos': 'Produtos mais vendidos', 'tv.recentes': 'Pedidos recentes',
@@ -1716,7 +1716,7 @@ Object.assign(pt, {
 });
 Object.assign(en, {
   'dash.subtitulo': 'Operations overview',
-  'tv.botao': 'TV mode', 'tv.titulo': 'Sales Panel', 'tv.atualizado': 'Updated at', 'tv.sair': 'Exit',
+  'tv.botao': 'TV mode', 'tv.titulo': 'Sales Panel', 'tv.atualizado': 'Updated at', 'tv.sair': 'Exit', 'tv.sair_conta': 'Sign out',
   'tv.dia': 'Sales today', 'tv.semana': 'Sales this week', 'tv.mes': 'Sales this month', 'tv.ano': 'Sales this year',
   'tv.receber': 'Open receivables', 'tv.caixa': 'Cash balance', 'tv.aguard_sep': 'Awaiting picking', 'tv.estoque_baixo': 'Low stock',
   'tv.top_produtos': 'Best sellers', 'tv.recentes': 'Recent orders',
@@ -1745,7 +1745,7 @@ Object.assign(en, {
 });
 Object.assign(es, {
   'dash.subtitulo': 'Visión general de la operación',
-  'tv.botao': 'Modo TV', 'tv.titulo': 'Panel de Ventas', 'tv.atualizado': 'Actualizado a las', 'tv.sair': 'Salir',
+  'tv.botao': 'Modo TV', 'tv.titulo': 'Panel de Ventas', 'tv.atualizado': 'Actualizado a las', 'tv.sair': 'Salir', 'tv.sair_conta': 'Cerrar sesión',
   'tv.dia': 'Ventas de hoy', 'tv.semana': 'Ventas de la semana', 'tv.mes': 'Ventas del mes', 'tv.ano': 'Ventas del año',
   'tv.receber': 'Por cobrar abierto', 'tv.caixa': 'Saldo en caja', 'tv.aguard_sep': 'Esperando preparación', 'tv.estoque_baixo': 'Stock bajo',
   'tv.top_produtos': 'Más vendidos', 'tv.recentes': 'Pedidos recientes',
