@@ -417,14 +417,14 @@ a { text-decoration: none; color: inherit; }
 
 /* --- Busca global (Ctrl+K) --- */
 .btn-busca { display: inline-flex; align-items: center; gap: 6px; background: var(--card, #fff); border: 1px solid var(--borda, #e2e8f0); color: var(--muted, #64748b); padding: 5px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; }
-.btn-busca:hover { border-color: var(--accent, #6d28d9); color: var(--texto, #1e293b); }
+.btn-busca:hover { border-color: var(--accent, #6d28d9); color: var(--ink, #1e293b); }
 .btn-busca kbd { background: #00000010; border-radius: 4px; padding: 1px 5px; font-size: 11px; font-family: inherit; }
 .btn-busca span { }
 .busca-fundo { position: fixed; inset: 0; background: rgba(15,23,42,.45); display: flex; align-items: flex-start; justify-content: center; padding-top: 12vh; z-index: 1000; }
 .busca-box { width: min(560px, 92vw); background: var(--card, #fff); border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,.3); overflow: hidden; display: flex; flex-direction: column; max-height: 70vh; }
-.busca-input { border: none; border-bottom: 1px solid var(--borda, #e2e8f0); padding: 16px 18px; font-size: 16px; outline: none; background: transparent; color: var(--texto, #1e293b); }
+.busca-input { border: none; border-bottom: 1px solid var(--borda, #e2e8f0); padding: 16px 18px; font-size: 16px; outline: none; background: transparent; color: var(--ink, #1e293b); }
 .busca-lista { overflow: auto; padding: 6px; }
-.busca-item { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: transparent; border: none; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; color: var(--texto, #1e293b); }
+.busca-item { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: transparent; border: none; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; color: var(--ink, #1e293b); }
 .busca-item.sel, .busca-item:hover { background: var(--accent, #6d28d9); color: var(--accent-fg, #fff); }
 .busca-ic { width: 22px; text-align: center; }
 .busca-vazio { padding: 18px; color: var(--muted, #64748b); text-align: center; }
@@ -440,14 +440,18 @@ a { text-decoration: none; color: inherit; }
 
 /* --- Sino de notificações --- */
 .sino-wrap { position: relative; }
-.sino-btn { position: relative; background: transparent; border: none; cursor: pointer; font-size: 18px; padding: 4px 6px; border-radius: 8px; line-height: 1; }
-.sino-btn:hover { background: #00000010; }
+.sino-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0; background: var(--bg, #f4f5fa); border: 1px solid var(--borda, #ececf2); border-radius: 9px; color: var(--ink, #1f2430); cursor: pointer; line-height: 0; }
+.sino-btn:hover { background: var(--accent-soft, #eef0ff); border-color: var(--accent, #7b61ff); }
+body.theme-dark .sino-btn { background: #1b1f27; border-color: #2a2f3a; color: #e6e8ee; }
+body.theme-dark .sino-btn:hover { background: #20252f; border-color: #3a4150; }
+body.theme-dark .sino-item:hover, body.theme-dark .busca-item:hover { background: #20252f; }
+body.theme-dark .sino-painel, body.theme-dark .busca-box, body.theme-dark .emp-menu { box-shadow: 0 16px 48px rgba(0,0,0,.6); }
 .sino-badge { position: absolute; top: -2px; right: -2px; background: #dc2626; color: #fff; font-size: 10px; font-weight: 700; min-width: 16px; height: 16px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; padding: 0 4px; }
 .sino-overlay { position: fixed; inset: 0; z-index: 1090; }
 .sino-painel { position: absolute; right: 0; top: 38px; width: 300px; background: var(--card, #fff); border: 1px solid var(--borda, #e2e8f0); border-radius: 12px; box-shadow: 0 16px 48px rgba(0,0,0,.2); z-index: 1095; overflow: hidden; }
 .sino-cab { padding: 12px 14px; font-weight: 700; border-bottom: 1px solid var(--borda, #e2e8f0); font-size: 14px; }
 .sino-vazio { padding: 20px 14px; color: var(--muted, #64748b); text-align: center; font-size: 14px; }
-.sino-item { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: transparent; border: none; padding: 11px 14px; cursor: pointer; font-size: 14px; color: var(--texto, #1e293b); border-bottom: 1px solid var(--borda, #f1f5f9); }
+.sino-item { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: transparent; border: none; padding: 11px 14px; cursor: pointer; font-size: 14px; color: var(--ink, #1e293b); border-bottom: 1px solid var(--borda, #f1f5f9); }
 .sino-todas { justify-content: center; color: var(--accent); font-weight: 600; border-bottom: none; }
 .sino-item:hover { background: #00000008; }
 .sino-ic { width: 22px; text-align: center; }
@@ -494,10 +498,18 @@ body.theme-dark .login-pane { background: #0b0d14; }
 body.theme-dark .login-card { background: var(--card); color: var(--ink); }
 body.theme-dark .login-logo, body.theme-dark .login-card h2 { color: var(--ink); }
 body.theme-dark .nota-info { background: #14233a; color: #93c5fd; border-color: #1e3a5f; }
-.btn-tema { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0; background: var(--card, #fff); border: 1px solid var(--borda, #ececf2); border-radius: 9px; color: var(--ink, #1f2430); cursor: pointer; line-height: 0; }
-.btn-tema:hover { background: var(--bg, #f4f5fa); border-color: var(--accent, #7b61ff); }
+.btn-tema { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0; background: var(--bg, #f4f5fa); border: 1px solid var(--borda, #ececf2); border-radius: 9px; color: var(--ink, #1f2430); cursor: pointer; line-height: 0; }
+.btn-tema:hover { background: var(--accent-soft, #eef0ff); border-color: var(--accent, #7b61ff); }
 body.theme-dark .btn-tema { background: #1b1f27; border-color: #2a2f3a; color: #fbbf24; }
 body.theme-dark .btn-tema:hover { background: #20252f; border-color: #3a4150; }
+/* Cards/botões que tinham fundo branco fixo — escurece no modo escuro */
+body.theme-dark .dash-card, body.theme-dark .pk-card, body.theme-dark .kb-card, body.theme-dark .logo-preview { background: var(--card); }
+body.theme-dark .btn-sair { background: var(--card); color: var(--ink); }
+body.theme-dark .btn-sair:hover { background: #20252f; }
+body.theme-dark .kb-count, body.theme-dark .acao-ic, body.theme-dark .sel-idioma { background: #1b1f27; border-color: #2a2f3a; }
+body.theme-dark .pk-pill.pix { background: #2a2342; color: #c4b5fd; }
+body.theme-dark .pk-pill.boleto { background: #1e2a45; color: #93c5fd; }
+body.theme-dark .pk-pill.cartao { background: #3a1f25; color: #fca5a5; }
 
 /* ===== Seletor de empresa (admin do sistema) ===== */
 .emp-switch { position: relative; }
