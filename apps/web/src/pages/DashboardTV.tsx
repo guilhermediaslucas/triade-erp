@@ -2,10 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
-import { useBranding } from '../branding/BrandingContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda, numeroPedido } from '../lib/pedido.js';
-import { TVAcoes } from '../components/TVAcoes.js';
+import { TVHeader } from '../components/TVHeader.js';
 import { SpriteIcones } from '../components/Icones.js';
 
 // Painel de vendas em "Modo TV": tela cheia, sem menu, números grandes e
@@ -50,7 +49,6 @@ function Barras({ labels, data }: { labels: string[]; data: number[] }) {
 export function DashboardTV() {
   const { token } = useAuth();
   const { t } = useI18n();
-  const { branding } = useBranding();
   const nav = useNavigate();
   const [d, setD] = useState<Resumo | null>(null);
   const [serie, setSerie] = useState<Serie | null>(null);
@@ -82,30 +80,12 @@ export function DashboardTV() {
   }, []);
 
   const aguardSep = d?.pedidosPorStatus.find((p) => p.status === 'aprovado')?.quantidade ?? 0;
-  const hhmmss = (x: Date) => x.toLocaleTimeString('pt-BR');
   const maxDisp = Math.max(1, ...estoque.map((e) => e.disponivel));
 
   return (
     <div className="tv">
       <SpriteIcones />
-      <div className="tv-top">
-        <div className="tv-marca">
-          {branding?.logo ? <img src={branding.logo} alt="" className="tv-logo" /> : null}
-          <div>
-            <div className="tv-titulo">
-              <span className="tv-wordmark">TR<span className="tv-rm-i">Í</span>ADE <span className="tv-rm-erp">ERP</span></span>
-              <span className="tv-sep"> · {t('tv.titulo')}</span>
-            </div>
-            <div className="tv-empresa">{branding?.fantasia ?? ''}</div>
-          </div>
-        </div>
-        <div className="tv-top-dir">
-          <div className="tv-relogio">{hhmmss(hora)}</div>
-          <div className="tv-data">{hora.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })}</div>
-          {atualizado && <div className="tv-upd">{t('tv.atualizado')} {hhmmss(atualizado)}</div>}
-          <TVAcoes />
-        </div>
-      </div>
+      <TVHeader titulo={t('tv.titulo')} hora={hora} atualizado={atualizado} />
 
       {!d ? <div className="tv-load">{t('common.carregando')}</div> : (
         <>
