@@ -48,6 +48,10 @@ export function SpriteIcones() {
       <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M5 3h14v18l-2.4-1.5-2.4 1.5-2.2-1.5L9.8 21l-2.4-1.5L5 21z" /><line x1="8.5" y1="8" x2="15.5" y2="8" /><line x1="8.5" y1="12" x2="13.5" y2="12" /></symbol>
       <symbol id="i-flag" viewBox="0 0 24 24"><line x1="5" y1="21" x2="5" y2="3.5" /><path d="M5 4.2h11l-2.2 3.2 2.2 3.2H5" /></symbol>
       <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 5h18l-7 8.2V20l-4-2.2v-4.6z" /></symbol>
+      <symbol id="i-rows" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="5" rx="1.5" /><rect x="3.5" y="14" width="17" height="5" rx="1.5" /></symbol>
+      <symbol id="i-arrow-up" viewBox="0 0 24 24"><polyline points="6 14 12 8 18 14" /></symbol>
+      <symbol id="i-arrow-down" viewBox="0 0 24 24"><polyline points="6 10 12 16 18 10" /></symbol>
+      <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z" /></symbol>
     </svg>
   );
 }

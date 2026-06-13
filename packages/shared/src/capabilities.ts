@@ -57,6 +57,7 @@ export const CAPABILITIES: Capability[] = [
   { id: 'financeiro.comissao.gerenciar',moduloChave: 'cap.modulo.financeiro', labelChave: 'cap.financeiro.comissao.gerenciar' },
   { id: 'financeiro.conciliacao.ver',      moduloChave: 'cap.modulo.financeiro', labelChave: 'cap.financeiro.conciliacao.ver' },
   { id: 'financeiro.conciliacao.gerenciar', moduloChave: 'cap.modulo.financeiro', labelChave: 'cap.financeiro.conciliacao.gerenciar' },
+  { id: 'relatorios.ver',                  moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.ver' },
 ];
 
 export const CAPABILITY_IDS: string[] = CAPABILITIES.map((c) => c.id);

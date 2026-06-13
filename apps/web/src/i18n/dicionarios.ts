@@ -570,7 +570,7 @@ Object.assign(es, {
 // --- Fase 5A: Financeiro ---
 Object.assign(pt, {
   'menu.financeiro': 'Financeiro', 'menu.receber': 'Contas a receber', 'menu.pagar': 'Contas a pagar',
-  'cap.modulo.financeiro': 'Financeiro',
+  'cap.modulo.financeiro': 'Financeiro', 'cap.modulo.relatorios': 'Relatórios', 'cap.relatorios.ver': 'Ver relatórios',
   'cap.financeiro.receber.listar': 'Ver contas a receber', 'cap.financeiro.receber.gerenciar': 'Gerenciar contas a receber',
   'cap.financeiro.pagar.listar': 'Ver contas a pagar', 'cap.financeiro.pagar.gerenciar': 'Gerenciar contas a pagar',
   'fin.receber': 'Contas a receber', 'fin.pagar': 'Contas a pagar', 'fin.novo': 'Novo título',
@@ -598,7 +598,7 @@ Object.assign(pt, {
 });
 Object.assign(en, {
   'menu.financeiro': 'Finance', 'menu.receber': 'Receivables', 'menu.pagar': 'Payables',
-  'cap.modulo.financeiro': 'Finance',
+  'cap.modulo.financeiro': 'Finance', 'cap.modulo.relatorios': 'Reports', 'cap.relatorios.ver': 'View reports',
   'cap.financeiro.receber.listar': 'View receivables', 'cap.financeiro.receber.gerenciar': 'Manage receivables',
   'cap.financeiro.pagar.listar': 'View payables', 'cap.financeiro.pagar.gerenciar': 'Manage payables',
   'fin.receber': 'Receivables', 'fin.pagar': 'Payables', 'fin.novo': 'New entry',
@@ -626,7 +626,7 @@ Object.assign(en, {
 });
 Object.assign(es, {
   'menu.financeiro': 'Finanzas', 'menu.receber': 'Cuentas a cobrar', 'menu.pagar': 'Cuentas a pagar',
-  'cap.modulo.financeiro': 'Finanzas',
+  'cap.modulo.financeiro': 'Finanzas', 'cap.modulo.relatorios': 'Informes', 'cap.relatorios.ver': 'Ver informes',
   'cap.financeiro.receber.listar': 'Ver cuentas a cobrar', 'cap.financeiro.receber.gerenciar': 'Gestionar cuentas a cobrar',
   'cap.financeiro.pagar.listar': 'Ver cuentas a pagar', 'cap.financeiro.pagar.gerenciar': 'Gestionar cuentas a pagar',
   'fin.receber': 'Cuentas a cobrar', 'fin.pagar': 'Cuentas a pagar', 'fin.novo': 'Nuevo título',
