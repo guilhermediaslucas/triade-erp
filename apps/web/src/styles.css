@@ -292,7 +292,7 @@ body:not(.theme-dark) .tv { --tvbg:#f4f5fa; --tvcard:#ffffff; --tvborda:#e6e8ee;
 /* Cabeçalho compacto: hora + data + atualizado numa linha */
 .tv-sub-linha { font-size: 13px; color: var(--tvmuted); margin-top: 2px; text-transform: capitalize; }
 .tv-relogio-in { font-size: 18px; font-weight: 800; color: var(--tvink); font-variant-numeric: tabular-nums; }
-@media (max-width: 1100px) { .tv-vendas-grid { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .tv-vendas-grid { grid-template-columns: 1fr; } }
 .tv-mid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 14px; }
 .tv-mini { padding: 12px 18px; }
 .tv-mini-lbl { font-size: 13px; color: var(--tvmuted); }
