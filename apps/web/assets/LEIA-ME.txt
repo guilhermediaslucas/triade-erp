@@ -1,0 +1,28 @@
+ÍCONE E SPLASH DO APP (Android/iOS)
+====================================
+
+Coloque suas imagens NESTA pasta com EXATAMENTE estes nomes. Depois rode, na
+raiz do projeto:
+
+    scripts\app-icons.bat
+
+Ele gera automaticamente todos os tamanhos de ícone (inclusive o "adaptive
+icon" do Android) e a tela de abertura (splash).
+
+ARQUIVOS (PNG, fundo transparente onde indicado):
+
+1) icon.png            -> OBRIGATÓRIO. A logo do app. 1024 x 1024 px (quadrado).
+                          Deixe uma margem de respiro nas bordas (~15%), porque
+                          o Android recorta o ícone em círculo/quadrado.
+
+2) splash.png          -> OPCIONAL. Tela de abertura (logo centralizada).
+                          2732 x 2732 px, logo no meio, resto na cor de fundo.
+
+3) splash-dark.png     -> OPCIONAL. Versão para o modo escuro do celular.
+                          Mesmo tamanho da splash.
+
+DICA: se você só tem uma logo retangular, crie um quadrado 1024x1024 com a
+logo centralizada e fundo branco (ou a cor da marca) e salve como icon.png.
+
+Não precisa instalar nada à mão: o script baixa a ferramenta (@capacitor/assets)
+sozinho na primeira vez.
