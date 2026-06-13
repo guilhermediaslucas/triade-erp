@@ -12,6 +12,28 @@ Os arquivos de configuração já estão no repo:
 
 ---
 
+## 0. Atalho de um clique (Android, recomendado)
+
+Depois de instalar o **Android Studio** (passo 1), na **raiz do repo**:
+
+```cmd
+scripts\app-android.bat
+```
+
+Esse script faz tudo de uma vez: `npm install` → build do front → cria a pasta
+`android/` (se não existir) → **injeta a permissão de CÂMERA** no manifest
+(`scripts\cap-fix-android.mjs`, idempotente) → `cap sync`. No fim, abra o
+projeto e aperte **Run**:
+
+```cmd
+scripts\app-android-open.bat
+```
+
+A cada mudança no app, rode `scripts\app-android.bat` de novo (ele só sincroniza)
+e **Run** no Android Studio. O passo a passo manual detalhado segue abaixo.
+
+---
+
 ## 1. Pré-requisitos
 
 **Android (Windows, Linux ou macOS):**
