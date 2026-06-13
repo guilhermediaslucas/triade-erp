@@ -4,10 +4,11 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { Ic } from '../components/Icones.js';
-import { moeda } from '../lib/pedido.js';
+import { corStatus, moeda, numeroPedido } from '../lib/pedido.js';
 
 type TipoSerie = 'dia' | 'semana' | 'mes' | 'ano' | 'clientes';
 interface Serie { tipo: TipoSerie; labels: string[]; data: number[]; formato: 'moeda' | 'quantidade'; }
+interface ItemSerie { numero: number | null; cliente: string; vendedor: string; data: string | null; status: string | null; valor: number; }
 
 const TIPOS: TipoSerie[] = ['dia', 'semana', 'mes', 'ano', 'clientes'];
 const iso = (d: Date) => d.toISOString().slice(0, 10);
@@ -62,16 +63,21 @@ export function DashboardSerie() {
   const [de, setDe] = useState(iso(ini30));
   const [ate, setAte] = useState(iso(hoje));
   const [s, setS] = useState<Serie | null>(null);
+  const [itens, setItens] = useState<ItemSerie[]>([]);
   const [erro, setErro] = useState<string | null>(null);
 
   async function carregar(dde?: string, aate?: string) {
     setErro(null);
     try {
       const qs = t0 === 'dia' ? `&de=${dde ?? de}&ate=${aate ?? ate}` : '';
-      setS(await api.get<Serie>(`/dashboard/serie?tipo=${t0}${qs}`, token!));
+      const [serie, lista] = await Promise.all([
+        api.get<Serie>(`/dashboard/serie?tipo=${t0}${qs}`, token!),
+        api.get<ItemSerie[]>(`/dashboard/serie-itens?tipo=${t0}${qs}`, token!).catch(() => [] as ItemSerie[]),
+      ]);
+      setS(serie); setItens(lista);
     } catch (e) { setErro((e as ErroApi).chaveI18n); }
   }
-  useEffect(() => { setS(null); carregar(); /* eslint-disable-next-line */ }, [t0]);
+  useEffect(() => { setS(null); setItens([]); carregar(); /* eslint-disable-next-line */ }, [t0]);
 
   const fmt = (v: number) => (s?.formato === 'quantidade'
     ? Math.round(v).toLocaleString('pt-BR')
@@ -112,6 +118,31 @@ export function DashboardSerie() {
           {s.data.every((v) => v === 0)
             ? <div className="it" style={{ color: 'var(--muted)' }}>{t('dash.serie_vazio')}</div>
             : <SerieChart s={s} fmt={fmt} />}
+        </div>
+
+        <div className="card pad0" style={{ marginTop: 12 }}>
+          <div className="card-head" style={{ padding: '16px 18px 4px' }}><h3>{t0 === 'clientes' ? t('dash.itens_clientes') : t('dash.itens_vendas')} <span className="muted" style={{ fontWeight: 400 }}>· {itens.length}</span></h3></div>
+          <table className="tabela">
+            <thead>
+              {t0 === 'clientes'
+                ? <tr><th>{t('pedidos.cliente')}</th><th>{t('dash.col_status')}</th></tr>
+                : <tr><th>{t('dash.col_pedido')}</th><th>{t('pedidos.cliente')}</th><th>{t('pedidos.vendedor')}</th><th>{t('pedidos.data')}</th><th>{t('dash.col_status')}</th><th style={{ textAlign: 'right' }}>{t('pedidos.total')}</th></tr>}
+            </thead>
+            <tbody>
+              {itens.length === 0 && <tr><td colSpan={t0 === 'clientes' ? 2 : 6} className="vazio">{t('dash.serie_vazio')}</td></tr>}
+              {t0 === 'clientes'
+                ? itens.map((it, i) => <tr key={i}><td>{it.cliente}</td><td><span className="pill ok">{it.status}</span></td></tr>)
+                : itens.map((it, i) => (
+                  <tr key={i}>
+                    <td><b>{it.numero != null ? numeroPedido(it.numero) : '—'}</b></td>
+                    <td>{it.cliente}</td><td>{it.vendedor}</td>
+                    <td>{it.data ? new Date(it.data).toLocaleDateString('pt-BR') : '—'}</td>
+                    <td>{it.status ? <span className={'pill ' + corStatus(it.status as any)}>{t('status.' + it.status)}</span> : '—'}</td>
+                    <td style={{ textAlign: 'right' }}>{moeda(it.valor)}</td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
         </div>
       </>}
     </div>

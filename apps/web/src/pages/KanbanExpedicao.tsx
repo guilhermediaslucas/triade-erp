@@ -36,7 +36,6 @@ export function KanbanExpedicao() {
   const [erro, setErro] = useState<string | null>(null);
   const [arrastando, setArrastando] = useState<string | null>(null);
   const [sobre, setSobre] = useState<StatusPedido | null>(null);
-  const [formas, setFormas] = useState<string[]>([]);
   const [motoboys, setMotoboys] = useState<MotoboyItem[]>([]);
   const [pend, setPend] = useState<{ tipo: 'envio' | 'entrega'; id: string; numero: number } | null>(null);
   const [de, setDe] = useState(''); const [ate, setAte] = useState('');
@@ -46,7 +45,6 @@ export function KanbanExpedicao() {
   async function carregar() { try { setItens(await api.get('/pedidos', token!)); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
   useEffect(() => {
     carregar();
-    if (temCapability('cadastros.forma_entrega.listar')) api.get<{ nome: string; ativo: boolean }[]>('/formas-entrega', token!).then((l) => setFormas(l.filter((f) => f.ativo).map((f) => f.nome))).catch(() => {});
     if (temCapability('cadastros.motoboy.listar')) api.get<MotoboyItem[]>('/motoboys', token!).then((l) => setMotoboys(l.filter((m) => m.ativo))).catch(() => {});
     /* eslint-disable-next-line */
   }, []);
@@ -109,8 +107,7 @@ export function KanbanExpedicao() {
       </div>
       {pend?.tipo === 'envio' && (() => {
         const ped = itens.find((p) => p.id === pend.id);
-        const pedirMotoboy = ped?.formaEntrega === 'motoboy';
-        return <ModalFormaEnvio numero={pend.numero} formas={formas} motoboys={motoboys} pedirMotoboy={pedirMotoboy} onFechar={() => setPend(null)}
+        return <ModalFormaEnvio numero={pend.numero} formaEntrega={ped?.formaEntrega ?? 'retirada'} motoboys={motoboys} onFechar={() => setPend(null)}
           onConfirmar={(forma, det, motoboyId) => { const x = pend; setPend(null); patch(x.id, 'expedido', { formaEnvio: forma, formaEnvioDetalhe: det, ...(motoboyId ? { motoboyId } : {}) }); }} />;
       })()}
       {pend?.tipo === 'entrega' && <ModalDataEntrega numero={pend.numero} onFechar={() => setPend(null)}

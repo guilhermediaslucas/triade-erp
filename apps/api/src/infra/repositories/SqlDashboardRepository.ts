@@ -1,5 +1,5 @@
 import type { DataSource } from 'typeorm';
-import type { DashboardRepository, DrillFaturamento, ResumoDashboard, SerieDashboard, TipoSerie } from '../../domain/dashboard/Dashboard.js';
+import type { DashboardRepository, DrillFaturamento, ItemSerie, ResumoDashboard, SerieDashboard, TipoSerie } from '../../domain/dashboard/Dashboard.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 // null = sem período anterior (cur>0 e ant=0) → frontend mostra "novo no período".
@@ -190,6 +190,50 @@ export class SqlDashboardRepository implements DashboardRepository {
       data: rows.map((r: any) => um(r.total)),
       formato: 'moeda',
     };
+  }
+
+  // Vendas (pedidos) que compõem o valor do KPI clicado, no período correspondente.
+  async serieItens(schema: string, tipo: TipoSerie, de: string | null, ate: string | null): Promise<ItemSerie[]> {
+    const s = validarSchema(schema);
+    const um = (v: any) => Number(v ?? 0);
+    const NAO = `status NOT IN ('orcamento','cancelado')`;
+
+    if (tipo === 'clientes') {
+      const cli = await this.ds.query(
+        `SELECT nome, ativo, COALESCE(limite_credito,0) limite, criado_em
+           FROM "${s}".cliente WHERE ativo ORDER BY nome`);
+      return cli.map((c: any) => ({
+        numero: null, cliente: c.nome, vendedor: '',
+        data: c.criado_em ? new Date(c.criado_em).toISOString() : null,
+        status: c.ativo ? 'ativo' : 'inativo', valor: um(c.limite),
+      }));
+    }
+
+    // Janela por tipo de KPI (igual à do card): dia usa o intervalo (default 30d).
+    let filtro: string; const params: any[] = [];
+    if (tipo === 'dia') {
+      filtro = `p.criado_em::date BETWEEN COALESCE($1::date, CURRENT_DATE - 29) AND COALESCE($2::date, CURRENT_DATE)`;
+      params.push(de, ate);
+    } else if (tipo === 'semana') {
+      filtro = `p.criado_em >= date_trunc('week', now())`;
+    } else if (tipo === 'mes') {
+      filtro = `p.criado_em >= date_trunc('month', now())`;
+    } else {
+      filtro = `p.criado_em >= date_trunc('year', now())`;
+    }
+
+    const rows = await this.ds.query(
+      `SELECT p.numero, COALESCE(c.nome,'—') cliente, COALESCE(v.nome,'—') vendedor,
+              p.criado_em, p.status, p.total
+         FROM "${s}".pedido p
+         LEFT JOIN "${s}".cliente c ON c.id = p.cliente_id
+         LEFT JOIN "${s}".vendedor v ON v.id = p.vendedor_id
+        WHERE p.${NAO} AND ${filtro}
+        ORDER BY p.criado_em DESC`, params);
+    return rows.map((r: any) => ({
+      numero: um(r.numero), cliente: r.cliente, vendedor: r.vendedor,
+      data: new Date(r.criado_em).toISOString(), status: r.status, valor: um(r.total),
+    }));
   }
 
   // Drilldown de um mês do faturamento (clique no ponto/barra do gráfico).

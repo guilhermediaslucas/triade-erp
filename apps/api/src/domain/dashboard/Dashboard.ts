@@ -33,6 +33,15 @@ export interface SerieDashboard {
   data: number[];
   formato: 'moeda' | 'quantidade';
 }
+// Itens que compõem o valor de um KPI (clique no card → lista das vendas do período).
+export interface ItemSerie {
+  numero: number | null;     // nº do pedido (null quando tipo=clientes)
+  cliente: string;
+  vendedor: string;
+  data: string | null;       // ISO
+  status: string | null;
+  valor: number;
+}
 // Drilldown do gráfico de faturamento: detalhe de um mês (clique numa barra/ponto).
 export interface DrillFaturamento {
   mes: string;                 // YYYY-MM
@@ -44,5 +53,6 @@ export interface DrillFaturamento {
 export interface DashboardRepository {
   resumo(schema: string): Promise<ResumoDashboard>;
   serie(schema: string, tipo: TipoSerie, de: string | null, ate: string | null): Promise<SerieDashboard>;
+  serieItens(schema: string, tipo: TipoSerie, de: string | null, ate: string | null): Promise<ItemSerie[]>;
   drillFaturamento(schema: string, mes: string): Promise<DrillFaturamento>;
 }

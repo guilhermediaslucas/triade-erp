@@ -1634,6 +1634,7 @@ Object.assign(pt, {
   'dash.kpi_drill': 'Clique para ver o gráfico do período',
   'dash.serie_crumb': 'Gráfico do período', 'dash.serie_total': 'Total do período', 'dash.serie_media': 'Média', 'dash.serie_pico': 'Pico',
   'dash.serie_vazio': 'Sem vendas no período.', 'dash.serie_limpar': 'Últimos 30 dias', 'dash.serie_tipo_invalido': 'Período inválido.',
+  'dash.itens_vendas': 'Vendas que compõem o valor', 'dash.itens_clientes': 'Clientes ativos', 'dash.col_pedido': 'Pedido', 'dash.col_status': 'Status',
   'dash.serie_dia': 'Vendas do dia — diário (últimos 30 dias)', 'dash.serie_semana': 'Vendas da semana — últimas 12 semanas',
   'dash.serie_mes': 'Vendas do mês — últimos 12 meses', 'dash.serie_ano': 'Vendas do ano — últimos 5 anos', 'dash.serie_clientes': 'Clientes ativos — total atual',
 });
@@ -1656,6 +1657,7 @@ Object.assign(en, {
   'dash.kpi_drill': 'Click to see the period chart',
   'dash.serie_crumb': 'Period chart', 'dash.serie_total': 'Period total', 'dash.serie_media': 'Average', 'dash.serie_pico': 'Peak',
   'dash.serie_vazio': 'No sales in the period.', 'dash.serie_limpar': 'Last 30 days', 'dash.serie_tipo_invalido': 'Invalid period.',
+  'dash.itens_vendas': 'Sales that make up the value', 'dash.itens_clientes': 'Active customers', 'dash.col_pedido': 'Order', 'dash.col_status': 'Status',
   'dash.serie_dia': 'Sales today — daily (last 30 days)', 'dash.serie_semana': 'Weekly sales — last 12 weeks',
   'dash.serie_mes': 'Monthly sales — last 12 months', 'dash.serie_ano': 'Yearly sales — last 5 years', 'dash.serie_clientes': 'Active customers — current total',
 });
@@ -1678,6 +1680,7 @@ Object.assign(es, {
   'dash.kpi_drill': 'Haz clic para ver el gráfico del período',
   'dash.serie_crumb': 'Gráfico del período', 'dash.serie_total': 'Total del período', 'dash.serie_media': 'Promedio', 'dash.serie_pico': 'Pico',
   'dash.serie_vazio': 'Sin ventas en el período.', 'dash.serie_limpar': 'Últimos 30 días', 'dash.serie_tipo_invalido': 'Período inválido.',
+  'dash.itens_vendas': 'Ventas que componen el valor', 'dash.itens_clientes': 'Clientes activos', 'dash.col_pedido': 'Pedido', 'dash.col_status': 'Estado',
   'dash.serie_dia': 'Ventas del día — diario (últimos 30 días)', 'dash.serie_semana': 'Ventas de la semana — últimas 12 semanas',
   'dash.serie_mes': 'Ventas del mes — últimos 12 meses', 'dash.serie_ano': 'Ventas del año — últimos 5 años', 'dash.serie_clientes': 'Clientes activos — total actual',
 });
@@ -1860,6 +1863,7 @@ Object.assign(pt, {
   'pedidos.excluir_sel': 'Excluir selecionados', 'pedidos.itens_sel': 'item(ns) selecionado(s)', 'pedidos.total_sel': 'Total selecionado',
   'pedidos.crumb_editar': 'Comercial / Pedidos / Editar orçamento', 'pedidos.editar': 'Editar orçamento', 'pedidos.sub_editar': 'Ajuste os itens e dados antes de virar pedido',
   'pedidos.end_manter': 'Manter endereço atual', 'pedidos.confirmar_virar': 'Confirmar pedido', 'pedidos.salvar_alteracoes': 'Salvar alterações',
+  'pedidos.disponivel': 'disp.',
 });
 Object.assign(en, {
   'pedidos.crumb_novo': 'Sales / Orders / New', 'pedidos.sub_novo': 'Customer, items and payment',
@@ -1874,6 +1878,7 @@ Object.assign(en, {
   'pedidos.excluir_sel': 'Delete selected', 'pedidos.itens_sel': 'item(s) selected', 'pedidos.total_sel': 'Selected total',
   'pedidos.crumb_editar': 'Sales / Orders / Edit quote', 'pedidos.editar': 'Edit quote', 'pedidos.sub_editar': 'Adjust items and details before turning it into an order',
   'pedidos.end_manter': 'Keep current address', 'pedidos.confirmar_virar': 'Confirm order', 'pedidos.salvar_alteracoes': 'Save changes',
+  'pedidos.disponivel': 'avail.',
 });
 Object.assign(es, {
   'pedidos.crumb_novo': 'Comercial / Pedidos / Nuevo', 'pedidos.sub_novo': 'Cliente, ítems y forma de pago',
@@ -1888,6 +1893,7 @@ Object.assign(es, {
   'pedidos.excluir_sel': 'Eliminar seleccionados', 'pedidos.itens_sel': 'ítem(s) seleccionado(s)', 'pedidos.total_sel': 'Total seleccionado',
   'pedidos.crumb_editar': 'Comercial / Pedidos / Editar presupuesto', 'pedidos.editar': 'Editar presupuesto', 'pedidos.sub_editar': 'Ajusta los ítems y datos antes de convertirlo en pedido',
   'pedidos.end_manter': 'Mantener dirección actual', 'pedidos.confirmar_virar': 'Confirmar pedido', 'pedidos.salvar_alteracoes': 'Guardar cambios',
+  'pedidos.disponivel': 'disp.',
 });
 
 Object.assign(pt, { 'pedido.workflow': 'Workflow', 'pedido.titulo': 'Pedido', 'pedido.lote': 'Lote', 'pedido.validade': 'Validade', 'pedido.editar': 'Editar', 'pedido.so_orcamento_edita': 'Só é possível editar enquanto o pedido está em orçamento.' });
@@ -2020,6 +2026,7 @@ Object.assign(pt, {
   'comissao.taxa_invalida': 'Informe uma taxa entre 0 e 100.', 'comissao.periodo_invalido': 'A data final não pode ser anterior à inicial.',
   'fenv.titulo': 'Informar forma de envio', 'fenv.forma': 'Forma de entrega', 'fenv.selecione': 'Selecione ou digite…', 'fenv.selecione_motoboy': 'Selecione o motoboy…', 'fenv.sem_motoboy': 'Nenhum motoboy cadastrado — cadastre em Cadastros › Pessoas › Motoboys.',
   'fenv.detalhe': 'Detalhe (opcional)', 'fenv.detalhe_ph': 'Ex.: código de rastreio, nome do motoboy', 'fenv.confirmar': 'Confirmar expedição',
+  'fenv.cod_rastreio': 'Código de rastreio', 'fenv.cod_rastreio_ph': 'Ex.: BR123456789BR', 'fenv.transportadora': 'Transportadora', 'fenv.transportadora_ph': 'Nome da transportadora', 'fenv.retirada_nota': 'O cliente retira o pedido. Nada a informar aqui.', 'fenv.opcional': 'opcional',
   'ent.titulo': 'Confirmar entrega', 'ent.data': 'Data de entrega', 'ent.confirmar': 'Confirmar entrega',
   'pedido.forma_envio': 'Forma de envio', 'pedido.entregue_em': 'Entregue em', 'pedido.separado_por': 'Separado por', 'pedido.expedido_por': 'Expedido por',
   'pedido.forma_envio_obrigatoria': 'Informe a forma de envio para expedir o pedido.', 'pedido.data_entrega_obrigatoria': 'Informe a data de entrega.',
@@ -2053,6 +2060,7 @@ Object.assign(en, {
   'comissao.taxa_invalida': 'Enter a rate between 0 and 100.', 'comissao.periodo_invalido': 'End date cannot be before the start date.',
   'fenv.titulo': 'Set shipping method', 'fenv.forma': 'Delivery method', 'fenv.selecione': 'Select or type…', 'fenv.selecione_motoboy': 'Select the courier…', 'fenv.sem_motoboy': 'No courier registered — add one in Records › People › Couriers.',
   'fenv.detalhe': 'Detail (optional)', 'fenv.detalhe_ph': 'e.g. tracking code, courier name', 'fenv.confirmar': 'Confirm shipment',
+  'fenv.cod_rastreio': 'Tracking code', 'fenv.cod_rastreio_ph': 'e.g. BR123456789BR', 'fenv.transportadora': 'Carrier', 'fenv.transportadora_ph': 'Carrier name', 'fenv.retirada_nota': 'The customer picks up the order. Nothing to enter here.', 'fenv.opcional': 'optional',
   'ent.titulo': 'Confirm delivery', 'ent.data': 'Delivery date', 'ent.confirmar': 'Confirm delivery',
   'pedido.forma_envio': 'Shipping method', 'pedido.entregue_em': 'Delivered on', 'pedido.separado_por': 'Picked by', 'pedido.expedido_por': 'Shipped by',
   'pedido.forma_envio_obrigatoria': 'Set the shipping method to dispatch the order.', 'pedido.data_entrega_obrigatoria': 'Enter the delivery date.',
@@ -2086,6 +2094,7 @@ Object.assign(es, {
   'comissao.taxa_invalida': 'Ingresa una tasa entre 0 y 100.', 'comissao.periodo_invalido': 'La fecha final no puede ser anterior a la inicial.',
   'fenv.titulo': 'Informar forma de envío', 'fenv.forma': 'Forma de entrega', 'fenv.selecione': 'Selecciona o escribe…', 'fenv.selecione_motoboy': 'Selecciona el motoboy…', 'fenv.sem_motoboy': 'Ningún motoboy registrado — regístralo en Registros › Personas › Motoboys.',
   'fenv.detalhe': 'Detalle (opcional)', 'fenv.detalhe_ph': 'Ej.: código de seguimiento, nombre del mensajero', 'fenv.confirmar': 'Confirmar expedición',
+  'fenv.cod_rastreio': 'Código de seguimiento', 'fenv.cod_rastreio_ph': 'Ej.: BR123456789BR', 'fenv.transportadora': 'Transportista', 'fenv.transportadora_ph': 'Nombre del transportista', 'fenv.retirada_nota': 'El cliente retira el pedido. Nada que informar aquí.', 'fenv.opcional': 'opcional',
   'ent.titulo': 'Confirmar entrega', 'ent.data': 'Fecha de entrega', 'ent.confirmar': 'Confirmar entrega',
   'pedido.forma_envio': 'Forma de envío', 'pedido.entregue_em': 'Entregado el', 'pedido.separado_por': 'Separado por', 'pedido.expedido_por': 'Expedido por',
   'pedido.forma_envio_obrigatoria': 'Informa la forma de envío para expedir el pedido.', 'pedido.data_entrega_obrigatoria': 'Informa la fecha de entrega.',

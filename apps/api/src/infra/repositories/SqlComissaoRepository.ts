@@ -33,16 +33,19 @@ export class SqlComissaoRepository implements ComissaoRepository {
           ORDER BY (r.de IS NOT NULL) DESC, r.de DESC NULLS LAST LIMIT 1)`;
     const taxa = `COALESCE(${regraVendedor}, ${regraGeral}, v.comissao_percentual, 0)`;
 
+    // A comissão é calculada sobre o SUBTOTAL (mercadoria), NÃO sobre o total — o
+    // frete não compõe a base de comissão. "Vendido" também passa a ser o subtotal,
+    // para o percentual efetivo exibido ficar coerente.
     const linhas = await this.ds.query(
       `SELECT v.id, v.nome,
-              COALESCE(SUM(p.total),0) vendido,
-              COALESCE(SUM(p.total * (${taxa}) / 100.0),0) comissao
+              COALESCE(SUM(p.subtotal),0) vendido,
+              COALESCE(SUM(p.subtotal * (${taxa}) / 100.0),0) comissao
          FROM "${s}".vendedor v
          JOIN "${s}".pedido p ON p.vendedor_id = v.id AND p.status = 'entregue'
         WHERE ($1::date IS NULL OR p.criado_em::date >= $1)
           AND ($2::date IS NULL OR p.criado_em::date <= $2)
         GROUP BY v.id, v.nome
-        HAVING SUM(p.total) > 0
+        HAVING SUM(p.subtotal) > 0
         ORDER BY v.nome`, [de, ate]);
     return linhas.map((r: any) => {
       const vendido = Number(r.vendido);

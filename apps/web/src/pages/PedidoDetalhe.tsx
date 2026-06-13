@@ -41,7 +41,6 @@ export function PedidoDetalhe() {
   const [erro, setErro] = useState<string | null>(null);
   const podeGerenciar = temCapability('comercial.pedido.gerenciar');
   const podeCriar = temCapability('comercial.pedido.criar');
-  const [formas, setFormas] = useState<string[]>([]);
   const [motoboys, setMotoboys] = useState<{ id: string; nome: string; ativo: boolean }[]>([]);
   const [modal, setModal] = useState<'envio' | 'entrega' | null>(null);
 
@@ -55,7 +54,6 @@ export function PedidoDetalhe() {
   async function carregar() { try { setP(await api.get('/pedidos/' + id, token!)); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
   useEffect(() => {
     carregar();
-    if (temCapability('cadastros.forma_entrega.listar')) api.get<{ nome: string; ativo: boolean }[]>('/formas-entrega', token!).then((l) => setFormas(l.filter((f) => f.ativo).map((f) => f.nome))).catch(() => {});
     if (temCapability('cadastros.motoboy.listar')) api.get<{ id: string; nome: string; ativo: boolean }[]>('/motoboys', token!).then((l) => setMotoboys(l.filter((m) => m.ativo))).catch(() => {});
     /* eslint-disable-next-line */
   }, [id]);
@@ -145,7 +143,7 @@ export function PedidoDetalhe() {
           <div><span className="det-l">{t('pedidos.forma_pgto')}</span><div>{p.formaPagamento ?? '—'}</div></div>
           <div><span className="det-l">{t('pedidos.data')}</span><div>{new Date(p.criadoEm).toLocaleString('pt-BR')}</div></div>
           <div><span className="det-l">{t('entrega.forma')}</span><div>{entregaTexto}</div></div>
-          {p.formaEnvio && <div><span className="det-l">{t('pedido.forma_envio')}</span><div>{p.formaEnvio}{p.formaEnvioDetalhe ? ' · ' + p.formaEnvioDetalhe : ''}</div></div>}
+          {p.formaEnvio && <div><span className="det-l">{t('pedido.forma_envio')}</span><div>{(['retirada', 'motoboy', 'correios', 'transportadora'].includes(p.formaEnvio) ? t('entrega.' + p.formaEnvio) : p.formaEnvio)}{p.formaEnvioDetalhe ? ' · ' + p.formaEnvioDetalhe : ''}</div></div>}
           {p.entregueEm && <div><span className="det-l">{t('pedido.entregue_em')}</span><div>{new Date(p.entregueEm + 'T00:00:00').toLocaleDateString('pt-BR')}</div></div>}
           {p.separadoPor && <div><span className="det-l">{t('pedido.separado_por')}</span><div>{p.separadoPor}{p.separadoEm ? ' · ' + new Date(p.separadoEm).toLocaleString('pt-BR') : ''}</div></div>}
           {p.expedidoPor && <div><span className="det-l">{t('pedido.expedido_por')}</span><div>{p.expedidoPor}{p.expedidoEm ? ' · ' + new Date(p.expedidoEm).toLocaleString('pt-BR') : ''}</div></div>}
@@ -222,7 +220,7 @@ export function PedidoDetalhe() {
         </div>
       )}
 
-      {modal === 'envio' && <ModalFormaEnvio numero={p.numero} formas={formas} motoboys={motoboys} pedirMotoboy={p.formaEntrega === 'motoboy'} inicial={{ forma: p.formaEnvio, detalhe: p.formaEnvioDetalhe }}
+      {modal === 'envio' && <ModalFormaEnvio numero={p.numero} formaEntrega={p.formaEntrega} motoboys={motoboys}
         onFechar={() => setModal(null)} onConfirmar={(forma, det, motoboyId) => { setModal(null); patchStatus('expedido', { formaEnvio: forma, formaEnvioDetalhe: det, ...(motoboyId ? { motoboyId } : {}) }); }} />}
       {modal === 'entrega' && <ModalDataEntrega numero={p.numero} inicial={p.entregueEm}
         onFechar={() => setModal(null)} onConfirmar={(data) => { setModal(null); patchStatus('entregue', { entregueEm: data }); }} />}

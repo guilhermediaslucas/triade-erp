@@ -71,7 +71,16 @@ export function Pedidos() {
               <div className="pk-body">
                 {cards.map((p) => (
                   <div key={p.id} className="pk-card" onClick={() => nav('/comercial/pedidos/' + p.id)}>
-                    <div className="pk-card-top"><b className="pk-num">{numeroPedido(p.numero)}</b><span className="pk-data">{new Date(p.criadoEm).toLocaleDateString('pt-BR')}</span></div>
+                    <div className="pk-card-top">
+                      <b className="pk-num">{numeroPedido(p.numero)}</b>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span className="pk-data">{new Date(p.criadoEm).toLocaleDateString('pt-BR')}</span>
+                        {p.status === 'orcamento' && temCapability('comercial.pedido.criar') && (
+                          <button className="pk-edit" title={t('pedido.editar')} aria-label={t('pedido.editar')}
+                            onClick={(e) => { e.stopPropagation(); nav('/comercial/pedidos/' + p.id + '/editar'); }}><Ic name="i-edit" className="sm" /></button>
+                        )}
+                      </span>
+                    </div>
                     <div className="pk-cli">{p.clienteNome ?? '—'}{p.vendedorNome ? ' · ' + p.vendedorNome : ''}</div>
                     <div className="pk-meta"><span className={pillForma(p.formaPagamento)}>{p.formaPagamento ?? '—'}</span><span className="pk-tot">{moeda(p.total)}</span></div>
                   </div>

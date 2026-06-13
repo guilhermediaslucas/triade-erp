@@ -2,40 +2,70 @@ import { useState } from 'react';
 import { useI18n } from '../i18n/I18nContext.js';
 import { numeroPedido } from '../lib/pedido.js';
 
-// Modal exibido ao mover um pedido para "Expedido": escolhe a forma de envio
-// (sugestões vêm do cadastro Formas de entrega) + um detalhe opcional (rastreio).
-// Quando o pedido é por MOTOBOY, exige escolher o motoboy (cadastro) aqui — é nesta
-// etapa que o frete passa a ser atribuído ao motoboy (Gestão de fretes).
-export function ModalFormaEnvio({ numero, formas, inicial, motoboys, pedirMotoboy, onFechar, onConfirmar }: {
-  numero: number; formas: string[]; inicial?: { forma: string | null; detalhe: string | null };
-  motoboys?: { id: string; nome: string }[]; pedirMotoboy?: boolean;
+// Modal exibido ao mover um pedido para "Expedido". A FORMA DE ENTREGA vem do
+// pedido de venda e NÃO pode ser alterada aqui — só se informa o detalhe que falta:
+//  - retirada      → nada a informar (o cliente retira);
+//  - motoboy       → escolher o motoboy (cadastro); é aqui que o frete passa a ser
+//                    atribuído ao motoboy (Gestão de fretes);
+//  - correios      → código de rastreio;
+//  - transportadora→ nome da transportadora (+ código de rastreio opcional).
+export function ModalFormaEnvio({ numero, formaEntrega, motoboys, onFechar, onConfirmar }: {
+  numero: number; formaEntrega: string;
+  motoboys?: { id: string; nome: string }[];
   onFechar: () => void; onConfirmar: (formaEnvio: string, detalhe: string, motoboyId: string | null) => void;
 }) {
   const { t } = useI18n();
-  const [forma, setForma] = useState(inicial?.forma ?? '');
-  const [detalhe, setDetalhe] = useState(inicial?.detalhe ?? '');
   const [motoboyId, setMotoboyId] = useState('');
-  const motoboyOk = !pedirMotoboy || !!motoboyId;
+  const [codigo, setCodigo] = useState('');
+  const [transp, setTransp] = useState('');
+
+  const ehMotoboy = formaEntrega === 'motoboy';
+  const ehCorreios = formaEntrega === 'correios';
+  const ehTransp = formaEntrega === 'transportadora';
+  const ok = ehMotoboy ? !!motoboyId : ehCorreios ? !!codigo.trim() : ehTransp ? !!transp.trim() : true;
+
+  function confirmar() {
+    let detalhe = '';
+    if (ehCorreios) detalhe = codigo.trim();
+    else if (ehTransp) detalhe = [transp.trim(), codigo.trim()].filter(Boolean).join(' · ');
+    onConfirmar(formaEntrega, detalhe, motoboyId || null);
+  }
+
   return (
     <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 460 }}>
       <h2>{t('fenv.titulo')} · {numeroPedido(numero)}</h2>
-      <label className="campo">{t('fenv.forma')}
-        <input list="fenv-formas" value={forma} onChange={(e) => setForma(e.target.value)} placeholder={t('fenv.selecione')} autoFocus />
-        <datalist id="fenv-formas">{formas.map((f) => <option key={f} value={f} />)}</datalist>
-      </label>
-      {pedirMotoboy && (
+      <div className="campo">
+        <span>{t('entrega.forma')}</span>
+        <div className="fenv-forma-fixa">{t('entrega.' + formaEntrega)}</div>
+      </div>
+      {formaEntrega === 'retirada' && <div className="nota-info">{t('fenv.retirada_nota')}</div>}
+      {ehMotoboy && (
         <label className="campo">{t('entrega.motoboy')}
-          <select value={motoboyId} onChange={(e) => setMotoboyId(e.target.value)}>
+          <select value={motoboyId} onChange={(e) => setMotoboyId(e.target.value)} autoFocus>
             <option value="">{t('fenv.selecione_motoboy')}</option>
             {(motoboys ?? []).map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
           </select>
           {(motoboys ?? []).length === 0 && <span className="hint">{t('fenv.sem_motoboy')}</span>}
         </label>
       )}
-      <label className="campo">{t('fenv.detalhe')}<input value={detalhe} onChange={(e) => setDetalhe(e.target.value)} placeholder={t('fenv.detalhe_ph')} /></label>
+      {ehCorreios && (
+        <label className="campo">{t('fenv.cod_rastreio')}
+          <input value={codigo} onChange={(e) => setCodigo(e.target.value)} placeholder={t('fenv.cod_rastreio_ph')} autoFocus />
+        </label>
+      )}
+      {ehTransp && (
+        <>
+          <label className="campo">{t('fenv.transportadora')}
+            <input value={transp} onChange={(e) => setTransp(e.target.value)} placeholder={t('fenv.transportadora_ph')} autoFocus />
+          </label>
+          <label className="campo">{t('fenv.cod_rastreio')} <span className="muted">({t('fenv.opcional')})</span>
+            <input value={codigo} onChange={(e) => setCodigo(e.target.value)} placeholder={t('fenv.cod_rastreio_ph')} />
+          </label>
+        </>
+      )}
       <div className="modal-acoes">
         <button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button>
-        <button className="btn-primary" disabled={!forma.trim() || !motoboyOk} onClick={() => onConfirmar(forma.trim(), detalhe.trim(), motoboyId || null)}>{t('fenv.confirmar')}</button>
+        <button className="btn-primary" disabled={!ok} onClick={confirmar}>{t('fenv.confirmar')}</button>
       </div>
     </div></div>
   );

@@ -7,6 +7,7 @@ import { moeda } from '../lib/pedido.js';
 import { mascaraCep, buscarCep, UFS } from '../lib/br.js';
 import { ModalNovaPessoa } from '../components/SeletorPessoa.js';
 import { Ic } from '../components/Icones.js';
+import { useToast } from '../components/Toast.js';
 
 interface Endereco { cep: string | null; logradouro: string | null; numero: string | null; complemento?: string | null; bairro: string | null; cidade: string | null; uf: string | null; favorito: boolean; }
 interface Cliente { id: string; tipoPessoa: string; nome: string; fantasia: string | null; documento: string; email: string | null; telefone: string | null; limiteCredito: number; ativo: boolean; enderecos: Endereco[]; }
@@ -42,6 +43,7 @@ export function NovoPedido() {
   const { token } = useAuth();
   const { t } = useI18n();
   const nav = useNavigate();
+  const toast = useToast();
   const { id: pedidoId } = useParams();         // presente = modo edição (orçamento)
   const editando = !!pedidoId;
   const [enderecoAtual, setEnderecoAtual] = useState<string | null>(null);
@@ -69,6 +71,8 @@ export function NovoPedido() {
   const [erro, setErro] = useState<string | null>(null);
   const [salv, setSalv] = useState(false);
   const [novoCli, setNovoCli] = useState(false);
+  const [estoque, setEstoque] = useState<Record<string, number>>({});
+  const [estoqueOk, setEstoqueOk] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -80,8 +84,14 @@ export function NovoPedido() {
       setClientes(c); setVendedores(v); setProdutos(p.filter((x) => x.ativo));
       setCondicoes((cond as Condicao[]).filter((x: any) => x.ativo !== false));
     });
+    // Saldo disponível por produto (informativo no ato do pedido). Pode falhar se o
+    // usuário não tiver a permissão de ver estoque — nesse caso simplesmente não mostra.
+    api.get<{ produtoId: string; saldo: number }[]>('/estoque', token!)
+      .then((l) => { const m: Record<string, number> = {}; l.forEach((x) => { m[x.produtoId] = x.saldo; }); setEstoque(m); setEstoqueOk(true); })
+      .catch(() => setEstoqueOk(false));
     /* eslint-disable-next-line */
   }, []);
+  const dispDe = (pid: string) => estoque[pid] ?? 0;
 
   // Modo edição: carrega o pedido (orçamento) e preenche o formulário.
   useEffect(() => {
@@ -243,7 +253,10 @@ export function NovoPedido() {
     try {
       const id = await salvar();
       await talvezSalvarEndereco();
-      try { await api.patch('/pedidos/' + id + '/status', { status: 'aguardando_pagamento' }, token!); } catch { /* confirma no detalhe */ }
+      let confirmou = false;
+      try { await api.patch('/pedidos/' + id + '/status', { status: 'aguardando_pagamento' }, token!); confirmou = true; } catch { /* confirma no detalhe */ }
+      // Pix/Boleto ficam pendentes de baixa no Financeiro — avisa por toast.
+      if (confirmou && ehPix(formaPagamento)) toast(t('pedido.toast_pix_pendente'));
       nav('/comercial/pedidos/' + id);
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
@@ -345,6 +358,11 @@ export function NovoPedido() {
                     <option value="">{t('pedidos.escolha_produto')}</option>
                     {produtos.map((pp) => <option key={pp.produtoId} value={pp.produtoId}>{pp.produtoNome}</option>)}
                   </select>
+                  {estoqueOk && it.produtoId && (
+                    <small className="hint" style={{ color: (Number(it.quantidade) || 0) > dispDe(it.produtoId) ? '#e1483b' : 'var(--muted)' }}>
+                      {t('pedidos.disponivel')}: {dispDe(it.produtoId)}
+                    </small>
+                  )}
                 </td>
                 <td><input type="number" min="0" step="1" value={it.quantidade} onChange={(e) => setItem(i, 'quantidade', e.target.value)} style={{ width: 90 }} /></td>
                 <td>{moeda(precoDe(it.produtoId))}</td>
