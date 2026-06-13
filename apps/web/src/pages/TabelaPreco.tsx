@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
 import { Ic } from '../components/Icones.js';
+import { ModalNovaPessoa } from '../components/SeletorPessoa.js';
 
 interface PrecoProduto { produtoId: string; produtoNome: string; categoriaNome: string | null; unidade: string; ativo: boolean; preco: number; campanhasCount: number; precoVigente: number | null; precoVigenteMotivo: string | null; }
 interface Cliente { id: string; nome: string; }
@@ -18,6 +19,12 @@ export function TabelaPreco() {
   const [modo, setModo] = useState<'base' | 'cliente'>('base');
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [clienteId, setClienteId] = useState('');
+  const [novoCli, setNovoCli] = useState(false);
+  const recarregarClientes = (nomeSel?: string) =>
+    api.get<Cliente[]>('/clientes', token!).then((l) => {
+      setClientes(l);
+      if (nomeSel) { const c = l.find((x) => x.nome === nomeSel); if (c) carregarCliente(c.id); }
+    }).catch(() => {});
   const [base, setBase] = useState<PrecoProduto[]>([]);
   const [cli, setCli] = useState<LinhaCli[]>([]);
   const [valores, setValores] = useState<Record<string, string>>({});
@@ -97,7 +104,11 @@ export function TabelaPreco() {
             <select value={modo} onChange={(e) => trocarModo(e.target.value as 'base' | 'cliente')}>
               <option value="base">{t('precos.modo_base')}</option><option value="cliente">{t('precos.modo_cliente')}</option>
             </select>
-            {modo === 'cliente' && <select value={clienteId} onChange={(e) => carregarCliente(e.target.value)}><option value="">{t('precos.escolha_cliente')}</option>{clientes.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}</select>}
+            {modo === 'cliente' && (<>
+              <select value={clienteId} onChange={(e) => carregarCliente(e.target.value)}><option value="">{t('precos.escolha_cliente')}</option>{clientes.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}</select>
+              {temCapability('cadastros.cliente.gerenciar') && <button type="button" className="btn-link" style={{ fontSize: 12 }} onClick={() => setNovoCli(true)}>+ {t('fin.cadastrar_novo')}</button>}
+            </>)}
+            {novoCli && <ModalNovaPessoa tipo="cliente" onFechar={() => setNovoCli(false)} onCriado={(nome) => { setNovoCli(false); recarregarClientes(nome); }} />}
             {pode && <button className="btn-primary" disabled={salvando} onClick={salvarTabela}><Ic name="i-check" className="sm" /> {t('precos.salvar_tabela')}</button>}
           </div>
         </div>
