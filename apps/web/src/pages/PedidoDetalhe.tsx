@@ -6,6 +6,7 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { useToast } from '../components/Toast.js';
 import { corStatus, moeda, numeroPedido, PROXIMOS, type StatusPedido } from '../lib/pedido.js';
 import { ModalDataEntrega, ModalFormaEnvio } from '../components/ExpedicaoModais.js';
+import { BotaoEscanear } from '../components/BotaoEscanear.js';
 
 interface ItemLote { lote: string; validade: string | null; }
 interface Item { produtoNome: string; quantidade: number; precoUnitario: number; subtotal: number; lotes?: ItemLote[]; }
@@ -187,6 +188,7 @@ export function PedidoDetalhe() {
                 onChange={(e) => setScan(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); bipar(scan); } }} />
             </label>
+            <div style={{ marginTop: 6 }}><BotaoEscanear onLido={bipar} /></div>
             {codigos.length > 0 && (
               <div className="chips">
                 {codigos.map((c) => (

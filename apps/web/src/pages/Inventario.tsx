@@ -4,6 +4,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { baixarExcel } from '../lib/excel.js';
+import { BotaoEscanear } from '../components/BotaoEscanear.js';
 
 interface Faltante { codigo: string; produtoNome: string; lote: string | null; validade: string | null; }
 interface Resultado { id: string; esperadas: number; encontradas: number; faltantes: number; desconhecidas: number; baixouPerda: boolean; faltantesDetalhe: Faltante[]; }
@@ -81,6 +82,7 @@ export function Inventario() {
                   onChange={(e) => setScan(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); bipar(scan); } }} />
               </label>
+              <div style={{ marginTop: 6 }}><BotaoEscanear onLido={bipar} /></div>
               {codigos.length > 0 && (
                 <div className="chips">
                   {codigos.map((c) => <span key={c} className="chip" style={{ fontFamily: 'monospace' }}>{c}<button type="button" className="chip-x" onClick={() => setCodigos((cs) => cs.filter((x) => x !== c))}>×</button></span>)}

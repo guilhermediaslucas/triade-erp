@@ -13,6 +13,10 @@
     "cap:ios": "cap open ios"
   },
   "dependencies": {
+    "@capacitor-mlkit/barcode-scanning": "^8.1.0",
+    "@capacitor/android": "^8.4.0",
+    "@capacitor/cli": "^8.4.0",
+    "@capacitor/core": "^8.4.0",
     "@triade/shared": "*",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

@@ -3,6 +3,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
+import { BotaoEscanear } from '../components/BotaoEscanear.js';
 
 interface Pend { id: string; fornecedorNome: string | null; produtoNome: string; quantidade: number; custoUnitario: number; total: number; nf: string | null; criadoEm: string; }
 interface Marca { id: string; nome: string; ativo: boolean; }
@@ -131,6 +132,7 @@ function LoteBloco({ idx, b, marcas, podeRemover, onPatch, onBipar, onRemoverCod
           onChange={(e) => setScan(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (onBipar(scan)) { setScan(''); scanRef.current?.focus(); } } }} />
       </label>
+      <div style={{ marginTop: 6 }}><BotaoEscanear onLido={(v) => onBipar(v)} /></div>
       {b.codigos.length > 0 && (
         <div className="chips">
           {b.codigos.map((c) => (

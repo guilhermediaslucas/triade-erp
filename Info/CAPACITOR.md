@@ -86,24 +86,31 @@ aparelho conectado por USB (com modo desenvolvedor ligado).
 
 ---
 
-## 6. Próximo passo: leitura de código de barras nativa
+## 6. Leitura de código de barras nativa (JÁ IMPLEMENTADO)
 
-O fluxo de estoque/separação do TRIADE é por **bipagem**. Hoje, no navegador,
-depende de leitor USB/digitação. No app dá pra usar a **câmera nativa**:
+O fluxo de estoque/separação do TRIADE é por **bipagem**. A integração já está no
+código: nas telas **Entrada de estoque, Recebimento, Inventário e Separação**
+(detalhe do pedido) há um botão **"📷 Escanear"** que abre a câmera nativa e
+injeta o código no mesmo handler de bipagem. No **navegador** o botão não aparece
+(usa-se o leitor USB / digitação, como hoje) — `lib/scanner.ts` decide isso por
+`Capacitor.isNativePlatform()`, então a web não muda.
+
+O plugin `@capacitor-mlkit/barcode-scanning` já está no `package.json`. Para
+materializar e levar ao app:
 
 ```bash
-npm install @capacitor-mlkit/barcode-scanning -w @triade/web
+npm install                 # baixa o plugin novo (na raiz do repo)
 cd apps/web && npm run cap:sync
 ```
 
-Depois, nas telas de bipagem (Entrada, Recebimento, Separação, Inventário),
-um botão "Escanear" chama o leitor nativo e injeta o código no mesmo campo que
-já recebe a digitação. Permissão de câmera precisa ser declarada:
-- Android: `android.permission.CAMERA` no `AndroidManifest.xml`.
-- iOS: `NSCameraUsageDescription` no `Info.plist`.
+Permissão de câmera (após `cap add`, uma vez):
+- **Android** — em `apps/web/android/app/src/main/AndroidManifest.xml`:
+  `<uses-permission android:name="android.permission.CAMERA" />`
+- **iOS** — em `apps/web/ios/App/App/Info.plist`:
+  `NSCameraUsageDescription` = "Usado para ler o código de barras dos produtos."
 
-> Posso implementar essa integração quando você quiser — é aditiva e usa o
-> mesmo handler de código que já existe.
+> No iOS o scanner usa o framework nativo; no Android o módulo do Google ML Kit é
+> baixado sob demanda na 1ª leitura (o `lib/scanner.ts` já trata isso).
 
 ---
 

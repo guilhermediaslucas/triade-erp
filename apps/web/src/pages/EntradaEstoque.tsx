@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { BotaoEscanear } from '../components/BotaoEscanear.js';
 
 interface PrecoProduto { produtoId: string; produtoNome: string; ativo: boolean; }
 interface Marca { id: string; nome: string; ativo: boolean; }
@@ -79,6 +80,7 @@ export function EntradaEstoque() {
             onChange={(e) => setScan(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); bipar(scan); } }} />
         </label>
+        <div style={{ marginTop: 6 }}><BotaoEscanear onLido={bipar} /></div>
         {codigos.length > 0 && (
           <div className="chips">
             {codigos.map((c) => (

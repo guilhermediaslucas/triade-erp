@@ -518,4 +518,23 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".motoboy ADD COLUMN IF NOT EXISTS chave_pix text;
     `,
   },
+  {
+    // Semeia as 4 formas de entrega do mockup em todas as empresas.
+    // Idempotente: insere cada uma só se ainda não existir um registro com o
+    // mesmo nome — não apaga nem duplica o que a empresa já cadastrou.
+    nome: '037_seed_formas_entrega',
+    sql: (s) => `
+      INSERT INTO "${s}".forma_entrega (id, nome, tipo, prazo, observacao, ativo)
+      SELECT gen_random_uuid(), v.nome, v.tipo, v.prazo, v.obs, v.ativo
+      FROM (VALUES
+        ('Motoboy', 'motoboy', 'Mesmo dia', 'Entrega expressa na região metropolitana', true),
+        ('Correios', 'correios', '3 a 8 dias úteis', 'PAC / SEDEX conforme CEP', true),
+        ('Retirada na loja', 'retirada', 'Imediato', 'Cliente retira no balcão / CD', true),
+        ('Transportadora', 'transportadora', '2 a 5 dias úteis', 'Cargas maiores / interior', false)
+      ) AS v(nome, tipo, prazo, obs, ativo)
+      WHERE NOT EXISTS (
+        SELECT 1 FROM "${s}".forma_entrega fe WHERE fe.nome = v.nome
+      );
+    `,
+  },
 ];

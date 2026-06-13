@@ -5,8 +5,8 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
 import { Ic } from '../components/Icones.js';
+import { SeletorPessoa } from '../components/SeletorPessoa.js';
 
-interface Fornecedor { id: string; nome: string; }
 interface PrecoProduto { produtoId: string; produtoNome: string; ativo: boolean; }
 
 const hojeISO = () => new Date().toISOString().slice(0, 10);
@@ -15,7 +15,6 @@ export function NotaEntrada() {
   const { token } = useAuth();
   const { t } = useI18n();
   const nav = useNavigate();
-  const [forns, setForns] = useState<Fornecedor[]>([]);
   const [produtos, setProdutos] = useState<PrecoProduto[]>([]);
   const [fornecedorNome, setFornecedor] = useState('');
   const [produtoNome, setProdutoNome] = useState('');
@@ -30,7 +29,6 @@ export function NotaEntrada() {
   const [salv, setSalv] = useState(false);
 
   useEffect(() => {
-    api.get<Fornecedor[]>('/fornecedores', token!).then(setForns).catch(() => {});
     api.get<PrecoProduto[]>('/precos', token!).then((l) => setProdutos(l.filter((p) => p.ativo))).catch(() => {});
     /* eslint-disable-next-line */
   }, []);
@@ -63,10 +61,7 @@ export function NotaEntrada() {
       <div className="card" style={{ maxWidth: 'none' }}>
         <div className="card-head"><h3>{t('nota.card')}</h3></div>
         <div className="cores-grid">
-          <label className="campo">{t('fin.fornecedor')}
-            <input list="dlForn" value={fornecedorNome} onChange={(e) => setFornecedor(e.target.value)} placeholder={t('nota.forn_ph')} />
-            <datalist id="dlForn">{forns.map((f) => <option key={f.id} value={f.nome} />)}</datalist>
-          </label>
+          <SeletorPessoa tipo="fornecedor" value={fornecedorNome} onChange={setFornecedor} placeholder={t('nota.forn_ph')} />
           <label className="campo">{t('precos.produto')}
             <input list="dlProd" value={produtoNome} onChange={(e) => setProdutoNome(e.target.value)} placeholder={t('nota.produto_ph')} />
             <datalist id="dlProd">{produtos.map((p) => <option key={p.produtoId} value={p.produtoNome} />)}</datalist>

@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
 import { mascaraCep, buscarCep, UFS } from '../lib/br.js';
+import { ModalNovaPessoa } from '../components/SeletorPessoa.js';
 
 interface Endereco { cep: string | null; logradouro: string | null; numero: string | null; complemento?: string | null; bairro: string | null; cidade: string | null; uf: string | null; favorito: boolean; }
 interface Cliente { id: string; tipoPessoa: string; nome: string; fantasia: string | null; documento: string; email: string | null; telefone: string | null; limiteCredito: number; ativo: boolean; enderecos: Endereco[]; }
@@ -63,6 +64,7 @@ export function NovoPedido() {
   const [sel, setSel] = useState<Set<number>>(new Set());
   const [erro, setErro] = useState<string | null>(null);
   const [salv, setSalv] = useState(false);
+  const [novoCli, setNovoCli] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -78,6 +80,13 @@ export function NovoPedido() {
     });
     /* eslint-disable-next-line */
   }, []);
+
+  // Recarrega a lista de clientes após cadastro inline e já seleciona o novo (por nome).
+  const recarregarClientes = (nomeSel?: string) =>
+    api.get<Cliente[]>('/clientes', token!).then((c) => {
+      setClientes(c);
+      if (nomeSel) { const n = c.find((x) => x.nome === nomeSel); if (n) escolherCliente(n.id); }
+    }).catch(() => {});
 
   const cliente = clientes.find((c) => c.id === clienteId);
   // Endereços do cliente com o favorito no topo.
@@ -212,12 +221,13 @@ export function NovoPedido() {
           <label className="campo full">
             <span style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               {t('pedidos.cliente_comercial')}
-              <Link to="/cadastros/clientes" className="btn-link" style={{ fontSize: 12 }}>+ {t('pedidos.cadastrar_cliente')}</Link>
+              <button type="button" className="btn-link" style={{ fontSize: 12 }} onClick={() => setNovoCli(true)}>+ {t('pedidos.cadastrar_cliente')}</button>
             </span>
             <select value={clienteId} onChange={(e) => escolherCliente(e.target.value)}>
               <option value="">{t('pedidos.escolha_cliente')}</option>{clientes.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
             </select>
           </label>
+          {novoCli && <ModalNovaPessoa tipo="cliente" onFechar={() => setNovoCli(false)} onCriado={(nome) => { setNovoCli(false); recarregarClientes(nome); }} />}
           <label className="campo">{t('pedidos.vendedor')}
             <select value={vendedorId} onChange={(e) => setVendedorId(e.target.value)}>
               <option value="">—</option>{vendedores.map((v) => <option key={v.id} value={v.id}>{v.nome}</option>)}
