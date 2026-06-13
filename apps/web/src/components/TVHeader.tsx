@@ -17,9 +17,11 @@ export function TVHeader({ titulo, hora, atualizado }: { titulo: string; hora: D
       </div>
       <div className="tv-centro">
         <div className="tv-painel-nome">{titulo}</div>
-        <div className="tv-relogio">{hhmmss(hora)}</div>
-        <div className="tv-data">{hora.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })}</div>
-        {atualizado && <div className="tv-upd">{t('tv.atualizado')} {hhmmss(atualizado)}</div>}
+        <div className="tv-sub-linha">
+          <b className="tv-relogio-in">{hhmmss(hora)}</b>
+          <span className="tv-sub-sep"> · {hora.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })}</span>
+          {atualizado && <span className="tv-sub-upd"> · {t('tv.atualizado')} {hhmmss(atualizado)}</span>}
+        </div>
       </div>
       <div className="tv-top-dir">
         <span className="tv-wordmark tv-brand-lg">TR<span className="tv-rm-i">Í</span>ADE <span className="tv-rm-erp">ERP</span></span>

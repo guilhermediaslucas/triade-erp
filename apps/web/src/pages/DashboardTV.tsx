@@ -14,6 +14,13 @@ interface Serie { labels: string[]; data: number[]; }
 
 const REFRESH_MS = 45000;
 
+// Moeda compacta para a TV: sem casas decimais; abrevia valores grandes (milhões).
+function moedaTV(v: number): string {
+  const n = Number(v) || 0;
+  if (Math.abs(n) >= 1_000_000) return 'R$ ' + (n / 1_000_000).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' mi';
+  return 'R$ ' + Math.round(n).toLocaleString('pt-BR');
+}
+
 // Gráfico de barras (vendas por dia) — SVG, ocupa a largura toda; rótulos no eixo X.
 function Barras({ labels, data }: { labels: string[]; data: number[] }) {
   const W = 1000, H = 340, padB = 26;
@@ -56,7 +63,7 @@ export function DashboardTV() {
         api.get<Serie>('/dashboard/serie?tipo=dia', token!).catch(() => null),
       ]);
       setD(resumo);
-      if (sd) setSerie({ labels: sd.labels.slice(-30), data: sd.data.slice(-30) });
+      if (sd) setSerie({ labels: sd.labels.slice(-14), data: sd.data.slice(-14) });
       setAtualizado(new Date());
     } catch { /* mantém */ }
   }
@@ -76,20 +83,19 @@ export function DashboardTV() {
       <TVHeader titulo={t('tv.titulo')} hora={hora} atualizado={atualizado} />
 
       {!d ? <div className="tv-load">{t('common.carregando')}</div> : (
-        <>
-          <div className="tv-kpis tv-kpis3">
-            <div className="tv-kpi"><div className="tv-kpi-lbl">{t('tv.dia')}</div><div className="tv-kpi-val">{moeda(d.vendasDia)}</div></div>
-            <div className="tv-kpi"><div className="tv-kpi-lbl">{t('tv.semana')}</div><div className="tv-kpi-val">{moeda(d.vendasSemana)}</div></div>
-            <div className="tv-kpi tv-destaque"><div className="tv-kpi-lbl">{t('tv.mes')}</div><div className="tv-kpi-val">{moeda(d.vendasMes)}</div></div>
-          </div>
-
+        <div className="tv-vendas-grid">
           <div className="tv-card tv-grafico">
             <div className="tv-card-h">{t('tv.vendas_dia')}</div>
             {serie && serie.data.some((v) => v > 0)
               ? <Barras labels={serie.labels} data={serie.data} />
               : <div className="tv-vazio">{t('dash.serie_vazio')}</div>}
           </div>
-        </>
+          <div className="tv-kpis-col">
+            <div className="tv-kpi"><div className="tv-kpi-lbl">{t('tv.dia')}</div><div className="tv-kpi-val">{moedaTV(d.vendasDia)}</div></div>
+            <div className="tv-kpi"><div className="tv-kpi-lbl">{t('tv.semana')}</div><div className="tv-kpi-val">{moedaTV(d.vendasSemana)}</div></div>
+            <div className="tv-kpi tv-destaque"><div className="tv-kpi-lbl">{t('tv.mes')}</div><div className="tv-kpi-val">{moedaTV(d.vendasMes)}</div></div>
+          </div>
+        </div>
       )}
     </div>
   );
