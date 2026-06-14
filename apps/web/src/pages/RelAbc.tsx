@@ -5,7 +5,8 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { CabecalhoRelatorio } from '../components/CabecalhoRelatorio.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
-import { baixarExcel } from '../lib/excel.js';
+import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
+import { BotaoExcel } from '../components/BotaoExcel.js';
 
 type Classe = 'A' | 'B' | 'C';
 interface Linha { nome: string; quantidade: number; total: number; pct: number; acumuladoPct: number; classe: Classe; }
@@ -48,9 +49,9 @@ export function RelAbc() {
         {d && d.linhas.length > 0 && (
           <><button className="btn-ghost" onClick={() => baixarCsv('curva_abc_' + de + '_' + ate,
             [t('precos.produto'), t('rel.qtd'), t('rel.total'), t('abc.pct'), t('abc.acumulado'), t('abc.classe')],
-            d.linhas.map((l) => [l.nome, l.quantidade, l.total, l.pct, l.acumuladoPct, l.classe]))}>{t('rel.exportar_csv')}</button> <button className="btn-ghost" onClick={() => baixarExcel('curva_abc_' + de + '_' + ate,
+            d.linhas.map((l) => [l.nome, l.quantidade, l.total, l.pct, l.acumuladoPct, l.classe]))}>{t('rel.exportar_csv')}</button> <BotaoExcel onClick={() => baixarExcel('curva_abc_' + de + '_' + ate,
             [t('precos.produto'), t('rel.qtd'), t('rel.total'), t('abc.pct'), t('abc.acumulado'), t('abc.classe')],
-            d.linhas.map((l) => [l.nome, l.quantidade, l.total, l.pct, l.acumuladoPct, l.classe]))}>{t('rel.exportar_xlsx')}</button></>
+            d.linhas.map((l) => [l.nome, l.quantidade, l.total, l.pct, l.acumuladoPct, l.classe]), { periodo: rotuloPeriodo(de, ate) })} /></>
         )}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}

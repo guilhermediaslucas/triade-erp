@@ -4,7 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
-import { baixarExcel } from '../lib/excel.js';
+import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
 
 interface FretePedido { numero: number; criadoEm: string; clienteNome: string | null; formaEntrega: string; motoboy: string | null; distanciaKm: number | null; frete: number; }
 interface FreteConfig { kmRate: number; minMotoboy: number; cepOrigem: string | null; }
@@ -52,7 +52,7 @@ export function GestaoFretes() {
   function exportar() {
     const cab = [t('gfrete.col_pedido'), t('pedidos.data'), t('fin.cliente'), t('entrega.forma'), t('entrega.motoboy'), t('gfrete.distancia'), t('gfrete.frete')];
     const linhasX = linhas.map((l) => [numeroPedido(l.numero), fmt(l.criadoEm), l.clienteNome ?? '', l.formaEntrega, l.motoboy ?? '', l.distanciaKm != null ? l.distanciaKm + ' km' : '', l.frete]);
-    baixarExcel('gestao_fretes', cab, linhasX);
+    baixarExcel('gestao_fretes', cab, linhasX, { periodo: rotuloPeriodo(de, ate) });
   }
 
   return (

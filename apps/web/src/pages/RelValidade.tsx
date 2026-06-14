@@ -7,6 +7,7 @@ import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel } from '../lib/excel.js';
+import { BotaoExcel } from '../components/BotaoExcel.js';
 
 interface Lote { produtoId: string; produto: string; lote: string | null; validade: string | null; saldo: number; custoUnitario: number; valor: number; }
 type Situacao = 'vencido' | 'critico' | 'atencao' | 'ok' | 'sem';
@@ -69,9 +70,9 @@ export function RelValidade() {
         {linhas.length > 0 && (
           <><button className="btn-ghost" onClick={() => baixarCsv('validade_lotes_' + hojeISO(),
             [t('precos.produto'), t('estoque.lote'), t('estoque.validade'), t('validade.dias'), t('rel.saldo'), t('rel.valor'), t('validade.situacao')],
-            linhas.map((l) => [l.produto, l.lote ?? '', l.validade ?? '', l.dias ?? '', l.saldo, l.valor, t('validade.' + l.sit)]))}>{t('rel.exportar_csv')}</button> <button className="btn-ghost" onClick={() => baixarExcel('validade_lotes_' + hojeISO(),
+            linhas.map((l) => [l.produto, l.lote ?? '', l.validade ?? '', l.dias ?? '', l.saldo, l.valor, t('validade.' + l.sit)]))}>{t('rel.exportar_csv')}</button> <BotaoExcel onClick={() => baixarExcel('validade_lotes_' + hojeISO(),
             [t('precos.produto'), t('estoque.lote'), t('estoque.validade'), t('validade.dias'), t('rel.saldo'), t('rel.valor'), t('validade.situacao')],
-            linhas.map((l) => [l.produto, l.lote ?? '', l.validade ?? '', l.dias ?? '', l.saldo, l.valor, t('validade.' + l.sit)]))}>{t('rel.exportar_xlsx')}</button></>
+            linhas.map((l) => [l.produto, l.lote ?? '', l.validade ?? '', l.dias ?? '', l.saldo, l.valor, t('validade.' + l.sit)]))} /></>
         )}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}

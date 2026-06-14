@@ -7,6 +7,7 @@ import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel } from '../lib/excel.js';
+import { BotaoExcel } from '../components/BotaoExcel.js';
 
 interface Linha { produtoId: string; produto: string; saldo: number; valor: number; ultimaSaida: string | null; }
 
@@ -54,9 +55,9 @@ export function RelEstoqueParado() {
         {linhas.length > 0 && (
           <><button className="btn-ghost" onClick={() => baixarCsv('estoque_parado_' + new Date().toISOString().slice(0, 10),
             [t('precos.produto'), t('rel.saldo'), t('rel.valor'), t('parado.ultima_saida'), t('parado.dias_parado')],
-            linhas.map((l) => [l.produto, l.saldo, l.valor, l.ultimaSaida ? l.ultimaSaida.slice(0, 10) : t('parado.nunca'), l.dias ?? t('parado.nunca')]))}>{t('rel.exportar_csv')}</button> <button className="btn-ghost" onClick={() => baixarExcel('estoque_parado_' + new Date().toISOString().slice(0, 10),
+            linhas.map((l) => [l.produto, l.saldo, l.valor, l.ultimaSaida ? l.ultimaSaida.slice(0, 10) : t('parado.nunca'), l.dias ?? t('parado.nunca')]))}>{t('rel.exportar_csv')}</button> <BotaoExcel onClick={() => baixarExcel('estoque_parado_' + new Date().toISOString().slice(0, 10),
             [t('precos.produto'), t('rel.saldo'), t('rel.valor'), t('parado.ultima_saida'), t('parado.dias_parado')],
-            linhas.map((l) => [l.produto, l.saldo, l.valor, l.ultimaSaida ? l.ultimaSaida.slice(0, 10) : t('parado.nunca'), l.dias ?? t('parado.nunca')]))}>{t('rel.exportar_xlsx')}</button></>
+            linhas.map((l) => [l.produto, l.saldo, l.valor, l.ultimaSaida ? l.ultimaSaida.slice(0, 10) : t('parado.nunca'), l.dias ?? t('parado.nunca')]))} /></>
         )}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}

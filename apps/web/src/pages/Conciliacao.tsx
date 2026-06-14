@@ -6,7 +6,8 @@ import { useToast } from '../components/Toast.js';
 import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
-import { baixarExcel } from '../lib/excel.js';
+import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
+import { BotaoExcel } from '../components/BotaoExcel.js';
 import { lerExtrato, type TxExtrato } from '../lib/extrato.js';
 
 interface Conta { id: string; nome: string; banco: string | null; saldo: number; ativo: boolean; }
@@ -112,9 +113,9 @@ export function Conciliacao() {
         {resp && resp.linhas.length > 0 && (
           <><button className="btn-ghost" onClick={() => baixarCsv('conciliacao_' + de + '_' + ate,
             [t('pedidos.data'), t('fin.descricao'), t('fin.cliente'), t('concil.tipo'), t('rel.valor'), t('concil.conciliado')],
-            resp.linhas.map((l) => [fmt(l.pagoEm), l.descricao, l.pessoaNome ?? '', l.tipo === 'receber' ? t('concil.entrada') : t('concil.saida'), l.valor, l.conciliado ? t('common.sim') : t('common.nao')]))}>{t('rel.exportar_csv')}</button> <button className="btn-ghost" onClick={() => baixarExcel('conciliacao_' + de + '_' + ate,
+            resp.linhas.map((l) => [fmt(l.pagoEm), l.descricao, l.pessoaNome ?? '', l.tipo === 'receber' ? t('concil.entrada') : t('concil.saida'), l.valor, l.conciliado ? t('common.sim') : t('common.nao')]))}>{t('rel.exportar_csv')}</button> <BotaoExcel onClick={() => baixarExcel('conciliacao_' + de + '_' + ate,
             [t('pedidos.data'), t('fin.descricao'), t('fin.cliente'), t('concil.tipo'), t('rel.valor'), t('concil.conciliado')],
-            resp.linhas.map((l) => [fmt(l.pagoEm), l.descricao, l.pessoaNome ?? '', l.tipo === 'receber' ? t('concil.entrada') : t('concil.saida'), l.valor, l.conciliado ? t('common.sim') : t('common.nao')]))}>{t('rel.exportar_xlsx')}</button></>
+            resp.linhas.map((l) => [fmt(l.pagoEm), l.descricao, l.pessoaNome ?? '', l.tipo === 'receber' ? t('concil.entrada') : t('concil.saida'), l.valor, l.conciliado ? t('common.sim') : t('common.nao')]), { periodo: rotuloPeriodo(de, ate) })} /></>
         )}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}

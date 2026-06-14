@@ -5,7 +5,8 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { CabecalhoRelatorio } from '../components/CabecalhoRelatorio.js';
 import { Ic } from '../components/Icones.js';
 import { baixarCsv } from '../lib/csv.js';
-import { baixarExcel } from '../lib/excel.js';
+import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
+import { BotaoExcel } from '../components/BotaoExcel.js';
 
 interface Hist { id: string; responsavel: string | null; esperadas: number; encontradas: number; faltantes: number; baixouPerda: boolean; criadoEm: string; }
 interface Faltante { codigo: string; produtoNome: string; lote: string | null; validade: string | null; }
@@ -63,9 +64,9 @@ export function RelInventarios() {
         {linhas.length > 0 && (
           <><button className="btn-ghost" onClick={() => baixarCsv('inventarios_' + de + '_' + ate,
             [t('inv.data'), t('inv.responsavel'), t('inv.esperadas'), t('inv.encontradas'), t('inv.faltantes'), t('relinv.acuracidade'), t('inv.baixa')],
-            linhas.map((h) => [fmt(h.criadoEm), h.responsavel ?? '—', h.esperadas, h.encontradas, h.faltantes, acur(h) + '%', h.baixouPerda ? t('inv.baixados') : '—']))}>{t('rel.exportar_csv')}</button> <button className="btn-ghost" onClick={() => baixarExcel('inventarios_' + de + '_' + ate,
+            linhas.map((h) => [fmt(h.criadoEm), h.responsavel ?? '—', h.esperadas, h.encontradas, h.faltantes, acur(h) + '%', h.baixouPerda ? t('inv.baixados') : '—']))}>{t('rel.exportar_csv')}</button> <BotaoExcel onClick={() => baixarExcel('inventarios_' + de + '_' + ate,
             [t('inv.data'), t('inv.responsavel'), t('inv.esperadas'), t('inv.encontradas'), t('inv.faltantes'), t('relinv.acuracidade'), t('inv.baixa')],
-            linhas.map((h) => [fmt(h.criadoEm), h.responsavel ?? '—', h.esperadas, h.encontradas, h.faltantes, acur(h) + '%', h.baixouPerda ? t('inv.baixados') : '—']))}>{t('rel.exportar_xlsx')}</button></>
+            linhas.map((h) => [fmt(h.criadoEm), h.responsavel ?? '—', h.esperadas, h.encontradas, h.faltantes, acur(h) + '%', h.baixouPerda ? t('inv.baixados') : '—']), { periodo: rotuloPeriodo(de, ate) })} /></>
         )}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}

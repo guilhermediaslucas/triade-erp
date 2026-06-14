@@ -4,7 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
-import { baixarExcel } from '../lib/excel.js';
+import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
 
 interface Lanc { id: string; tipo: 'entrada' | 'saida'; numero: string; descricao: string; pessoaNome: string | null; conta: string | null; dataCaixa: string; previsto: boolean; situacao: 'baixado' | 'vencido' | 'aberto'; valor: number; }
 interface Semana { de: string; ate: string; rotulo: string; entradas: number; saidas: number; }
@@ -52,7 +52,7 @@ export function FluxoCaixa() {
   function exportar() {
     const cab = [t('fluxo.tipo'), t('fin.numero'), t('fin.descricao'), t('fin.fornecedor'), t('fluxo.conta'), t('fluxo.data_caixa'), t('fin.situacao'), t('fin.valor')];
     const linhas = mostrados.map((l) => [t('fluxo.' + l.tipo), l.numero, l.descricao, l.pessoaNome ?? '', l.conta ?? '', l.dataCaixa, t('fluxo.' + l.situacao), (l.tipo === 'saida' ? -l.valor : l.valor)]);
-    baixarExcel('fluxo_caixa', cab, linhas);
+    baixarExcel('fluxo_caixa', cab, linhas, { periodo: rotuloPeriodo(de, ate) });
   }
 
   // Gráfico SVG de barras semanais (entradas verde / saídas vermelha).

@@ -5,7 +5,7 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { useToast } from '../components/Toast.js';
 import { moeda, abrevMoeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
-import { baixarExcel } from '../lib/excel.js';
+import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
 import { ModalNovaPessoa } from '../components/SeletorPessoa.js';
 import { Ic } from '../components/Icones.js';
 
@@ -127,9 +127,30 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   }, [kpiBase, ate7ISO]);
 
   function exportar(fmt: 'csv' | 'xlsx') {
-    const cab = [t('fin.descricao'), tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor'), t('catfin.titulo_s'), t('fin.vencimento'), t('fin.valor'), t('fin.situacao')];
-    const linhas = filtrados.map((x) => [x.descricao, x.pessoaNome ?? '', x.categoriaFinanceiraNome ?? '', x.vencimento, x.valor, t('fin.' + situacao(x))]);
-    (fmt === 'xlsx' ? baixarExcel : baixarCsv)((tipo === 'receber' ? 'contas_receber' : 'contas_pagar'), cab, linhas);
+    // Exporta exatamente as colunas visíveis (respeita o seletor de colunas), sem a coluna de ações.
+    const cols = ['numero', 'descricao', ...HIDEABLE.filter((k) => !oc(k))];
+    const cab = cols.map((k) => k === 'numero' ? t('fin.numero') : k === 'descricao' ? t('fin.descricao') : t(colLabel(k)));
+    const fdata = (iso: string | null | undefined) => iso ? new Date(iso.length > 10 ? iso : iso + 'T00:00:00').toLocaleDateString('pt-BR') : '';
+    const valOf = (x: Titulo, k: string): string | number => {
+      switch (k) {
+        case 'numero': return x.numero;
+        case 'descricao': return x.descricao;
+        case 'pessoa': return x.pessoaNome ?? '';
+        case 'cat': return x.categoriaFinanceiraNome ?? '';
+        case 'doc': return x.tipoDocumento ?? '';
+        case 'emissao': return fdata(x.emissao || x.criadoEm);
+        case 'venc': return fdata(x.vencimento);
+        case 'baixa': return fdata(x.pagoEm);
+        case 'valor': return x.valor;
+        case 'vendedor': return x.vendedorNome ?? '';
+        case 'sit': return t('fin.' + situacao(x));
+        default: return '';
+      }
+    };
+    const linhas = filtrados.map((x) => cols.map((k) => valOf(x, k)));
+    const nome = tipo === 'receber' ? 'contas_receber' : 'contas_pagar';
+    if (fmt === 'xlsx') baixarExcel(nome, cab, linhas, { periodo: rotuloPeriodo(fVde, fVate) });
+    else baixarCsv(nome, cab, linhas);
   }
 
   function toggle(id: string) { setSel((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; }); }

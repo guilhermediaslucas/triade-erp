@@ -6,7 +6,8 @@ import { CabecalhoRelatorio } from '../components/CabecalhoRelatorio.js';
 import { Ic } from '../components/Icones.js';
 import { moeda, numeroPedido } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
-import { baixarExcel } from '../lib/excel.js';
+import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
+import { BotaoExcel } from '../components/BotaoExcel.js';
 
 interface Linha { numero: number; data: string; cliente: string | null; vendedor: string | null; status: string; total: number; }
 interface PorVend { vendedor: string; quantidade: number; total: number; }
@@ -29,8 +30,10 @@ export function RelVendas() {
 
   function exportar(fmt: 'csv' | 'xlsx' = 'csv') {
     if (!d) return;
-    (fmt === 'xlsx' ? baixarExcel : baixarCsv)('vendas_' + de + '_' + ate, [t('pedidos.numero'), t('pedidos.data'), t('pedidos.cliente'), t('pedidos.vendedor'), t('pedidos.status'), t('pedidos.total')],
-      d.linhas.map((l) => [numeroPedido(l.numero), new Date(l.data).toLocaleDateString('pt-BR'), l.cliente ?? '', l.vendedor ?? '', t('status.' + l.status), l.total]));
+    const cab = [t('pedidos.numero'), t('pedidos.data'), t('pedidos.cliente'), t('pedidos.vendedor'), t('pedidos.status'), t('pedidos.total')];
+    const dados = d.linhas.map((l) => [numeroPedido(l.numero), new Date(l.data).toLocaleDateString('pt-BR'), l.cliente ?? '', l.vendedor ?? '', t('status.' + l.status), l.total]);
+    if (fmt === 'xlsx') baixarExcel('vendas_' + de + '_' + ate, cab, dados, { periodo: rotuloPeriodo(de, ate) });
+    else baixarCsv('vendas_' + de + '_' + ate, cab, dados);
   }
 
   return (
@@ -41,7 +44,7 @@ export function RelVendas() {
         <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
         <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
         <button className="btn-primary" onClick={gerar}>{t('rel.gerar')}</button>
-        {d && d.linhas.length > 0 && <><button className="btn-ghost" onClick={() => exportar('csv')}>{t('rel.exportar_csv')}</button> <button className="btn-ghost" onClick={() => exportar('xlsx')}>{t('rel.exportar_xlsx')}</button></>}
+        {d && d.linhas.length > 0 && <><button className="btn-ghost" onClick={() => exportar('csv')}>{t('rel.exportar_csv')}</button> <BotaoExcel onClick={() => exportar('xlsx')} /></>}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       {d && <>

@@ -6,7 +6,8 @@ import { CabecalhoRelatorio } from '../components/CabecalhoRelatorio.js';
 import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
-import { baixarExcel } from '../lib/excel.js';
+import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
+import { BotaoExcel } from '../components/BotaoExcel.js';
 
 interface Linha { produtoId: string; produto: string; lote: string | null; quantidade: number; motivo: string | null; data: string; valor: number; }
 const primeiroDia = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10); };
@@ -48,9 +49,9 @@ export function RelPerdas() {
         {linhas.length > 0 && (
           <><button className="btn-ghost" onClick={() => baixarCsv('perdas_estoque_' + de + '_' + ate,
             [t('precos.produto'), t('estoque.lote'), t('perdas.motivo'), t('pedidos.data'), t('rel.qtd'), t('rel.valor')],
-            linhas.map((l) => [l.produto, l.lote ?? '', l.motivo ?? '—', l.data.slice(0, 10), l.quantidade, l.valor]))}>{t('rel.exportar_csv')}</button> <button className="btn-ghost" onClick={() => baixarExcel('perdas_estoque_' + de + '_' + ate,
+            linhas.map((l) => [l.produto, l.lote ?? '', l.motivo ?? '—', l.data.slice(0, 10), l.quantidade, l.valor]))}>{t('rel.exportar_csv')}</button> <BotaoExcel onClick={() => baixarExcel('perdas_estoque_' + de + '_' + ate,
             [t('precos.produto'), t('estoque.lote'), t('perdas.motivo'), t('pedidos.data'), t('rel.qtd'), t('rel.valor')],
-            linhas.map((l) => [l.produto, l.lote ?? '', l.motivo ?? '—', l.data.slice(0, 10), l.quantidade, l.valor]))}>{t('rel.exportar_xlsx')}</button></>
+            linhas.map((l) => [l.produto, l.lote ?? '', l.motivo ?? '—', l.data.slice(0, 10), l.quantidade, l.valor]), { periodo: rotuloPeriodo(de, ate) })} /></>
         )}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}

@@ -6,7 +6,8 @@ import { CabecalhoRelatorio } from '../components/CabecalhoRelatorio.js';
 import { Ic } from '../components/Icones.js';
 import { corStatus, moeda, numeroPedido, type StatusPedido } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
-import { baixarExcel } from '../lib/excel.js';
+import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
+import { BotaoExcel } from '../components/BotaoExcel.js';
 
 interface Linha {
   numero: number; data: string; cliente: string | null; vendedor: string | null;
@@ -34,7 +35,8 @@ export function RelPedidos() {
   function exportar(fmt: 'csv' | 'xlsx') {
     const cab = [t('pedidos.numero'), t('pedidos.data'), t('pedidos.cliente'), t('pedidos.vendedor'), t('entrega.forma'), t('pedido.forma_envio'), t('pedidos.status'), t('pedido.entregue_em'), t('pedidos.total')];
     const dados = linhas.map((l) => [numeroPedido(l.numero), fmtData(l.data), l.cliente ?? '', l.vendedor ?? '', t('entrega.' + l.formaEntrega), l.formaEnvio ?? '', t('status.' + l.status), l.entregueEm ? new Date(l.entregueEm + 'T00:00:00').toLocaleDateString('pt-BR') : '', l.total]);
-    (fmt === 'xlsx' ? baixarExcel : baixarCsv)('pedidos_' + de + '_' + ate, cab, dados);
+    if (fmt === 'xlsx') baixarExcel('pedidos_' + de + '_' + ate, cab, dados, { periodo: rotuloPeriodo(de, ate) });
+    else baixarCsv('pedidos_' + de + '_' + ate, cab, dados);
   }
 
   return (
@@ -51,7 +53,7 @@ export function RelPedidos() {
           </select>
         </label>
         <button className="btn-primary" onClick={gerar}>{t('rel.gerar')}</button>
-        {linhas.length > 0 && <><button className="btn-ghost" onClick={() => exportar('csv')}>{t('rel.exportar_csv')}</button> <button className="btn-ghost" onClick={() => exportar('xlsx')}>{t('rel.exportar_xlsx')}</button></>}
+        {linhas.length > 0 && <><button className="btn-ghost" onClick={() => exportar('csv')}>{t('rel.exportar_csv')}</button> <BotaoExcel onClick={() => exportar('xlsx')} /></>}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="kpi-row" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>

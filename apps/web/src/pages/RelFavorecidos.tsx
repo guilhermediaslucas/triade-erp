@@ -6,7 +6,8 @@ import { CabecalhoRelatorio } from '../components/CabecalhoRelatorio.js';
 import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
-import { baixarExcel } from '../lib/excel.js';
+import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
+import { BotaoExcel } from '../components/BotaoExcel.js';
 
 interface Titulo {
   id: string; descricao: string; valor: number; vencimento: string; status: 'aberto' | 'pago';
@@ -38,7 +39,8 @@ export function RelFavorecidos() {
   function exportar(fmt: 'csv' | 'xlsx') {
     const cab = [t('relfav.favorecido'), t('fin.descricao'), t('fin.valor'), t('fin.vencimento'), t('fin.situacao'), t('relfav.pago_em')];
     const dados = filtrados.map((x) => [x.favorecidoNome ?? '', x.descricao, x.valor, fmtData(x.vencimento), t('fin.' + x.status), fmtData(x.pagoEm)]);
-    (fmt === 'xlsx' ? baixarExcel : baixarCsv)('reembolsos_' + de + '_' + ate, cab, dados);
+    if (fmt === 'xlsx') baixarExcel('reembolsos_' + de + '_' + ate, cab, dados, { periodo: rotuloPeriodo(de, ate) });
+    else baixarCsv('reembolsos_' + de + '_' + ate, cab, dados);
   }
 
   if (erro) return <div className="alerta-erro">{t(erro)}</div>;
@@ -54,7 +56,7 @@ export function RelFavorecidos() {
             <option value="todos">{t('fin.f_todos')}</option><option value="aberto">{t('fin.aberto')}</option><option value="pago">{t('fin.pago')}</option>
           </select>
         </label>
-        {filtrados.length > 0 && <><button className="btn-ghost" onClick={() => exportar('csv')}>{t('rel.exportar_csv')}</button> <button className="btn-ghost" onClick={() => exportar('xlsx')}>{t('rel.exportar_xlsx')}</button></>}
+        {filtrados.length > 0 && <><button className="btn-ghost" onClick={() => exportar('csv')}>{t('rel.exportar_csv')}</button> <BotaoExcel onClick={() => exportar('xlsx')} /></>}
       </div>
       <div className="kpi-row" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
         <div className="card kpi-mock"><div className="kpi-ic tint-pp"><Ic name="i-receipt" className="sm" /></div><div className="kpi-body"><div className="kpi-lbl">{t('relfav.qtd')}</div><div className="kpi-val">{filtrados.length}</div></div></div>

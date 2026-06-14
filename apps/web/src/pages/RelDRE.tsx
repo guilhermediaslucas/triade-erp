@@ -6,7 +6,8 @@ import { CabecalhoRelatorio } from '../components/CabecalhoRelatorio.js';
 import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
-import { baixarExcel } from '../lib/excel.js';
+import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
+import { BotaoExcel } from '../components/BotaoExcel.js';
 
 interface Linha { origem: string; total: number; }
 interface Dre { por: 'origem' | 'categoria'; receitas: Linha[]; despesas: Linha[]; totalReceitas: number; totalDespesas: number; resultado: number; }
@@ -34,7 +35,9 @@ export function RelDRE() {
       ...d.receitas.map((l) => [t('dre.receitas'), rotulo(l.origem), l.total]),
       ...d.despesas.map((l) => [t('dre.despesas'), rotulo(l.origem), -l.total]),
     ];
-    (fmt === 'xlsx' ? baixarExcel : baixarCsv)('dre_' + por + '_' + de + '_' + ate, [t('dre.grupo'), d.por === 'categoria' ? t('catfin.titulo_s') : t('dre.origem'), t('fin.valor')], linhas);
+    const cab = [t('dre.grupo'), d.por === 'categoria' ? t('catfin.titulo_s') : t('dre.origem'), t('fin.valor')];
+    if (fmt === 'xlsx') baixarExcel('dre_' + por + '_' + de + '_' + ate, cab, linhas, { periodo: rotuloPeriodo(de, ate) });
+    else baixarCsv('dre_' + por + '_' + de + '_' + ate, cab, linhas);
   }
 
   const colRot = d?.por === 'categoria' ? t('catfin.titulo_s') : t('dre.origem');
@@ -54,7 +57,7 @@ export function RelDRE() {
           </select>
         </label>
         <button className="btn-primary" onClick={gerar}>{t('rel.gerar')}</button>
-        {d && <><button className="btn-ghost" onClick={() => exportar('csv')}>{t('rel.exportar_csv')}</button> <button className="btn-ghost" onClick={() => exportar('xlsx')}>{t('rel.exportar_xlsx')}</button></>}
+        {d && <><button className="btn-ghost" onClick={() => exportar('csv')}>{t('rel.exportar_csv')}</button> <BotaoExcel onClick={() => exportar('xlsx')} /></>}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       {d && (

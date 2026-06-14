@@ -6,7 +6,8 @@ import { CabecalhoRelatorio } from '../components/CabecalhoRelatorio.js';
 import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
-import { baixarExcel } from '../lib/excel.js';
+import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
+import { BotaoExcel } from '../components/BotaoExcel.js';
 
 interface Linha { categoria: string; quantidade: number; total: number; }
 const primeiroDia = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10); };
@@ -34,7 +35,7 @@ export function RelCategorias() {
         <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
         <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
         <button className="btn-primary" onClick={gerar}>{t('rel.gerar')}</button>
-        {linhas.length > 0 && <><button className="btn-ghost" onClick={() => baixarCsv('vendas_categoria_' + de + '_' + ate, [t('produtos.categoria'), t('rel.qtd'), t('rel.total')], linhas.map((l) => [l.categoria, l.quantidade, l.total]))}>{t('rel.exportar_csv')}</button> <button className="btn-ghost" onClick={() => baixarExcel('vendas_categoria_' + de + '_' + ate, [t('produtos.categoria'), t('rel.qtd'), t('rel.total')], linhas.map((l) => [l.categoria, l.quantidade, l.total]))}>{t('rel.exportar_xlsx')}</button></>}
+        {linhas.length > 0 && <><button className="btn-ghost" onClick={() => baixarCsv('vendas_categoria_' + de + '_' + ate, [t('produtos.categoria'), t('rel.qtd'), t('rel.total')], linhas.map((l) => [l.categoria, l.quantidade, l.total]))}>{t('rel.exportar_csv')}</button> <BotaoExcel onClick={() => baixarExcel('vendas_categoria_' + de + '_' + ate, [t('produtos.categoria'), t('rel.qtd'), t('rel.total')], linhas.map((l) => [l.categoria, l.quantidade, l.total]), { periodo: rotuloPeriodo(de, ate) })} /></>}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="kpis"><div className="kpi-card kpi-mock"><div className="kpi-ic tint-gr"><Ic name="i-dollar" className="sm" /></div><div><div className="kpi-l">{t('com.total')}</div><div className="kpi-v">{moeda(total)}</div></div></div></div>
