@@ -31,6 +31,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   const [novo, setNovo] = useState(false);
   const [parcelarT, setParcelarT] = useState<Titulo | null>(null);
   const [parcelarModo, setParcelarModo] = useState<'dividir' | 'replicar'>('dividir');
+  const [multiplicarT, setMultiplicarT] = useState<Titulo | null>(null);
   const [baixar, setBaixar] = useState<Titulo | null>(null);
   const [verT, setVerT] = useState<Titulo | null>(null);
   const [sel, setSel] = useState<Set<string>>(new Set());
@@ -73,6 +74,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
     return true;
   }), [kpiBase, fKpi, ate7ISO]);
   const temFiltro = fSit !== 'todos' || !!fQ || !!fCat || !!fPessoa || !!fVde || !!fVate || !!fMin || !!fMax;
+  const qtdFiltros = [fSit !== 'todos', !!fQ, !!fCat, !!fPessoa, !!fVde, !!fVate, !!fMin, !!fMax].filter(Boolean).length;
   function limparFiltros() { setFSit('todos'); setFQ(''); setFCat(''); setFPessoa(''); setFVde(''); setFVate(''); setFMin(''); setFMax(''); }
   const toggleKpi = (k: 'aberto' | 'vence7' | 'vencido' | 'boletos') => setFKpi((cur) => (cur === k ? '' : k));
 
@@ -181,7 +183,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
           <option value="">{tipo === 'receber' ? t('fin.todos_clientes') : t('fin.todos_fornecedores')}</option>
           {pessoas.map((p) => <option key={p} value={p}>{p}</option>)}
         </select>
-        <button className="btn-ghost" onClick={() => setFiltroAberto((v) => !v)}><Ic name="i-gear" className="sm" /> {t('fin.filtros')} {temFiltro ? '•' : '0'}</button>
+        <button className="btn-ghost" onClick={() => setFiltroAberto(true)}><Ic name="i-gear" className="sm" /> {t('fin.filtros')}{qtdFiltros > 0 && <span className="flt-badge">{qtdFiltros}</span>}</button>
         <button className="btn-ghost" onClick={() => setColsAberto((v) => !v)}><Ic name="i-grid" className="sm" /> {t('fin.colunas')}</button>
       </div>
 
@@ -189,33 +191,37 @@ export function Contas({ tipo }: { tipo: Tipo }) {
         {pode && <button className="btn-primary" onClick={() => setNovo(true)}>+ {t('fin.novo_lanc_btn')}</button>}
         {pode && <button className="btn-acao verde" disabled={abertosSel.length === 0} onClick={() => setBaixaMassa(true)}><Ic name="i-check" className="sm" /> {t('fin.baixar_sel')}{abertosSel.length > 0 ? ` (${abertosSel.length})` : ''}</button>}
         {pode && <button className="btn-acao vermelho" disabled={sel.size === 0} onClick={excluirMassa}><Ic name="i-trash" className="sm" /> {t('fin.excluir_sel')}</button>}
-        {pode && <button className="btn-ghost" disabled={!umAberto} onClick={() => umAberto && abrirParcelar(umAberto, 'replicar')}><Ic name="i-plus" className="sm" /> {t('parcelar.multiplicar')}</button>}
+        {pode && <button className="btn-ghost" disabled={!umAberto} onClick={() => umAberto && setMultiplicarT(umAberto)}><Ic name="i-plus" className="sm" /> {t('parcelar.multiplicar')}</button>}
         {pode && <button className="btn-ghost" disabled={!umAberto} onClick={() => umAberto && abrirParcelar(umAberto, 'dividir')}><Ic name="i-rows" className="sm" /> {t('parcelar.acao')}</button>}
         {filtrados.length > 0 && <button className="btn-acao verde" onClick={() => exportar('xlsx')}><Ic name="i-download" className="sm" /> {t('rel.exportar_xlsx')}</button>}
       </div>
 
       {filtroAberto && (
-        <div className="card" style={{ maxWidth: '100%', marginBottom: 12 }}>
-          <div className="filtros-grid">
-            <label className="campo">{t('fin.f_busca')}<input value={fQ} onChange={(e) => setFQ(e.target.value)} placeholder={t('fin.f_busca_ph')} /></label>
-            <label className="campo">{t('fin.f_situacao')}
-              <select value={fSit} onChange={(e) => setFSit(e.target.value as 'todos' | 'aberto' | 'vencido' | 'pago')}>
-                <option value="todos">{t('fin.f_todos')}</option><option value="aberto">{t('fin.aberto')}</option><option value="vencido">{t('fin.vencido')}</option><option value="pago">{t('fin.pago')}</option>
-              </select>
-            </label>
-            {categorias.length > 0 && <label className="campo">{t('catfin.titulo_s')}
-              <select value={fCat} onChange={(e) => setFCat(e.target.value)}>
-                <option value="">{t('fin.f_todos')}</option>{categorias.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </label>}
-            <label className="campo">{t('fin.f_venc_de')}<input type="date" value={fVde} onChange={(e) => setFVde(e.target.value)} /></label>
-            <label className="campo">{t('fin.f_venc_ate')}<input type="date" value={fVate} onChange={(e) => setFVate(e.target.value)} /></label>
-            <label className="campo">{t('fin.f_min')}<input type="number" value={fMin} onChange={(e) => setFMin(e.target.value)} /></label>
-            <label className="campo">{t('fin.f_max')}<input type="number" value={fMax} onChange={(e) => setFMax(e.target.value)} /></label>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
-            <span className="muted">{filtrados.length} {t('fin.titulos')}</span>
-            <button className="btn-link" onClick={limparFiltros}>{t('fin.f_limpar')}</button>
+        <div className="modal-fundo">
+          <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 560 }}>
+            <h2>{t('fin.filtros')}</h2>
+            <div className="filtros-grid">
+              <label className="campo">{t('fin.f_busca')}<input value={fQ} onChange={(e) => setFQ(e.target.value)} placeholder={t('fin.f_busca_ph')} /></label>
+              <label className="campo">{t('fin.f_situacao')}
+                <select value={fSit} onChange={(e) => setFSit(e.target.value as 'todos' | 'aberto' | 'vencido' | 'pago')}>
+                  <option value="todos">{t('fin.f_todos')}</option><option value="aberto">{t('fin.aberto')}</option><option value="vencido">{t('fin.vencido')}</option><option value="pago">{t('fin.pago')}</option>
+                </select>
+              </label>
+              {categorias.length > 0 && <label className="campo">{t('catfin.titulo_s')}
+                <select value={fCat} onChange={(e) => setFCat(e.target.value)}>
+                  <option value="">{t('fin.f_todos')}</option>{categorias.map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </label>}
+              <label className="campo">{t('fin.f_venc_de')}<input type="date" value={fVde} onChange={(e) => setFVde(e.target.value)} /></label>
+              <label className="campo">{t('fin.f_venc_ate')}<input type="date" value={fVate} onChange={(e) => setFVate(e.target.value)} /></label>
+              <label className="campo">{t('fin.f_min')}<input type="number" value={fMin} onChange={(e) => setFMin(e.target.value)} /></label>
+              <label className="campo">{t('fin.f_max')}<input type="number" value={fMax} onChange={(e) => setFMax(e.target.value)} /></label>
+            </div>
+            <p className="muted" style={{ marginTop: 8 }}>{filtrados.length} {t('fin.titulos')}</p>
+            <div className="modal-acoes">
+              <button className="btn-ghost" onClick={limparFiltros}>{t('flt.limpar')}</button>
+              <button className="btn-primary" onClick={() => setFiltroAberto(false)}>{t('flt.aplicar')}</button>
+            </div>
           </div>
         </div>
       )}
@@ -271,6 +277,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
       </table></div>
       {novo && <ModalNovo tipo={tipo} onFechar={() => setNovo(false)} onSalvo={() => { setNovo(false); carregar(); toast(t('fin.toast_criado')); }} />}
       {parcelarT && <ModalParcelar tipo={tipo} titulo={parcelarT} modoInicial={parcelarModo} onFechar={() => setParcelarT(null)} onSalvo={(n) => { setParcelarT(null); carregar(); toast(t('parcelar.toast').replace('{n}', String(n))); }} />}
+      {multiplicarT && <ModalMultiplicar tipo={tipo} titulo={multiplicarT} onFechar={() => setMultiplicarT(null)} onSalvo={(n) => { setMultiplicarT(null); carregar(); toast(t('parcelar.toast').replace('{n}', String(n))); }} />}
       {baixar && <ModalBaixa tipo={tipo} titulos={[baixar]} onFechar={() => setBaixar(null)} onSalvo={() => { setBaixar(null); carregar(); toast(t('fin.toast_baixado')); }} />}
       {baixaMassa && <ModalBaixa tipo={tipo} titulos={abertosSel} onFechar={() => setBaixaMassa(false)} onSalvo={(n) => { setBaixaMassa(false); carregar(); toast(t('bulk.baixados').replace('{n}', String(n))); }} />}
       {verT && <ModalVerTitulo tipo={tipo} titulo={verT} onFechar={() => setVerT(null)} />}
@@ -492,6 +499,59 @@ function ModalParcelar({ tipo, titulo, modoInicial, onFechar, onSalvo }: { tipo:
       <p className="muted">{modo === 'dividir' ? t('parcelar.previa_dividir') : t('parcelar.previa_replicar')}{' '}<b>{n}× {moeda(valorParcela)}</b></p>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv} onClick={salvar}>{t('common.salvar')}</button></div>
+    </div></div>
+  );
+}
+
+// Multiplicar título (modelo do mockup): cria N cópias somando o intervalo (vencimento e
+// emissão) e aplicando a variação ao valor — em $ ou %. O título original é mantido.
+function ModalMultiplicar({ tipo, titulo, onFechar, onSalvo }: { tipo: Tipo; titulo: Titulo; onFechar: () => void; onSalvo: (n: number) => void; }) {
+  const { token } = useAuth(); const { t } = useI18n();
+  const [vezes, setVezes] = useState('1');
+  const [variacao, setVariacao] = useState('0');
+  const [variacaoTipo, setVariacaoTipo] = useState<'valor' | 'pct'>('valor');
+  const [intervaloVenc, setIntVenc] = useState('1');
+  const [unidadeVenc, setUnVenc] = useState('mensal');
+  const [intervaloEmis, setIntEmis] = useState('1');
+  const [unidadeEmis, setUnEmis] = useState('mensal');
+  const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
+  const unidades = ['dia', 'semanal', 'quinzenal', 'mensal', 'anual'];
+  async function salvar() {
+    setErro(null); setSalv(true);
+    try {
+      const r = await api.post<{ criados: number }>('/financeiro/' + tipo + '/' + titulo.id + '/multiplicar', {
+        vezes: Math.trunc(Number(vezes) || 0), variacao: Number(variacao) || 0, variacaoTipo,
+        intervaloVenc: Number(intervaloVenc) || 1, unidadeVenc, intervaloEmis: Number(intervaloEmis) || 1, unidadeEmis,
+      }, token!);
+      onSalvo(r.criados);
+    } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
+  }
+  return (
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 460 }}>
+      <h2>{t('mult.titulo')}</h2>
+      <p className="muted" style={{ marginTop: -6 }}>{titulo.descricao} · {moeda(titulo.valor)}</p>
+      <label className="campo">{t('mult.vezes')}<input type="number" min="1" max="99" value={vezes} onChange={(e) => setVezes(e.target.value)} /></label>
+      <label className="campo">{t('mult.variacao')}
+        <div style={{ display: 'flex', gap: 8 }}>
+          <input type="number" step="0.01" value={variacao} onChange={(e) => setVariacao(e.target.value)} style={{ flex: 1 }} />
+          <select value={variacaoTipo} onChange={(e) => setVariacaoTipo(e.target.value as 'valor' | 'pct')} style={{ width: 72 }}><option value="valor">$</option><option value="pct">%</option></select>
+        </div>
+      </label>
+      <label className="campo">{t('mult.int_venc')}
+        <div style={{ display: 'flex', gap: 8 }}>
+          <input type="number" min="1" value={intervaloVenc} onChange={(e) => setIntVenc(e.target.value)} style={{ width: 72 }} />
+          <select value={unidadeVenc} onChange={(e) => setUnVenc(e.target.value)} style={{ flex: 1 }}>{unidades.map((u) => <option key={u} value={u}>{t('mult.un.' + u)}</option>)}</select>
+        </div>
+      </label>
+      <label className="campo">{t('mult.int_emis')}
+        <div style={{ display: 'flex', gap: 8 }}>
+          <input type="number" min="1" value={intervaloEmis} onChange={(e) => setIntEmis(e.target.value)} style={{ width: 72 }} />
+          <select value={unidadeEmis} onChange={(e) => setUnEmis(e.target.value)} style={{ flex: 1 }}>{unidades.map((u) => <option key={u} value={u}>{t('mult.un.' + u)}</option>)}</select>
+        </div>
+      </label>
+      <p className="muted">{t('mult.nota')}</p>
+      {erro && <div className="alerta-erro">{t(erro)}</div>}
+      <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv} onClick={salvar}>{t('mult.acao')}</button></div>
     </div></div>
   );
 }

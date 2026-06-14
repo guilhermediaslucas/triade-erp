@@ -728,6 +728,24 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
 .topbar-menu { display: none; }
 .sidebar-backdrop { display: none; }
 
+/* Recolher menu (só desktop): botão na topbar + esconder a sidebar */
+.topbar-recolher {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; flex: none; padding: 0;
+  background: var(--bg); border: 1px solid var(--borda); border-radius: 10px;
+  color: var(--ink); cursor: pointer;
+}
+.topbar-recolher:hover { border-color: var(--accent); }
+.app-shell.menu-recolhido .sidebar { display: none; }
+
+/* Badge de contagem no botão "Filtros" */
+.flt-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 18px; margin-left: 6px; padding: 0 5px;
+  font-size: 11px; font-weight: 700; line-height: 1;
+  color: #fff; background: var(--accent); border-radius: 9px;
+}
+
 @media (max-width: 860px) {
   /* --- Sidebar vira drawer off-canvas --- */
   .sidebar {
@@ -753,6 +771,9 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
     color: var(--ink); cursor: pointer;
   }
   .topbar-menu:hover { border-color: var(--accent); }
+  /* No mobile o recolher não se aplica: a sidebar é drawer; esconde o botão e ignora a classe */
+  .topbar-recolher { display: none; }
+  .app-shell.menu-recolhido .sidebar { display: flex; }
 
   /* --- Topbar compacta --- */
   .topbar { height: 58px; gap: 8px; padding: 0 12px; }

@@ -129,10 +129,13 @@ export function Layout({ children }: { children: ReactNode }) {
   // Drawer mobile: a sidebar vira off-canvas abaixo do breakpoint (CSS). Fecha ao navegar.
   const [menuAberto, setMenuAberto] = useState(false);
   const fecharMenu = () => setMenuAberto(false);
+  // Recolher o menu (só desktop): esconde a sidebar e dá largura total ao conteúdo. Persistido.
+  const [recolhido, setRecolhido] = useState(() => localStorage.getItem('triade_menu_recolhido') === '1');
+  const toggleRecolher = () => setRecolhido((v) => { const n = !v; localStorage.setItem('triade_menu_recolhido', n ? '1' : '0'); return n; });
   const toggleGrupo = (gi: number) => setAbertos((cur) => { const n = new Set(cur); n.has(gi) ? n.delete(gi) : n.add(gi); return n; });
 
   return (
-    <div className={'app-shell' + (menuAberto ? ' menu-aberto' : '')}>
+    <div className={'app-shell' + (menuAberto ? ' menu-aberto' : '') + (recolhido ? ' menu-recolhido' : '')}>
       <SpriteIcones />
       <BuscaGlobal />
       <div className="sidebar-backdrop" onClick={fecharMenu} />
@@ -202,6 +205,9 @@ export function Layout({ children }: { children: ReactNode }) {
         <header className="topbar">
           <button type="button" className="topbar-menu" onClick={() => setMenuAberto((v) => !v)} aria-label={t('menu.principal')}>
             <Ic name={menuAberto ? 'i-x' : 'i-menu'} />
+          </button>
+          <button type="button" className="topbar-recolher" onClick={toggleRecolher} aria-label={t('menu.recolher')} title={t('menu.recolher')}>
+            <Ic name="i-menu" />
           </button>
           <button type="button" className="topbar-busca" onClick={() => window.dispatchEvent(new Event('abrir-busca'))} title="Ctrl+K">
             <Ic name="i-search" className="sm" />

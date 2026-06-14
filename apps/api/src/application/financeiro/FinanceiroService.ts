@@ -268,4 +268,46 @@ export class FinanceiroService {
     await this.repo.excluir(schema, id);
     return n;
   }
+
+  // Multiplica um título (modelo do mockup): cria N novos títulos a partir do marcado,
+  // somando o intervalo (vencimento e emissão) a cada repetição e aplicando a variação ao
+  // valor — em $ (valor absoluto) ou % (percentual). O título original é mantido.
+  async multiplicar(schema: string, id: string, e: any): Promise<number> {
+    const t = await this.repo.buscarPorId(schema, id);
+    if (!t) throw new ErroAplicacao('financeiro.nao_encontrado', 404);
+    if (t.status !== 'aberto') throw new ErroAplicacao('parcelar.so_aberto', 400);
+    const vezes = Math.trunc(Number(e?.vezes));
+    if (!Number.isFinite(vezes) || vezes < 1 || vezes > 99) throw new ErroAplicacao('parcelar.parcelas_invalidas', 400);
+    const variacao = Number(e?.variacao ?? 0) || 0;
+    const variacaoTipo = e?.variacaoTipo === 'pct' ? 'pct' : 'valor';
+    const intVenc = Math.max(1, Math.trunc(Number(e?.intervaloVenc ?? 1)) || 1);
+    const intEmis = Math.max(1, Math.trunc(Number(e?.intervaloEmis ?? 1)) || 1);
+    const unVenc = String(e?.unidadeVenc ?? 'mensal');
+    const unEmis = String(e?.unidadeEmis ?? 'mensal');
+
+    const addIntervalo = (iso: string, n: number, unidade: string): string => {
+      const d = new Date(iso + 'T00:00:00Z');
+      if (unidade === 'mensal') d.setUTCMonth(d.getUTCMonth() + n);
+      else if (unidade === 'anual') d.setUTCFullYear(d.getUTCFullYear() + n);
+      else { const dias = unidade === 'semanal' ? 7 : unidade === 'quinzenal' ? 15 : 1; d.setUTCDate(d.getUTCDate() + n * dias); }
+      return d.toISOString().slice(0, 10);
+    };
+    const emissaoBase = t.emissao ?? t.vencimento;
+    let criados = 0;
+    for (let i = 1; i <= vezes; i++) {
+      const valor = variacaoTipo === 'pct'
+        ? r2(t.valor * (1 + (variacao / 100) * i))
+        : r2(t.valor + variacao * i);
+      await this.repo.criar(schema, {
+        tipo: t.tipo, descricao: t.descricao, pessoaNome: t.pessoaNome,
+        valor: valor < 0 ? 0 : valor,
+        vencimento: addIntervalo(t.vencimento, i * intVenc, unVenc),
+        emissao: addIntervalo(emissaoBase, i * intEmis, unEmis),
+        categoriaFinanceiraId: t.categoriaFinanceiraId, favorecidoId: t.favorecidoId,
+        previsto: t.previsto, tipoDocumento: t.tipoDocumento, numeroDocumento: t.numeroDocumento,
+      }, t.origem, t.pedidoId);
+      criados++;
+    }
+    return criados;
+  }
 }

@@ -34,8 +34,12 @@ export function PosicaoEstoque() {
   const fmtData = (d: string | null) => d ? new Date(d + 'T00:00:00').toLocaleDateString('pt-BR') : '—';
 
   const valorDe = (p: Posicao) => p.lotes.reduce((s, l) => s + l.quantidade * l.custoUnitario, 0);
-  const venceProx = (p: Posicao) => p.lotes.some((l) => { const d = diasAte(l.validade); return d !== null && d < 90; });
-  const situacaoDe = (p: Posicao): Filtro => p.abaixoMinimo ? 'baixo' : (venceProx(p) ? 'validade' : 'ok');
+  const loteVence = (l: Lote) => { const d = diasAte(l.validade); return d !== null && d < 90; };
+  const venceProx = (p: Posicao) => p.lotes.some(loteVence);
+  // Selo de situação por lote (validade): Validade próxima quando < 90 dias, senão OK.
+  const loteBadge = (l: Lote) => loteVence(l)
+    ? <span className="pill st-vermelho">{t('estoque.sit_validade')}</span>
+    : <span className="pill st-verde">{t('estoque.ok')}</span>;
 
   const kpis = useMemo(() => {
     const skus = itens.length;
@@ -50,7 +54,11 @@ export function PosicaoEstoque() {
     const q = busca.trim().toLowerCase();
     return itens.filter((p) => {
       if (q && !p.produtoNome.toLowerCase().includes(q)) return false;
-      if (filtro && situacaoDe(p) !== filtro) return false;
+      // Um produto pode ser estoque baixo E validade próxima ao mesmo tempo —
+      // por isso o filtro casa pela situação PRESENTE (não por uma única prioridade).
+      if (filtro === 'baixo' && !p.abaixoMinimo) return false;
+      if (filtro === 'validade' && !venceProx(p)) return false;
+      if (filtro === 'ok' && (p.abaixoMinimo || venceProx(p))) return false;
       return true;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -122,10 +130,10 @@ export function PosicaoEstoque() {
               {aberto[p.produtoId] && p.lotes.map((l) => (
                 <tr key={l.id} className="lote-row">
                   <td></td>
-                  <td colSpan={2} style={{ paddingLeft: 24 }}>{t('estoque.lote')}: <b>{l.lote ?? '—'}</b>{l.marca ? ' · ' + l.marca : ''}</td>
+                  <td colSpan={2} style={{ paddingLeft: 24 }}>{t('estoque.lote')}: <b>{l.lote ?? '—'}</b>{l.marca ? ' · ' + l.marca : ''} · <button className="btn-link" onClick={(e) => { e.stopPropagation(); abrirEtiquetas(p, l); }}>{t('etq.ver')}</button></td>
                   <td>{l.quantidade}</td>
                   <td>{t('estoque.validade')}: {fmtData(l.validade)}</td>
-                  <td><button className="btn-link" onClick={(e) => { e.stopPropagation(); abrirEtiquetas(p, l); }}>{t('etq.ver')}</button></td>
+                  <td>{loteBadge(l)}</td>
                 </tr>
               ))}
             </Fragment>

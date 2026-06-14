@@ -1465,6 +1465,11 @@ Object.assign(es, {
 // --- Refinamento: Parcelar / Multiplicar títulos ---
 Object.assign(pt, {
   'parcelar.acao': 'Parcelar', 'parcelar.multiplicar': 'Multiplicar', 'parcelar.titulo': 'Parcelar / multiplicar título',
+  'mult.titulo': 'Multiplicar título', 'mult.vezes': 'Multiplicar o título (vezes)', 'mult.variacao': 'Variação por título (+/−)',
+  'mult.int_venc': 'Intervalo de vencimento', 'mult.int_emis': 'Intervalo de emissão', 'mult.acao': 'Multiplicar',
+  'mult.nota': 'Cria N novos títulos a partir do marcado, somando o intervalo a cada repetição (vencimento e emissão) e aplicando a variação ao valor — em $ (valor) ou % (percentual). O título original é mantido.',
+  'mult.un.dia': 'Dia(s)', 'mult.un.semanal': 'Semanal', 'mult.un.quinzenal': 'Quinzenal', 'mult.un.mensal': 'Mensal', 'mult.un.anual': 'Anual',
+  'flt.limpar': 'Limpar filtros', 'flt.aplicar': 'Aplicar', 'flt.titulo': 'Filtros',
   'parcelar.modo': 'Modo', 'parcelar.dividir': 'Dividir o valor em parcelas', 'parcelar.replicar': 'Replicar o valor (recorrente)',
   'parcelar.parcelas': 'Parcelas', 'parcelar.intervalo': 'Intervalo (dias)',
   'parcelar.previa_dividir': 'Vai gerar', 'parcelar.previa_replicar': 'Vai gerar',
@@ -1474,6 +1479,11 @@ Object.assign(pt, {
 });
 Object.assign(en, {
   'parcelar.acao': 'Split', 'parcelar.multiplicar': 'Multiply', 'parcelar.titulo': 'Split / multiply entry',
+  'mult.titulo': 'Multiply entry', 'mult.vezes': 'Multiply the entry (times)', 'mult.variacao': 'Variation per entry (+/−)',
+  'mult.int_venc': 'Due-date interval', 'mult.int_emis': 'Issue-date interval', 'mult.acao': 'Multiply',
+  'mult.nota': 'Creates N new entries from the selected one, adding the interval on each repeat (due and issue dates) and applying the variation to the amount — in $ (value) or % (percent). The original entry is kept.',
+  'mult.un.dia': 'Day(s)', 'mult.un.semanal': 'Weekly', 'mult.un.quinzenal': 'Biweekly', 'mult.un.mensal': 'Monthly', 'mult.un.anual': 'Yearly',
+  'flt.limpar': 'Clear filters', 'flt.aplicar': 'Apply', 'flt.titulo': 'Filters',
   'parcelar.modo': 'Mode', 'parcelar.dividir': 'Split the amount into installments', 'parcelar.replicar': 'Replicate the amount (recurring)',
   'parcelar.parcelas': 'Installments', 'parcelar.intervalo': 'Interval (days)',
   'parcelar.previa_dividir': 'Will generate', 'parcelar.previa_replicar': 'Will generate',
@@ -1483,6 +1493,11 @@ Object.assign(en, {
 });
 Object.assign(es, {
   'parcelar.acao': 'Dividir', 'parcelar.multiplicar': 'Multiplicar', 'parcelar.titulo': 'Dividir / multiplicar título',
+  'mult.titulo': 'Multiplicar título', 'mult.vezes': 'Multiplicar el título (veces)', 'mult.variacao': 'Variación por título (+/−)',
+  'mult.int_venc': 'Intervalo de vencimiento', 'mult.int_emis': 'Intervalo de emisión', 'mult.acao': 'Multiplicar',
+  'mult.nota': 'Crea N nuevos títulos a partir del marcado, sumando el intervalo en cada repetición (vencimiento y emisión) y aplicando la variación al valor — en $ (valor) o % (porcentaje). El título original se mantiene.',
+  'mult.un.dia': 'Día(s)', 'mult.un.semanal': 'Semanal', 'mult.un.quinzenal': 'Quincenal', 'mult.un.mensal': 'Mensual', 'mult.un.anual': 'Anual',
+  'flt.limpar': 'Limpiar filtros', 'flt.aplicar': 'Aplicar', 'flt.titulo': 'Filtros',
   'parcelar.modo': 'Modo', 'parcelar.dividir': 'Dividir el valor en cuotas', 'parcelar.replicar': 'Replicar el valor (recurrente)',
   'parcelar.parcelas': 'Cuotas', 'parcelar.intervalo': 'Intervalo (días)',
   'parcelar.previa_dividir': 'Generará', 'parcelar.previa_replicar': 'Generará',
@@ -2123,7 +2138,7 @@ Object.assign(pt, {
   'pedido.forma_envio_obrigatoria': 'Informe a forma de envio para expedir o pedido.', 'pedido.data_entrega_obrigatoria': 'Informe a data de entrega.',
   'menu.rel_pedidos': 'Pedidos', 'relped.crumb': 'Relatórios / Pedidos', 'relped.titulo': 'Relatório de pedidos',
   'relped.sub': 'Todos os pedidos do sistema, com filtro de data e status', 'relped.todos': 'Todos os status', 'relped.qtd': 'Pedidos', 'relped.total': 'Valor total',
-  'menu.suporte': 'Suporte', 'menu.suporte_sub': 'Central de ajuda', 'menu.principal': 'PRINCIPAL',
+  'menu.suporte': 'Suporte', 'menu.suporte_sub': 'Central de ajuda', 'menu.principal': 'PRINCIPAL', 'menu.recolher': 'Recolher menu',
   'logout.titulo': 'Sair do sistema?', 'logout.msg': 'Você precisará entrar novamente para acessar.',
   'menu.bancos': 'Bancos', 'cap.cadastros.banco.listar': 'Listar bancos', 'cap.cadastros.banco.gerenciar': 'Criar e editar bancos',
   'bancos.crumb': 'Cadastros / Financeiro / Bancos', 'bancos.titulo': 'Bancos', 'bancos.sub': 'Instituições usadas nas contas correntes e conciliação',
@@ -2157,7 +2172,7 @@ Object.assign(en, {
   'pedido.forma_envio_obrigatoria': 'Set the shipping method to dispatch the order.', 'pedido.data_entrega_obrigatoria': 'Enter the delivery date.',
   'menu.rel_pedidos': 'Orders', 'relped.crumb': 'Reports / Orders', 'relped.titulo': 'Orders report',
   'relped.sub': 'All orders in the system, with date and status filters', 'relped.todos': 'All statuses', 'relped.qtd': 'Orders', 'relped.total': 'Total value',
-  'menu.suporte': 'Support', 'menu.suporte_sub': 'Help center', 'menu.principal': 'MAIN',
+  'menu.suporte': 'Support', 'menu.suporte_sub': 'Help center', 'menu.principal': 'MAIN', 'menu.recolher': 'Collapse menu',
   'logout.titulo': 'Sign out?', 'logout.msg': 'You will need to sign in again to access.',
   'menu.bancos': 'Banks', 'cap.cadastros.banco.listar': 'List banks', 'cap.cadastros.banco.gerenciar': 'Create and edit banks',
   'bancos.crumb': 'Records / Finance / Banks', 'bancos.titulo': 'Banks', 'bancos.sub': 'Institutions used in checking accounts and reconciliation',
@@ -2191,7 +2206,7 @@ Object.assign(es, {
   'pedido.forma_envio_obrigatoria': 'Informa la forma de envío para expedir el pedido.', 'pedido.data_entrega_obrigatoria': 'Informa la fecha de entrega.',
   'menu.rel_pedidos': 'Pedidos', 'relped.crumb': 'Informes / Pedidos', 'relped.titulo': 'Informe de pedidos',
   'relped.sub': 'Todos los pedidos del sistema, con filtro de fecha y estado', 'relped.todos': 'Todos los estados', 'relped.qtd': 'Pedidos', 'relped.total': 'Valor total',
-  'menu.suporte': 'Soporte', 'menu.suporte_sub': 'Centro de ayuda', 'menu.principal': 'PRINCIPAL',
+  'menu.suporte': 'Soporte', 'menu.suporte_sub': 'Centro de ayuda', 'menu.principal': 'PRINCIPAL', 'menu.recolher': 'Recoger menú',
   'logout.titulo': '¿Salir del sistema?', 'logout.msg': 'Tendrás que iniciar sesión de nuevo para acceder.',
   'menu.bancos': 'Bancos', 'cap.cadastros.banco.listar': 'Listar bancos', 'cap.cadastros.banco.gerenciar': 'Crear y editar bancos',
   'bancos.crumb': 'Registros / Finanzas / Bancos', 'bancos.titulo': 'Bancos', 'bancos.sub': 'Instituciones usadas en las cuentas corrientes y conciliación',
