@@ -27,6 +27,7 @@ const GRUPOS: Grupo[] = [
     secoes: [{ itens: [
       { rotulo: 'menu.pedidos', to: '/comercial/pedidos', cap: 'comercial.pedido.listar' },
       { rotulo: 'menu.crm', to: '/comercial/crm', cap: 'comercial.crm.ver' },
+      { rotulo: 'menu.metas', to: '/comercial/metas', cap: 'comercial.meta.ver' },
       { rotulo: 'menu.precos', to: '/comercial/precos', cap: 'comercial.preco.listar' },
     ] }],
   },

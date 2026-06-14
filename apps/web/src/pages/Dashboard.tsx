@@ -24,6 +24,7 @@ interface Resumo {
   fluxoEntradasMes: number; fluxoSaidasMes: number; fluxoSaldoMes: number;
   faturamentoMensal: { mes: string; total: number }[];
   faturamentoAnterior: { mes: string; total: number }[];
+  metaMensal: number[];
   vendasCategoria: { categoria: string; total: number }[];
   saldosBancarios: { nome: string; saldo: number }[];
 }
@@ -51,16 +52,16 @@ function Delta({ pct, suf }: { pct: number | null; suf?: string }) {
   return <div className={'delta ' + (up ? 'up' : 'down')}><Ic name={up ? 'i-arrow-up' : 'i-arrow-down'} className="sm" /> {pctBR(pct)}%{suf ? ' ' + suf : ''}</div>;
 }
 
-function GraficoLinha({ pontos, anteriores, onPick }: { pontos: { mes: string; total: number }[]; anteriores: number[]; onPick?: (mes: string) => void }) {
+// Barras agrupadas: realizado (azul) e meta (vermelho) por mês. Clique numa coluna abre o drill.
+function GraficoBarras({ pontos, metas, onPick }: { pontos: { mes: string; total: number }[]; metas: number[]; onPick?: (mes: string) => void }) {
   const W = 560, H = 220, padL = 48, padR = 12, padT = 10, padB = 26;
   const n = pontos.length;
-  const max = Math.max(1, ...pontos.map((p) => p.total), ...anteriores);
+  const max = Math.max(1, ...pontos.map((p) => p.total), ...metas);
   const innerW = W - padL - padR, innerH = H - padT - padB;
-  const x = (i: number) => padL + (n <= 1 ? innerW / 2 : (i * innerW) / (n - 1));
-  const y = (v: number) => padT + innerH - (v / max) * innerH;
-  const pts = pontos.map((p, i) => `${x(i)},${y(p.total)}`).join(' ');
-  const ptsAnt = anteriores.map((v, i) => `${x(i)},${y(v)}`).join(' ');
-  const area = `${padL},${padT + innerH} ${pts} ${x(n - 1)},${padT + innerH}`;
+  const slot = innerW / Math.max(1, n);
+  const bw = Math.min(26, slot * 0.32);
+  const base = padT + innerH;
+  const y = (v: number) => padT + innerH - (Math.max(0, v) / max) * innerH;
   return (
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 230 }} className="dash-chart-in">
       {[0, 0.25, 0.5, 0.75, 1].map((g) => {
@@ -72,16 +73,18 @@ function GraficoLinha({ pontos, anteriores, onPick }: { pontos: { mes: string; t
           </g>
         );
       })}
-      {anteriores.some((v) => v > 0) && <polyline points={ptsAnt} fill="none" stroke="var(--muted)" strokeWidth="2" strokeDasharray="4 4" opacity="0.55" />}
-      <polygon points={area} fill="var(--accent)" opacity="0.10" />
-      <polyline points={pts} fill="none" stroke="var(--accent)" strokeWidth="2.5" />
-      {pontos.map((p, i) => (
-        <g key={i} onClick={onPick ? () => onPick(p.mes) : undefined} style={onPick ? { cursor: 'pointer' } : undefined} className="dash-ponto">
-          {onPick && <circle cx={x(i)} cy={y(p.total)} r="12" fill="transparent" />}
-          <circle cx={x(i)} cy={y(p.total)} r="3.5" fill="var(--accent)" className="dash-ponto-c" />
-          <text x={x(i)} y={H - 8} fontSize="10" textAnchor="middle" fill="var(--muted)">{p.mes.slice(5)}/{p.mes.slice(2, 4)}</text>
-        </g>
-      ))}
+      {pontos.map((p, i) => {
+        const cx = padL + slot * (i + 0.5);
+        const meta = metas[i] ?? 0;
+        return (
+          <g key={i} onClick={onPick ? () => onPick(p.mes) : undefined} style={onPick ? { cursor: 'pointer' } : undefined} className="dash-ponto">
+            {onPick && <rect x={cx - slot / 2} y={padT} width={slot} height={innerH} fill="transparent" />}
+            <rect x={cx - bw - 1} y={y(p.total)} width={bw} height={base - y(p.total)} fill="#378ADD" rx="2" />
+            {meta > 0 && <rect x={cx + 1} y={y(meta)} width={bw} height={base - y(meta)} fill="#e1483b" rx="2" />}
+            <text x={cx} y={H - 8} fontSize="10" textAnchor="middle" fill="var(--muted)">{p.mes.slice(5)}/{p.mes.slice(2, 4)}</text>
+          </g>
+        );
+      })}
     </svg>
   );
 }
@@ -178,11 +181,11 @@ export function Dashboard() {
         <div className="card">
           <div className="card-head"><h3>{t('dash.faturamento')}</h3>
             <div className="legendmini">
-              <span><i style={{ background: 'var(--accent)' }} />{t('dash.este_periodo')}</span>
-              <span><i style={{ background: 'var(--muted)' }} />{t('dash.periodo_anterior')}</span>
+              <span><i style={{ background: '#378ADD' }} />{t('dash.realizado')}</span>
+              <span><i style={{ background: '#e1483b' }} />{t('dash.meta')}</span>
             </div>
           </div>
-          <GraficoLinha pontos={d.faturamentoMensal} anteriores={d.faturamentoAnterior.map((a) => a.total)} onPick={setDrillMes} />
+          <GraficoBarras pontos={d.faturamentoMensal} metas={d.metaMensal ?? []} onPick={setDrillMes} />
           <div className="muted" style={{ fontSize: 11, marginTop: 4, textAlign: 'right' }}>{t('dash.clique_ponto')}</div>
         </div>
         <div className="card">

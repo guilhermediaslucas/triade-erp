@@ -20,6 +20,7 @@ import { rotasPessoas } from './rotas/pessoas.js';
 import { rotasMotoboys } from './rotas/motoboys.js';
 import { rotasPrecos } from './rotas/precos.js';
 import { rotasCrm } from './rotas/crm.js';
+import { rotasMetas } from './rotas/metas.js';
 import { rotasFrete } from './rotas/frete.js';
 import { rotasLogistica } from './rotas/logistica.js';
 import { rotasPedidos } from './rotas/pedidos.js';
@@ -94,6 +95,7 @@ export function criarServidor(): Express {
   app.use(rotasMotoboys(deps));
   app.use(rotasPrecos(deps));
   app.use(rotasCrm(deps));
+  app.use(rotasMetas(deps));
   app.use(rotasFrete(deps));
   app.use(rotasLogistica(deps));
   app.use(rotasPedidos(deps));

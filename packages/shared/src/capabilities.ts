@@ -44,6 +44,8 @@ export const CAPABILITIES: Capability[] = [
   { id: 'comercial.pedido.gerenciar', moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.pedido.gerenciar' },
   { id: 'comercial.crm.ver',          moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.crm.ver' },
   { id: 'comercial.crm.gerenciar',    moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.crm.gerenciar' },
+  { id: 'comercial.meta.ver',         moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.meta.ver' },
+  { id: 'comercial.meta.gerenciar',   moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.meta.gerenciar' },
   { id: 'estoque.saldo.ver',     moduloChave: 'cap.modulo.estoque', labelChave: 'cap.estoque.saldo.ver' },
   { id: 'estoque.entrada.criar', moduloChave: 'cap.modulo.estoque', labelChave: 'cap.estoque.entrada.criar' },
   { id: 'estoque.baixa.criar',   moduloChave: 'cap.modulo.estoque', labelChave: 'cap.estoque.baixa.criar' },
@@ -96,7 +98,7 @@ export const PERFIS_PADRAO: PerfilPadrao[] = [
   {
     nome: 'Comercial', descricao: 'Apenas Comercial e relatórios comerciais',
     caps: ['dashboard.ver', 'comercial.preco.listar', 'comercial.preco.gerenciar', 'comercial.pedido.listar', 'comercial.pedido.criar', 'comercial.pedido.gerenciar',
-      'comercial.crm.ver', 'comercial.crm.gerenciar', 'cadastros.cliente.listar', 'cadastros.cliente.gerenciar', 'cadastros.produto.listar', 'cadastros.vendedor.listar', ...REL_COMERCIAL],
+      'comercial.crm.ver', 'comercial.crm.gerenciar', 'comercial.meta.ver', 'comercial.meta.gerenciar', 'cadastros.cliente.listar', 'cadastros.cliente.gerenciar', 'cadastros.produto.listar', 'cadastros.vendedor.listar', ...REL_COMERCIAL],
   },
   {
     nome: 'Financeiro', descricao: 'Apenas Financeiro e cadastros financeiros',
@@ -113,7 +115,7 @@ export const PERFIS_PADRAO: PerfilPadrao[] = [
   },
   {
     nome: 'Gestão à Vista Comercial', descricao: 'Painel de vendas em TV (somente leitura)',
-    caps: ['painel.tv_comercial', 'dashboard.ver', 'estoque.saldo.ver'], usuario: { prefixoEmail: 'tv-comercial' },
+    caps: ['painel.tv_comercial', 'dashboard.ver', 'estoque.saldo.ver', 'comercial.meta.ver'], usuario: { prefixoEmail: 'tv-comercial' },
   },
   {
     nome: 'Gestão à Vista Estoque/Expedição', descricao: 'Painel de expedição em TV (somente leitura)',

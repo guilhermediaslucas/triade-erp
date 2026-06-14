@@ -22,6 +22,7 @@ export interface ResumoDashboard {
 
   faturamentoMensal: { mes: string; total: number }[];
   faturamentoAnterior: { mes: string; total: number }[];   // 6 meses imediatamente anteriores (série de comparação)
+  metaMensal: number[];                                     // meta mensal repetida por mês (linha/barra de meta)
   vendasCategoria: { categoria: string; total: number }[];
   saldosBancarios: { nome: string; saldo: number }[];
 }

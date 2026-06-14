@@ -619,4 +619,17 @@ export const tenantMigrations: MigracaoTenant[] = [
       WHERE NOT EXISTS (SELECT 1 FROM "${s}".condicao_pagamento cp WHERE cp.nome = v.nome);
     `,
   },
+  {
+    nome: '044_meta',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".meta (
+        periodo   text PRIMARY KEY,
+        valor     numeric(14,2) NOT NULL DEFAULT 0,
+        criado_em timestamptz NOT NULL DEFAULT now()
+      );
+      INSERT INTO "${s}".meta (periodo, valor)
+      SELECT v.p, 0 FROM (VALUES ('dia'),('semana'),('mes'),('ano')) AS v(p)
+      WHERE NOT EXISTS (SELECT 1 FROM "${s}".meta m WHERE m.periodo = v.p);
+    `,
+  },
 ];

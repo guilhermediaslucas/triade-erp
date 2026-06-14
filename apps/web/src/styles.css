@@ -301,7 +301,10 @@ body:not(.theme-dark) .tv { --tvbg:#f4f5fa; --tvcard:#ffffff; --tvborda:#e6e8ee;
 .tv-mini-val.tv-alerta { color: #e1483b; }
 .tv-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .tv-card { background: var(--tvcard); border: 1px solid var(--tvborda); border-radius: 18px; padding: 18px 22px; }
-.tv-card-h { font-size: 19px; font-weight: 700; margin-bottom: 12px; }
+.tv-card-h { font-size: 19px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 14px; }
+.tv-legend { display: inline-flex; gap: 14px; font-size: 13px; font-weight: 500; color: var(--tvmuted, #aab6cc); }
+.tv-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.tv-legend i { width: 12px; height: 9px; border-radius: 2px; display: inline-block; }
 .tv-lin { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--tvline); font-size: 19px; }
 .tv-lin:last-child { border-bottom: 0; }
 .tv-rank { width: 30px; height: 30px; flex: none; display: inline-flex; align-items: center; justify-content: center; background: var(--tvchip); border-radius: 9px; font-weight: 800; font-size: 15px; }
@@ -651,6 +654,7 @@ body.theme-dark .pk-pill.cartao { background: #3a1f25; color: #fca5a5; }
 body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
 .dash-row { display: grid; gap: 18px; margin-bottom: 18px; }
 .dash-row.c5 { grid-template-columns: repeat(5, 1fr); }
+.dash-row.c4 { grid-template-columns: repeat(4, 1fr); }
 .dash-row.c2 { grid-template-columns: 1fr 1fr; }
 .dash-row.c3 { grid-template-columns: repeat(3, 1fr); }
 .card.clicavel { cursor: pointer; transition: transform .12s, box-shadow .12s, border-color .12s; }
@@ -717,8 +721,8 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
 .dash-chart-in { animation: dash-chart-in .5s ease-out; }
 .dash-ponto-c { transition: r .12s ease, fill .12s ease; }
 .dash-ponto:hover .dash-ponto-c { r: 5.5; }
-@media (max-width: 1100px) { .dash-row.c5, .dash-row.c2, .dash-row.d2, .dash-row.d3, .alerts { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 680px) { .dash-row.c5, .dash-row.c2, .dash-row.c3, .dash-row.d2, .dash-row.d3, .alerts, .quick { grid-template-columns: 1fr; } }
+@media (max-width: 1100px) { .dash-row.c5, .dash-row.c4, .dash-row.c2, .dash-row.d2, .dash-row.d3, .alerts { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 680px) { .dash-row.c5, .dash-row.c4, .dash-row.c2, .dash-row.c3, .dash-row.d2, .dash-row.d3, .alerts, .quick { grid-template-columns: 1fr; } }
 
 /* =====================================================================
    Camada RESPONSIVA (mobile) — só ativa abaixo do breakpoint.
