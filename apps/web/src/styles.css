@@ -135,12 +135,25 @@ a { text-decoration: none; color: inherit; }
 .btn-danger:disabled { opacity: .6; cursor: default; }
 .fin-linha-det { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 12px; background: #f8fafc; border-radius: 8px; font-size: 13px; }
 .fin-linha-det + .fin-linha-det { margin-top: 8px; }
+.pe-ef { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 8px; background: #eafaf0; color: #16a34a; border: 1px solid transparent; }
+.pe-pv { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 8px; background: var(--bg); color: var(--muted); border: 1px solid var(--borda); }
+.pe-badge { cursor: pointer; font-family: inherit; }
+.pe-badge:disabled { cursor: default; opacity: .85; }
 .busca-num { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--borda); border-radius: 10px; padding: 6px 12px; }
 .busca-num input { border: 0; outline: none; font-size: 14px; width: 200px; font-family: inherit; }
 .cal-wd { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; font-size: 11px; color: var(--muted); text-transform: capitalize; margin-bottom: 4px; }
 .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
 .cal-cel { border-radius: 8px; padding: 6px 7px; min-height: 44px; }
 .cal-editor { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 12px; background: var(--bg); border-radius: 10px; padding: 10px 14px; }
+.dre-linha { display: grid; grid-template-columns: 160px 1fr 56px 120px; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+.dre-linha:hover { background: #f8fafc; }
+.dre-bar { height: 8px; background: #f0f0f4; border-radius: 6px; overflow: hidden; }
+.dre-bar > span { display: block; height: 100%; }
+.dre-pct { text-align: right; color: var(--muted); }
+.dre-val { text-align: right; font-weight: 500; }
+.dre-total { display: flex; justify-content: space-between; border-top: 2px solid var(--borda); padding-top: 8px; margin-top: 6px; font-weight: 600; font-size: 13px; }
+.dre-resultado { display: flex; justify-content: space-between; align-items: center; background: #e1f5ee; border-radius: 10px; padding: 12px 14px; margin-top: 14px; }
+@media (max-width: 720px) { .dre-linha { grid-template-columns: 1fr 50px 100px; } .dre-bar { display: none; } }
 .btn-ghost { background: #fff; border: 1px solid var(--borda); border-radius: 8px; padding: 9px 16px; font-weight: 600; font-size: 14px; cursor: pointer; }
 .btn-link { background: none; border: 0; color: var(--accent); font-weight: 600; font-size: 13px; cursor: pointer; padding: 2px 6px; }
 .btn-link:hover { text-decoration: underline; }

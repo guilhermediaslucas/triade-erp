@@ -5,11 +5,10 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
-import { FiltrosModal } from '../components/FiltrosModal.js';
 
 interface Lanc { id: string; tipo: 'entrada' | 'saida'; numero: string; descricao: string; pessoaNome: string | null; conta: string | null; dataCaixa: string; previsto: boolean; situacao: 'baixado' | 'vencido' | 'aberto'; valor: number; }
 interface Semana { de: string; ate: string; rotulo: string; entradas: number; saidas: number; }
-interface Fluxo { lancamentos: Lanc[]; entradas: number; saidas: number; semanas: Semana[]; }
+interface Fluxo { lancamentos: Lanc[]; entradas: number; saidas: number; semanas: Semana[]; granularidade: 'semana' | 'mes'; }
 interface Conta { id: string; nome: string; saldo?: number; }
 
 const fmtData = (d: string) => new Date(d + 'T00:00:00').toLocaleDateString('pt-BR');
@@ -18,7 +17,7 @@ export function FluxoCaixa() {
   const { token } = useAuth();
   const { t } = useI18n();
   const [de, setDe] = useState(''); const [ate, setAte] = useState('');
-  const [dados, setDados] = useState<Fluxo>({ lancamentos: [], entradas: 0, saidas: 0, semanas: [] });
+  const [dados, setDados] = useState<Fluxo>({ lancamentos: [], entradas: 0, saidas: 0, semanas: [], granularidade: 'semana' });
   const [contas, setContas] = useState<Conta[]>([]);
   const [bancosSel, setBancosSel] = useState<Set<string>>(new Set());
   const [semanaSel, setSemanaSel] = useState<number | null>(null);
@@ -68,11 +67,15 @@ export function FluxoCaixa() {
       <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('fluxo.titulo')}</h1><div className="muted page-sub">{t('fluxo.sub_full')}</div></div></div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
 
-      <div className="contas-toolbar" style={{ alignItems: 'center' }}>
-        <FiltrosModal count={(de ? 1 : 0) + (ate ? 1 : 0)} onLimpar={() => { setDe(''); setAte(''); carregar('', ''); }} onAplicar={() => carregar()} titulo={t('fluxo.titulo')}>
-          <label className="campo">{t('fluxo.data_ini')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
-          <label className="campo">{t('fluxo.data_fim')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
-        </FiltrosModal>
+      <div className="toolbar" style={{ alignItems: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
+        <label className="campo" style={{ margin: 0 }}>{t('fluxo.data_ini')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} style={{ maxWidth: 180 }} /></label>
+        <label className="campo" style={{ margin: 0 }}>{t('fluxo.data_fim')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} style={{ maxWidth: 180 }} /></label>
+        <button className="btn-primary" onClick={() => carregar()}><Ic name="i-search" className="sm" /> {t('fluxo.filtrar')}</button>
+        <button className="btn-ghost" onClick={() => { setDe(''); setAte(''); carregar('', ''); }}><Ic name="i-x" className="sm" /> {t('fluxo.limpar')}</button>
+        <span className="muted" style={{ marginLeft: 'auto', fontSize: 12 }}>
+          {t('fluxo.periodo')}: <b style={{ color: 'var(--ink)' }}>{rotuloPeriodo(de, ate)}</b>
+          {dados.semanas.length > 0 && <span className="pe-pv" style={{ marginLeft: 8 }}>{t(dados.granularidade === 'mes' ? 'fluxo.por_mes' : 'fluxo.por_semana')}</span>}
+        </span>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 14, marginBottom: 14 }}>
@@ -100,7 +103,7 @@ export function FluxoCaixa() {
               </svg>
             </div>
           )}
-          <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 8, textAlign: 'right' }}>{t('fluxo.clique_barras')}</div>
+          <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 8, textAlign: 'right' }}>{t(dados.granularidade === 'mes' ? 'fluxo.clique_mes' : 'fluxo.clique_barras')}</div>
         </div>
 
         <div className="card" style={{ maxWidth: 'none' }}>
@@ -141,7 +144,7 @@ export function FluxoCaixa() {
                 <td>{l.pessoaNome ?? '—'}</td>
                 <td>{l.conta ?? '—'}</td>
                 <td>{fmtData(l.dataCaixa)}</td>
-                <td>{l.previsto ? t('fluxo.previsto') : t('fluxo.efetivo')}</td>
+                <td><span className={l.previsto ? 'pe-pv' : 'pe-ef'}>{l.previsto ? t('fluxo.previsto') : t('fluxo.efetivo')}</span></td>
                 <td><span className={'pill ' + (l.situacao === 'baixado' ? 'st-verde' : l.situacao === 'vencido' ? 'st-vermelho' : 'st-laranja')}>{t('fluxo.' + l.situacao)}</span></td>
                 <td style={{ textAlign: 'right', color: l.tipo === 'entrada' ? '#15803d' : '#b91c1c', fontWeight: 600 }}>{l.tipo === 'saida' ? '-' : ''}{moeda(l.valor)}</td>
               </tr>

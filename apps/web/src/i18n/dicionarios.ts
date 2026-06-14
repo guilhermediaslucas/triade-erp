@@ -2316,3 +2316,26 @@ Object.assign(es, {
   'metas.def_calendario': 'Total definido por el calendario', 'meta.dia_invalido': 'Día inválido.',
   'dash.drill_meta': 'Meta del mes', 'dash.drill_atingido': 'Alcanzado', 'dash.drill_mes': 'Mes', 'dash.acumulado': 'Acumulado',
 });
+
+// ===== Lote: fluxo de caixa (filtro inline, agrupar por mês, badges) + DRE redesenhada =====
+Object.assign(pt, {
+  'fluxo.filtrar': 'Filtrar', 'fluxo.periodo': 'Período', 'fluxo.por_mes': 'agrupado por mês', 'fluxo.por_semana': 'agrupado por semana',
+  'fluxo.clique_mes': 'Clique numa barra para ver os títulos do mês',
+  'dre.margem': 'Margem', 'dre.competencia': 'Competência (mês)', 'dre.periodo_personalizado': 'Usar período personalizado', 'dre.usar_competencia': 'Usar competência (mês)',
+  'dre.total_receitas': 'Total de receitas', 'dre.total_despesas': 'Total de despesas', 'dre.resultado_periodo': 'Resultado do período',
+  'dre.vs_anterior': 'vs período anterior', 'dre.clique_linha': 'Clique numa linha para ver os títulos que a compõem', 'dre.detalhe_titulo': 'Títulos da linha',
+});
+Object.assign(en, {
+  'fluxo.filtrar': 'Filter', 'fluxo.periodo': 'Period', 'fluxo.por_mes': 'grouped by month', 'fluxo.por_semana': 'grouped by week',
+  'fluxo.clique_mes': 'Click a bar to see the entries for the month',
+  'dre.margem': 'Margin', 'dre.competencia': 'Period (month)', 'dre.periodo_personalizado': 'Use custom range', 'dre.usar_competencia': 'Use month',
+  'dre.total_receitas': 'Total revenue', 'dre.total_despesas': 'Total expenses', 'dre.resultado_periodo': 'Period result',
+  'dre.vs_anterior': 'vs previous period', 'dre.clique_linha': 'Click a line to see the entries that make it up', 'dre.detalhe_titulo': 'Line entries',
+});
+Object.assign(es, {
+  'fluxo.filtrar': 'Filtrar', 'fluxo.periodo': 'Período', 'fluxo.por_mes': 'agrupado por mes', 'fluxo.por_semana': 'agrupado por semana',
+  'fluxo.clique_mes': 'Haz clic en una barra para ver los títulos del mes',
+  'dre.margem': 'Margen', 'dre.competencia': 'Competencia (mes)', 'dre.periodo_personalizado': 'Usar período personalizado', 'dre.usar_competencia': 'Usar competencia (mes)',
+  'dre.total_receitas': 'Total de ingresos', 'dre.total_despesas': 'Total de gastos', 'dre.resultado_periodo': 'Resultado del período',
+  'dre.vs_anterior': 'vs período anterior', 'dre.clique_linha': 'Haz clic en una línea para ver los títulos que la componen', 'dre.detalhe_titulo': 'Títulos de la línea',
+});

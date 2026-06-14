@@ -325,7 +325,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
               {!oc('sit') && <td data-label={t('fin.situacao')}><span className={'pill ' + (sit === 'pago' ? 'st-verde' : sit === 'vencido' ? 'st-vermelho' : 'st-laranja')}>{t('fin.' + sit)}</span></td>}
               <td data-label={t('fin.previsto')} style={{ textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
                 {tt.status === 'aberto'
-                  ? <input type="checkbox" checked={tt.previsto} disabled={!pode} onChange={() => alternarPrevisto(tt)} title={t('fin.previsto_hint')} />
+                  ? <button className={'pe-badge ' + (tt.previsto ? 'pe-pv' : 'pe-ef')} disabled={!pode} onClick={() => alternarPrevisto(tt)} title={t('fin.previsto_hint')}>{tt.previsto ? t('fluxo.previsto') : t('fluxo.efetivo')}</button>
                   : <span className="muted">—</span>}
               </td>
               <td data-label={t('usuarios.acoes')}><span className="acoes-ic">{pode && (tt.status === 'aberto'

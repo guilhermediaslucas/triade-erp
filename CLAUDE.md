@@ -188,6 +188,25 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-14** — **Fluxo de caixa (agrupar por mês + inline + período + badges), logo do Excel e DRE redesenhada.**
+  **Fluxo (`FinanceiroService.fluxoCompleto`):** `RelatorioFluxo` += `granularidade`; agora agrupa as barras por
+  **semana** (período ≤ ~12 semanas) ou **mês** (> 84 dias) automaticamente (helpers `primeiroDoMes/ultimoDoMes/
+  addMes/diasEntre`, `MESES_ABREV`). **`FluxoCaixa.tsx`:** filtro **inline** (Data início/fim + Filtrar + Limpar,
+  como o mockup; saiu o `FiltrosModal`), **período exibido** no topo (`rotuloPeriodo` + badge agrupado por mês/
+  semana), texto do gráfico adapta (semana/mês). Mantidos: resumo, saldo inicial por banco, seleção, export.
+  **Previsto/Efetivo = badges do mockup:** CSS `.pe-ef` (verde) / `.pe-pv` (neutro c/ borda); no fluxo (read-only)
+  e em **Contas** o checkbox virou **badge clicável** (`.pe-badge`, alterna previsto, mantém a cap). **Excel
+  (`lib/excel.ts`):** a logo da empresa era inserida com cx/cy fixos (3,9:1) → achatava. Novos `dimsImagem`
+  (lê PNG/JPEG/GIF dos bytes) + `caixaLogo` calculam cx/cy mantendo a proporção dentro da caixa máx
+  (1400000×360000 EMU). Logo TRIADE (texto) intacta. **DRE redesenhada (`RelDRE.tsx` reescrita + backend):**
+  `dre` += `anterior` (mesmo período imediatamente anterior, p/ comparação) e novo `dreDetalhe` (títulos pagos
+  que compõem uma linha) + rota `GET /financeiro/dre/detalhe`. Tela: **competência (mês)** + período personalizado,
+  agrupar por categoria/origem, KPIs (Receitas/Despesas/Resultado/**Margem**), demonstrativo com **% e barra** por
+  linha, totais, **Resultado do período** + margem + delta vs anterior, e **drill** (clica na linha → modal com os
+  títulos). CSS `.dre-linha/.dre-bar/.dre-pct/.dre-val/.dre-total/.dre-resultado`. i18n `fluxo.*`/`dre.*` pt/en/es.
+  **Validação:** type-check do sandbox inútil (mount trunca/NUL-pad); hand-review pelo file-tool; sem órfãos.
+  **Pendente:** Gui build + commit+push (Render/Cloudflare) **e APK novo** (telas mudaram). Sem migration; relogar
+  não é necessário.
 - **2026-06-14** — **Metas do calendário refletindo nos dashboards + drill de faturamento (meta × realizado).**
   **Bug:** a tabela `meta_dia` (calendário) era salva mas **nunca lida** — TV derivava a meta do dia de
   `metaDiaUtil/metaSabado` (modelo dia da semana) e o drill não mostrava meta. **Fix (sem migration):** novo

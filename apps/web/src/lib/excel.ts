@@ -62,6 +62,48 @@ function dataUriParaBytes(uri: string): { ext: string; mime: string; bytes: Uint
   return { ext, mime, bytes };
 }
 
+// Lê a largura/altura naturais da imagem direto dos bytes (PNG/JPEG/GIF),
+// para preservar a proporção ao embutir no Excel (evita a logo "achatada").
+function dimsImagem(b: Uint8Array, ext: string): { w: number; h: number } | null {
+  try {
+    if (ext === 'png' && b.length >= 24) {
+      const w = (b[16]! << 24) | (b[17]! << 16) | (b[18]! << 8) | b[19]!;
+      const h = (b[20]! << 24) | (b[21]! << 16) | (b[22]! << 8) | b[23]!;
+      return w > 0 && h > 0 ? { w, h } : null;
+    }
+    if (ext === 'gif' && b.length >= 10) {
+      return { w: b[6]! | (b[7]! << 8), h: b[8]! | (b[9]! << 8) };
+    }
+    if (ext === 'jpg') {
+      let p = 2;
+      while (p < b.length) {
+        if (b[p] !== 0xff) { p++; continue; }
+        const marker = b[p + 1]!;
+        // SOF0..SOF15 (exceto DHT=C4, JPG=C8, DAC=CC) trazem as dimensões.
+        if (marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc) {
+          const h = (b[p + 5]! << 8) | b[p + 6]!;
+          const w = (b[p + 7]! << 8) | b[p + 8]!;
+          return w > 0 && h > 0 ? { w, h } : null;
+        }
+        const len = (b[p + 2]! << 8) | b[p + 3]!;
+        if (len <= 0) break;
+        p += 2 + len;
+      }
+    }
+  } catch { /* ignora */ }
+  return null;
+}
+
+// Calcula cx/cy (EMU) encaixando a imagem numa caixa máxima, mantendo a proporção.
+function caixaLogo(b: Uint8Array, ext: string, maxCx: number, maxCy: number): { cx: number; cy: number } {
+  const d = dimsImagem(b, ext);
+  if (!d) return { cx: maxCx, cy: maxCy };
+  const aspect = d.w / d.h, boxAspect = maxCx / maxCy;
+  return aspect > boxAspect
+    ? { cx: maxCx, cy: Math.round(maxCx / aspect) }
+    : { cx: Math.round(maxCy * aspect), cy: maxCy };
+}
+
 // Logo da empresa (data URI raster) persistida pelo BrandingContext.
 function logoEmpresa(): { ext: string; mime: string; bytes: Uint8Array } | null {
   try { const uri = localStorage.getItem('triade_logo'); return uri ? dataUriParaBytes(uri) : null; }
@@ -91,7 +133,7 @@ function logoTriade(): { ext: string; mime: string; bytes: Uint8Array } | null {
 function montarImagens(ncols: number): Img[] {
   const imgs: Img[] = [];
   const emp = logoEmpresa();
-  if (emp) imgs.push({ ...emp, col: 0, colOff: 45720, cx: 1400000, cy: 360000 });
+  if (emp) { const c = caixaLogo(emp.bytes, emp.ext, 1400000, 360000); imgs.push({ ...emp, col: 0, colOff: 45720, cx: c.cx, cy: c.cy }); }
   const tri = logoTriade();
   if (tri) imgs.push({ ...tri, col: Math.max(1, ncols - 2), colOff: 0, cx: 1350000, cy: 342000 });
   return imgs;

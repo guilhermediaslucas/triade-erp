@@ -13,7 +13,13 @@ export interface RelatorioFluxoProj { saldoInicial: number; semanas: SemanaProje
 
 export type DrePor = 'origem' | 'categoria';
 export interface DreLinha { origem: string; total: number; }
-export interface RelatorioDre { por: DrePor; receitas: DreLinha[]; despesas: DreLinha[]; totalReceitas: number; totalDespesas: number; resultado: number; }
+export interface DreResumo { totalReceitas: number; totalDespesas: number; resultado: number; }
+export interface DreTituloDetalhe { numero: string; descricao: string; pessoaNome: string | null; pagoEm: string | null; valor: number; }
+export interface RelatorioDre {
+  por: DrePor; receitas: DreLinha[]; despesas: DreLinha[];
+  totalReceitas: number; totalDespesas: number; resultado: number;
+  anterior: DreResumo | null;   // mesmo período imediatamente anterior (comparação); null se sem datas
+}
 
 export interface RelatorioConciliacao {
   linhas: LinhaConciliacao[];
@@ -37,8 +43,11 @@ export interface FluxoLancamento {
   conta: string | null; dataCaixa: string; previsto: boolean; situacao: 'baixado' | 'vencido' | 'aberto'; valor: number;
 }
 export interface SemanaFluxo { de: string; ate: string; rotulo: string; entradas: number; saidas: number; }
-export interface RelatorioFluxo { lancamentos: FluxoLancamento[]; entradas: number; saidas: number; semanas: SemanaFluxo[]; }
+// `granularidade`: o gráfico agrupa por semana (período curto) ou por mês (período longo),
+// automaticamente, para as barras não ficarem ilegíveis quando o filtro é grande.
+export interface RelatorioFluxo { lancamentos: FluxoLancamento[]; entradas: number; saidas: number; semanas: SemanaFluxo[]; granularidade: 'semana' | 'mes'; }
 
+const MESES_ABREV = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 function segundaDaSemana(isoDate: string): string {
   const d = new Date(isoDate + 'T00:00:00Z');
   const dow = d.getUTCDay(); // 0=domingo .. 6=sábado
@@ -47,6 +56,16 @@ function segundaDaSemana(isoDate: string): string {
 }
 function addDias(iso: string, n: number): string {
   const d = new Date(iso + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10);
+}
+function diasEntre(a: string, b: string): number {
+  return Math.round((Date.parse(b + 'T00:00:00Z') - Date.parse(a + 'T00:00:00Z')) / 86400000);
+}
+function primeiroDoMes(iso: string): string { return iso.slice(0, 7) + '-01'; }
+function ultimoDoMes(iso: string): string {
+  const [y, m] = iso.slice(0, 7).split('-').map(Number); return new Date(Date.UTC(y!, m!, 0)).toISOString().slice(0, 10);
+}
+function addMes(iso: string, n: number): string {
+  const [y, m] = iso.slice(0, 7).split('-').map(Number); return new Date(Date.UTC(y!, m! - 1 + n, 1)).toISOString().slice(0, 10);
 }
 
 export class FinanceiroService {
@@ -78,21 +97,35 @@ export class FinanceiroService {
     const soma = (filtro: (l: FluxoLancamento) => boolean) => r2(lancamentos.filter(filtro).reduce((a, l) => a + l.valor, 0));
     const entradas = soma((l) => l.tipo === 'entrada');
     const saidas = soma((l) => l.tipo === 'saida');
-    // Semanas (segunda a domingo) do menor ao maior dataCaixa (ou de..ate), p/ o gráfico.
+    // Barras do gráfico: agrupa por SEMANA (período curto) ou por MÊS (período longo,
+    // > ~12 semanas), automaticamente, para não ficar ilegível com muitos pontos.
     const semanas: SemanaFluxo[] = [];
+    let granularidade: 'semana' | 'mes' = 'semana';
     if (lancamentos.length > 0) {
       const min = de ?? lancamentos[0]!.dataCaixa;
       const max = ate ?? lancamentos[lancamentos.length - 1]!.dataCaixa;
-      let wk = segundaDaSemana(min); const fim = segundaDaSemana(max); let guard = 0;
-      while (wk <= fim && guard++ < 60) {
-        const wkFim = addDias(wk, 6);
-        const na = (l: FluxoLancamento) => l.dataCaixa >= wk && l.dataCaixa <= wkFim;
-        const [, mm, dd] = wk.split('-');
-        semanas.push({ de: wk, ate: wkFim, rotulo: `${dd}/${mm}`, entradas: soma((l) => l.tipo === 'entrada' && na(l)), saidas: soma((l) => l.tipo === 'saida' && na(l)) });
-        wk = addDias(wk, 7);
+      granularidade = diasEntre(min, max) > 84 ? 'mes' : 'semana';
+      if (granularidade === 'mes') {
+        let mk = primeiroDoMes(min); const fim = primeiroDoMes(max); let guard = 0;
+        while (mk <= fim && guard++ < 120) {
+          const mFim = ultimoDoMes(mk);
+          const na = (l: FluxoLancamento) => l.dataCaixa >= mk && l.dataCaixa <= mFim;
+          const [yy, mm] = mk.split('-');
+          semanas.push({ de: mk, ate: mFim, rotulo: `${MESES_ABREV[Number(mm) - 1]}/${yy!.slice(2)}`, entradas: soma((l) => l.tipo === 'entrada' && na(l)), saidas: soma((l) => l.tipo === 'saida' && na(l)) });
+          mk = addMes(mk, 1);
+        }
+      } else {
+        let wk = segundaDaSemana(min); const fim = segundaDaSemana(max); let guard = 0;
+        while (wk <= fim && guard++ < 60) {
+          const wkFim = addDias(wk, 6);
+          const na = (l: FluxoLancamento) => l.dataCaixa >= wk && l.dataCaixa <= wkFim;
+          const [, mm, dd] = wk.split('-');
+          semanas.push({ de: wk, ate: wkFim, rotulo: `${dd}/${mm}`, entradas: soma((l) => l.tipo === 'entrada' && na(l)), saidas: soma((l) => l.tipo === 'saida' && na(l)) });
+          wk = addDias(wk, 7);
+        }
       }
     }
-    return { lancamentos, entradas, saidas, semanas };
+    return { lancamentos, entradas, saidas, semanas, granularidade };
   }
 
   // Aging: títulos em aberto agrupados por faixa de atraso (relativo a hoje).
@@ -141,16 +174,45 @@ export class FinanceiroService {
   }
 
   // DRE de caixa (resultado do período): títulos pagos no período, agrupados por origem ou categoria.
+  // Também devolve o resumo do MESMO período imediatamente anterior (comparação), quando há datas.
   async dre(schema: string, de: any, ate: any, por: any): Promise<RelatorioDre> {
     const grupo: DrePor = por === 'categoria' ? 'categoria' : 'origem';
-    const linhas: PagoAgrupado[] = grupo === 'categoria'
-      ? await this.repo.pagosPorCategoria(schema, lim(de), lim(ate))
-      : await this.repo.pagosPorOrigem(schema, lim(de), lim(ate));
+    const buscar = (d: string | null, a: string | null) => grupo === 'categoria'
+      ? this.repo.pagosPorCategoria(schema, d, a)
+      : this.repo.pagosPorOrigem(schema, d, a);
+    const linhas: PagoAgrupado[] = await buscar(lim(de), lim(ate));
     const receitas = linhas.filter((l) => l.tipo === 'receber').map((l) => ({ origem: l.chave, total: r2(l.total) })).sort((a, b) => b.total - a.total);
     const despesas = linhas.filter((l) => l.tipo === 'pagar').map((l) => ({ origem: l.chave, total: r2(l.total) })).sort((a, b) => b.total - a.total);
     const totalReceitas = r2(receitas.reduce((a, l) => a + l.total, 0));
     const totalDespesas = r2(despesas.reduce((a, l) => a + l.total, 0));
-    return { por: grupo, receitas, despesas, totalReceitas, totalDespesas, resultado: r2(totalReceitas - totalDespesas) };
+
+    // Período anterior de mesmo tamanho (só quando de e ate vieram).
+    let anterior: DreResumo | null = null;
+    const d0 = lim(de), a0 = lim(ate);
+    if (d0 && a0) {
+      const len = diasEntre(d0, a0);
+      const prevAte = addDias(d0, -1), prevDe = addDias(d0, -(len + 1));
+      const lp = await buscar(prevDe, prevAte);
+      const rA = r2(lp.filter((l) => l.tipo === 'receber').reduce((a, l) => a + l.total, 0));
+      const dA = r2(lp.filter((l) => l.tipo === 'pagar').reduce((a, l) => a + l.total, 0));
+      anterior = { totalReceitas: rA, totalDespesas: dA, resultado: r2(rA - dA) };
+    }
+    return { por: grupo, receitas, despesas, totalReceitas, totalDespesas, resultado: r2(totalReceitas - totalDespesas), anterior };
+  }
+
+  // Drill da DRE: títulos pagos no período que compõem uma linha (origem ou categoria).
+  async dreDetalhe(schema: string, de: any, ate: any, por: any, tipoRaw: any, chave: any): Promise<DreTituloDetalhe[]> {
+    const grupo: DrePor = por === 'categoria' ? 'categoria' : 'origem';
+    const tipo: TipoTitulo = tipoRaw === 'pagar' ? 'pagar' : 'receber';
+    const d0 = lim(de), a0 = lim(ate);
+    const alvo = String(chave ?? '');
+    const titulos = await this.repo.listar(schema, tipo);
+    return titulos
+      .filter((t) => t.status === 'pago' && t.pagoEm)
+      .filter((t) => { const pe = String(t.pagoEm).slice(0, 10); return (!d0 || pe >= d0) && (!a0 || pe <= a0); })
+      .filter((t) => (grupo === 'categoria' ? (t.categoriaFinanceiraNome ?? '—') : t.origem) === alvo)
+      .map((t) => ({ numero: t.numero, descricao: t.descricao, pessoaNome: t.pessoaNome, pagoEm: t.pagoEm ? String(t.pagoEm).slice(0, 10) : null, valor: r2(t.valor) }))
+      .sort((a, b) => (a.pagoEm! < b.pagoEm! ? -1 : 1));
   }
 
   async criar(schema: string, tipo: TipoTitulo, e: any): Promise<string> {
