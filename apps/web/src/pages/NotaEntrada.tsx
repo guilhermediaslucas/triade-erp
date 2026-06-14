@@ -5,6 +5,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
 import { Ic } from '../components/Icones.js';
+import { MoedaInput } from '../components/MoedaInput.js';
 import { SeletorPessoa } from '../components/SeletorPessoa.js';
 
 interface PrecoProduto { produtoId: string; produtoNome: string; ativo: boolean; }
@@ -99,7 +100,7 @@ export function NotaEntrada() {
         </div>
         <div className="cores-grid">
           <label className="campo">{t('entrada.quantidade')}<input type="number" min="0" step="1" value={quantidade} onChange={(e) => setQtd(e.target.value)} /></label>
-          <label className="campo">{t('entrada.custo')}<input type="number" min="0" step="0.01" value={custo} onChange={(e) => setCusto(e.target.value)} placeholder="0,00" /></label>
+          <label className="campo">{t('entrada.custo')}<MoedaInput value={custo} onChange={(n) => setCusto(n ? String(n) : '')} placeholder="0,00" /></label>
         </div>
         <div className="cores-grid">
           <label className="campo">{t('nota.nf')}<input value={nf} onChange={(e) => setNf(e.target.value)} placeholder={t('nota.nf_ph')} /></label>

@@ -99,6 +99,9 @@ function ModalPerfil({ perfil, novo, porModulo, onFechar, onSalvo }: {
   const [caps, setCaps] = useState<string[]>(perfil.capabilities);
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
+  // Módulos começam recolhidos; abre só o que quer editar (expansão +/−).
+  const [abertos, setAbertos] = useState<Set<string>>(new Set());
+  function toggleMod(mod: string) { setAbertos((s) => { const n = new Set(s); n.has(mod) ? n.delete(mod) : n.add(mod); return n; }); }
 
   function alternar(id: string) {
     setCaps((c) => (c.includes(id) ? c.filter((x) => x !== id) : [...c, id]));
@@ -139,20 +142,26 @@ function ModalPerfil({ perfil, novo, porModulo, onFechar, onSalvo }: {
           {Object.entries(porModulo).map(([mod, lista]) => {
             const ids = lista.map((c) => c.id);
             const todos = ids.every((id) => caps.includes(id));
+            const marcadas = ids.filter((id) => caps.includes(id)).length;
+            const aberto = abertos.has(mod);
             return (
               <div key={mod} className="perm-mod">
-                <label className="perm-mod-head">
+                <div className="perm-mod-head">
+                  <button type="button" className="perm-mod-tg" onClick={() => toggleMod(mod)} aria-label={aberto ? '−' : '+'}>{aberto ? '−' : '+'}</button>
                   <input type="checkbox" checked={todos} onChange={() => alternarModulo(lista)} />
-                  {t(mod)}
-                </label>
-                <div className="perm-grid">
-                  {lista.map((c) => (
-                    <label key={c.id} className="perm-item">
-                      <input type="checkbox" checked={caps.includes(c.id)} onChange={() => alternar(c.id)} />
-                      {t(c.labelChave)}
-                    </label>
-                  ))}
+                  <span className="perm-mod-nome" onClick={() => toggleMod(mod)}>{t(mod)}</span>
+                  <span className="perm-mod-ct">{marcadas}/{lista.length}</span>
                 </div>
+                {aberto && (
+                  <div className="perm-grid">
+                    {lista.map((c) => (
+                      <label key={c.id} className="perm-item">
+                        <input type="checkbox" checked={caps.includes(c.id)} onChange={() => alternar(c.id)} />
+                        {t(c.labelChave)}
+                      </label>
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })}

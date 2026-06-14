@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
+import { MoedaInput } from '../components/MoedaInput.js';
 import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
 import { FiltrosModal } from '../components/FiltrosModal.js';
 
@@ -68,8 +69,8 @@ export function GestaoFretes() {
       <div className="card" style={{ maxWidth: 'none', marginBottom: 14 }}>
         <div className="card-head"><h3>{t('gfrete.parametros')}</h3></div>
         <div className="toolbar" style={{ alignItems: 'flex-end' }}>
-          <label className="campo" style={{ margin: 0 }}>{t('motoboys.km_rate')}<input type="number" min="0" step="0.01" value={kmRate} disabled={!podeParam} onChange={(e) => setKmRate(e.target.value)} style={{ maxWidth: 220 }} /></label>
-          <label className="campo" style={{ margin: 0 }}>{t('motoboys.min_motoboy')}<input type="number" min="0" step="0.01" value={minMotoboy} disabled={!podeParam} onChange={(e) => setMinMotoboy(e.target.value)} style={{ maxWidth: 220 }} /></label>
+          <label className="campo" style={{ margin: 0 }}>{t('motoboys.km_rate')}<MoedaInput value={kmRate} disabled={!podeParam} onChange={(n) => setKmRate(String(n))} style={{ maxWidth: 220 }} /></label>
+          <label className="campo" style={{ margin: 0 }}>{t('motoboys.min_motoboy')}<MoedaInput value={minMotoboy} disabled={!podeParam} onChange={(n) => setMinMotoboy(String(n))} style={{ maxWidth: 220 }} /></label>
           {podeParam && <button className="btn-primary" onClick={salvarParam}><Ic name="i-check" className="sm" /> {t('gfrete.salvar_param')}</button>}
         </div>
       </div>

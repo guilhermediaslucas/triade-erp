@@ -188,6 +188,37 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-14** — **Lote do Gui (6 demandas, mostradas em mockup e aprovadas antes de aplicar).**
+  **(1) Confirmar cancelamento de baixa:** `Contas.tsx` ganhou modal de confirmação (estado `cancelarT` +
+  `.btn-danger`) antes de `cancelar(tt)`; i18n `fin.cancelar_baixa_titulo/aviso`. **(2) Voltar para orçamento:**
+  `PedidosService` TRANSICOES += `aguardando_pagamento → orcamento`; ao voltar, **remove os títulos do pedido se
+  em aberto** e **bloqueia se algum pago** (`pedido.voltar_baixa_antes`, 409). Botão "Voltar para orçamento" no
+  detalhe (só em aguardando_pagamento). **(3) Máscara de moeda (varredura completa):** novo componente
+  `components/MoedaInput.tsx` (`fmtMoedaBR`/`parseMoedaBR`, exibe `350.000,00`, devolve número) aplicado em
+  Vendedores (meta), TabelaPreco (base/cliente/campanha), Clientes (limite), ContasCorrentes (saldo), Contas
+  (valor/desconto/multa/juros/filtros), Crm, EntradaEstoque, NotaEntrada, NovoPedido (frete), GestaoFretes,
+  Conciliacao. (Deixado de fora: campo "variação" do parcelar, que alterna R$/%.) **(3b) Metas por dia
+  (calendário):** migration tenant **046** `meta_dia` (ano,mes,dia,valor,feriado); `MetaRepository` +=
+  `listarDiasAno`/`salvarDiasAno`; `MetasService.obterDias` + `salvar` aceita `dias[]`; rota `GET /metas/dias`.
+  `Metas.tsx` reescrita: cada mês expande um calendário (Preencher a partir de dia útil/sábado; clicar no dia
+  edita valor / marca feriado / zera; total do mês = soma dos dias; CSS `.cal-wd/.cal-grid/.cal-cel/.cal-editor`).
+  **(4) Cancelar pedido como permissão + nível B:** `packages/shared/capabilities.ts` += `comercial.pedido.separar/
+  expedir/cancelar` (e nos perfis padrão Comercial/Estoque). `criarAutorizar` aceita `string|string[]` (any-of,
+  retrocompat com `gerenciar`); novo `criarTemCaps` p/ autorização que depende do corpo. Rota `PATCH /pedidos/:id/
+  status` gateia por destino (cancelado→cancelar|gerenciar; expedido/entregue→expedir|gerenciar); `/separar`→
+  separar|gerenciar. **Perfis.tsx:** módulos viram **expansíveis (＋/−)** (estado `abertos`, contador marcadas/total;
+  CSS `.perm-mod-tg/.perm-mod-nome/.perm-mod-ct`). **(5) Consulta por número:** `PedidoRepository.buscarPorNumero`
+  + `PedidosService.obterPorNumero` (aceita "142"/"PE-000142"); rota `GET /pedidos/numero/:numero`; `obter` anexa
+  `titulos` (resumo em aberto/baixado, via `listarPorPedido`). `Pedidos.tsx` ganhou busca por nº (`.busca-num`);
+  `PedidoDetalhe.tsx` ganhou bloco **Financeiro** (`.fin-linha-det`) + "Recebido por". **(recebido por)** migration
+  tenant **047** `pedido.recebido_por`; `definirEntrega(...,recebidoPor)`; `ModalDataEntrega` ganhou campo opcional
+  "Recebido por" (em branco se entregue de outra forma); `mudarStatus` repassa `recebidoPor`. **(6) Comissão por
+  competência:** `Comissoes.tsx` troca de/até por seletor **`<input type=month>`** (competência → 1º a último dia),
+  com link "usar período personalizado". i18n pt/en/es de tudo (bloco no fim de `dicionarios.ts`). **Validação:**
+  **type-check NÃO rodou no sandbox** (mount trunca arquivos grandes → erros falsos "unterminated string"/"invalid
+  character"; confirmado byte-a-byte) — hand-review pelo file-tool (lê o Windows íntegro); confiar no build do
+  Cloudflare/Render. **Pendente:** Gui `npm install` (relink `@triade/shared`) + `npm run build -w @triade/web` +
+  commit+push → Render aplica migrations 046/047 no boot + **relogar** (carrega caps novas).
 - **2026-06-12** — **Paridade: telas de cadastro de Pessoas igualadas ao mockup (lote completo).**
   "Tudo de uma vez" (escolha do Gui). **Comum:** sprite += `i-trash`/`i-eye`; CSS `.acao-ic`/`.acoes-ic`; todas as
   listas trocaram botões de texto (Editar/Inativar) por **ícones** (lápis/lixeira); busca usa `<Ic i-search>`.

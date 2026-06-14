@@ -71,20 +71,25 @@ export function ModalFormaEnvio({ numero, formaEntrega, motoboys, onFechar, onCo
   );
 }
 
-// Modal exibido ao mover um pedido para "Entregue": informa a data de entrega.
+// Modal exibido ao mover um pedido para "Entregue": informa a data de entrega
+// e, opcionalmente, quem recebeu (fica em branco se a entrega foi de outra forma).
 export function ModalDataEntrega({ numero, inicial, onFechar, onConfirmar }: {
-  numero: number; inicial?: string | null; onFechar: () => void; onConfirmar: (data: string) => void;
+  numero: number; inicial?: string | null; onFechar: () => void; onConfirmar: (data: string, recebidoPor: string) => void;
 }) {
   const { t } = useI18n();
   const hoje = new Date().toISOString().slice(0, 10);
   const [data, setData] = useState(inicial || hoje);
+  const [recebidoPor, setRecebidoPor] = useState('');
   return (
     <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 420 }}>
       <h2>{t('ent.titulo')} · {numeroPedido(numero)}</h2>
       <label className="campo">{t('ent.data')}<input type="date" value={data} onChange={(e) => setData(e.target.value)} autoFocus /></label>
+      <label className="campo">{t('ent.recebido_por')} <span className="muted">({t('fenv.opcional')})</span>
+        <input value={recebidoPor} onChange={(e) => setRecebidoPor(e.target.value)} placeholder={t('ent.recebido_por_ph')} />
+      </label>
       <div className="modal-acoes">
         <button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button>
-        <button className="btn-primary" disabled={!data} onClick={() => onConfirmar(data)}>{t('ent.confirmar')}</button>
+        <button className="btn-primary" disabled={!data} onClick={() => onConfirmar(data, recebidoPor.trim())}>{t('ent.confirmar')}</button>
       </div>
     </div></div>
   );

@@ -8,15 +8,18 @@ import { Ic } from '../components/Icones.js';
 interface Linha { vendedorId: string; vendedor: string; percentual: number; vendido: number; comissao: number; }
 interface Regra { id: string; nome: string; taxa: number; vendedorId: string | null; vendedorNome: string | null; de: string | null; ate: string | null; ativo: boolean; }
 interface Vendedor { id: string; nome: string; }
-const primeiroDia = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10); };
-const hoje = () => new Date().toISOString().slice(0, 10);
+const mesAtual = () => new Date().toISOString().slice(0, 7);
+const primeiroDiaDe = (m: string) => m + '-01';
+const ultimoDiaDe = (m: string) => { const [y, mo] = m.split('-').map(Number); return new Date(y!, mo!, 0).toISOString().slice(0, 10); };
 const fmtData = (d: string | null) => (d ? new Date(d + 'T00:00:00').toLocaleDateString('pt-BR') : '—');
 
 export function Comissoes() {
   const { token, temCapability } = useAuth();
   const { t } = useI18n();
   const podeFechar = temCapability('financeiro.comissao.gerenciar');
-  const [de, setDe] = useState(primeiroDia()); const [ate, setAte] = useState(hoje());
+  const [comp, setComp] = useState(mesAtual());
+  const [personalizado, setPersonalizado] = useState(false);
+  const [de, setDe] = useState(primeiroDiaDe(mesAtual())); const [ate, setAte] = useState(ultimoDiaDe(mesAtual()));
   const [linhas, setLinhas] = useState<Linha[]>([]);
   const [venc, setVenc] = useState('');
   const [erro, setErro] = useState<string | null>(null); const [ok, setOk] = useState<string | null>(null);
@@ -24,7 +27,12 @@ export function Comissoes() {
   const [vendedores, setVendedores] = useState<Vendedor[]>([]);
   const [edit, setEdit] = useState<Regra | null>(null);
 
-  async function gerar() { setErro(null); setOk(null); try { setLinhas(await api.get('/financeiro/comissoes?de=' + de + '&ate=' + ate, token!)); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
+  async function gerar(d = de, a = ate) { setErro(null); setOk(null); try { setLinhas(await api.get('/financeiro/comissoes?de=' + d + '&ate=' + a, token!)); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
+  function escolherCompetencia(m: string) {
+    setComp(m); if (!m) return;
+    const ini = primeiroDiaDe(m), fim = ultimoDiaDe(m);
+    setDe(ini); setAte(fim); gerar(ini, fim);
+  }
   async function carregarRegras() { try { setRegras(await api.get<Regra[]>('/financeiro/comissoes/regras', token!)); } catch { /* ignora */ } }
   useEffect(() => {
     gerar(); carregarRegras();
@@ -46,10 +54,17 @@ export function Comissoes() {
   return (
     <div>
       <div className="crumb">{t('com.crumb')}</div><h1 className="page-titulo">{t('com.titulo')}</h1><p className="muted page-sub">{t('com.sub')}</p>
-      <div className="rel-filtro">
-        <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
-        <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
-        <button className="btn-primary" onClick={gerar}>{t('rel.gerar')}</button>
+      <div className="rel-filtro" style={{ alignItems: 'flex-end' }}>
+        {!personalizado ? (
+          <label className="campo">{t('com.competencia')}<input type="month" value={comp} onChange={(e) => escolherCompetencia(e.target.value)} /></label>
+        ) : (
+          <>
+            <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
+            <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
+          </>
+        )}
+        <button className="btn-primary" onClick={() => gerar()}>{t('rel.gerar')}</button>
+        <button className="btn-link" onClick={() => setPersonalizado((v) => !v)}>{personalizado ? t('com.usar_competencia') : t('com.periodo_personalizado')}</button>
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       {ok && <div className="alerta-ok">{ok}</div>}

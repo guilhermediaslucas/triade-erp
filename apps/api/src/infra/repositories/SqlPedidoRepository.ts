@@ -80,6 +80,24 @@ export class SqlPedidoRepository implements PedidoRepository {
          LEFT JOIN "${s}".motoboy mb ON mb.id = p.motoboy_id
         WHERE p.id = $1`, [id]))[0];
     if (!r) return null;
+    return this.montar(s, r);
+  }
+
+  async buscarPorNumero(schema: string, numero: number): Promise<Pedido | null> {
+    const s = validarSchema(schema);
+    const r = (await this.ds.query(
+      `SELECT p.*, c.nome AS cliente_nome, v.nome AS vendedor_nome, mb.nome AS motoboy_nome
+         FROM "${s}".pedido p
+         LEFT JOIN "${s}".cliente c ON c.id = p.cliente_id
+         LEFT JOIN "${s}".vendedor v ON v.id = p.vendedor_id
+         LEFT JOIN "${s}".motoboy mb ON mb.id = p.motoboy_id
+        WHERE p.numero = $1`, [numero]))[0];
+    if (!r) return null;
+    return this.montar(s, r);
+  }
+
+  private async montar(s: string, r: any): Promise<Pedido> {
+    const id = r.id;
     const itens = await this.ds.query(`SELECT * FROM "${s}".pedido_item WHERE pedido_id = $1`, [id]);
 
     // Lotes consumidos na separação (rastreabilidade): movimentos de saída deste pedido,
@@ -109,6 +127,7 @@ export class SqlPedidoRepository implements PedidoRepository {
       entregueEm: r.entregue_em ? new Date(r.entregue_em).toISOString().slice(0, 10) : null,
       separadoPor: r.separado_por ?? null, separadoEm: r.separado_em ? new Date(r.separado_em).toISOString() : null,
       expedidoPor: r.expedido_por ?? null, expedidoEm: r.expedido_em ? new Date(r.expedido_em).toISOString() : null,
+      recebidoPor: r.recebido_por ?? null,
       subtotal: Number(r.subtotal), frete: Number(r.frete), total: Number(r.total),
       condicaoParcelas: r.condicao_parcelas ?? 1, condicaoIntervalo: r.condicao_intervalo ?? 30, criadoEm: new Date(r.criado_em),
       itens: itens.map((i: any) => ({
@@ -131,9 +150,9 @@ export class SqlPedidoRepository implements PedidoRepository {
     const s = validarSchema(schema);
     await this.ds.query(`UPDATE "${s}".pedido SET motoboy_id = $2 WHERE id = $1`, [id, motoboyId]);
   }
-  async definirEntrega(schema: string, id: string, entregueEm: string): Promise<void> {
+  async definirEntrega(schema: string, id: string, entregueEm: string, recebidoPor: string | null): Promise<void> {
     const s = validarSchema(schema);
-    await this.ds.query(`UPDATE "${s}".pedido SET entregue_em = $2 WHERE id = $1`, [id, entregueEm]);
+    await this.ds.query(`UPDATE "${s}".pedido SET entregue_em = $2, recebido_por = $3 WHERE id = $1`, [id, entregueEm, recebidoPor]);
   }
   async logSeparacao(schema: string, id: string, ator: string | null): Promise<void> {
     const s = validarSchema(schema);

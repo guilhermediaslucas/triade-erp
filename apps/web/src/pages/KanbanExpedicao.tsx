@@ -111,7 +111,7 @@ export function KanbanExpedicao() {
           onConfirmar={(forma, det, motoboyId) => { const x = pend; setPend(null); patch(x.id, 'expedido', { formaEnvio: forma, formaEnvioDetalhe: det, ...(motoboyId ? { motoboyId } : {}) }); }} />;
       })()}
       {pend?.tipo === 'entrega' && <ModalDataEntrega numero={pend.numero} onFechar={() => setPend(null)}
-        onConfirmar={(data) => { const x = pend; setPend(null); patch(x.id, 'entregue', { entregueEm: data }); }} />}
+        onConfirmar={(data, recebido) => { const x = pend; setPend(null); patch(x.id, 'entregue', { entregueEm: data, ...(recebido ? { recebidoPor: recebido } : {}) }); }} />}
     </div>
   );
 }

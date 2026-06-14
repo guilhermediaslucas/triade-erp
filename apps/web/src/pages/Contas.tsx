@@ -8,6 +8,7 @@ import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
 import { ModalNovaPessoa } from '../components/SeletorPessoa.js';
 import { Ic } from '../components/Icones.js';
+import { MoedaInput } from '../components/MoedaInput.js';
 
 type Tipo = 'receber' | 'pagar';
 interface Titulo { id: string; numero: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; contaCorrenteNome: string | null; vendedorNome: string | null; previsto: boolean; tipoDocumento: string | null; numeroDocumento: string | null; emissao: string | null; criadoEm: string; pagoEm: string | null; desconto: number; multa: number; juros: number; }
@@ -33,6 +34,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   const [parcelarModo, setParcelarModo] = useState<'dividir' | 'replicar'>('dividir');
   const [multiplicarT, setMultiplicarT] = useState<Titulo | null>(null);
   const [baixar, setBaixar] = useState<Titulo | null>(null);
+  const [cancelarT, setCancelarT] = useState<Titulo | null>(null);
   const [verT, setVerT] = useState<Titulo | null>(null);
   const [sel, setSel] = useState<Set<string>>(new Set());
   const [baixaMassa, setBaixaMassa] = useState(false);
@@ -268,8 +270,8 @@ export function Contas({ tipo }: { tipo: Tipo }) {
                 </select>
               </label>
               <label className="campo" style={{ gridColumn: '1 / -1' }}>{t('fin.descricao')}<input value={fDesc} onChange={(e) => setFDesc(e.target.value)} placeholder={t('fin.f_desc_ph')} /></label>
-              <label className="campo">{t('fin.f_min')}<input type="number" step="0.01" value={fMin} onChange={(e) => setFMin(e.target.value)} placeholder="0,00" /></label>
-              <label className="campo">{t('fin.f_max')}<input type="number" step="0.01" value={fMax} onChange={(e) => setFMax(e.target.value)} placeholder="0,00" /></label>
+              <label className="campo">{t('fin.f_min')}<MoedaInput value={fMin} onChange={(n) => setFMin(n ? String(n) : '')} placeholder="0,00" /></label>
+              <label className="campo">{t('fin.f_max')}<MoedaInput value={fMax} onChange={(n) => setFMax(n ? String(n) : '')} placeholder="0,00" /></label>
               <label className="campo">{t('fin.emissao')} ({t('fin.de')})<input type="date" value={fEmiDe} onChange={(e) => setFEmiDe(e.target.value)} /></label>
               <label className="campo">{t('fin.emissao')} ({t('fin.ate')})<input type="date" value={fEmiAte} onChange={(e) => setFEmiAte(e.target.value)} /></label>
               <label className="campo">{t('fin.vencimento')} ({t('fin.de')})<input type="date" value={fVde} onChange={(e) => setFVde(e.target.value)} /></label>
@@ -331,7 +333,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
                     {!tt.previsto && <button className="acao-ic ok" title={t('fin.baixar')} aria-label={t('fin.baixar')} onClick={() => setBaixar(tt)}><Ic name="i-check" className="sm" /></button>}
                     <button className="acao-ic" title={t('parcelar.acao')} aria-label={t('parcelar.acao')} onClick={() => abrirParcelar(tt, 'dividir')}><Ic name="i-clock" className="sm" /></button>
                   </>
-                : <button className="acao-ic danger" title={t('fin.cancelar_baixa')} aria-label={t('fin.cancelar_baixa')} onClick={() => cancelar(tt)}><Ic name="i-x" className="sm" /></button>)}</span></td>
+                : <button className="acao-ic danger" title={t('fin.cancelar_baixa')} aria-label={t('fin.cancelar_baixa')} onClick={() => setCancelarT(tt)}><Ic name="i-x" className="sm" /></button>)}</span></td>
             </tr>
           ); })}
         </tbody>
@@ -339,6 +341,18 @@ export function Contas({ tipo }: { tipo: Tipo }) {
       {novo && <ModalNovo tipo={tipo} onFechar={() => setNovo(false)} onSalvo={() => { setNovo(false); carregar(); toast(t('fin.toast_criado')); }} />}
       {parcelarT && <ModalParcelar tipo={tipo} titulo={parcelarT} modoInicial={parcelarModo} onFechar={() => setParcelarT(null)} onSalvo={(n) => { setParcelarT(null); carregar(); toast(t('parcelar.toast').replace('{n}', String(n))); }} />}
       {multiplicarT && <ModalMultiplicar tipo={tipo} titulo={multiplicarT} onFechar={() => setMultiplicarT(null)} onSalvo={(n) => { setMultiplicarT(null); carregar(); toast(t('parcelar.toast').replace('{n}', String(n))); }} />}
+      {cancelarT && (
+        <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 420 }}>
+          <h2>{t('fin.cancelar_baixa_titulo')}</h2>
+          <p className="muted" style={{ marginTop: -4, lineHeight: 1.6 }}>
+            {t('fin.cancelar_baixa_aviso').replace('{n}', cancelarT.numero).replace('{v}', moeda(cancelarT.valor))}
+          </p>
+          <div className="modal-acoes">
+            <button className="btn-ghost" onClick={() => setCancelarT(null)}>{t('common.voltar')}</button>
+            <button className="btn-danger" onClick={() => { const tt = cancelarT; setCancelarT(null); cancelar(tt); }}>{t('fin.cancelar_baixa')}</button>
+          </div>
+        </div></div>
+      )}
       {baixar && <ModalBaixa tipo={tipo} titulos={[baixar]} onFechar={() => setBaixar(null)} onSalvo={() => { setBaixar(null); carregar(); toast(t('fin.toast_baixado')); }} />}
       {baixaMassa && <ModalBaixa tipo={tipo} titulos={abertosSel} onFechar={() => setBaixaMassa(false)} onSalvo={(n) => { setBaixaMassa(false); carregar(); toast(t('bulk.baixados').replace('{n}', String(n))); }} />}
       {verT && <ModalVerTitulo tipo={tipo} titulo={verT} onFechar={() => setVerT(null)} />}
@@ -436,7 +450,7 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
             <option value="">{t('catfin.sem')}</option>{cats.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
           </select>
         </label>
-        <label className="campo">{t('fin.valor')}<input type="number" min="0" step="0.01" value={valor} onChange={(e) => setValor(e.target.value)} placeholder="0,00" /></label>
+        <label className="campo">{t('fin.valor')}<MoedaInput value={valor} onChange={(n) => setValor(n ? String(n) : '')} placeholder="0,00" /></label>
       </div>
       <label className="campo">
         <span style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -512,9 +526,9 @@ function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos:
         <div className="perm-titulo" style={{ marginTop: 6 }}>{t('fin.composicao')}</div>
         <div className="cores-grid">
           <label className="campo">{t('fin.valor_original')}<input value={moeda(totalSel)} readOnly style={{ background: 'var(--bg)', fontWeight: 600 }} /></label>
-          <label className="campo">{t('fin.desconto')}<input type="number" min="0" step="0.01" value={desconto} onChange={(e) => setDesconto(e.target.value)} /></label>
-          <label className="campo">{t('fin.multa')}<input type="number" min="0" step="0.01" value={multa} onChange={(e) => setMulta(e.target.value)} /></label>
-          <label className="campo">{t('fin.juros')}<input type="number" min="0" step="0.01" value={juros} onChange={(e) => setJuros(e.target.value)} /></label>
+          <label className="campo">{t('fin.desconto')}<MoedaInput value={desconto} onChange={(n) => setDesconto(n ? String(n) : '')} /></label>
+          <label className="campo">{t('fin.multa')}<MoedaInput value={multa} onChange={(n) => setMulta(n ? String(n) : '')} /></label>
+          <label className="campo">{t('fin.juros')}<MoedaInput value={juros} onChange={(n) => setJuros(n ? String(n) : '')} /></label>
         </div>
         <div className="tl-row tl-total" style={{ marginTop: 6 }}>
           <span className="muted">{t('fin.total_baixar')}</span>

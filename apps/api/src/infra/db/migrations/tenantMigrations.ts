@@ -642,4 +642,26 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".etiqueta ADD COLUMN IF NOT EXISTS emissao date;
     `,
   },
+  {
+    // Meta por dia específico: ajuste fino do calendário da meta mensal.
+    // Quando há linhas para (ano, mes), o total do mês = soma dos dias; feriado = sem meta.
+    nome: '046_meta_dia',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".meta_dia (
+        ano     int NOT NULL,
+        mes     int NOT NULL,
+        dia     int NOT NULL,
+        valor   numeric(14,2) NOT NULL DEFAULT 0,
+        feriado boolean NOT NULL DEFAULT false,
+        PRIMARY KEY (ano, mes, dia)
+      );
+    `,
+  },
+  {
+    // Quem recebeu o pedido na entrega (preenchido na transição p/ Entregue; opcional).
+    nome: '047_pedido_recebido_por',
+    sql: (s) => `
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS recebido_por text;
+    `,
+  },
 ];

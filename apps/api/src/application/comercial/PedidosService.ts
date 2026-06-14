@@ -13,7 +13,7 @@ import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
 const TRANSICOES: Record<StatusPedido, StatusPedido[]> = {
   orcamento: ['aguardando_pagamento', 'cancelado'],
-  aguardando_pagamento: ['aprovado', 'cancelado'],
+  aguardando_pagamento: ['aprovado', 'orcamento', 'cancelado'],
   aprovado: ['separacao', 'cancelado'],
   separacao: ['expedido', 'cancelado'],
   expedido: ['entregue', 'cancelado'],
@@ -54,6 +54,25 @@ export class PedidosService {
   async obter(schema: string, id: string): Promise<Pedido> {
     const p = await this.pedidos.buscarPorId(schema, id);
     if (!p) throw new ErroAplicacao('pedido.nao_encontrado', 404);
+    return this.comTitulos(schema, p);
+  }
+
+  // Consulta por número do pedido (aceita "142" ou "PE-000142").
+  async obterPorNumero(schema: string, raw: string): Promise<Pedido> {
+    const numero = Number(String(raw ?? '').replace(/\D/g, ''));
+    if (!Number.isFinite(numero) || numero <= 0) throw new ErroAplicacao('pedido.nao_encontrado', 404);
+    const p = await this.pedidos.buscarPorNumero(schema, numero);
+    if (!p) throw new ErroAplicacao('pedido.nao_encontrado', 404);
+    return this.comTitulos(schema, p);
+  }
+
+  // Anexa o resumo dos títulos a receber do pedido (bloco Financeiro do detalhe).
+  private async comTitulos(schema: string, p: Pedido): Promise<Pedido> {
+    const tits = await this.titulos.listarPorPedido(schema, p.id);
+    p.titulos = tits.map((t) => ({
+      numero: t.numero, valor: t.valor, vencimento: t.vencimento,
+      status: t.status, pagoEm: t.pagoEm, formaPagamento: t.formaPagamento,
+    }));
     return p;
   }
 
@@ -133,7 +152,7 @@ export class PedidosService {
     return { id };
   }
 
-  async mudarStatus(schema: string, id: string, novo: StatusPedido, dados?: { formaEnvio?: any; formaEnvioDetalhe?: any; entregueEm?: any; motoboyId?: any }, ator?: string | null): Promise<void> {
+  async mudarStatus(schema: string, id: string, novo: StatusPedido, dados?: { formaEnvio?: any; formaEnvioDetalhe?: any; entregueEm?: any; recebidoPor?: any; motoboyId?: any }, ator?: string | null): Promise<void> {
     const pedido = await this.pedidos.buscarPorId(schema, id);
     if (!pedido) throw new ErroAplicacao('pedido.nao_encontrado', 404);
     const permitidos = TRANSICOES[pedido.status] ?? [];
@@ -142,6 +161,7 @@ export class PedidosService {
     // Expedir exige a forma de envio; entregar exige a data de entrega (espelha o mockup).
     const formaEnvio = String(dados?.formaEnvio ?? '').trim();
     const entregueEm = dados?.entregueEm && /^\d{4}-\d{2}-\d{2}$/.test(String(dados.entregueEm)) ? String(dados.entregueEm) : '';
+    const recebidoPor = (dados?.recebidoPor && String(dados.recebidoPor).trim()) || null;
     if (novo === 'expedido' && !formaEnvio) throw new ErroAplicacao('pedido.forma_envio_obrigatoria', 400);
     if (novo === 'entregue' && !entregueEm) throw new ErroAplicacao('pedido.data_entrega_obrigatoria', 400);
 
@@ -191,13 +211,21 @@ export class PedidosService {
       for (const t of tits) await this.titulos.excluir(schema, t.id);
     }
 
+    // Voltar para orçamento (aguardando_pagamento → orçamento): remove os títulos
+    // gerados na confirmação. Se algum já foi baixado, bloqueia (cancele a baixa antes).
+    if (novo === 'orcamento') {
+      const tits = await this.titulos.listarPorPedido(schema, pedido.id);
+      if (tits.some((t) => t.status === 'pago')) throw new ErroAplicacao('pedido.voltar_baixa_antes', 409);
+      for (const t of tits) await this.titulos.excluir(schema, t.id);
+    }
+
     await this.pedidos.mudarStatus(schema, id, novo);
     if (novo === 'expedido') {
       await this.pedidos.definirExpedicao(schema, id, formaEnvio, (String(dados?.formaEnvioDetalhe ?? '').trim()) || null);
       if (motoboyExpedicao) await this.pedidos.definirMotoboy(schema, id, motoboyExpedicao);
       await this.pedidos.logExpedicao(schema, id, ator ?? null);
     }
-    if (novo === 'entregue') await this.pedidos.definirEntrega(schema, id, entregueEm);
+    if (novo === 'entregue') await this.pedidos.definirEntrega(schema, id, entregueEm, recebidoPor);
 
     // Gate por forma de pagamento (espelha o mockup): Cartão/Dinheiro liberam direto
     // (pulam a espera → já vão para 'aprovado'); Pix/Boleto ficam em 'aguardando_pagamento'

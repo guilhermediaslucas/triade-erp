@@ -8,6 +8,7 @@ import { notificarPixPendente } from '../lib/notificarPix.js';
 import { mascaraCep, buscarCep, UFS } from '../lib/br.js';
 import { ModalNovaPessoa } from '../components/SeletorPessoa.js';
 import { Ic } from '../components/Icones.js';
+import { MoedaInput } from '../components/MoedaInput.js';
 import { useToast } from '../components/Toast.js';
 
 interface Endereco { cep: string | null; logradouro: string | null; numero: string | null; complemento?: string | null; bairro: string | null; cidade: string | null; uf: string | null; favorito: boolean; }
@@ -409,7 +410,7 @@ export function NovoPedido() {
           <div className="tl-row">
             {freteMemo && <span className="muted" style={{ fontSize: 12, marginRight: 'auto' }}>{freteMemo}</span>}
             <span className="muted">{t('pedidos.frete')}</span>
-            <input type="number" min="0" step="0.01" value={frete} readOnly={freteAuto} onChange={(e) => setFrete(e.target.value)} style={{ width: 130, textAlign: 'right' }} />
+            <MoedaInput value={frete} disabled={freteAuto} onChange={(n) => setFrete(String(n))} style={{ width: 130, textAlign: 'right' }} />
           </div>
           <div className="tl-row tl-total"><span className="muted">{t('pedidos.total')}</span><b style={{ fontSize: 20 }}>{moeda(total)}</b></div>
         </div>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
@@ -36,6 +36,17 @@ export function Pedidos() {
   const [erro, setErro] = useState<string | null>(null);
   const [de, setDe] = useState(''); const [ate, setAte] = useState('');
   const [fCli, setFCli] = useState(''); const [fVend, setFVend] = useState(''); const [fForma, setFForma] = useState('');
+  const [busca, setBusca] = useState('');
+  async function buscarNumero(e?: FormEvent) {
+    e?.preventDefault();
+    const n = Number(busca.replace(/\D/g, ''));
+    if (!n) return;
+    setErro(null);
+    const achado = itens.find((p) => p.numero === n);
+    if (achado) { nav('/comercial/pedidos/' + achado.id); return; }
+    try { const p = await api.get<{ id: string }>('/pedidos/numero/' + n, token!); nav('/comercial/pedidos/' + p.id); }
+    catch (er) { setErro((er as ErroApi).chaveI18n); }
+  }
   const passa = (p: PedidoResumo) => {
     const d = p.criadoEm.slice(0, 10);
     if (de && d < de) return false;
@@ -68,6 +79,11 @@ export function Pedidos() {
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="toolbar" style={{ alignItems: 'center' }}>
+        <form className="busca-num" onSubmit={buscarNumero}>
+          <Ic name="i-search" className="sm" />
+          <input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('pedidos.busca_num_ph')} />
+          <button type="submit" className="btn-primary btn-mini">{t('pedidos.busca_num_btn')}</button>
+        </form>
         <FiltrosModal count={qtdFiltros} onLimpar={limparFiltros} titulo={t('pedidos.titulo')}>
           <label className="campo">{t('pedidos.data_de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
           <label className="campo">{t('pedidos.data_ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>

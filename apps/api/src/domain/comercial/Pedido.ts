@@ -38,6 +38,7 @@ export interface Pedido {
   separadoEm: string | null;          // log: data/hora ISO da separação
   expedidoPor: string | null;         // log: quem expediu o pedido
   expedidoEm: string | null;          // log: data/hora ISO da expedição
+  recebidoPor: string | null;         // quem recebeu na entrega (opcional)
   subtotal: number;
   frete: number;
   total: number;
@@ -45,6 +46,17 @@ export interface Pedido {
   condicaoIntervalo: number;
   criadoEm: Date;
   itens: PedidoItem[];
+  titulos?: PedidoTituloResumo[];      // títulos financeiros do pedido (preenchido no detalhe)
+}
+
+// Resumo do(s) título(s) a receber do pedido — bloco Financeiro do detalhe.
+export interface PedidoTituloResumo {
+  numero: string;
+  valor: number;
+  vencimento: string;
+  status: 'aberto' | 'pago';
+  pagoEm: string | null;
+  formaPagamento: string | null;
 }
 
 export interface PedidoResumo {
@@ -75,10 +87,11 @@ export interface PedidoRepository {
   editar(schema: string, id: string, p: NovoPedido): Promise<void>;
   listar(schema: string): Promise<PedidoResumo[]>;
   buscarPorId(schema: string, id: string): Promise<Pedido | null>;
+  buscarPorNumero(schema: string, numero: number): Promise<Pedido | null>;
   mudarStatus(schema: string, id: string, status: StatusPedido): Promise<void>;
   definirExpedicao(schema: string, id: string, formaEnvio: string, detalhe: string | null): Promise<void>;
   definirMotoboy(schema: string, id: string, motoboyId: string): Promise<void>;
-  definirEntrega(schema: string, id: string, entregueEm: string): Promise<void>;
+  definirEntrega(schema: string, id: string, entregueEm: string, recebidoPor: string | null): Promise<void>;
   logSeparacao(schema: string, id: string, ator: string | null): Promise<void>;
   logExpedicao(schema: string, id: string, ator: string | null): Promise<void>;
   somaEmAberto(schema: string, clienteId: string, excetoPedidoId: string): Promise<number>;

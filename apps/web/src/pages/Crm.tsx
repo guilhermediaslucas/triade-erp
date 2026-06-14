@@ -6,6 +6,7 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { useToast } from '../components/Toast.js';
 import { moeda } from '../lib/pedido.js';
 import { Ic } from '../components/Icones.js';
+import { MoedaInput } from '../components/MoedaInput.js';
 
 type Estagio = 'lead' | 'contato' | 'proposta' | 'negociacao' | 'ganho';
 interface Oportunidade { id: string; clienteId: string | null; clienteNome: string; titulo: string | null; valor: number; vendedorId: string | null; vendedorNome: string | null; estagio: string; previsao: string | null; pedidoId: string | null; pedidoNumero: number | null; perdido: boolean; }
@@ -224,7 +225,7 @@ function ModalOportunidade({ clientes, vendedores, onFechar, onCriado }: { clien
       </label>
       <label className="campo">{t('crm.titulo_oport')}<input value={titulo} onChange={(e) => setTitulo(e.target.value)} placeholder={t('crm.titulo_ph')} /></label>
       <div className="cores-grid">
-        <label className="campo">{t('crm.valor')}<input type="number" step="0.01" min="0" value={valor} onChange={(e) => setValor(e.target.value)} /></label>
+        <label className="campo">{t('crm.valor')}<MoedaInput value={valor} onChange={(n) => setValor(n ? String(n) : '')} /></label>
         <label className="campo">{t('pedidos.vendedor')}<select value={vendedorId} onChange={(e) => setVendedorId(e.target.value)}><option value="">—</option>{vendedores.map((v) => <option key={v.id} value={v.id}>{v.nome}</option>)}</select></label>
       </div>
       <div className="cores-grid">

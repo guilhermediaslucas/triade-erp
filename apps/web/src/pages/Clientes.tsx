@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { UFS, buscarMunicipios } from '../lib/br.js';
 import { Ic } from '../components/Icones.js';
+import { MoedaInput } from '../components/MoedaInput.js';
 
 type TipoPessoa = 'PJ' | 'PF';
 interface Endereco { cep: string; logradouro: string; numero: string; complemento: string; bairro: string; cidade: string; uf: string; favorito: boolean; }
@@ -163,7 +164,7 @@ function ModalCli({ c, onFechar, onSalvo }: { c: Cliente; onFechar: () => void; 
             {pj && <button type="button" className="btn-ghost btn-mini" disabled={buscandoCnpj} onClick={buscarCnpj}>{buscandoCnpj ? '...' : t('clientes.buscar')}</button>}
           </div>
         </label>
-        <label className="campo">{t('clientes.limite')}<input type="number" step="0.01" min="0" value={v.limiteCredito} onChange={(e) => set('limiteCredito', e.target.value)} /></label>
+        <label className="campo">{t('clientes.limite')}<MoedaInput value={v.limiteCredito} onChange={(n) => set('limiteCredito', n)} /></label>
       </div>
       <div className="cores-grid">
         <label className="campo">{t('pessoa.email')}<input type="email" value={v.email ?? ''} onChange={(e) => set('email', e.target.value)} /></label>

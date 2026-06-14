@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
 import { Ic } from '../components/Icones.js';
+import { MoedaInput } from '../components/MoedaInput.js';
 import { ModalNovaPessoa } from '../components/SeletorPessoa.js';
 
 interface PrecoProduto { produtoId: string; produtoNome: string; categoriaNome: string | null; unidade: string; ativo: boolean; preco: number; campanhasCount: number; precoVigente: number | null; precoVigenteMotivo: string | null; }
@@ -121,7 +122,7 @@ export function TabelaPreco() {
               {base.map((p) => (
                 <tr key={p.produtoId} className={p.ativo ? '' : 'linha-inativa'}>
                   <td>{p.produtoNome}</td><td>{p.categoriaNome ?? '—'}</td>
-                  <td>{pode ? <input type="number" step="0.01" min="0" className="preco-inp" value={valores[p.produtoId] ?? ''} onChange={(e) => setValores({ ...valores, [p.produtoId]: e.target.value })} /> : moeda(p.preco)}</td>
+                  <td>{pode ? <MoedaInput className="preco-inp" value={valores[p.produtoId] ?? ''} onChange={(n) => setValores({ ...valores, [p.produtoId]: String(n) })} /> : moeda(p.preco)}</td>
                   <td>{p.precoVigente != null ? <span className="pill st-verde">{p.precoVigenteMotivo ? p.precoVigenteMotivo + ' · ' : ''}{moeda(p.precoVigente)}</span> : <span className="muted">{t('precos.usa_fixo')}</span>}</td>
                   <td style={{ textAlign: 'right' }}><button className="camp-btn" onClick={() => setCampProduto(p)}><Ic name="i-clock" className="sm" />{t('camp.titulo')} ({p.campanhasCount})</button></td>
                 </tr>
@@ -140,7 +141,7 @@ export function TabelaPreco() {
                 return (
                   <tr key={p.produtoId}>
                     <td>{p.produtoNome}</td><td>{p.categoriaNome ?? '—'}</td><td className="muted">{moeda(p.precoBase)}</td>
-                    <td>{pode ? <input type="number" step="0.01" min="0" className="preco-inp" placeholder={t('precos.usa_base')} value={valores[p.produtoId] ?? ''} onChange={(e) => setValores({ ...valores, [p.produtoId]: e.target.value })} /> : (p.precoCliente != null ? moeda(p.precoCliente) : '—')}</td>
+                    <td>{pode ? <MoedaInput className="preco-inp" placeholder={t('precos.usa_base')} value={valores[p.produtoId] ?? ''} onChange={(n) => setValores({ ...valores, [p.produtoId]: String(n) })} /> : (p.precoCliente != null ? moeda(p.precoCliente) : '—')}</td>
                     <td>
                       {pode ? (
                         <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -207,7 +208,7 @@ function ModalCampanhas({ produto, pode, onFechar }: { produto: PrecoProduto; po
       {pode && <>
         <div className="perm-titulo">{editId ? t('camp.editando') : t('camp.nova')}</div>
         <div className="cores-grid">
-          <label className="campo">{t('rel.total')}<input type="number" step="0.01" min="0" value={preco} onChange={(e) => setPreco(e.target.value)} /></label>
+          <label className="campo">{t('rel.total')}<MoedaInput value={preco} onChange={(n) => setPreco(String(n))} /></label>
           <label className="campo">{t('camp.motivo')}<input value={motivo} onChange={(e) => setMotivo(e.target.value)} placeholder="Ex.: Black Friday" /></label>
         </div>
         <div className="cores-grid">

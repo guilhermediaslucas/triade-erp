@@ -131,6 +131,16 @@ a { text-decoration: none; color: inherit; }
 .card.pad0 { padding: 0; overflow-x: auto; overflow-y: hidden; max-width: none; }
 .btn-primary { background: var(--accent); color: var(--accent-fg); border: 0; border-radius: 8px; padding: 9px 16px; font-weight: 700; font-size: 14px; cursor: pointer; }
 .btn-primary:disabled { opacity: .6; cursor: default; }
+.btn-danger { background: #e1483b; color: #fff; border: 0; border-radius: 8px; padding: 9px 16px; font-weight: 700; font-size: 14px; cursor: pointer; }
+.btn-danger:disabled { opacity: .6; cursor: default; }
+.fin-linha-det { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 12px; background: #f8fafc; border-radius: 8px; font-size: 13px; }
+.fin-linha-det + .fin-linha-det { margin-top: 8px; }
+.busca-num { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--borda); border-radius: 10px; padding: 6px 12px; }
+.busca-num input { border: 0; outline: none; font-size: 14px; width: 200px; font-family: inherit; }
+.cal-wd { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; font-size: 11px; color: var(--muted); text-transform: capitalize; margin-bottom: 4px; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.cal-cel { border-radius: 8px; padding: 6px 7px; min-height: 44px; }
+.cal-editor { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 12px; background: var(--bg); border-radius: 10px; padding: 10px 14px; }
 .btn-ghost { background: #fff; border: 1px solid var(--borda); border-radius: 8px; padding: 9px 16px; font-weight: 600; font-size: 14px; cursor: pointer; }
 .btn-link { background: none; border: 0; color: var(--accent); font-weight: 600; font-size: 13px; cursor: pointer; padding: 2px 6px; }
 .btn-link:hover { text-decoration: underline; }
@@ -377,7 +387,11 @@ body:not(.theme-dark) .tv { --tvbg:#f4f5fa; --tvcard:#ffffff; --tvborda:#e6e8ee;
 /* perfil — telas liberadas (cards por módulo, padrão do mockup) */
 .perm-mods { display: flex; flex-direction: column; gap: 12px; }
 .perm-mod { border: 1px solid var(--borda); border-radius: 12px; padding: 12px 14px; }
-.perm-mod-head { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 14px; margin-bottom: 8px; cursor: pointer; }
+.perm-mod-head { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 14px; cursor: default; }
+.perm-mod-tg { width: 24px; height: 24px; flex-shrink: 0; border: 1px solid var(--borda); background: #fff; border-radius: 6px; font-size: 16px; line-height: 1; cursor: pointer; color: var(--accent); font-weight: 700; }
+.perm-mod-nome { flex: 1; cursor: pointer; }
+.perm-mod-ct { font-weight: 400; font-size: 12px; color: var(--muted); }
+.perm-mod .perm-grid { margin-top: 10px; }
 .perm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 18px; }
 .perm-grid .perm-item { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
 @media (max-width: 720px) { .perm-grid { grid-template-columns: 1fr; } }

@@ -42,6 +42,9 @@ export const CAPABILITIES: Capability[] = [
   { id: 'comercial.pedido.listar',    moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.pedido.listar' },
   { id: 'comercial.pedido.criar',     moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.pedido.criar' },
   { id: 'comercial.pedido.gerenciar', moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.pedido.gerenciar' },
+  { id: 'comercial.pedido.separar',   moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.pedido.separar' },
+  { id: 'comercial.pedido.expedir',   moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.pedido.expedir' },
+  { id: 'comercial.pedido.cancelar',  moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.pedido.cancelar' },
   { id: 'comercial.crm.ver',          moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.crm.ver' },
   { id: 'comercial.crm.gerenciar',    moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.crm.gerenciar' },
   { id: 'comercial.meta.ver',         moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.meta.ver' },
@@ -98,6 +101,7 @@ export const PERFIS_PADRAO: PerfilPadrao[] = [
   {
     nome: 'Comercial', descricao: 'Apenas Comercial e relatórios comerciais',
     caps: ['dashboard.ver', 'comercial.preco.listar', 'comercial.preco.gerenciar', 'comercial.pedido.listar', 'comercial.pedido.criar', 'comercial.pedido.gerenciar',
+      'comercial.pedido.separar', 'comercial.pedido.expedir', 'comercial.pedido.cancelar',
       'comercial.crm.ver', 'comercial.crm.gerenciar', 'comercial.meta.ver', 'comercial.meta.gerenciar', 'cadastros.cliente.listar', 'cadastros.cliente.gerenciar', 'cadastros.produto.listar', 'cadastros.vendedor.listar', ...REL_COMERCIAL],
   },
   {
@@ -110,7 +114,7 @@ export const PERFIS_PADRAO: PerfilPadrao[] = [
   {
     nome: 'Estoque', descricao: 'Apenas Estoque/Expedição',
     caps: ['dashboard.ver', 'estoque.saldo.ver', 'estoque.entrada.criar', 'estoque.baixa.criar', 'estoque.inventario.ver', 'estoque.inventario.gerenciar',
-      'comercial.pedido.listar', 'comercial.pedido.gerenciar', 'financeiro.compra.criar', 'cadastros.produto.listar', 'cadastros.marca.listar', 'cadastros.marca.gerenciar',
+      'comercial.pedido.listar', 'comercial.pedido.gerenciar', 'comercial.pedido.separar', 'comercial.pedido.expedir', 'financeiro.compra.criar', 'cadastros.produto.listar', 'cadastros.marca.listar', 'cadastros.marca.gerenciar',
       'cadastros.forma_entrega.listar', 'cadastros.motoboy.listar', 'relatorios.ver', 'relatorios.validade.ver', 'relatorios.parado.ver', 'relatorios.perdas.ver'],
   },
   {

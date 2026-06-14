@@ -19,13 +19,16 @@ function fmtValidade(v: string | null): string {
   const d = new Date(v + 'T00:00:00');
   return isNaN(d.getTime()) ? '—' : d.toLocaleDateString('pt-BR', { month: '2-digit', year: 'numeric' });
 }
+interface TituloResumo { numero: string; valor: number; vencimento: string; status: 'aberto' | 'pago'; pagoEm: string | null; formaPagamento: string | null; }
 interface Pedido {
   id: string; numero: number; clienteNome: string | null; vendedorNome: string | null; status: StatusPedido;
   formaPagamento: string | null; observacao: string | null; enderecoEntrega: string | null;
   formaEntrega: string; motoboyNome: string | null; distanciaKm: number | null;
   formaEnvio: string | null; formaEnvioDetalhe: string | null; entregueEm: string | null;
   separadoPor: string | null; separadoEm: string | null; expedidoPor: string | null; expedidoEm: string | null;
+  recebidoPor: string | null;
   subtotal: number; frete: number; total: number; criadoEm: string; itens: Item[];
+  titulos?: TituloResumo[];
 }
 
 export function PedidoDetalhe() {
@@ -41,6 +44,7 @@ export function PedidoDetalhe() {
   const [p, setP] = useState<Pedido | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const podeGerenciar = temCapability('comercial.pedido.gerenciar');
+  const podeCancelar = podeGerenciar || temCapability('comercial.pedido.cancelar');
   const podeCriar = temCapability('comercial.pedido.criar');
   const [motoboys, setMotoboys] = useState<{ id: string; nome: string; ativo: boolean }[]>([]);
   const [modal, setModal] = useState<'envio' | 'entrega' | null>(null);
@@ -75,6 +79,7 @@ export function PedidoDetalhe() {
     if (status === 'expedido') { setModal('envio'); return; }
     if (status === 'entregue') { setModal('entrega'); return; }
     if (status === 'cancelado' && !confirm(t('pedido.cancelar_confirma'))) return;
+    if (status === 'orcamento' && !confirm(t('pedido.voltar_orcamento_confirma'))) return;
     patchStatus(status);
   }
 
@@ -117,7 +122,10 @@ export function PedidoDetalhe() {
             <button className="btn-primary" onClick={() => nav('/comercial/pedidos/' + p.id + '/editar')}><Ic name="i-edit" className="sm" /> {t('pedido.editar')}</button>
           )}
           <button className="btn-ghost" onClick={() => nav('/comercial/pedidos/' + p.id + '/romaneio')}><Ic name="i-print" className="sm" /> {t('romaneio.titulo')}</button>
-          {podeGerenciar && !modoExpedicao && p.status !== 'cancelado' && (
+          {podeGerenciar && !modoExpedicao && p.status === 'aguardando_pagamento' && (
+            <button className="btn-ghost" onClick={() => mudar('orcamento')}><Ic name="i-edit" className="sm" /> {t('pedido.voltar_orcamento')}</button>
+          )}
+          {podeCancelar && !modoExpedicao && p.status !== 'cancelado' && (
             <button className="btn-acao vermelho" onClick={() => mudar('cancelado')}><Ic name="i-trash" className="sm" /> {t('pedido.cancelar')}</button>
           )}
           <button className="btn-ghost" onClick={() => nav('/comercial/pedidos')}>← {t('pedidos.voltar')}</button>
@@ -153,10 +161,26 @@ export function PedidoDetalhe() {
           {p.entregueEm && <div><span className="det-l">{t('pedido.entregue_em')}</span><div>{new Date(p.entregueEm + 'T00:00:00').toLocaleDateString('pt-BR')}</div></div>}
           {p.separadoPor && <div><span className="det-l">{t('pedido.separado_por')}</span><div>{p.separadoPor}{p.separadoEm ? ' · ' + new Date(p.separadoEm).toLocaleString('pt-BR') : ''}</div></div>}
           {p.expedidoPor && <div><span className="det-l">{t('pedido.expedido_por')}</span><div>{p.expedidoPor}{p.expedidoEm ? ' · ' + new Date(p.expedidoEm).toLocaleString('pt-BR') : ''}</div></div>}
+          {p.recebidoPor && <div><span className="det-l">{t('pedido.recebido_por')}</span><div>{p.recebidoPor}</div></div>}
           <div style={{ gridColumn: '1 / -1' }}><span className="det-l">{t('pedidos.endereco')}</span><div>{p.enderecoEntrega ?? '—'}</div></div>
           {p.observacao && <div style={{ gridColumn: '1 / -1' }}><span className="det-l">{t('pedidos.obs')}</span><div>{p.observacao}</div></div>}
         </div>
       </div>
+
+      {p.titulos && p.titulos.length > 0 && (
+        <div className="card" style={{ maxWidth: 820, marginBottom: 16 }}>
+          <div className="card-head"><h3>{t('pedido.financeiro')}</h3></div>
+          {p.titulos.map((tt) => (
+            <div key={tt.numero} className="fin-linha-det">
+              <span>{tt.numero} · {t('pedido.vence')} {new Date(tt.vencimento + 'T00:00:00').toLocaleDateString('pt-BR')}{tt.status === 'pago' && tt.pagoEm ? ' · ' + t('pedido.baixado_em') + ' ' + new Date(tt.pagoEm + 'T00:00:00').toLocaleDateString('pt-BR') : ''}{tt.formaPagamento ? ' · ' + tt.formaPagamento : ''}</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <b>{moeda(tt.valor)}</b>
+                <span className={'pill ' + (tt.status === 'pago' ? 'st-verde' : 'st-vermelho')}>{t(tt.status === 'pago' ? 'pedido.baixado' : 'pedido.em_aberto')}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="card pad0" style={{ maxWidth: 820, marginBottom: 16 }}><table className="tabela">
         <thead><tr><th>{t('precos.produto')}</th><th>{t('pedido.lote')}</th><th>{t('pedido.validade')}</th><th>{t('pedidos.qtd')}</th><th>{t('pedidos.preco_unit')}</th><th>{t('pedidos.subtotal')}</th></tr></thead>
@@ -229,7 +253,7 @@ export function PedidoDetalhe() {
       {modal === 'envio' && <ModalFormaEnvio numero={p.numero} formaEntrega={p.formaEntrega} motoboys={motoboys}
         onFechar={() => setModal(null)} onConfirmar={(forma, det, motoboyId) => { setModal(null); patchStatus('expedido', { formaEnvio: forma, formaEnvioDetalhe: det, ...(motoboyId ? { motoboyId } : {}) }); }} />}
       {modal === 'entrega' && <ModalDataEntrega numero={p.numero} inicial={p.entregueEm}
-        onFechar={() => setModal(null)} onConfirmar={(data) => { setModal(null); patchStatus('entregue', { entregueEm: data }); }} />}
+        onFechar={() => setModal(null)} onConfirmar={(data, recebido) => { setModal(null); patchStatus('entregue', { entregueEm: data, ...(recebido ? { recebidoPor: recebido } : {}) }); }} />}
     </div>
   );
 }

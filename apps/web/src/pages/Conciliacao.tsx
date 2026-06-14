@@ -5,6 +5,7 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { useToast } from '../components/Toast.js';
 import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
+import { MoedaInput } from '../components/MoedaInput.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
 import { BotaoExcel } from '../components/BotaoExcel.js';
@@ -137,7 +138,7 @@ export function Conciliacao() {
             <div className="totais" style={{ justifyContent: 'space-between' }}>
               <div style={{ alignItems: 'flex-start' }}><span className="muted">{t('concil.saldo_sistema')}</span><b>{moeda(saldoSistema)}</b></div>
               <label className="campo" style={{ margin: 0, minWidth: 160 }}>{t('concil.saldo_extrato')}
-                <input type="number" step="0.01" value={extrato} onChange={(e) => setExtrato(e.target.value)} placeholder="0,00" />
+                <MoedaInput value={extrato} onChange={(n) => setExtrato(n ? String(n) : '')} placeholder="0,00" />
               </label>
               {diferenca != null && (
                 <div style={{ alignItems: 'flex-start' }}><span className="muted">{t('concil.diferenca')}</span>

@@ -1,5 +1,5 @@
 import type { DataSource } from 'typeorm';
-import type { MetaMes, MetaRepository } from '../../domain/comercial/Meta.js';
+import type { MetaDia, MetaMes, MetaRepository } from '../../domain/comercial/Meta.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 function linhaZero(mes: number): MetaMes { return { mes, valor: 0, metaDiaUtil: 0, metaSabado: 0 }; }
@@ -30,6 +30,25 @@ export class SqlMetaRepository implements MetaRepository {
          ON CONFLICT (ano, mes) DO UPDATE SET valor = EXCLUDED.valor,
            meta_dia_util = EXCLUDED.meta_dia_util, meta_sabado = EXCLUDED.meta_sabado`,
         [ano, m.mes, m.valor, m.metaDiaUtil, m.metaSabado]);
+    }
+  }
+
+  async listarDiasAno(schema: string, ano: number): Promise<MetaDia[]> {
+    const s = validarSchema(schema);
+    const linhas = await this.ds.query(
+      `SELECT mes, dia, valor, feriado FROM "${s}".meta_dia WHERE ano = $1 ORDER BY mes, dia`, [ano]);
+    return linhas.map((r: any) => ({
+      mes: Number(r.mes), dia: Number(r.dia), valor: Number(r.valor) || 0, feriado: !!r.feriado,
+    }));
+  }
+
+  async salvarDiasAno(schema: string, ano: number, dias: MetaDia[]): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(`DELETE FROM "${s}".meta_dia WHERE ano = $1`, [ano]);
+    for (const d of dias) {
+      await this.ds.query(
+        `INSERT INTO "${s}".meta_dia (ano, mes, dia, valor, feriado) VALUES ($1,$2,$3,$4,$5)`,
+        [ano, d.mes, d.dia, d.valor, d.feriado]);
     }
   }
 

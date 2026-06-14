@@ -3,6 +3,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { BotaoEscanear } from '../components/BotaoEscanear.js';
+import { MoedaInput } from '../components/MoedaInput.js';
 import { useAutoBip } from '../lib/useAutoBip.js';
 
 interface PrecoProduto { produtoId: string; produtoNome: string; ativo: boolean; }
@@ -74,7 +75,7 @@ export function EntradaEstoque() {
           <label className="campo">{t('estoque.lote')}<input value={lote} onChange={(e) => setLote(e.target.value)} placeholder={t('entrada.lote_ph')} /></label>
           <label className="campo">{t('estoque.validade')}<input type="date" value={validade} onChange={(e) => setValidade(e.target.value)} /></label>
         </div>
-        <label className="campo">{t('entrada.custo')}<input type="number" min="0" step="0.01" value={custo} onChange={(e) => setCusto(e.target.value)} /></label>
+        <label className="campo">{t('entrada.custo')}<MoedaInput value={custo} onChange={(n) => setCusto(n ? String(n) : '')} /></label>
 
         <label className="campo">
           {t('etq.bipe')} <span className="muted">· {codigos.length} {t('etq.bipados')}</span>

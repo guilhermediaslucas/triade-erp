@@ -3,6 +3,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { Ic } from '../components/Icones.js';
+import { MoedaInput } from '../components/MoedaInput.js';
 
 interface Vendedor { id: string; nome: string; email: string | null; telefone: string | null; regiao: string | null; metaMensal: number; comissaoPercentual: number; segueRegraGeral: boolean; ativo: boolean; vendasMes: number; }
 const moeda = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -81,7 +82,7 @@ function ModalVend({ v, onFechar, onSalvo }: { v: Vendedor; onFechar: () => void
       </div>
       <label className="campo">{t('vendedores.regiao')}<input value={f.regiao ?? ''} onChange={(e) => set('regiao', e.target.value)} placeholder={t('vendedores.regiao_ph')} /></label>
       <div className="cores-grid">
-        <label className="campo">{t('vendedores.meta')}<input type="number" step="0.01" min="0" value={f.metaMensal} onChange={(e) => set('metaMensal', e.target.value)} /></label>
+        <label className="campo">{t('vendedores.meta')}<MoedaInput value={f.metaMensal} onChange={(n) => set('metaMensal', n)} /></label>
         <label className="campo">{t('vendedores.comissao')}<input type="number" step="0.5" min="0" max="100" value={f.comissaoPercentual} onChange={(e) => set('comissaoPercentual', e.target.value)} disabled={f.segueRegraGeral} /></label>
       </div>
       <label className="chk-linha"><input type="checkbox" checked={f.segueRegraGeral} onChange={(e) => set('segueRegraGeral', e.target.checked)} /> {t('vendedores.regra_geral')}</label>

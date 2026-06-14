@@ -3,6 +3,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
+import { MoedaInput } from '../components/MoedaInput.js';
 import { FiltroLista, aplicarFiltro, type FiltroStatus } from '../components/FiltroLista.js';
 
 interface Conta { id: string; nome: string; banco: string | null; saldoInicial: number; ativo: boolean; saldo?: number; }
@@ -63,7 +64,7 @@ function ModalConta({ c, onFechar, onSalvo }: { c: Conta; onFechar: () => void; 
       <label className="campo">{t('categorias.nome')}<input value={v.nome} onChange={(e) => set('nome', e.target.value)} placeholder="Ex.: Itaú Movimento" autoFocus /></label>
       <div className="cores-grid">
         <label className="campo">{t('cc.banco')}<input list="cc-bancos" value={v.banco ?? ''} onChange={(e) => set('banco', e.target.value)} /><datalist id="cc-bancos">{bancos.map((b) => <option key={b} value={b} />)}</datalist></label>
-        <label className="campo">{t('cc.saldo_inicial')}<input type="number" step="0.01" value={v.saldoInicial} onChange={(e) => set('saldoInicial', e.target.value)} /></label>
+        <label className="campo">{t('cc.saldo_inicial')}<MoedaInput value={v.saldoInicial} onChange={(n) => set('saldoInicial', n)} /></label>
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv} onClick={salvar}>{t('common.salvar')}</button></div>
