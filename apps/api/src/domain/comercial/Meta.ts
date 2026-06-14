@@ -25,6 +25,9 @@ export interface MetaRepository {
   listarDiasAno(schema: string, ano: number): Promise<MetaDia[]>;
   // Substitui o conjunto de dias do ano pelo informado.
   salvarDiasAno(schema: string, ano: number, dias: MetaDia[]): Promise<void>;
+  // Meta por dia do mês (1..N), com FALLBACK: usa meta_dia se houver calendário
+  // (feriado = 0); senão deriva de metaDiaUtil/metaSabado (domingo = 0). total = soma.
+  metaDiasMes(schema: string, ano: number, mes: number): Promise<{ porDia: number[]; total: number }>;
   // Linha de um mês específico (ou zeros se não houver) — usado pelo dashboard/TV.
   obterMes(schema: string, ano: number, mes: number): Promise<MetaMes>;
   // Mapa 'YYYY-MM' -> valor do mês, para os meses pedidos (dashboard).

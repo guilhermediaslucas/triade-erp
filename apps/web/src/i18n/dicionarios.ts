@@ -2280,6 +2280,7 @@ Object.assign(pt, {
   'metas.preencher_dica': 'Defina a meta por dia útil/sábado e clique em Preencher calendário para distribuir.',
   'metas.feriado': 'Feriado', 'metas.zerar_dia': 'Zerar dia', 'metas.dia': 'Dia', 'metas.total_mes': 'Total do mês',
   'metas.def_calendario': 'Total definido pelo calendário', 'meta.dia_invalido': 'Dia inválido.',
+  'dash.drill_meta': 'Meta do mês', 'dash.drill_atingido': 'Atingido', 'dash.drill_mes': 'Mês', 'dash.acumulado': 'Acumulado',
 });
 Object.assign(en, {
   'pedido.voltar_orcamento': 'Back to quote',
@@ -2296,6 +2297,7 @@ Object.assign(en, {
   'metas.preencher_dica': 'Set the weekday/Saturday target and click Fill calendar to distribute.',
   'metas.feriado': 'Holiday', 'metas.zerar_dia': 'Zero day', 'metas.dia': 'Day', 'metas.total_mes': 'Month total',
   'metas.def_calendario': 'Total set by the calendar', 'meta.dia_invalido': 'Invalid day.',
+  'dash.drill_meta': 'Month target', 'dash.drill_atingido': 'Achieved', 'dash.drill_mes': 'Month', 'dash.acumulado': 'Cumulative',
 });
 Object.assign(es, {
   'pedido.voltar_orcamento': 'Volver a presupuesto',
@@ -2312,4 +2314,5 @@ Object.assign(es, {
   'metas.preencher_dica': 'Define la meta por día hábil/sábado y haz clic en Rellenar calendario para distribuir.',
   'metas.feriado': 'Feriado', 'metas.zerar_dia': 'Poner a cero', 'metas.dia': 'Día', 'metas.total_mes': 'Total del mes',
   'metas.def_calendario': 'Total definido por el calendario', 'meta.dia_invalido': 'Día inválido.',
+  'dash.drill_meta': 'Meta del mes', 'dash.drill_atingido': 'Alcanzado', 'dash.drill_mes': 'Mes', 'dash.acumulado': 'Acumulado',
 });

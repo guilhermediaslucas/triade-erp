@@ -125,7 +125,7 @@ export function montarDependencias() {
     comprasService: new ComprasService(produtosRepo, tituloRepo, recebimentoRepo, estoqueRepo, marcasRepo, etiquetaRepo),
     comissoesService: new ComissoesService(new SqlComissaoRepository(AppDataSource), tituloRepo),
     contasService: new ContasService(new SqlContaCorrenteRepository(AppDataSource)),
-    dashboardService: new DashboardService(new SqlDashboardRepository(AppDataSource)),
+    dashboardService: new DashboardService(new SqlDashboardRepository(AppDataSource), new SqlMetaRepository(AppDataSource)),
     relatoriosService: new RelatoriosService(new SqlRelatorioRepository(AppDataSource)),
     estoqueService: new EstoqueService(estoqueRepo, etiquetaRepo),
     inventarioService: new InventarioService(inventarioRepo, etiquetaRepo, estoqueRepo),

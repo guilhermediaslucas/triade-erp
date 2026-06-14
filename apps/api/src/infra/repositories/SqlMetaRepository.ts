@@ -52,6 +52,27 @@ export class SqlMetaRepository implements MetaRepository {
     }
   }
 
+  async metaDiasMes(schema: string, ano: number, mes: number): Promise<{ porDia: number[]; total: number }> {
+    const s = validarSchema(schema);
+    const diasNoMes = new Date(ano, mes, 0).getDate();
+    const ddRows = await this.ds.query(
+      `SELECT dia, valor, feriado FROM "${s}".meta_dia WHERE ano = $1 AND mes = $2`, [ano, mes]);
+    const porDia: number[] = [];
+    if (ddRows.length > 0) {
+      const mapa = new Map<number, { valor: number; feriado: boolean }>();
+      for (const r of ddRows) mapa.set(Number(r.dia), { valor: Number(r.valor) || 0, feriado: !!r.feriado });
+      for (let d = 1; d <= diasNoMes; d++) { const o = mapa.get(d); porDia.push(o ? (o.feriado ? 0 : o.valor) : 0); }
+    } else {
+      const mm = (await this.ds.query(
+        `SELECT meta_dia_util, meta_sabado FROM "${s}".meta_mensal WHERE ano = $1 AND mes = $2`, [ano, mes]))[0];
+      const util = mm ? Number(mm.meta_dia_util) || 0 : 0;
+      const sab = mm ? Number(mm.meta_sabado) || 0 : 0;
+      for (let d = 1; d <= diasNoMes; d++) { const wd = new Date(ano, mes - 1, d).getDay(); porDia.push(wd === 0 ? 0 : wd === 6 ? sab : util); }
+    }
+    const total = porDia.reduce((a, b) => a + b, 0);
+    return { porDia, total };
+  }
+
   async obterMes(schema: string, ano: number, mes: number): Promise<MetaMes> {
     const s = validarSchema(schema);
     const r = (await this.ds.query(

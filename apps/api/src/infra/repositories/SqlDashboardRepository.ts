@@ -277,11 +277,24 @@ export class SqlDashboardRepository implements DashboardRepository {
          LEFT JOIN "${s}".cliente c ON c.id = p.cliente_id
         WHERE p.${NAO} AND to_char(date_trunc('month', p.criado_em),'YYYY-MM') = $1
         GROUP BY 1 ORDER BY total DESC LIMIT 5`, [mes]);
+    // Faturamento por dia do mês (para o gráfico realizado × meta).
+    const porDiaRows = await this.ds.query(
+      `SELECT EXTRACT(DAY FROM criado_em)::int dia, COALESCE(SUM(total),0) total
+         FROM "${s}".pedido
+        WHERE ${NAO} AND to_char(date_trunc('month', criado_em),'YYYY-MM') = $1
+        GROUP BY 1`, [mes]);
+    const fatPorDia = new Map<number, number>();
+    for (const r of porDiaRows) fatPorDia.set(Number(r.dia), um(r.total));
+    const [anoN, mesN] = mes.split('-').map(Number);
+    const diasNoMes = new Date(anoN!, mesN!, 0).getDate();
+    const dias = Array.from({ length: diasNoMes }, (_, i) => ({ dia: i + 1, faturamento: fatPorDia.get(i + 1) ?? 0, meta: 0 }));
     const pedidos = um(tot.pedidos), total = um(tot.total);
     return {
       mes, total, pedidos,
       ticketMedio: pedidos > 0 ? Math.round((total / pedidos) * 100) / 100 : 0,
+      metaMes: 0, // preenchido pelo DashboardService (calendário de metas)
       topClientes: top.map((r: any) => ({ nome: r.nome, total: um(r.total) })),
+      dias,
     };
   }
 }

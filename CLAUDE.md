@@ -188,6 +188,22 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-14** — **Metas do calendário refletindo nos dashboards + drill de faturamento (meta × realizado).**
+  **Bug:** a tabela `meta_dia` (calendário) era salva mas **nunca lida** — TV derivava a meta do dia de
+  `metaDiaUtil/metaSabado` (modelo dia da semana) e o drill não mostrava meta. **Fix (sem migration):** novo
+  `MetaRepository.metaDiasMes(schema, ano, mes)` → `{porDia[], total}` com **fallback** (usa `meta_dia` se houver
+  calendário, feriado=0; senão deriva de dia útil/sábado, domingo=0) em `SqlMetaRepository`. `MetasService.atual`
+  reescrito: calcula **metaHoje/metaSemana/metaMes** a partir do calendário (semana = seg→dom dos dias no mês) e
+  devolve `diasMeta[]`; novo `metasDoMes(YYYY-MM)`. **TV (`DashboardTV.tsx`):** usa metaHoje/semana/mes do backend
+  e mapeia cada barra pela `diasMeta` (mês corrente; fallback dia da semana p/ dias de outro mês). **Drill de
+  faturamento (`Dashboard.tsx` `DrillModal`):** domínio `DrillFaturamento` += `metaMes` + `dias[]{dia,faturamento,
+  meta}`; `SqlDashboardRepository.drillFaturamento` agrega faturamento por dia; `DashboardService` recebe
+  `MetaRepository` (composition) e preenche a meta diária. Modal ganhou **seletor de mês** (`<input type=month>`),
+  KPIs **Meta do mês** + **Atingido %** (mantidos Faturado/Pedidos/Ticket), **gráfico diário** barras (realizado)
+  × linha vermelha (meta) com toggle **acumulado** (componente `DrillChart`). i18n `dash.drill_meta/atingido/mes/
+  acumulado` pt/en/es. **Validação:** type-check do sandbox inútil (mount trunca/NUL-pad — confirmado); hand-review
+  pelo file-tool. **Pendente:** Gui build + commit+push (Render/Cloudflare) **e APK novo** (telas mudaram); relogar
+  não é necessário (sem caps novas). Sem migration.
 - **2026-06-14** — **Lote do Gui (6 demandas, mostradas em mockup e aprovadas antes de aplicar).**
   **(1) Confirmar cancelamento de baixa:** `Contas.tsx` ganhou modal de confirmação (estado `cancelarT` +
   `.btn-danger`) antes de `cancelar(tt)`; i18n `fin.cancelar_baixa_titulo/aviso`. **(2) Voltar para orçamento:**

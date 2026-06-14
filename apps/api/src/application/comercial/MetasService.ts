@@ -48,11 +48,29 @@ export class MetasService {
     }
   }
 
-  // Mês corrente (para o painel TV derivar dia/semana/mês). Usa a data do servidor.
-  async atual(schema: string): Promise<{ ano: number; mes: number } & MetaMes> {
+  // Mês corrente (para o painel TV). Deriva metaHoje/metaSemana/metaMes do CALENDÁRIO
+  // (meta_dia) quando existe, com fallback no modelo dia útil/sábado. Também devolve o
+  // mapa de meta por dia do mês (diasMeta) para o gráfico de barras da TV.
+  async atual(schema: string): Promise<{ ano: number; mes: number } & MetaMes & {
+    metaHoje: number; metaSemana: number; metaMes: number; diasMeta: number[];
+  }> {
     const hoje = new Date();
-    const ano = hoje.getFullYear(), mes = hoje.getMonth() + 1;
+    const ano = hoje.getFullYear(), mes = hoje.getMonth() + 1, dia = hoje.getDate();
     const m = await this.repo.obterMes(schema, ano, mes);
-    return { ano, mes, ...m };
+    const { porDia, total } = await this.repo.metaDiasMes(schema, ano, mes);
+    const metaHoje = porDia[dia - 1] ?? 0;
+    // Semana corrente (segunda→domingo): soma os dias dessa semana que caem no mês.
+    const wdSeg = (hoje.getDay() + 6) % 7; // 0=segunda … 6=domingo
+    const inicio = dia - wdSeg;
+    let metaSemana = 0;
+    for (let k = 0; k < 7; k++) { const dd = inicio + k; if (dd >= 1 && dd <= porDia.length) metaSemana += porDia[dd - 1]!; }
+    const metaMes = total > 0 ? total : m.valor;
+    return { ano, mes, ...m, metaHoje, metaSemana, metaMes, diasMeta: porDia };
+  }
+
+  // Meta por dia de um mês (YYYY-MM) — usado pelo drill de faturamento.
+  async metasDoMes(schema: string, anoMes: string): Promise<{ porDia: number[]; total: number }> {
+    const [ano, mes] = String(anoMes).split('-').map(Number);
+    return this.repo.metaDiasMes(schema, ano!, mes!);
   }
 }

@@ -302,27 +302,69 @@ export function Dashboard() {
   );
 }
 
-interface DrillFat { mes: string; total: number; pedidos: number; ticketMedio: number; topClientes: { nome: string; total: number }[]; }
-// Modal de drilldown de um mês do faturamento (clique no ponto do gráfico).
+interface DrillDia { dia: number; faturamento: number; meta: number; }
+interface DrillFat { mes: string; total: number; pedidos: number; ticketMedio: number; metaMes: number; topClientes: { nome: string; total: number }[]; dias: DrillDia[]; }
+
+// Gráfico diário do mês: barras = faturamento, linha vermelha = meta (do calendário).
+// Toggle "acumulado" mostra os dois valores somados dia a dia (ritmo do mês).
+function DrillChart({ dias, acumulado }: { dias: DrillDia[]; acumulado: boolean }) {
+  const W = 600, H = 200, padL = 8, padR = 8, padT = 10, padB = 22;
+  const iw = W - padL - padR, ih = H - padT - padB;
+  const n = Math.max(1, dias.length);
+  let fat = dias.map((d) => d.faturamento), met = dias.map((d) => d.meta);
+  if (acumulado) { let a = 0, b = 0; fat = fat.map((v) => (a += v)); met = met.map((v) => (b += v)); }
+  const max = Math.max(1, ...fat, ...met) * 1.1;
+  const x = (i: number) => padL + (iw / n) * (i + 0.5);
+  const y = (v: number) => padT + ih - (v / max) * ih;
+  const bw = Math.max(3, (iw / n) * 0.55);
+  const marcos = [1, 8, 15, 22, n];
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 200 }} role="img">
+      {[0, 0.5, 1].map((g) => <line key={g} x1={padL} x2={W - padR} y1={padT + ih * (1 - g)} y2={padT + ih * (1 - g)} stroke="var(--borda)" strokeWidth="1" />)}
+      {fat.map((v, i) => <rect key={i} x={x(i) - bw / 2} y={y(v)} width={bw} height={padT + ih - y(v)} rx="2" fill="#378ADD"><title>{dias[i]?.dia}: {moeda(v)}</title></rect>)}
+      <polyline points={met.map((v, i) => `${x(i)},${y(v)}`).join(' ')} fill="none" stroke="#e1483b" strokeWidth="2" />
+      {dias.map((d, i) => marcos.includes(d.dia) && <text key={i} x={x(i)} y={H - 6} fontSize="9" textAnchor="middle" fill="var(--muted)">{d.dia}</text>)}
+    </svg>
+  );
+}
+
+// Modal de drilldown do faturamento de um mês. Mantém os KPIs + top clientes e
+// adiciona seletor de mês e o gráfico meta × faturamento (diário/acumulado).
 function DrillModal({ mes, onFechar }: { mes: string; onFechar: () => void }) {
   const { token } = useAuth(); const { t } = useI18n();
+  const [mesSel, setMesSel] = useState(mes);
   const [dd, setDd] = useState<DrillFat | null>(null);
   const [erro, setErro] = useState<string | null>(null);
-  useEffect(() => { api.get<DrillFat>('/dashboard/drill?mes=' + encodeURIComponent(mes), token!).then(setDd).catch((e) => setErro((e as ErroApi).chaveI18n)); /* eslint-disable-next-line */ }, [mes]);
-  const titulo = mes.slice(5) + '/' + mes.slice(0, 4);
+  const [acumulado, setAcumulado] = useState(false);
+  useEffect(() => { setDd(null); setErro(null); api.get<DrillFat>('/dashboard/drill?mes=' + encodeURIComponent(mesSel), token!).then(setDd).catch((e) => setErro((e as ErroApi).chaveI18n)); /* eslint-disable-next-line */ }, [mesSel]);
+  const atingido = dd && dd.metaMes > 0 ? Math.round((dd.total / dd.metaMes) * 100) : null;
   return (
     <div className="modal-fundo" onClick={onFechar}><div className="modal modal-lg" onClick={(e) => e.stopPropagation()}>
-      <div className="card-head" style={{ marginBottom: 4 }}><h2 style={{ margin: 0 }}>{t('dash.faturamento')} · {titulo}</h2></div>
+      <div className="card-head" style={{ marginBottom: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+        <h2 style={{ margin: 0 }}>{t('dash.faturamento')}</h2>
+        <label className="campo" style={{ margin: 0 }}>{t('dash.drill_mes')}<input type="month" value={mesSel} onChange={(e) => setMesSel(e.target.value)} /></label>
+      </div>
       <div className="muted" style={{ fontSize: 13, marginBottom: 14 }}>{t('dash.drill_sub')}</div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       {!dd && !erro && <div className="muted">{t('common.carregando')}</div>}
       {dd && (<>
-        <div className="kpi-row" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: 14 }}>
+        <div className="kpi-row" style={{ gridTemplateColumns: 'repeat(5, 1fr)', marginBottom: 14 }}>
           <div className="card kpi-mock"><div className="kpi-ic tint-pp"><Ic name="i-dollar" className="sm" /></div><div><div className="kpi-lbl">{t('dash.drill_faturado')}</div><div className="kpi-val">{moeda(dd.total)}</div></div></div>
+          <div className="card kpi-mock"><div className="kpi-ic tint-rd"><Ic name="i-flag" className="sm" /></div><div><div className="kpi-lbl">{t('dash.drill_meta')}</div><div className="kpi-val">{moeda(dd.metaMes)}</div></div></div>
+          <div className="card kpi-mock"><div className="kpi-ic tint-gr"><Ic name="i-chart" className="sm" /></div><div><div className="kpi-lbl">{t('dash.drill_atingido')}</div><div className="kpi-val">{atingido != null ? atingido + '%' : '—'}</div></div></div>
           <div className="card kpi-mock"><div className="kpi-ic tint-bl"><Ic name="i-receipt" className="sm" /></div><div><div className="kpi-lbl">{t('dash.drill_pedidos')}</div><div className="kpi-val">{dd.pedidos}</div></div></div>
-          <div className="card kpi-mock"><div className="kpi-ic tint-gr"><Ic name="i-chart" className="sm" /></div><div><div className="kpi-lbl">{t('dash.drill_ticket')}</div><div className="kpi-val">{moeda(dd.ticketMedio)}</div></div></div>
+          <div className="card kpi-mock"><div className="kpi-ic tint-or"><Ic name="i-chart" className="sm" /></div><div><div className="kpi-lbl">{t('dash.drill_ticket')}</div><div className="kpi-val">{moeda(dd.ticketMedio)}</div></div></div>
         </div>
-        <div className="perm-titulo">{t('dash.drill_top_clientes')}</div>
+
+        <div className="card-head" style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 4 }}>
+          <span className="legendmini"><span><i style={{ background: '#378ADD' }} />{t('dash.realizado')}</span><span><i style={{ background: '#e1483b' }} />{t('dash.meta')}</span></span>
+          <label style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, cursor: 'pointer' }}>
+            <input type="checkbox" checked={acumulado} onChange={(e) => setAcumulado(e.target.checked)} /> {t('dash.acumulado')}
+          </label>
+        </div>
+        {dd.dias.length > 0 ? <DrillChart dias={dd.dias} acumulado={acumulado} /> : <div className="it" style={{ color: 'var(--muted)' }}>{t('dash.serie_vazio')}</div>}
+
+        <div className="perm-titulo" style={{ marginTop: 12 }}>{t('dash.drill_top_clientes')}</div>
         <div className="lst">
           {dd.topClientes.length === 0 && <div className="it" style={{ color: 'var(--muted)' }}>{t('dash.sem_vendas')}</div>}
           {dd.topClientes.map((c) => (

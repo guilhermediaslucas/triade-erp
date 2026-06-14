@@ -11,7 +11,7 @@ import { SpriteIcones } from '../components/Icones.js';
 // atualização automática — feito para deixar rodando numa televisão.
 interface Resumo { vendasDia: number; vendasSemana: number; vendasMes: number; }
 interface Serie { labels: string[]; data: number[]; }
-interface MetaAtual { valor: number; metaDiaUtil: number; metaSabado: number; }
+interface MetaAtual { valor: number; metaDiaUtil: number; metaSabado: number; mes: number; metaHoje: number; metaSemana: number; metaMes: number; diasMeta: number[]; }
 
 const REFRESH_MS = 45000;
 
@@ -63,7 +63,7 @@ export function DashboardTV() {
   const nav = useNavigate();
   const [d, setD] = useState<Resumo | null>(null);
   const [serie, setSerie] = useState<Serie | null>(null);
-  const [meta, setMeta] = useState<MetaAtual>({ valor: 0, metaDiaUtil: 0, metaSabado: 0 });
+  const [meta, setMeta] = useState<MetaAtual>({ valor: 0, metaDiaUtil: 0, metaSabado: 0, mes: new Date().getMonth() + 1, metaHoje: 0, metaSemana: 0, metaMes: 0, diasMeta: [] });
   const [hora, setHora] = useState(new Date());
   const [atualizado, setAtualizado] = useState<Date | null>(null);
 
@@ -76,22 +76,28 @@ export function DashboardTV() {
       ]);
       setD(resumo);
       if (sd) setSerie({ labels: sd.labels.slice(-14), data: sd.data.slice(-14) });
-      if (m) setMeta({ valor: Number(m.valor) || 0, metaDiaUtil: Number(m.metaDiaUtil) || 0, metaSabado: Number(m.metaSabado) || 0 });
+      if (m) setMeta({
+        valor: Number(m.valor) || 0, metaDiaUtil: Number(m.metaDiaUtil) || 0, metaSabado: Number(m.metaSabado) || 0,
+        mes: Number(m.mes) || (new Date().getMonth() + 1),
+        metaHoje: Number(m.metaHoje) || 0, metaSemana: Number(m.metaSemana) || 0, metaMes: Number(m.metaMes) || 0,
+        diasMeta: Array.isArray(m.diasMeta) ? m.diasMeta.map(Number) : [],
+      });
       setAtualizado(new Date());
     } catch { /* mantém */ }
   }
 
-  // Meta de um dia conforme o dia da semana (domingo = 0).
-  const metaDoDia = (wd: number) => (wd === 0 ? 0 : wd === 6 ? meta.metaSabado : meta.metaDiaUtil);
-  // Label 'DD/MM' → meta do dia (assume ano corrente).
+  // Meta de um dia (fallback por dia da semana — usado p/ dias de outro mês na série).
+  const metaDoDiaSemana = (wd: number) => (wd === 0 ? 0 : wd === 6 ? meta.metaSabado : meta.metaDiaUtil);
+  // Label 'DD/MM' → meta do dia: do CALENDÁRIO (diasMeta) quando é o mês corrente; senão fallback.
   function metaDoLabel(lb: string): number {
     const [dd, mm] = lb.split('/').map(Number);
     if (!dd || !mm) return 0;
-    return metaDoDia(new Date(new Date().getFullYear(), mm - 1, dd).getDay());
+    if (mm === meta.mes && meta.diasMeta.length >= dd) return meta.diasMeta[dd - 1] ?? 0;
+    return metaDoDiaSemana(new Date(new Date().getFullYear(), mm - 1, dd).getDay());
   }
-  const metaHoje = metaDoDia(new Date().getDay());
-  const metaSemana = meta.metaDiaUtil * 5 + meta.metaSabado;
-  const metaMes = meta.valor;
+  const metaHoje = meta.metaHoje;
+  const metaSemana = meta.metaSemana;
+  const metaMes = meta.metaMes;
   useEffect(() => {
     carregar();
     const r = setInterval(carregar, REFRESH_MS);

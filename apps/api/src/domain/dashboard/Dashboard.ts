@@ -49,7 +49,9 @@ export interface DrillFaturamento {
   total: number;
   pedidos: number;
   ticketMedio: number;
+  metaMes: number;             // meta do mês (do calendário / fallback)
   topClientes: { nome: string; total: number }[];
+  dias: { dia: number; faturamento: number; meta: number }[];  // série diária realizado × meta
 }
 export interface DashboardRepository {
   resumo(schema: string): Promise<ResumoDashboard>;
