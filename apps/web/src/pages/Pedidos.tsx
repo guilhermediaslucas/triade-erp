@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda, numeroPedido, type StatusPedido } from '../lib/pedido.js';
 import { Ic } from '../components/Icones.js';
+import { FiltrosModal } from '../components/FiltrosModal.js';
 
 interface PedidoResumo { id: string; numero: number; clienteNome: string | null; vendedorNome: string | null; status: StatusPedido; total: number; criadoEm: string; formaPagamento: string | null; }
 
@@ -34,8 +35,16 @@ export function Pedidos() {
   const [itens, setItens] = useState<PedidoResumo[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [de, setDe] = useState(''); const [ate, setAte] = useState('');
-  const [filtro, setFiltro] = useState<{ de: string; ate: string }>({ de: '', ate: '' });
-  const noPeriodo = (p: PedidoResumo) => { const d = p.criadoEm.slice(0, 10); if (filtro.de && d < filtro.de) return false; if (filtro.ate && d > filtro.ate) return false; return true; };
+  const [fCli, setFCli] = useState(''); const [fVend, setFVend] = useState(''); const [fForma, setFForma] = useState('');
+  const passa = (p: PedidoResumo) => {
+    const d = p.criadoEm.slice(0, 10);
+    if (de && d < de) return false;
+    if (ate && d > ate) return false;
+    if (fCli && !(p.clienteNome ?? '').toLowerCase().includes(fCli.toLowerCase())) return false;
+    if (fVend && !(p.vendedorNome ?? '').toLowerCase().includes(fVend.toLowerCase())) return false;
+    if (fForma && (p.formaPagamento ?? '') !== fForma) return false;
+    return true;
+  };
 
   useEffect(() => {
     api.get<PedidoResumo[]>('/pedidos', token!).then(setItens).catch((e) => setErro((e as ErroApi).chaveI18n));
@@ -43,6 +52,12 @@ export function Pedidos() {
   }, []);
 
   const cancelados = itens.filter((p) => p.status === 'cancelado').length;
+  const clientes = useMemo(() => Array.from(new Set(itens.map((p) => p.clienteNome).filter(Boolean))) as string[], [itens]);
+  const vendedores = useMemo(() => Array.from(new Set(itens.map((p) => p.vendedorNome).filter(Boolean))) as string[], [itens]);
+  const formas = useMemo(() => Array.from(new Set(itens.map((p) => p.formaPagamento).filter(Boolean))) as string[], [itens]);
+  const flags = [!!de, !!ate, !!fCli, !!fVend, !!fForma];
+  const qtdFiltros = flags.filter(Boolean).length;
+  function limparFiltros() { setDe(''); setAte(''); setFCli(''); setFVend(''); setFForma(''); }
 
   return (
     <div>
@@ -52,16 +67,29 @@ export function Pedidos() {
         {temCapability('comercial.pedido.criar') && <button className="btn-primary" onClick={() => nav('/comercial/pedidos/novo')}>+ {t('pedidos.novo')}</button>}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
-      <div className="toolbar" style={{ alignItems: 'flex-end' }}>
-        <label className="campo" style={{ margin: 0 }}>{t('pedidos.data_de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} style={{ maxWidth: 180 }} /></label>
-        <label className="campo" style={{ margin: 0 }}>{t('pedidos.data_ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} style={{ maxWidth: 180 }} /></label>
-        <button className="btn-primary" onClick={() => setFiltro({ de, ate })}><Ic name="i-search" className="sm" /> {t('pedidos.filtrar')}</button>
-        <button className="btn-ghost" onClick={() => { setDe(''); setAte(''); setFiltro({ de: '', ate: '' }); }}>{t('fin.f_limpar')}</button>
+      <div className="toolbar" style={{ alignItems: 'center' }}>
+        <FiltrosModal count={qtdFiltros} onLimpar={limparFiltros} titulo={t('pedidos.titulo')}>
+          <label className="campo">{t('pedidos.data_de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
+          <label className="campo">{t('pedidos.data_ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
+          <label className="campo">{t('pedidos.cliente')}
+            <input list="dlPedCli" value={fCli} onChange={(e) => setFCli(e.target.value)} placeholder={t('fin.f_pessoa_ph')} />
+            <datalist id="dlPedCli">{clientes.map((c) => <option key={c} value={c} />)}</datalist>
+          </label>
+          <label className="campo">{t('pedidos.vendedor')}
+            <input list="dlPedVend" value={fVend} onChange={(e) => setFVend(e.target.value)} placeholder={t('fin.f_pessoa_ph')} />
+            <datalist id="dlPedVend">{vendedores.map((v) => <option key={v} value={v} />)}</datalist>
+          </label>
+          <label className="campo">{t('pedidos.forma_pgto')}
+            <select value={fForma} onChange={(e) => setFForma(e.target.value)}>
+              <option value="">{t('fin.f_todos')}</option>{formas.map((f) => <option key={f} value={f}>{f}</option>)}
+            </select>
+          </label>
+        </FiltrosModal>
         <span className="muted" style={{ fontSize: 12, marginLeft: 'auto' }}>{t('pedidos.filtro_dica')}</span>
       </div>
       <div className="pk-board">
         {COLUNAS.map((col) => {
-          const cards = itens.filter((p) => p.status === col.s && noPeriodo(p));
+          const cards = itens.filter((p) => p.status === col.s && passa(p));
           return (
             <div key={col.s} className="pk-col" style={{ borderTopColor: col.cor }}>
               <div className="pk-h">
