@@ -435,6 +435,9 @@ Object.assign(pt, {
   'pedido.nao_encontrado': 'Pedido não encontrado.', 'pedido.cliente_obrigatorio': 'Selecione um cliente.',
   'pedido.sem_itens': 'Adicione ao menos um item.', 'pedido.produto_invalido': 'Produto inválido no pedido.',
   'pedido.qtd_invalida': 'Quantidade inválida.', 'pedido.transicao_invalida': 'Mudança de status não permitida.',
+  'pedido.cancelar_baixa_antes': 'Há título já baixado (pago) deste pedido. Cancele a baixa no Financeiro antes de cancelar o pedido.',
+  'pedido.cancelar': 'Cancelar pedido', 'pedido.cancelar_confirma': 'Cancelar este pedido? O estoque e as etiquetas voltam, e os títulos do pedido são cancelados.', 'pedido.cancelado_ok': 'Pedido cancelado.',
+  'toastpix.titulo': 'Pendência de baixa', 'toastpix.corpo': 'O pedido <b>{n}</b> ({c}) gerou um título de <b>{v}</b> via Pix que precisa ser baixado no financeiro.',
   'pedido.limite_estourado': 'Limite de crédito do cliente excedido.',
 });
 Object.assign(en, {
@@ -464,6 +467,9 @@ Object.assign(en, {
   'pedido.nao_encontrado': 'Order not found.', 'pedido.cliente_obrigatorio': 'Select a customer.',
   'pedido.sem_itens': 'Add at least one item.', 'pedido.produto_invalido': 'Invalid product in order.',
   'pedido.qtd_invalida': 'Invalid quantity.', 'pedido.transicao_invalida': 'Status change not allowed.',
+  'pedido.cancelar_baixa_antes': 'This order has a settled (paid) entry. Cancel the settlement in Finance before cancelling the order.',
+  'pedido.cancelar': 'Cancel order', 'pedido.cancelar_confirma': 'Cancel this order? Stock and labels are returned, and the order entries are cancelled.', 'pedido.cancelado_ok': 'Order cancelled.',
+  'toastpix.titulo': 'Settlement pending', 'toastpix.corpo': 'Order <b>{n}</b> ({c}) generated a <b>{v}</b> entry via Pix that needs to be settled in Finance.',
   'pedido.limite_estourado': "Customer's credit limit exceeded.",
 });
 Object.assign(es, {
@@ -493,6 +499,9 @@ Object.assign(es, {
   'pedido.nao_encontrado': 'Pedido no encontrado.', 'pedido.cliente_obrigatorio': 'Selecciona un cliente.',
   'pedido.sem_itens': 'Agrega al menos un ítem.', 'pedido.produto_invalido': 'Producto inválido en el pedido.',
   'pedido.qtd_invalida': 'Cantidad inválida.', 'pedido.transicao_invalida': 'Cambio de estado no permitido.',
+  'pedido.cancelar_baixa_antes': 'Hay un título ya pagado de este pedido. Cancele la baja en Finanzas antes de cancelar el pedido.',
+  'pedido.cancelar': 'Cancelar pedido', 'pedido.cancelar_confirma': '¿Cancelar este pedido? El stock y las etiquetas vuelven, y los títulos del pedido se cancelan.', 'pedido.cancelado_ok': 'Pedido cancelado.',
+  'toastpix.titulo': 'Pendiente de baja', 'toastpix.corpo': 'El pedido <b>{n}</b> ({c}) generó un título de <b>{v}</b> vía Pix que debe darse de baja en finanzas.',
   'pedido.limite_estourado': 'Límite de crédito del cliente excedido.',
 });
 
@@ -503,7 +512,9 @@ Object.assign(es, { 'pedidos.kanban_sub': 'Vista Kanban (solo lectura — el mov
 
 // --- Fase 4A: Estoque ---
 Object.assign(pt, {
-  'menu.estoque_exp': 'Estoque/Expedição', 'menu.posicao': 'Posição de estoque', 'menu.entrada': 'Entrada de estoque',
+  'menu.estoque_exp': 'Estoque/Expedição', 'menu.posicao': 'Posição de estoque', 'menu.entrada': 'Entrada de estoque', 'menu.consultar_etiqueta': 'Consultar etiqueta',
+  'etqc.crumb': 'Estoque / Consultar etiqueta', 'etqc.titulo': 'Consultar etiqueta', 'etqc.sub': 'Bipe ou digite o código para ver o produto, lote, validade, marca e origem',
+  'etqc.codigo': 'Código da etiqueta', 'etqc.codigo_ph': 'Bipe ou digite o código', 'etqc.consultar': 'Consultar', 'etqc.nao_encontrada': 'Etiqueta não encontrada.', 'etqc.saldo_lote': 'Saldo do lote', 'etqc.marca': 'Marca',
   'cap.modulo.estoque': 'Estoque', 'cap.estoque.saldo.ver': 'Ver posição de estoque', 'cap.estoque.entrada.criar': 'Registrar entrada de estoque',
   'estoque.titulo': 'Posição de estoque', 'estoque.saldo': 'Saldo', 'estoque.lote': 'Lote', 'estoque.validade': 'Validade',
   'estoque.baixo': 'Estoque baixo', 'estoque.ok': 'Em dia',
@@ -517,7 +528,9 @@ Object.assign(pt, {
   'estoque.qtd_invalida': 'Quantidade inválida.', 'estoque.custo_invalido': 'Custo inválido.',
 });
 Object.assign(en, {
-  'menu.estoque_exp': 'Inventory/Shipping', 'menu.posicao': 'Stock position', 'menu.entrada': 'Stock entry',
+  'menu.estoque_exp': 'Inventory/Shipping', 'menu.posicao': 'Stock position', 'menu.entrada': 'Stock entry', 'menu.consultar_etiqueta': 'Look up label',
+  'etqc.crumb': 'Inventory / Look up label', 'etqc.titulo': 'Look up label', 'etqc.sub': 'Scan or type the code to see product, lot, expiry, brand and origin',
+  'etqc.codigo': 'Label code', 'etqc.codigo_ph': 'Scan or type the code', 'etqc.consultar': 'Look up', 'etqc.nao_encontrada': 'Label not found.', 'etqc.saldo_lote': 'Lot balance', 'etqc.marca': 'Brand',
   'cap.modulo.estoque': 'Inventory', 'cap.estoque.saldo.ver': 'View stock position', 'cap.estoque.entrada.criar': 'Register stock entry',
   'estoque.titulo': 'Stock position', 'estoque.saldo': 'Balance', 'estoque.lote': 'Batch', 'estoque.validade': 'Expiry',
   'estoque.baixo': 'Low stock', 'estoque.ok': 'OK',
@@ -531,7 +544,9 @@ Object.assign(en, {
   'estoque.qtd_invalida': 'Invalid quantity.', 'estoque.custo_invalido': 'Invalid cost.',
 });
 Object.assign(es, {
-  'menu.estoque_exp': 'Inventario/Expedición', 'menu.posicao': 'Posición de stock', 'menu.entrada': 'Entrada de stock',
+  'menu.estoque_exp': 'Inventario/Expedición', 'menu.posicao': 'Posición de stock', 'menu.entrada': 'Entrada de stock', 'menu.consultar_etiqueta': 'Consultar etiqueta',
+  'etqc.crumb': 'Inventario / Consultar etiqueta', 'etqc.titulo': 'Consultar etiqueta', 'etqc.sub': 'Escanee o escriba el código para ver producto, lote, vencimiento, marca y origen',
+  'etqc.codigo': 'Código de la etiqueta', 'etqc.codigo_ph': 'Escanee o escriba el código', 'etqc.consultar': 'Consultar', 'etqc.nao_encontrada': 'Etiqueta no encontrada.', 'etqc.saldo_lote': 'Saldo del lote', 'etqc.marca': 'Marca',
   'cap.modulo.estoque': 'Inventario', 'cap.estoque.saldo.ver': 'Ver posición de stock', 'cap.estoque.entrada.criar': 'Registrar entrada de stock',
   'estoque.titulo': 'Posición de stock', 'estoque.saldo': 'Saldo', 'estoque.lote': 'Lote', 'estoque.validade': 'Caducidad',
   'estoque.baixo': 'Stock bajo', 'estoque.ok': 'Al día',

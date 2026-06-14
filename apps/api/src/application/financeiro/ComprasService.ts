@@ -118,10 +118,14 @@ export class ComprasService {
     const jaExistem = await this.etiquetas.jaExistem(schema, todosCodigos);
     if (jaExistem.length > 0) throw new ErroAplicacao('etiqueta.duplicada', 409);
 
+    // Origem da nota gravada nas etiquetas (fornecedor / NF / emissão — emissão vem do título).
+    const tit = rec.tituloId ? await this.titulos.buscarPorId(schema, rec.tituloId) : null;
+    const emissao = tit?.emissao ?? null;
     for (const b of blocos) {
       await this.estoque.registrarEntrada(schema, {
         produtoId: rec.produtoId, lote: b.lote, validade: b.validade, marcaId: b.marcaId,
         quantidade: b.codigos.length, custoUnitario: rec.custoUnitario, codigos: b.codigos,
+        fornecedor: rec.fornecedorNome ?? null, nf: rec.nf ?? null, emissao,
       });
     }
     await this.recebimentos.marcarRecebido(schema, id);

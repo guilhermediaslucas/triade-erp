@@ -15,9 +15,9 @@ const TRANSICOES: Record<StatusPedido, StatusPedido[]> = {
   orcamento: ['aguardando_pagamento', 'cancelado'],
   aguardando_pagamento: ['aprovado', 'cancelado'],
   aprovado: ['separacao', 'cancelado'],
-  separacao: ['expedido'],
-  expedido: ['entregue'],
-  entregue: [],
+  separacao: ['expedido', 'cancelado'],
+  expedido: ['entregue', 'cancelado'],
+  entregue: ['cancelado'],
   cancelado: [],
 };
 
@@ -180,6 +180,17 @@ export class PedidosService {
       }
     }
 
+    // Cancelar (de qualquer etapa): devolve estoque + etiquetas e cancela os títulos do pedido.
+    // Se algum título já estiver pago, bloqueia (precisa cancelar a baixa no Financeiro antes).
+    if (novo === 'cancelado') {
+      const ref = 'Pedido PE-' + String(pedido.numero).padStart(6, '0');
+      const tits = await this.titulos.listarPorPedido(schema, pedido.id);
+      if (tits.some((t) => t.status === 'pago')) throw new ErroAplicacao('pedido.cancelar_baixa_antes', 409);
+      await this.estoque.devolverPorRef(schema, ref);
+      await this.etiquetas.reverterPorPedido(schema, ref);
+      for (const t of tits) await this.titulos.excluir(schema, t.id);
+    }
+
     await this.pedidos.mudarStatus(schema, id, novo);
     if (novo === 'expedido') {
       await this.pedidos.definirExpedicao(schema, id, formaEnvio, (String(dados?.formaEnvioDetalhe ?? '').trim()) || null);
@@ -231,7 +242,7 @@ export class PedidosService {
     const ref = 'Pedido PE-' + String(pedido.numero).padStart(6, '0');
     for (const r of resolvidas) {
       await this.estoque.baixarUnidadeLote(schema, r.loteId, r.produtoId, ref);
-      await this.etiquetas.consumir(schema, r.codigo, 'saida');
+      await this.etiquetas.consumir(schema, r.codigo, 'saida', ref);
     }
     await this.pedidos.mudarStatus(schema, id, 'separacao');
     await this.pedidos.logSeparacao(schema, id, ator ?? null);

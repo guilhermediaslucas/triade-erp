@@ -48,6 +48,7 @@ const GRUPOS: Grupo[] = [
     secoes: [{ itens: [
       { rotulo: 'menu.expedicao', to: '/estoque/expedicao', cap: 'comercial.pedido.gerenciar' },
       { rotulo: 'menu.posicao', to: '/estoque/posicao', cap: 'estoque.saldo.ver' },
+      { rotulo: 'menu.consultar_etiqueta', to: '/estoque/etiqueta', cap: 'estoque.saldo.ver' },
       { rotulo: 'menu.entrada', to: '/estoque/entrada', cap: 'estoque.entrada.criar' },
       { rotulo: 'menu.recebimento', to: '/estoque/recebimento', cap: 'estoque.entrada.criar' },
       { rotulo: 'menu.baixa', to: '/estoque/baixa', cap: 'estoque.baixa.criar' },

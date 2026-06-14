@@ -633,4 +633,13 @@ export const tenantMigrations: MigracaoTenant[] = [
       );
     `,
   },
+  {
+    nome: '045_etiqueta_origem_pedido',
+    sql: (s) => `
+      ALTER TABLE "${s}".etiqueta ADD COLUMN IF NOT EXISTS pedido_ref text;
+      ALTER TABLE "${s}".etiqueta ADD COLUMN IF NOT EXISTS fornecedor text;
+      ALTER TABLE "${s}".etiqueta ADD COLUMN IF NOT EXISTS nf text;
+      ALTER TABLE "${s}".etiqueta ADD COLUMN IF NOT EXISTS emissao date;
+    `,
+  },
 ];

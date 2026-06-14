@@ -6,9 +6,9 @@ export const PROXIMOS: Record<StatusPedido, StatusPedido[]> = {
   orcamento: ['aguardando_pagamento', 'cancelado'],
   aguardando_pagamento: ['aprovado', 'cancelado'],
   aprovado: ['separacao', 'cancelado'],
-  separacao: ['expedido'],
-  expedido: ['entregue'],
-  entregue: [],
+  separacao: ['expedido', 'cancelado'],
+  expedido: ['entregue', 'cancelado'],
+  entregue: ['cancelado'],
   cancelado: [],
 };
 

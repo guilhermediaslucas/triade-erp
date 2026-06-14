@@ -5,6 +5,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { useToast } from '../components/Toast.js';
 import { corStatus, moeda, numeroPedido, PROXIMOS, type StatusPedido } from '../lib/pedido.js';
+import { notificarPixPendente } from '../lib/notificarPix.js';
 import { ModalDataEntrega, ModalFormaEnvio } from '../components/ExpedicaoModais.js';
 import { BotaoEscanear } from '../components/BotaoEscanear.js';
 import { Ic } from '../components/Icones.js';
@@ -63,7 +64,8 @@ export function PedidoDetalhe() {
     try {
       await api.patch('/pedidos/' + id + '/status', { status, ...extra }, token!); carregar();
       const forma = (p?.formaPagamento ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
-      if (status === 'aguardando_pagamento' && forma === 'pix') toast(t('pedido.toast_pix_pendente'));
+      if (status === 'cancelado') toast(t('pedido.cancelado_ok'));
+      else if (status === 'aguardando_pagamento' && forma === 'pix') notificarPixPendente(p!.numero, p!.clienteNome, p!.total, t);
       else toast(t('pedido.toast_status') + ' ' + t('status.' + status));
     }
     catch (e) { const k = (e as ErroApi).chaveI18n; setErro(k); toast(t(k), 'erro'); }
@@ -72,6 +74,7 @@ export function PedidoDetalhe() {
     // Expedir/Entregar pedem dados (forma de envio / data de entrega) antes de confirmar.
     if (status === 'expedido') { setModal('envio'); return; }
     if (status === 'entregue') { setModal('entrega'); return; }
+    if (status === 'cancelado' && !confirm(t('pedido.cancelar_confirma'))) return;
     patchStatus(status);
   }
 
@@ -114,6 +117,9 @@ export function PedidoDetalhe() {
             <button className="btn-primary" onClick={() => nav('/comercial/pedidos/' + p.id + '/editar')}><Ic name="i-edit" className="sm" /> {t('pedido.editar')}</button>
           )}
           <button className="btn-ghost" onClick={() => nav('/comercial/pedidos/' + p.id + '/romaneio')}><Ic name="i-print" className="sm" /> {t('romaneio.titulo')}</button>
+          {podeGerenciar && !modoExpedicao && p.status !== 'cancelado' && (
+            <button className="btn-acao vermelho" onClick={() => mudar('cancelado')}><Ic name="i-trash" className="sm" /> {t('pedido.cancelar')}</button>
+          )}
           <button className="btn-ghost" onClick={() => nav('/comercial/pedidos')}>← {t('pedidos.voltar')}</button>
         </div>
       </div>

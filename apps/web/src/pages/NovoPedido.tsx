@@ -4,6 +4,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { moeda } from '../lib/pedido.js';
+import { notificarPixPendente } from '../lib/notificarPix.js';
 import { mascaraCep, buscarCep, UFS } from '../lib/br.js';
 import { ModalNovaPessoa } from '../components/SeletorPessoa.js';
 import { Ic } from '../components/Icones.js';
@@ -272,8 +273,11 @@ export function NovoPedido() {
       await talvezVincularOport(id);
       let confirmou = false;
       try { await api.patch('/pedidos/' + id + '/status', { status: 'aguardando_pagamento' }, token!); confirmou = true; } catch { /* confirma no detalhe */ }
-      // Pix/Boleto ficam pendentes de baixa no Financeiro — avisa por toast.
-      if (confirmou && ehPix(formaPagamento)) toast(t('pedido.toast_pix_pendente'));
+      // Pix gerado → toast de ação persistente "Pendência de baixa" (Abrir → Contas a receber).
+      if (confirmou && ehPix(formaPagamento)) {
+        try { const ped = await api.get<{ numero: number; clienteNome: string | null; total: number }>('/pedidos/' + id, token!); notificarPixPendente(ped.numero, ped.clienteNome, ped.total, t); }
+        catch { toast(t('pedido.toast_pix_pendente')); }
+      }
       nav('/comercial/pedidos/' + id);
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }

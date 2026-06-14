@@ -15,6 +15,8 @@ export interface EntradaEstoque {
   // Códigos das etiquetas (já afixadas nos produtos) bipados nesta entrada.
   // O sistema NÃO gera etiquetas — apenas registra os códigos lidos. quantidade = codigos.length.
   codigos?: string[];
+  // Origem da nota (quando a entrada vem de um recebimento de compra) — gravada na etiqueta.
+  fornecedor?: string | null; nf?: string | null; emissao?: string | null;
 }
 export interface EstoqueRepository {
   posicao(schema: string): Promise<PosicaoProduto[]>;
@@ -28,4 +30,7 @@ export interface EstoqueRepository {
   baixarUnidadeLote(schema: string, loteId: string, produtoId: string, ref: string): Promise<void>;
   // Baixa uma unidade de um lote como PERDA (ajuste de inventario).
   baixarUnidadeLotePerda(schema: string, loteId: string, produtoId: string, motivo: string): Promise<void>;
+  // Devolve ao estoque as quantidades que saíram por um pedido (cancelamento): reverte os
+  // movimentos de saída daquele ref, repondo o saldo dos lotes e registrando a devolução.
+  devolverPorRef(schema: string, ref: string): Promise<void>;
 }

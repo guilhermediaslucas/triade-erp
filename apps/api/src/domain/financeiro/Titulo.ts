@@ -42,6 +42,7 @@ export interface TituloRepository {
   pagosPorOrigem(schema: string, de: string | null, ate: string | null): Promise<PagoAgrupado[]>;
   pagosPorCategoria(schema: string, de: string | null, ate: string | null): Promise<PagoAgrupado[]>;
   listar(schema: string, tipo: TipoTitulo): Promise<Titulo[]>;
+  listarPorPedido(schema: string, pedidoId: string): Promise<Titulo[]>;
   buscarPorId(schema: string, id: string): Promise<Titulo | null>;
   criar(schema: string, t: NovoTitulo, origem: string, pedidoId: string | null): Promise<string>;
   baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null, dataBaixa?: string | null, ajustes?: AjustesBaixa): Promise<void>;

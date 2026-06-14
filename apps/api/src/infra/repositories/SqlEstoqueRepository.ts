@@ -122,9 +122,9 @@ export class SqlEstoqueRepository implements EstoqueRepository {
     // O sistema NAO gera codigos: insere os que vieram da leitura, vinculando ao lote.
     for (const codigo of e.codigos ?? []) {
       await this.ds.query(
-        `INSERT INTO "${s}".etiqueta (id, codigo, produto_id, lote_id, status)
-         VALUES ($1,$2,$3,$4,'estoque') ON CONFLICT (codigo) DO NOTHING`,
-        [randomUUID(), codigo, e.produtoId, loteId]);
+        `INSERT INTO "${s}".etiqueta (id, codigo, produto_id, lote_id, status, fornecedor, nf, emissao)
+         VALUES ($1,$2,$3,$4,'estoque',$5,$6,$7) ON CONFLICT (codigo) DO NOTHING`,
+        [randomUUID(), codigo, e.produtoId, loteId, e.fornecedor ?? null, e.nf ?? null, e.emissao ?? null]);
     }
   }
 
@@ -144,5 +144,25 @@ export class SqlEstoqueRepository implements EstoqueRepository {
       `INSERT INTO "${s}".estoque_movimento (id, produto_id, lote_id, tipo, quantidade, observacao)
        VALUES ($1, $2, $3, 'perda', 1, $4)`,
       [randomUUID(), produtoId, loteId, motivo]);
+  }
+
+  // Cancelamento de pedido: repõe o saldo dos lotes que tiveram saída por este ref
+  // (FIFO ou bipagem) e registra o movimento de devolução. Idempotente por flag de devolução.
+  async devolverPorRef(schema: string, ref: string): Promise<void> {
+    const s = validarSchema(schema);
+    const saidas = await this.ds.query(
+      `SELECT lote_id, produto_id, SUM(quantidade)::int AS qtd
+         FROM "${s}".estoque_movimento
+        WHERE tipo = 'saida' AND observacao = $1
+        GROUP BY lote_id, produto_id`, [ref]);
+    for (const m of saidas) {
+      await this.ds.query(`UPDATE "${s}".estoque_lote SET quantidade = quantidade + $2 WHERE id = $1`, [m.lote_id, Number(m.qtd)]);
+      await this.ds.query(
+        `INSERT INTO "${s}".estoque_movimento (id, produto_id, lote_id, tipo, quantidade, observacao)
+         VALUES ($1, $2, $3, 'entrada', $4, $5)`,
+        [randomUUID(), m.produto_id, m.lote_id, Number(m.qtd), 'Devolução ' + ref]);
+    }
+    // Remove os movimentos de saída originais para não devolver duas vezes em novo cancelamento.
+    await this.ds.query(`DELETE FROM "${s}".estoque_movimento WHERE tipo = 'saida' AND observacao = $1`, [ref]);
   }
 }

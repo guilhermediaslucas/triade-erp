@@ -91,6 +91,10 @@ export class SqlTituloRepository implements TituloRepository {
     const r = (await this.ds.query(`SELECT * FROM "${s}".titulo WHERE id = $1`, [id]))[0];
     return r ? map(r) : null;
   }
+  async listarPorPedido(schema: string, pedidoId: string): Promise<Titulo[]> {
+    const s = validarSchema(schema);
+    return (await this.ds.query(`SELECT * FROM "${s}".titulo WHERE pedido_id = $1`, [pedidoId])).map(map);
+  }
   async criar(schema: string, t: NovoTitulo, origem: string, pedidoId: string | null): Promise<string> {
     const s = validarSchema(schema); const id = randomUUID();
     await this.ds.query(
