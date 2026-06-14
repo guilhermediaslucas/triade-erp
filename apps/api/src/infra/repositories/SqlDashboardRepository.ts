@@ -105,9 +105,10 @@ export class SqlDashboardRepository implements DashboardRepository {
          LEFT JOIN "${s}".pedido p ON date_trunc('month', p.criado_em) = m AND p.${NAO}
         GROUP BY m ORDER BY m`);
 
-    // Meta mensal (barra de meta no gráfico): repetida em cada um dos meses exibidos.
-    const metaMes = Number(
-      (await this.ds.query(`SELECT valor FROM "${s}".meta WHERE periodo = 'mes'`))[0]?.valor ?? 0) || 0;
+    // Meta mensal (barra de meta no gráfico): valor de cada mês exibido (meta_mensal).
+    const metaRows = await this.ds.query(`SELECT ano, mes, valor FROM "${s}".meta_mensal`);
+    const metaMap: Record<string, number> = {};
+    for (const r of metaRows) metaMap[`${r.ano}-${String(r.mes).padStart(2, '0')}`] = Number(r.valor) || 0;
 
     const vendasCat = await this.ds.query(
       `SELECT COALESCE(c.nome,'—') categoria, COALESCE(SUM(pi.subtotal),0) total
@@ -142,7 +143,7 @@ export class SqlDashboardRepository implements DashboardRepository {
       fluxoEntradasMes: um(fx.ent), fluxoSaidasMes: um(fx.sai), fluxoSaldoMes: um(fx.ent) - um(fx.sai),
       faturamentoMensal: fatMensal.map((r: any) => ({ mes: r.mes, total: um(r.total) })),
       faturamentoAnterior: fatAnterior.map((r: any) => ({ mes: r.mes, total: um(r.total) })),
-      metaMensal: fatMensal.map(() => metaMes),
+      metaMensal: fatMensal.map((r: any) => metaMap[r.mes] ?? 0),
       vendasCategoria: vendasCat.map((r: any) => ({ categoria: r.categoria, total: um(r.total) })),
       saldosBancarios: saldos.map((r: any) => ({ nome: r.nome, saldo: um(r.saldo) })),
     };

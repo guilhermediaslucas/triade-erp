@@ -620,16 +620,17 @@ export const tenantMigrations: MigracaoTenant[] = [
     `,
   },
   {
-    nome: '044_meta',
+    nome: '044_meta_mensal',
     sql: (s) => `
-      CREATE TABLE IF NOT EXISTS "${s}".meta (
-        periodo   text PRIMARY KEY,
-        valor     numeric(14,2) NOT NULL DEFAULT 0,
-        criado_em timestamptz NOT NULL DEFAULT now()
+      CREATE TABLE IF NOT EXISTS "${s}".meta_mensal (
+        ano           int NOT NULL,
+        mes           int NOT NULL,
+        valor         numeric(14,2) NOT NULL DEFAULT 0,
+        meta_dia_util numeric(14,2) NOT NULL DEFAULT 0,
+        meta_sabado   numeric(14,2) NOT NULL DEFAULT 0,
+        criado_em     timestamptz NOT NULL DEFAULT now(),
+        PRIMARY KEY (ano, mes)
       );
-      INSERT INTO "${s}".meta (periodo, valor)
-      SELECT v.p, 0 FROM (VALUES ('dia'),('semana'),('mes'),('ano')) AS v(p)
-      WHERE NOT EXISTS (SELECT 1 FROM "${s}".meta m WHERE m.periodo = v.p);
     `,
   },
 ];

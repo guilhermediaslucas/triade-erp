@@ -283,6 +283,8 @@ body:not(.theme-dark) .tv { --tvbg:#f4f5fa; --tvcard:#ffffff; --tvborda:#e6e8ee;
 .tv-kpi.tv-destaque { border-color: #dc2626; }
 .tv-kpi-lbl { font-size: 14px; color: var(--tvmuted); text-transform: uppercase; letter-spacing: .8px; }
 .tv-kpi-val { font-size: clamp(28px, 3vw, 48px); font-weight: 800; margin-top: 4px; color: #16a34a; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tv-kpi-val.tv-realizado { color: #378ADD; }
+.tv-kpi-meta { font-size: clamp(14px, 1.4vw, 22px); font-weight: 700; color: #e1483b; margin-top: 2px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 /* Painel de vendas TV: gráfico à esquerda, números empilhados à direita */
 .tv-flex { display: flex; flex-direction: column; }
 .tv-vendas-grid { display: grid; grid-template-columns: 2.9fr 1fr; gap: 12px; flex: 1; min-height: 0; }

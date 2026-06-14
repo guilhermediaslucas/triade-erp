@@ -1,9 +1,10 @@
 // Ícones SVG line-style portados do mockup (erp-mockup.html).
 // <SpriteIcones/> é montado uma vez (no Layout); <Ic name="i-cart"/> referencia o símbolo.
+import type { CSSProperties } from 'react';
 
-export function Ic({ name, className }: { name: string; className?: string }) {
+export function Ic({ name, className, style }: { name: string; className?: string; style?: CSSProperties }) {
   return (
-    <svg className={'ic' + (className ? ' ' + className : '')} aria-hidden="true">
+    <svg className={'ic' + (className ? ' ' + className : '')} aria-hidden="true" style={style}>
       <use href={'#' + name} />
     </svg>
   );

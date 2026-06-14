@@ -12,7 +12,10 @@ export function rotasMetas(deps: Dependencias): Router {
   const metas = deps.metasService;
 
   r.get('/metas', aut, az('comercial.meta.ver'), async (req, res: Response) => {
-    try { res.json(await metas.obter(sch(req))); } catch (e) { tratarErro(res, e); }
+    try { res.json(await metas.obter(sch(req), req.query.ano ?? new Date().getFullYear())); } catch (e) { tratarErro(res, e); }
+  });
+  r.get('/metas/atual', aut, az('comercial.meta.ver'), async (req, res: Response) => {
+    try { res.json(await metas.atual(sch(req))); } catch (e) { tratarErro(res, e); }
   });
   r.put('/metas', aut, az('comercial.meta.gerenciar'), async (req, res: Response) => {
     try { await metas.salvar(sch(req), req.body ?? {}); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }

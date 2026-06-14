@@ -11,6 +11,7 @@ import { SpriteIcones } from '../components/Icones.js';
 // atualização automática — feito para deixar rodando numa televisão.
 interface Resumo { vendasDia: number; vendasSemana: number; vendasMes: number; }
 interface Serie { labels: string[]; data: number[]; }
+interface MetaAtual { valor: number; metaDiaUtil: number; metaSabado: number; }
 
 const REFRESH_MS = 45000;
 
@@ -23,11 +24,11 @@ function moedaTV(v: number): string {
 
 // Gráfico de barras (vendas por dia). O SVG preenche a altura do card (barras
 // esticadas, preserveAspectRatio=none); as datas vão em HTML embaixo, sem distorcer.
-// Por dia: realizado (azul) e meta (vermelho) lado a lado.
-function Barras({ labels, data, meta }: { labels: string[]; data: number[]; meta: number }) {
+// Por dia: realizado (azul) e meta (vermelho) lado a lado — a meta varia por dia.
+function Barras({ labels, data, metas }: { labels: string[]; data: number[]; metas: number[] }) {
   const W = 1000, H = 300;
   const n = Math.max(1, data.length);
-  const max = Math.max(1, ...data, meta);
+  const max = Math.max(1, ...data, ...metas);
   const bw = (W / n) * 0.3;
   const passo = Math.ceil(n / 8);
   return (
@@ -37,6 +38,7 @@ function Barras({ labels, data, meta }: { labels: string[]; data: number[]; meta
         {data.map((v, i) => {
           const cx = (W / n) * (i + 0.5);
           const h = (v / max) * (H - 6);
+          const meta = metas[i] ?? 0;
           const hm = (meta / max) * (H - 6);
           return (
             <g key={i}>
@@ -61,7 +63,7 @@ export function DashboardTV() {
   const nav = useNavigate();
   const [d, setD] = useState<Resumo | null>(null);
   const [serie, setSerie] = useState<Serie | null>(null);
-  const [metaDia, setMetaDia] = useState(0);
+  const [meta, setMeta] = useState<MetaAtual>({ valor: 0, metaDiaUtil: 0, metaSabado: 0 });
   const [hora, setHora] = useState(new Date());
   const [atualizado, setAtualizado] = useState<Date | null>(null);
 
@@ -70,14 +72,26 @@ export function DashboardTV() {
       const [resumo, sd, m] = await Promise.all([
         api.get<Resumo>('/dashboard', token!),
         api.get<Serie>('/dashboard/serie?tipo=dia', token!).catch(() => null),
-        api.get<{ dia: number }>('/metas', token!).catch(() => null),
+        api.get<MetaAtual>('/metas/atual', token!).catch(() => null),
       ]);
       setD(resumo);
       if (sd) setSerie({ labels: sd.labels.slice(-14), data: sd.data.slice(-14) });
-      if (m) setMetaDia(Number(m.dia) || 0);
+      if (m) setMeta({ valor: Number(m.valor) || 0, metaDiaUtil: Number(m.metaDiaUtil) || 0, metaSabado: Number(m.metaSabado) || 0 });
       setAtualizado(new Date());
     } catch { /* mantém */ }
   }
+
+  // Meta de um dia conforme o dia da semana (domingo = 0).
+  const metaDoDia = (wd: number) => (wd === 0 ? 0 : wd === 6 ? meta.metaSabado : meta.metaDiaUtil);
+  // Label 'DD/MM' → meta do dia (assume ano corrente).
+  function metaDoLabel(lb: string): number {
+    const [dd, mm] = lb.split('/').map(Number);
+    if (!dd || !mm) return 0;
+    return metaDoDia(new Date(new Date().getFullYear(), mm - 1, dd).getDay());
+  }
+  const metaHoje = metaDoDia(new Date().getDay());
+  const metaSemana = meta.metaDiaUtil * 5 + meta.metaSabado;
+  const metaMes = meta.valor;
   useEffect(() => {
     carregar();
     const r = setInterval(carregar, REFRESH_MS);
@@ -103,13 +117,25 @@ export function DashboardTV() {
               </span>
             </div>
             {serie && serie.data.some((v) => v > 0)
-              ? <Barras labels={serie.labels} data={serie.data} meta={metaDia} />
+              ? <Barras labels={serie.labels} data={serie.data} metas={serie.labels.map(metaDoLabel)} />
               : <div className="tv-vazio">{t('dash.serie_vazio')}</div>}
           </div>
           <div className="tv-kpis-col">
-            <div className="tv-kpi"><div className="tv-kpi-lbl">{t('tv.dia')}</div><div className="tv-kpi-val">{moedaTV(d.vendasDia)}</div></div>
-            <div className="tv-kpi"><div className="tv-kpi-lbl">{t('tv.semana')}</div><div className="tv-kpi-val">{moedaTV(d.vendasSemana)}</div></div>
-            <div className="tv-kpi"><div className="tv-kpi-lbl">{t('tv.mes')}</div><div className="tv-kpi-val">{moedaTV(d.vendasMes)}</div></div>
+            <div className="tv-kpi">
+              <div className="tv-kpi-lbl">{t('tv.dia')}</div>
+              <div className="tv-kpi-val tv-realizado">{moedaTV(d.vendasDia)}</div>
+              {metaHoje > 0 && <div className="tv-kpi-meta">{t('dash.meta')} {moedaTV(metaHoje)}</div>}
+            </div>
+            <div className="tv-kpi">
+              <div className="tv-kpi-lbl">{t('tv.semana')}</div>
+              <div className="tv-kpi-val tv-realizado">{moedaTV(d.vendasSemana)}</div>
+              {metaSemana > 0 && <div className="tv-kpi-meta">{t('dash.meta')} {moedaTV(metaSemana)}</div>}
+            </div>
+            <div className="tv-kpi">
+              <div className="tv-kpi-lbl">{t('tv.mes')}</div>
+              <div className="tv-kpi-val tv-realizado">{moedaTV(d.vendasMes)}</div>
+              {metaMes > 0 && <div className="tv-kpi-meta">{t('dash.meta')} {moedaTV(metaMes)}</div>}
+            </div>
           </div>
         </div>
       )}
