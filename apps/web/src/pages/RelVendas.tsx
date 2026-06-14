@@ -8,6 +8,7 @@ import { moeda, numeroPedido } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
 import { BotaoExcel } from '../components/BotaoExcel.js';
+import { FiltrosModal } from '../components/FiltrosModal.js';
 
 interface Linha { numero: number; data: string; cliente: string | null; vendedor: string | null; status: string; total: number; }
 interface PorVend { vendedor: string; quantidade: number; total: number; }
@@ -21,12 +22,14 @@ export function RelVendas() {
   const [de, setDe] = useState(primeiroDia()); const [ate, setAte] = useState(hoje());
   const [d, setD] = useState<Resp | null>(null); const [erro, setErro] = useState<string | null>(null);
 
-  async function gerar() {
+  async function gerar(dd = de, aa = ate) {
     setErro(null);
-    try { setD(await api.get<Resp>(`/relatorios/vendas?de=${de}&ate=${ate}`, token!)); }
+    try { setD(await api.get<Resp>(`/relatorios/vendas?de=${dd}&ate=${aa}`, token!)); }
     catch (e) { setErro((e as ErroApi).chaveI18n); }
   }
   useEffect(() => { gerar(); /* eslint-disable-next-line */ }, []);
+  const qtdFiltros = (de !== primeiroDia() ? 1 : 0) + (ate !== hoje() ? 1 : 0);
+  function limparFiltros() { const dd = primeiroDia(), aa = hoje(); setDe(dd); setAte(aa); gerar(dd, aa); }
 
   function exportar(fmt: 'csv' | 'xlsx' = 'csv') {
     if (!d) return;
@@ -41,9 +44,10 @@ export function RelVendas() {
       <CabecalhoRelatorio titulo={t('rel.vendas')} />
       <div className="crumb">{t('rel.crumb_vendas')}</div><h1 className="page-titulo">{t('rel.vendas')}</h1>
       <div className="rel-filtro">
-        <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
-        <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
-        <button className="btn-primary" onClick={gerar}>{t('rel.gerar')}</button>
+        <FiltrosModal count={qtdFiltros} onLimpar={limparFiltros} onAplicar={() => gerar()} titulo={t('rel.vendas')}>
+          <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
+          <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
+        </FiltrosModal>
         {d && d.linhas.length > 0 && <><button className="btn-ghost" onClick={() => exportar('csv')}>{t('rel.exportar_csv')}</button> <BotaoExcel onClick={() => exportar('xlsx')} /></>}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
