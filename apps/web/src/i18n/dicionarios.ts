@@ -1583,17 +1583,20 @@ Object.assign(es, {
 Object.assign(pt, {
   'fin.filtros': 'Filtros', 'fin.f_busca': 'Buscar', 'fin.f_busca_ph': 'Descrição ou pessoa…',
   'fin.f_situacao': 'Situação', 'fin.f_todos': 'Todos', 'fin.f_venc_de': 'Vence de', 'fin.f_venc_ate': 'Vence até',
-  'fin.f_min': 'Valor mín.', 'fin.f_max': 'Valor máx.', 'fin.f_limpar': 'Limpar filtros',
+  'fin.f_min': 'Valor de (R$)', 'fin.f_max': 'Valor até (R$)', 'fin.f_limpar': 'Limpar filtros',
+  'fin.f_conta': 'Conta bancária', 'fin.f_pessoa_ph': 'Parte do nome / razão social', 'fin.f_desc_ph': 'Trecho da descrição', 'fin.de': 'de', 'fin.ate': 'até',
 });
 Object.assign(en, {
   'fin.filtros': 'Filters', 'fin.f_busca': 'Search', 'fin.f_busca_ph': 'Description or person…',
   'fin.f_situacao': 'Status', 'fin.f_todos': 'All', 'fin.f_venc_de': 'Due from', 'fin.f_venc_ate': 'Due until',
-  'fin.f_min': 'Min amount', 'fin.f_max': 'Max amount', 'fin.f_limpar': 'Clear filters',
+  'fin.f_min': 'Amount from (R$)', 'fin.f_max': 'Amount to (R$)', 'fin.f_limpar': 'Clear filters',
+  'fin.f_conta': 'Bank account', 'fin.f_pessoa_ph': 'Part of the name', 'fin.f_desc_ph': 'Part of the description', 'fin.de': 'from', 'fin.ate': 'to',
 });
 Object.assign(es, {
   'fin.filtros': 'Filtros', 'fin.f_busca': 'Buscar', 'fin.f_busca_ph': 'Descripción o persona…',
   'fin.f_situacao': 'Situación', 'fin.f_todos': 'Todos', 'fin.f_venc_de': 'Vence desde', 'fin.f_venc_ate': 'Vence hasta',
-  'fin.f_min': 'Valor mín.', 'fin.f_max': 'Valor máx.', 'fin.f_limpar': 'Limpiar filtros',
+  'fin.f_min': 'Valor de (R$)', 'fin.f_max': 'Valor hasta (R$)', 'fin.f_limpar': 'Limpiar filtros',
+  'fin.f_conta': 'Cuenta bancaria', 'fin.f_pessoa_ph': 'Parte del nombre / razón social', 'fin.f_desc_ph': 'Parte de la descripción', 'fin.de': 'de', 'fin.ate': 'hasta',
 });
 
 // --- common.voltar ---

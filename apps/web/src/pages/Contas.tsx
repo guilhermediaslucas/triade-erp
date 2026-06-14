@@ -10,7 +10,7 @@ import { ModalNovaPessoa } from '../components/SeletorPessoa.js';
 import { Ic } from '../components/Icones.js';
 
 type Tipo = 'receber' | 'pagar';
-interface Titulo { id: string; numero: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; vendedorNome: string | null; previsto: boolean; tipoDocumento: string | null; numeroDocumento: string | null; emissao: string | null; criadoEm: string; pagoEm: string | null; desconto: number; multa: number; juros: number; }
+interface Titulo { id: string; numero: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; contaCorrenteNome: string | null; vendedorNome: string | null; previsto: boolean; tipoDocumento: string | null; numeroDocumento: string | null; emissao: string | null; criadoEm: string; pagoEm: string | null; desconto: number; multa: number; juros: number; }
 interface TipoDoc { id: string; nome: string; ativo: boolean; }
 interface CatFin { id: string; nome: string; tipo: 'receita' | 'despesa'; ativo: boolean; }
 
@@ -40,6 +40,10 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   const [fSit, setFSit] = useState<'todos' | 'aberto' | 'vencido' | 'pago'>('todos');
   const [fQ, setFQ] = useState(''); const [fCat, setFCat] = useState('');
   const [fPessoa, setFPessoa] = useState('');
+  const [fConta, setFConta] = useState(''); const [fDoc, setFDoc] = useState(''); const [fTitulo, setFTitulo] = useState('');
+  const [fDesc, setFDesc] = useState('');
+  const [fEmiDe, setFEmiDe] = useState(''); const [fEmiAte, setFEmiAte] = useState('');
+  const [fBxDe, setFBxDe] = useState(''); const [fBxAte, setFBxAte] = useState('');
   // Filtro vindo dos KPIs (clicar no card filtra a lista pelos lançamentos que o compõem).
   const [fKpi, setFKpi] = useState<'' | 'aberto' | 'vence7' | 'vencido' | 'boletos'>('');
   const [fVde, setFVde] = useState(''); const [fVate, setFVate] = useState('');
@@ -50,19 +54,31 @@ export function Contas({ tipo }: { tipo: Tipo }) {
 
   const categorias = useMemo(() => Array.from(new Set(itens.map((x) => x.categoriaFinanceiraNome).filter(Boolean))) as string[], [itens]);
   const pessoas = useMemo(() => Array.from(new Set(itens.map((x) => x.pessoaNome).filter(Boolean))) as string[], [itens]);
+  const contas = useMemo(() => Array.from(new Set(itens.map((x) => x.contaCorrenteNome).filter(Boolean))) as string[], [itens]);
+  const documentos = useMemo(() => Array.from(new Set(itens.map((x) => x.tipoDocumento).filter(Boolean))) as string[], [itens]);
   // "A vencer" do chip = aberto (situacao). 'aberto' interno é o em aberto não vencido.
   // kpiBase = lista filtrada SEM o filtro de KPI (os KPIs são calculados sobre ela e não se autocolapsam).
   const kpiBase = useMemo(() => itens.filter((x) => {
     if (fSit !== 'todos' && situacao(x) !== fSit) return false;
     if (fCat && (x.categoriaFinanceiraNome ?? '') !== fCat) return false;
-    if (fPessoa && (x.pessoaNome ?? '') !== fPessoa) return false;
+    if (fConta && (x.contaCorrenteNome ?? '') !== fConta) return false;
+    if (fDoc && (x.tipoDocumento ?? '') !== fDoc) return false;
+    if (fPessoa && !(x.pessoaNome ?? '').toLowerCase().includes(fPessoa.toLowerCase())) return false;
+    if (fTitulo && !(x.numero ?? '').toLowerCase().includes(fTitulo.toLowerCase())) return false;
+    if (fDesc && !(x.descricao ?? '').toLowerCase().includes(fDesc.toLowerCase())) return false;
     if (fVde && x.vencimento < fVde) return false;
     if (fVate && x.vencimento > fVate) return false;
+    const emi = (x.emissao || (x.criadoEm ? x.criadoEm.slice(0, 10) : '')) || '';
+    if (fEmiDe && emi < fEmiDe) return false;
+    if (fEmiAte && emi > fEmiAte) return false;
+    const bx = x.pagoEm ? x.pagoEm.slice(0, 10) : '';
+    if (fBxDe && (!bx || bx < fBxDe)) return false;
+    if (fBxAte && (!bx || bx > fBxAte)) return false;
     if (fMin && x.valor < Number(fMin)) return false;
     if (fMax && x.valor > Number(fMax)) return false;
     if (fQ) { const q = fQ.toLowerCase(); if (!((x.descricao || '').toLowerCase().includes(q) || (x.pessoaNome || '').toLowerCase().includes(q) || (x.numero || '').toLowerCase().includes(q))) return false; }
     return true;
-  }), [itens, fSit, fCat, fPessoa, fVde, fVate, fMin, fMax, fQ]);
+  }), [itens, fSit, fCat, fConta, fDoc, fPessoa, fTitulo, fDesc, fVde, fVate, fEmiDe, fEmiAte, fBxDe, fBxAte, fMin, fMax, fQ]);
   const ate7ISO = useMemo(() => { const d = new Date(); d.setDate(d.getDate() + 7); return d.toISOString().slice(0, 10); }, []);
   const filtrados = useMemo(() => kpiBase.filter((x) => {
     if (!fKpi) return true;
@@ -73,9 +89,13 @@ export function Contas({ tipo }: { tipo: Tipo }) {
     if (fKpi === 'boletos') return x.status === 'aberto' && (x.tipoDocumento ?? '').toLowerCase().includes('bole');
     return true;
   }), [kpiBase, fKpi, ate7ISO]);
-  const temFiltro = fSit !== 'todos' || !!fQ || !!fCat || !!fPessoa || !!fVde || !!fVate || !!fMin || !!fMax;
-  const qtdFiltros = [fSit !== 'todos', !!fQ, !!fCat, !!fPessoa, !!fVde, !!fVate, !!fMin, !!fMax].filter(Boolean).length;
-  function limparFiltros() { setFSit('todos'); setFQ(''); setFCat(''); setFPessoa(''); setFVde(''); setFVate(''); setFMin(''); setFMax(''); }
+  const flags = [fSit !== 'todos', !!fCat, !!fConta, !!fDoc, !!fPessoa, !!fTitulo, !!fDesc, !!fVde, !!fVate, !!fEmiDe, !!fEmiAte, !!fBxDe, !!fBxAte, !!fMin, !!fMax, !!fQ];
+  const temFiltro = flags.some(Boolean);
+  const qtdFiltros = flags.filter(Boolean).length;
+  function limparFiltros() {
+    setFSit('todos'); setFQ(''); setFCat(''); setFConta(''); setFDoc(''); setFPessoa(''); setFTitulo(''); setFDesc('');
+    setFVde(''); setFVate(''); setFEmiDe(''); setFEmiAte(''); setFBxDe(''); setFBxAte(''); setFMin(''); setFMax('');
+  }
   const toggleKpi = (k: 'aberto' | 'vence7' | 'vencido' | 'boletos') => setFKpi((cur) => (cur === k ? '' : k));
 
   const HIDEABLE = ['pessoa', 'cat', 'doc', 'emissao', 'venc', 'baixa', 'valor', 'vendedor', 'sit'] as const;
@@ -219,28 +239,48 @@ export function Contas({ tipo }: { tipo: Tipo }) {
 
       {filtroAberto && (
         <div className="modal-fundo">
-          <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 560 }}>
-            <h2>{t('fin.filtros')}</h2>
+          <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 720 }}>
+            <h2>{t('fin.filtros')} — {t(tipo === 'receber' ? 'fin.receber' : 'fin.pagar')}</h2>
             <div className="filtros-grid">
-              <label className="campo">{t('fin.f_busca')}<input value={fQ} onChange={(e) => setFQ(e.target.value)} placeholder={t('fin.f_busca_ph')} /></label>
+              <label className="campo">{t('catfin.titulo_s')}
+                <select value={fCat} onChange={(e) => setFCat(e.target.value)}>
+                  <option value="">{t('fin.f_todos')}</option>{categorias.map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </label>
+              <label className="campo">{t('fin.f_conta')}
+                <select value={fConta} onChange={(e) => setFConta(e.target.value)}>
+                  <option value="">{t('fin.f_todos')}</option>{contas.map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </label>
+              <label className="campo">{t(tipo === 'receber' ? 'fin.cliente' : 'fin.fornecedor')}
+                <input list="dlFltPessoa" value={fPessoa} onChange={(e) => setFPessoa(e.target.value)} placeholder={t('fin.f_pessoa_ph')} />
+                <datalist id="dlFltPessoa">{pessoas.map((p) => <option key={p} value={p} />)}</datalist>
+              </label>
+              <label className="campo">{t('fin.documento')}
+                <select value={fDoc} onChange={(e) => setFDoc(e.target.value)}>
+                  <option value="">{t('fin.f_todos')}</option>{documentos.map((d) => <option key={d} value={d}>{d}</option>)}
+                </select>
+              </label>
+              <label className="campo">{t('fin.numero')}<input value={fTitulo} onChange={(e) => setFTitulo(e.target.value)} placeholder={tipo === 'receber' ? 'Ex: REC-000001' : 'Ex: PAG-000001'} /></label>
               <label className="campo">{t('fin.f_situacao')}
                 <select value={fSit} onChange={(e) => setFSit(e.target.value as 'todos' | 'aberto' | 'vencido' | 'pago')}>
                   <option value="todos">{t('fin.f_todos')}</option><option value="aberto">{t('fin.aberto')}</option><option value="vencido">{t('fin.vencido')}</option><option value="pago">{t('fin.pago')}</option>
                 </select>
               </label>
-              {categorias.length > 0 && <label className="campo">{t('catfin.titulo_s')}
-                <select value={fCat} onChange={(e) => setFCat(e.target.value)}>
-                  <option value="">{t('fin.f_todos')}</option>{categorias.map((c) => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </label>}
-              <label className="campo">{t('fin.f_venc_de')}<input type="date" value={fVde} onChange={(e) => setFVde(e.target.value)} /></label>
-              <label className="campo">{t('fin.f_venc_ate')}<input type="date" value={fVate} onChange={(e) => setFVate(e.target.value)} /></label>
-              <label className="campo">{t('fin.f_min')}<input type="number" value={fMin} onChange={(e) => setFMin(e.target.value)} /></label>
-              <label className="campo">{t('fin.f_max')}<input type="number" value={fMax} onChange={(e) => setFMax(e.target.value)} /></label>
+              <label className="campo" style={{ gridColumn: '1 / -1' }}>{t('fin.descricao')}<input value={fDesc} onChange={(e) => setFDesc(e.target.value)} placeholder={t('fin.f_desc_ph')} /></label>
+              <label className="campo">{t('fin.f_min')}<input type="number" step="0.01" value={fMin} onChange={(e) => setFMin(e.target.value)} placeholder="0,00" /></label>
+              <label className="campo">{t('fin.f_max')}<input type="number" step="0.01" value={fMax} onChange={(e) => setFMax(e.target.value)} placeholder="0,00" /></label>
+              <label className="campo">{t('fin.emissao')} ({t('fin.de')})<input type="date" value={fEmiDe} onChange={(e) => setFEmiDe(e.target.value)} /></label>
+              <label className="campo">{t('fin.emissao')} ({t('fin.ate')})<input type="date" value={fEmiAte} onChange={(e) => setFEmiAte(e.target.value)} /></label>
+              <label className="campo">{t('fin.vencimento')} ({t('fin.de')})<input type="date" value={fVde} onChange={(e) => setFVde(e.target.value)} /></label>
+              <label className="campo">{t('fin.vencimento')} ({t('fin.ate')})<input type="date" value={fVate} onChange={(e) => setFVate(e.target.value)} /></label>
+              <label className="campo">{t('fin.baixa')} ({t('fin.de')})<input type="date" value={fBxDe} onChange={(e) => setFBxDe(e.target.value)} /></label>
+              <label className="campo">{t('fin.baixa')} ({t('fin.ate')})<input type="date" value={fBxAte} onChange={(e) => setFBxAte(e.target.value)} /></label>
             </div>
             <p className="muted" style={{ marginTop: 8 }}>{filtrados.length} {t('fin.titulos')}</p>
             <div className="modal-acoes">
-              <button className="btn-ghost" onClick={limparFiltros}>{t('flt.limpar')}</button>
+              <button className="btn-ghost" style={{ marginRight: 'auto' }} onClick={limparFiltros}>{t('flt.limpar')}</button>
+              <button className="btn-ghost" onClick={() => setFiltroAberto(false)}>{t('common.cancelar')}</button>
               <button className="btn-primary" onClick={() => setFiltroAberto(false)}>{t('flt.aplicar')}</button>
             </div>
           </div>
