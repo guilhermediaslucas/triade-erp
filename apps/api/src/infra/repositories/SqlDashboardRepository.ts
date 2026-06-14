@@ -13,25 +13,33 @@ export class SqlDashboardRepository implements DashboardRepository {
     const s = validarSchema(schema);
     const um = (v: any) => Number(v ?? 0);
     const NAO = `status NOT IN ('orcamento','cancelado')`;
+    // Datetime é gravado em UTC; o bucket de "dia/semana/mês/ano" precisa ser no fuso da
+    // empresa (senão vendas da tarde/noite caem no dia seguinte em UTC e somem do "dia").
+    const tz = (await this.ds.query(
+      `SELECT COALESCE(timezone_padrao, 'America/Sao_Paulo') tz FROM public.empresa WHERE schema_name = $1`,
+      [s]))[0]?.tz || 'America/Sao_Paulo';
+    // Atalhos no fuso da empresa: criado_em local e "agora" local.
+    const L = `(criado_em AT TIME ZONE $1)`;        // criado_em em hora local
+    const HOJE = `(now() AT TIME ZONE $1)`;          // agora em hora local
 
-    // Vendas por período + período anterior (uma query)
+    // Vendas por período + período anterior (uma query), bucketadas no fuso da empresa
     const vd = (await this.ds.query(
       `SELECT
-         COALESCE(SUM(total) FILTER (WHERE criado_em::date = CURRENT_DATE),0) dia,
-         COALESCE(SUM(total) FILTER (WHERE criado_em::date = CURRENT_DATE - 1),0) dia_ant,
-         COALESCE(SUM(total) FILTER (WHERE criado_em >= date_trunc('week', now())),0) sem,
-         COALESCE(SUM(total) FILTER (WHERE criado_em >= date_trunc('week', now()) - interval '7 days' AND criado_em < date_trunc('week', now())),0) sem_ant,
-         COALESCE(SUM(total) FILTER (WHERE criado_em >= date_trunc('month', now())),0) mes,
-         COALESCE(SUM(total) FILTER (WHERE criado_em >= date_trunc('month', now()) - interval '1 month' AND criado_em < date_trunc('month', now())),0) mes_ant,
-         COALESCE(SUM(total) FILTER (WHERE criado_em >= date_trunc('year', now())),0) ano,
-         COALESCE(SUM(total) FILTER (WHERE criado_em >= date_trunc('year', now()) - interval '1 year' AND criado_em < date_trunc('year', now())),0) ano_ant
-       FROM "${s}".pedido WHERE ${NAO}`))[0];
+         COALESCE(SUM(total) FILTER (WHERE ${L}::date = ${HOJE}::date),0) dia,
+         COALESCE(SUM(total) FILTER (WHERE ${L}::date = ${HOJE}::date - 1),0) dia_ant,
+         COALESCE(SUM(total) FILTER (WHERE ${L} >= date_trunc('week', ${HOJE})),0) sem,
+         COALESCE(SUM(total) FILTER (WHERE ${L} >= date_trunc('week', ${HOJE}) - interval '7 days' AND ${L} < date_trunc('week', ${HOJE})),0) sem_ant,
+         COALESCE(SUM(total) FILTER (WHERE ${L} >= date_trunc('month', ${HOJE})),0) mes,
+         COALESCE(SUM(total) FILTER (WHERE ${L} >= date_trunc('month', ${HOJE}) - interval '1 month' AND ${L} < date_trunc('month', ${HOJE})),0) mes_ant,
+         COALESCE(SUM(total) FILTER (WHERE ${L} >= date_trunc('year', ${HOJE})),0) ano,
+         COALESCE(SUM(total) FILTER (WHERE ${L} >= date_trunc('year', ${HOJE}) - interval '1 year' AND ${L} < date_trunc('year', ${HOJE})),0) ano_ant
+       FROM "${s}".pedido WHERE ${NAO}`, [tz]))[0];
 
     const cli = (await this.ds.query(
       `SELECT COUNT(*) FILTER (WHERE ativo)::int ativos,
-              COUNT(*) FILTER (WHERE criado_em >= date_trunc('month', now()))::int novos,
-              COUNT(*) FILTER (WHERE criado_em >= date_trunc('month', now()) - interval '1 month' AND criado_em < date_trunc('month', now()))::int novos_ant
-         FROM "${s}".cliente`))[0];
+              COUNT(*) FILTER (WHERE ${L} >= date_trunc('month', ${HOJE}))::int novos,
+              COUNT(*) FILTER (WHERE ${L} >= date_trunc('month', ${HOJE}) - interval '1 month' AND ${L} < date_trunc('month', ${HOJE}))::int novos_ant
+         FROM "${s}".cliente`, [tz]))[0];
 
     const porStatus = await this.ds.query(
       `SELECT status, COUNT(*)::int q FROM "${s}".pedido GROUP BY status`);
@@ -140,6 +148,9 @@ export class SqlDashboardRepository implements DashboardRepository {
     const s = validarSchema(schema);
     const um = (v: any) => Number(v ?? 0);
     const NAO = `status NOT IN ('orcamento','cancelado')`;
+    const tz = (await this.ds.query(
+      `SELECT COALESCE(timezone_padrao, 'America/Sao_Paulo') tz FROM public.empresa WHERE schema_name = $1`,
+      [s]))[0]?.tz || 'America/Sao_Paulo';
 
     if (tipo === 'clientes') {
       const q = (await this.ds.query(
@@ -149,38 +160,43 @@ export class SqlDashboardRepository implements DashboardRepository {
 
     let sql: string;
     let params: any[] = [];
+    // criado_em em hora local da empresa (datetime gravado em UTC)
+    const L = `(p.criado_em AT TIME ZONE $1)`;
     if (tipo === 'dia') {
-      // Intervalo arbitrário (default: últimos 30 dias), série diária.
+      // Intervalo arbitrário (default: últimos 30 dias), série diária no fuso da empresa.
       const ini = de ?? null, fim = ate ?? null;
       sql =
         `WITH faixa AS (
-           SELECT COALESCE($1::date, CURRENT_DATE - 29) di,
-                  COALESCE($2::date, CURRENT_DATE) df
+           SELECT COALESCE($2::date, (now() AT TIME ZONE $1)::date - 29) di,
+                  COALESCE($3::date, (now() AT TIME ZONE $1)::date) df
          )
          SELECT to_char(g.d,'DD/MM') rotulo, COALESCE(SUM(p.total),0) total
            FROM faixa, generate_series((SELECT LEAST(di,df) FROM faixa), (SELECT GREATEST(di,df) FROM faixa), interval '1 day') g(d)
-           LEFT JOIN "${s}".pedido p ON p.criado_em::date = g.d::date AND p.${NAO}
+           LEFT JOIN "${s}".pedido p ON ${L}::date = g.d::date AND p.${NAO}
           GROUP BY g.d ORDER BY g.d`;
-      params = [ini, fim];
+      params = [tz, ini, fim];
     } else if (tipo === 'semana') {
       sql =
         `SELECT to_char(g.w,'DD/MM') rotulo, COALESCE(SUM(p.total),0) total
-           FROM generate_series(date_trunc('week', now()) - interval '11 weeks', date_trunc('week', now()), interval '1 week') g(w)
-           LEFT JOIN "${s}".pedido p ON date_trunc('week', p.criado_em) = g.w AND p.${NAO}
+           FROM generate_series(date_trunc('week', now() AT TIME ZONE $1) - interval '11 weeks', date_trunc('week', now() AT TIME ZONE $1), interval '1 week') g(w)
+           LEFT JOIN "${s}".pedido p ON date_trunc('week', ${L}) = g.w AND p.${NAO}
           GROUP BY g.w ORDER BY g.w`;
+      params = [tz];
     } else if (tipo === 'mes') {
       sql =
         `SELECT to_char(g.m,'MM/YYYY') rotulo, COALESCE(SUM(p.total),0) total
-           FROM generate_series(date_trunc('month', now()) - interval '11 months', date_trunc('month', now()), interval '1 month') g(m)
-           LEFT JOIN "${s}".pedido p ON date_trunc('month', p.criado_em) = g.m AND p.${NAO}
+           FROM generate_series(date_trunc('month', now() AT TIME ZONE $1) - interval '11 months', date_trunc('month', now() AT TIME ZONE $1), interval '1 month') g(m)
+           LEFT JOIN "${s}".pedido p ON date_trunc('month', ${L}) = g.m AND p.${NAO}
           GROUP BY g.m ORDER BY g.m`;
+      params = [tz];
     } else {
       // ano: últimos 5 anos
       sql =
         `SELECT to_char(g.y,'YYYY') rotulo, COALESCE(SUM(p.total),0) total
-           FROM generate_series(date_trunc('year', now()) - interval '4 years', date_trunc('year', now()), interval '1 year') g(y)
-           LEFT JOIN "${s}".pedido p ON date_trunc('year', p.criado_em) = g.y AND p.${NAO}
+           FROM generate_series(date_trunc('year', now() AT TIME ZONE $1) - interval '4 years', date_trunc('year', now() AT TIME ZONE $1), interval '1 year') g(y)
+           LEFT JOIN "${s}".pedido p ON date_trunc('year', ${L}) = g.y AND p.${NAO}
           GROUP BY g.y ORDER BY g.y`;
+      params = [tz];
     }
 
     const rows = await this.ds.query(sql, params);
@@ -209,17 +225,21 @@ export class SqlDashboardRepository implements DashboardRepository {
       }));
     }
 
-    // Janela por tipo de KPI (igual à do card): dia usa o intervalo (default 30d).
-    let filtro: string; const params: any[] = [];
+    const tz = (await this.ds.query(
+      `SELECT COALESCE(timezone_padrao, 'America/Sao_Paulo') tz FROM public.empresa WHERE schema_name = $1`,
+      [s]))[0]?.tz || 'America/Sao_Paulo';
+    // Janela por tipo de KPI (igual à do card), bucketada no fuso da empresa. $1 = tz.
+    const L = `(p.criado_em AT TIME ZONE $1)`, HOJE = `(now() AT TIME ZONE $1)`;
+    let filtro: string; const params: any[] = [tz];
     if (tipo === 'dia') {
-      filtro = `p.criado_em::date BETWEEN COALESCE($1::date, CURRENT_DATE - 29) AND COALESCE($2::date, CURRENT_DATE)`;
+      filtro = `${L}::date BETWEEN COALESCE($2::date, ${HOJE}::date - 29) AND COALESCE($3::date, ${HOJE}::date)`;
       params.push(de, ate);
     } else if (tipo === 'semana') {
-      filtro = `p.criado_em >= date_trunc('week', now())`;
+      filtro = `${L} >= date_trunc('week', ${HOJE})`;
     } else if (tipo === 'mes') {
-      filtro = `p.criado_em >= date_trunc('month', now())`;
+      filtro = `${L} >= date_trunc('month', ${HOJE})`;
     } else {
-      filtro = `p.criado_em >= date_trunc('year', now())`;
+      filtro = `${L} >= date_trunc('year', ${HOJE})`;
     }
 
     const rows = await this.ds.query(
