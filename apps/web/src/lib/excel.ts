@@ -121,7 +121,7 @@ function styles(accent: string): string {
 <border><top style="medium"><color rgb="FF${accent}"/></top></border>
 </borders>
 <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
-<cellXfs count="12">
+<cellXfs count="13">
 <xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
 <xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>
 <xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/>
@@ -134,6 +134,7 @@ function styles(accent: string): string {
 <xf numFmtId="164" fontId="4" fillId="3" borderId="2" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right"/></xf>
 <xf numFmtId="0" fontId="4" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment vertical="center"/></xf>
 <xf numFmtId="0" fontId="5" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>
+<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>
 </cellXfs>
 <cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
 </styleSheet>`;
@@ -165,16 +166,16 @@ function planilhaXml(titulo: string, cabecalho: string[], linhas: (string | numb
   const cTexto = (ref: string, v: string | number, s: number) => `<c r="${ref}" s="${s}" t="inlineStr"><is><t xml:space="preserve">${esc(v)}</t></is></c>`;
   const cNum = (ref: string, v: number, s: number) => `<c r="${ref}" s="${s}"><v>${v}</v></c>`;
 
-  // Linha 1 = faixa das logos (imagens flutuam); 2 = título; 3 = subtítulo; 4 = colunas; dados a partir da 5.
+  // Linha 1 = faixa das logos (flutuam à esq./dir.) com o TÍTULO centralizado na mesma altura;
+  // 2 = subtítulo; 3 = colunas; dados a partir da 4.
   const rows: string[] = [];
-  rows.push(`<row r="1" ht="${imgs.length ? 30 : 8}" customHeight="1"></row>`);
-  rows.push(`<row r="2">${cTexto('A2', titulo, 2)}</row>`);
-  rows.push(`<row r="3">${cTexto('A3', sub, 3)}</row>`);
-  rows.push(`<row r="4">${cabecalho.map((h, c) => cTexto(colLetra(c) + '4', h, 1)).join('')}</row>`);
+  rows.push(`<row r="1" ht="${imgs.length ? 30 : 20}" customHeight="1">${cTexto('A1', titulo, 12)}</row>`);
+  rows.push(`<row r="2">${cTexto('A2', sub, 3)}</row>`);
+  rows.push(`<row r="3">${cabecalho.map((h, c) => cTexto(colLetra(c) + '3', h, 1)).join('')}</row>`);
 
   const somas = new Array(ncols).fill(0);
   linhas.forEach((linha, i) => {
-    const r = i + 5;
+    const r = i + 4;
     const zebra = i % 2 === 1;
     const cells = linha.map((v, c) => {
       const ref = colLetra(c) + r;
@@ -187,7 +188,7 @@ function planilhaXml(titulo: string, cabecalho: string[], linhas: (string | numb
 
   const temTotal = valCol.some(Boolean) && linhas.length > 0;
   if (temTotal) {
-    const r = linhas.length + 5;
+    const r = linhas.length + 4;
     const cells = cabecalho.map((_, c) => {
       const ref = colLetra(c) + r;
       if (valCol[c]) return cNum(ref, Math.round(somas[c] * 100) / 100, 9);
@@ -196,7 +197,7 @@ function planilhaXml(titulo: string, cabecalho: string[], linhas: (string | numb
     rows.push(`<row r="${r}">${cells}</row>`);
   }
 
-  const merges = ncols >= 2 ? `<mergeCells count="2"><mergeCell ref="A2:${lastCol}2"/><mergeCell ref="A3:${lastCol}3"/></mergeCells>` : '';
+  const merges = ncols >= 2 ? `<mergeCells count="2"><mergeCell ref="A1:${lastCol}1"/><mergeCell ref="A2:${lastCol}2"/></mergeCells>` : '';
   const drawing = imgs.length ? '<drawing r:id="rId1"/>' : '';
   const cols = colsXml(cabecalho, linhas, valCol);
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
