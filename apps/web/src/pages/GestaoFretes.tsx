@@ -5,6 +5,7 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
+import { FiltrosModal } from '../components/FiltrosModal.js';
 
 interface FretePedido { numero: number; criadoEm: string; clienteNome: string | null; formaEntrega: string; motoboy: string | null; distanciaKm: number | null; frete: number; }
 interface FreteConfig { kmRate: number; minMotoboy: number; cepOrigem: string | null; }
@@ -21,11 +22,13 @@ export function GestaoFretes() {
   const [kmRate, setKmRate] = useState(''); const [minMotoboy, setMinMotoboy] = useState('');
   const [erro, setErro] = useState<string | null>(null); const [ok, setOk] = useState<string | null>(null);
 
-  function gerar() {
+  function gerar(dd = de, aa = ate) {
     setErro(null); setOk(null);
-    const qs = [de ? 'de=' + de : '', ate ? 'ate=' + ate : ''].filter(Boolean).join('&');
+    const qs = [dd ? 'de=' + dd : '', aa ? 'ate=' + aa : ''].filter(Boolean).join('&');
     api.get<FretePedido[]>('/logistica/fretes/pedidos' + (qs ? '?' + qs : ''), token!).then(setLinhas).catch((e) => setErro((e as ErroApi).chaveI18n));
   }
+  const qtdFiltros = (de ? 1 : 0) + (ate ? 1 : 0);
+  function limparFiltros() { setDe(''); setAte(''); gerar('', ''); }
   useEffect(() => {
     gerar();
     api.get<FreteConfig>('/frete/config', token!).then((c) => { setCfg(c); setKmRate(String(c.kmRate)); setMinMotoboy(String(c.minMotoboy)); }).catch(() => {});
@@ -71,11 +74,12 @@ export function GestaoFretes() {
         </div>
       </div>
 
-      <div className="contas-toolbar" style={{ alignItems: 'flex-end' }}>
-        <label className="campo" style={{ margin: 0 }}>{t('pedidos.data_de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} style={{ maxWidth: 170 }} /></label>
-        <label className="campo" style={{ margin: 0 }}>{t('pedidos.data_ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} style={{ maxWidth: 170 }} /></label>
+      <div className="contas-toolbar" style={{ alignItems: 'center' }}>
+        <FiltrosModal count={qtdFiltros} onLimpar={limparFiltros} onAplicar={() => gerar()} titulo={t('gfrete.titulo')}>
+          <label className="campo">{t('pedidos.data_de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
+          <label className="campo">{t('pedidos.data_ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
+        </FiltrosModal>
         <label className="campo" style={{ margin: 0 }}>{t('gfrete.venc1')}<input type="date" value={venc} onChange={(e) => setVenc(e.target.value)} style={{ maxWidth: 170 }} /></label>
-        <button className="btn-primary" onClick={gerar}><Ic name="i-search" className="sm" /> {t('pedidos.filtrar')}</button>
         <span style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
           {linhas.length > 0 && <button className="btn-acao verde" onClick={exportar}><Ic name="i-download" className="sm" /> {t('rel.exportar_xlsx')}</button>}
           {podeFechar && <button className="btn-primary" disabled={!venc || total <= 0} onClick={fechar}>$ {t('gfrete.gerar_titulos_motoboy')}</button>}

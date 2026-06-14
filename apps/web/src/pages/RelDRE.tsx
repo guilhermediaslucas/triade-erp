@@ -8,6 +8,7 @@ import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
 import { BotaoExcel } from '../components/BotaoExcel.js';
+import { FiltrosModal } from '../components/FiltrosModal.js';
 
 interface Linha { origem: string; total: number; }
 interface Dre { por: 'origem' | 'categoria'; receitas: Linha[]; despesas: Linha[]; totalReceitas: number; totalDespesas: number; resultado: number; }
@@ -20,12 +21,14 @@ export function RelDRE() {
   const [por, setPor] = useState<'origem' | 'categoria'>('origem');
   const [d, setD] = useState<Dre | null>(null); const [erro, setErro] = useState<string | null>(null);
 
-  async function gerar() {
+  async function gerar(dd = de, aa = ate, pp = por) {
     setErro(null);
-    try { setD(await api.get<Dre>(`/financeiro/dre?de=${de}&ate=${ate}&por=${por}`, token!)); }
+    try { setD(await api.get<Dre>(`/financeiro/dre?de=${dd}&ate=${aa}&por=${pp}`, token!)); }
     catch (e) { setErro((e as ErroApi).chaveI18n); }
   }
   useEffect(() => { gerar(); /* eslint-disable-next-line */ }, []);
+  const qtdFiltros = (de !== primeiroDia() ? 1 : 0) + (ate !== hoje() ? 1 : 0) + (por !== 'origem' ? 1 : 0);
+  function limparFiltros() { const dd = primeiroDia(), aa = hoje(); setDe(dd); setAte(aa); setPor('origem'); gerar(dd, aa, 'origem'); }
   // Quando agrupado por origem, traduz a chave; por categoria, mostra o nome como está.
   const rotulo = (chave: string) => (d?.por === 'categoria' ? chave : (t('origem.' + chave) === 'origem.' + chave ? chave : t('origem.' + chave)));
 
@@ -48,15 +51,16 @@ export function RelDRE() {
       <div className="crumb">{t('rel.crumb_dre')}</div><h1 className="page-titulo">{t('dre.titulo')}</h1>
       <p className="muted" style={{ marginTop: -8 }}>{t('dre.sub')}</p>
       <div className="rel-filtro">
-        <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
-        <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
-        <label className="campo">{t('dre.agrupar')}
-          <select value={por} onChange={(e) => setPor(e.target.value as 'origem' | 'categoria')}>
-            <option value="origem">{t('dre.por_origem')}</option>
-            <option value="categoria">{t('dre.por_categoria')}</option>
-          </select>
-        </label>
-        <button className="btn-primary" onClick={gerar}>{t('rel.gerar')}</button>
+        <FiltrosModal count={qtdFiltros} onLimpar={limparFiltros} onAplicar={() => gerar()} titulo={t('dre.titulo')}>
+          <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
+          <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
+          <label className="campo">{t('dre.agrupar')}
+            <select value={por} onChange={(e) => setPor(e.target.value as 'origem' | 'categoria')}>
+              <option value="origem">{t('dre.por_origem')}</option>
+              <option value="categoria">{t('dre.por_categoria')}</option>
+            </select>
+          </label>
+        </FiltrosModal>
         {d && <><button className="btn-ghost" onClick={() => exportar('csv')}>{t('rel.exportar_csv')}</button> <BotaoExcel onClick={() => exportar('xlsx')} /></>}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}

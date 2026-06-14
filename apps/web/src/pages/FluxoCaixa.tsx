@@ -5,6 +5,7 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
+import { FiltrosModal } from '../components/FiltrosModal.js';
 
 interface Lanc { id: string; tipo: 'entrada' | 'saida'; numero: string; descricao: string; pessoaNome: string | null; conta: string | null; dataCaixa: string; previsto: boolean; situacao: 'baixado' | 'vencido' | 'aberto'; valor: number; }
 interface Semana { de: string; ate: string; rotulo: string; entradas: number; saidas: number; }
@@ -67,11 +68,11 @@ export function FluxoCaixa() {
       <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('fluxo.titulo')}</h1><div className="muted page-sub">{t('fluxo.sub_full')}</div></div></div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
 
-      <div className="contas-toolbar" style={{ alignItems: 'flex-end' }}>
-        <label className="campo" style={{ margin: 0 }}>{t('fluxo.data_ini')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} style={{ maxWidth: 180 }} /></label>
-        <label className="campo" style={{ margin: 0 }}>{t('fluxo.data_fim')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} style={{ maxWidth: 180 }} /></label>
-        <button className="btn-primary" onClick={() => carregar()}><Ic name="i-search" className="sm" /> {t('fluxo.filtrar')}</button>
-        <button className="btn-ghost" onClick={() => { setDe(''); setAte(''); carregar('', ''); }}><Ic name="i-x" className="sm" /> {t('fluxo.limpar')}</button>
+      <div className="contas-toolbar" style={{ alignItems: 'center' }}>
+        <FiltrosModal count={(de ? 1 : 0) + (ate ? 1 : 0)} onLimpar={() => { setDe(''); setAte(''); carregar('', ''); }} onAplicar={() => carregar()} titulo={t('fluxo.titulo')}>
+          <label className="campo">{t('fluxo.data_ini')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
+          <label className="campo">{t('fluxo.data_fim')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
+        </FiltrosModal>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 14, marginBottom: 14 }}>

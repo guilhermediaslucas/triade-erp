@@ -8,6 +8,7 @@ import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
 import { BotaoExcel } from '../components/BotaoExcel.js';
+import { FiltrosModal } from '../components/FiltrosModal.js';
 import { lerExtrato, type TxExtrato } from '../lib/extrato.js';
 
 interface Conta { id: string; nome: string; banco: string | null; saldo: number; ativo: boolean; }
@@ -39,13 +40,15 @@ export function Conciliacao() {
     /* eslint-disable-next-line */
   }, []);
 
-  async function gerar(id = contaId) {
+  async function gerar(id = contaId, dd = de, aa = ate) {
     if (!id) return;
     setErro(null);
-    try { setResp(await api.get<Resp>(`/financeiro/conciliacao?contaId=${id}&de=${de}&ate=${ate}`, token!)); }
+    try { setResp(await api.get<Resp>(`/financeiro/conciliacao?contaId=${id}&de=${dd}&ate=${aa}`, token!)); }
     catch (e) { setErro((e as ErroApi).chaveI18n); }
   }
   useEffect(() => { if (contaId) gerar(contaId); /* eslint-disable-next-line */ }, [contaId]);
+  const qtdFiltros = (de !== primeiroDia() ? 1 : 0) + (ate !== hoje() ? 1 : 0);
+  function limparFiltros() { const dd = primeiroDia(), aa = hoje(); setDe(dd); setAte(aa); gerar(contaId, dd, aa); }
 
   async function alternar(l: Linha) {
     if (!pode) return;
@@ -102,10 +105,10 @@ export function Conciliacao() {
             {contas.map((c) => <option key={c.id} value={c.id}>{c.nome}{c.banco ? ` · ${c.banco}` : ''}</option>)}
           </select>
         </label>
-        <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
-        <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
-        <button className="btn-primary" onClick={() => gerar()}><Ic name="i-search" className="sm" /> {t('fluxo.filtrar')}</button>
-        <button className="btn-ghost" onClick={() => { setDe(primeiroDia()); setAte(hoje()); }}><Ic name="i-x" className="sm" /> {t('fluxo.limpar')}</button>
+        <FiltrosModal count={qtdFiltros} onLimpar={limparFiltros} onAplicar={() => gerar()} titulo={t('concil.titulo')}>
+          <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
+          <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
+        </FiltrosModal>
         {pode && <>
           <button className="btn-ghost" onClick={() => fileRef.current?.click()}>{t('concil.importar')}</button>
           <input ref={fileRef} type="file" accept=".ofx,.csv,.txt" style={{ display: 'none' }} onChange={aoEscolherArquivo} />

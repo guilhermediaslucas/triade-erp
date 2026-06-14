@@ -8,6 +8,7 @@ import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
 import { BotaoExcel } from '../components/BotaoExcel.js';
+import { FiltrosModal } from '../components/FiltrosModal.js';
 
 interface Linha { produtoId: string; produto: string; lote: string | null; quantidade: number; motivo: string | null; data: string; valor: number; }
 const primeiroDia = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10); };
@@ -20,12 +21,14 @@ export function RelPerdas() {
   const [motivo, setMotivo] = useState('');
   const [erro, setErro] = useState<string | null>(null);
 
-  async function gerar() {
+  async function gerar(dd = de, aa = ate) {
     setErro(null);
-    try { setTodas(await api.get<Linha[]>(`/relatorios/perdas-estoque?de=${de}&ate=${ate}`, token!)); }
+    try { setTodas(await api.get<Linha[]>(`/relatorios/perdas-estoque?de=${dd}&ate=${aa}`, token!)); }
     catch (e) { setErro((e as ErroApi).chaveI18n); }
   }
   useEffect(() => { gerar(); /* eslint-disable-next-line */ }, []);
+  const qtdFiltros = (de !== primeiroDia() ? 1 : 0) + (ate !== hoje() ? 1 : 0) + (motivo ? 1 : 0);
+  function limparFiltros() { const dd = primeiroDia(), aa = hoje(); setDe(dd); setAte(aa); setMotivo(''); gerar(dd, aa); }
 
   const motivos = useMemo(() => Array.from(new Set(todas.map((l) => l.motivo ?? '—'))).sort(), [todas]);
   const linhas = useMemo(() => (motivo ? todas.filter((l) => (l.motivo ?? '—') === motivo) : todas), [todas, motivo]);
@@ -38,14 +41,15 @@ export function RelPerdas() {
       <div className="crumb">{t('rel.crumb_perdas')}</div><h1 className="page-titulo">{t('perdas.titulo')}</h1>
       <p className="muted" style={{ marginTop: -8 }}>{t('perdas.sub')}</p>
       <div className="rel-filtro">
-        <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
-        <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
-        <label className="campo">{t('perdas.motivo')}
-          <select value={motivo} onChange={(e) => setMotivo(e.target.value)}>
-            <option value="">{t('perdas.todos')}</option>{motivos.map((m) => <option key={m} value={m}>{m}</option>)}
-          </select>
-        </label>
-        <button className="btn-primary" onClick={gerar}>{t('rel.gerar')}</button>
+        <FiltrosModal count={qtdFiltros} onLimpar={limparFiltros} onAplicar={() => gerar()} titulo={t('perdas.titulo')}>
+          <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
+          <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
+          <label className="campo">{t('perdas.motivo')}
+            <select value={motivo} onChange={(e) => setMotivo(e.target.value)}>
+              <option value="">{t('perdas.todos')}</option>{motivos.map((m) => <option key={m} value={m}>{m}</option>)}
+            </select>
+          </label>
+        </FiltrosModal>
         {linhas.length > 0 && (
           <><button className="btn-ghost" onClick={() => baixarCsv('perdas_estoque_' + de + '_' + ate,
             [t('precos.produto'), t('estoque.lote'), t('perdas.motivo'), t('pedidos.data'), t('rel.qtd'), t('rel.valor')],

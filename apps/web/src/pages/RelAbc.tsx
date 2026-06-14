@@ -7,6 +7,7 @@ import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
 import { BotaoExcel } from '../components/BotaoExcel.js';
+import { FiltrosModal } from '../components/FiltrosModal.js';
 
 type Classe = 'A' | 'B' | 'C';
 interface Linha { nome: string; quantidade: number; total: number; pct: number; acumuladoPct: number; classe: Classe; }
@@ -25,12 +26,14 @@ export function RelAbc() {
   const [d, setD] = useState<Abc | null>(null); const [erro, setErro] = useState<string | null>(null);
   const [por, setPor] = useState<'produtos' | 'clientes'>('produtos');
 
-  async function gerar() {
+  async function gerar(dd = de, aa = ate) {
     setErro(null);
-    try { setD(await api.get<Abc>(`/relatorios/curva-abc?de=${de}&ate=${ate}&por=${por}`, token!)); }
+    try { setD(await api.get<Abc>(`/relatorios/curva-abc?de=${dd}&ate=${aa}&por=${por}`, token!)); }
     catch (e) { setErro((e as ErroApi).chaveI18n); }
   }
   useEffect(() => { gerar(); /* eslint-disable-next-line */ }, [por]);
+  const qtdFiltros = (de !== primeiroDia() ? 1 : 0) + (ate !== hoje() ? 1 : 0);
+  function limparFiltros() { const dd = primeiroDia(), aa = hoje(); setDe(dd); setAte(aa); gerar(dd, aa); }
 
   return (
     <div>
@@ -43,9 +46,10 @@ export function RelAbc() {
         ))}
       </div>
       <div className="rel-filtro">
-        <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
-        <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
-        <button className="btn-primary" onClick={gerar}>{t('rel.gerar')}</button>
+        <FiltrosModal count={qtdFiltros} onLimpar={limparFiltros} onAplicar={() => gerar()} titulo={t('abc.titulo')}>
+          <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
+          <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
+        </FiltrosModal>
         {d && d.linhas.length > 0 && (
           <><button className="btn-ghost" onClick={() => baixarCsv('curva_abc_' + de + '_' + ate,
             [t('precos.produto'), t('rel.qtd'), t('rel.total'), t('abc.pct'), t('abc.acumulado'), t('abc.classe')],

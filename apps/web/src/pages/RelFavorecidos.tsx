@@ -8,6 +8,7 @@ import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
 import { BotaoExcel } from '../components/BotaoExcel.js';
+import { FiltrosModal } from '../components/FiltrosModal.js';
 
 interface Titulo {
   id: string; descricao: string; valor: number; vencimento: string; status: 'aberto' | 'pago';
@@ -35,6 +36,8 @@ export function RelFavorecidos() {
     return true;
   }), [itens, sit, de, ate]);
   const total = filtrados.reduce((a, x) => a + x.valor, 0);
+  const qtdFiltros = (de !== primeiroDia() ? 1 : 0) + (ate !== hoje() ? 1 : 0) + (sit !== 'todos' ? 1 : 0);
+  function limparFiltros() { setDe(primeiroDia()); setAte(hoje()); setSit('todos'); }
 
   function exportar(fmt: 'csv' | 'xlsx') {
     const cab = [t('relfav.favorecido'), t('fin.descricao'), t('fin.valor'), t('fin.vencimento'), t('fin.situacao'), t('relfav.pago_em')];
@@ -49,13 +52,15 @@ export function RelFavorecidos() {
       <CabecalhoRelatorio titulo={t('relfav.titulo')} />
       <div className="crumb">{t('relfav.crumb')}</div><h1 className="page-titulo">{t('relfav.titulo')}</h1><p className="muted page-sub">{t('relfav.sub')}</p>
       <div className="rel-filtro">
-        <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
-        <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
-        <label className="campo">{t('fin.situacao')}
-          <select value={sit} onChange={(e) => setSit(e.target.value as 'todos' | 'aberto' | 'pago')}>
-            <option value="todos">{t('fin.f_todos')}</option><option value="aberto">{t('fin.aberto')}</option><option value="pago">{t('fin.pago')}</option>
-          </select>
-        </label>
+        <FiltrosModal count={qtdFiltros} onLimpar={limparFiltros} titulo={t('relfav.titulo')}>
+          <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
+          <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
+          <label className="campo">{t('fin.situacao')}
+            <select value={sit} onChange={(e) => setSit(e.target.value as 'todos' | 'aberto' | 'pago')}>
+              <option value="todos">{t('fin.f_todos')}</option><option value="aberto">{t('fin.aberto')}</option><option value="pago">{t('fin.pago')}</option>
+            </select>
+          </label>
+        </FiltrosModal>
         {filtrados.length > 0 && <><button className="btn-ghost" onClick={() => exportar('csv')}>{t('rel.exportar_csv')}</button> <BotaoExcel onClick={() => exportar('xlsx')} /></>}
       </div>
       <div className="kpi-row" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>

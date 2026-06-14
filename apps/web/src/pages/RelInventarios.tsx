@@ -7,6 +7,7 @@ import { Ic } from '../components/Icones.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
 import { BotaoExcel } from '../components/BotaoExcel.js';
+import { FiltrosModal } from '../components/FiltrosModal.js';
 
 interface Hist { id: string; responsavel: string | null; esperadas: number; encontradas: number; faltantes: number; baixouPerda: boolean; criadoEm: string; }
 interface Faltante { codigo: string; produtoNome: string; lote: string | null; validade: string | null; }
@@ -38,6 +39,8 @@ export function RelInventarios() {
     return d >= de && d <= ate;
   }), [todos, de, ate]);
 
+  const qtdFiltros = (de !== primeiroDia() ? 1 : 0) + (ate !== hoje() ? 1 : 0);
+  function limparFiltros() { setDe(primeiroDia()); setAte(hoje()); }
   const totalFalt = useMemo(() => linhas.reduce((a, h) => a + h.faltantes, 0), [linhas]);
   const totalBaixados = useMemo(() => linhas.filter((h) => h.baixouPerda).reduce((a, h) => a + h.faltantes, 0), [linhas]);
   const acurMedia = useMemo(() => {
@@ -58,9 +61,10 @@ export function RelInventarios() {
       <div className="crumb">{t('rel.crumb_inv')}</div><h1 className="page-titulo">{t('relinv.titulo')}</h1>
       <p className="muted" style={{ marginTop: -8 }}>{t('relinv.sub')}</p>
       <div className="rel-filtro">
-        <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
-        <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
-        <button className="btn-primary" onClick={carregar}>{t('rel.gerar')}</button>
+        <FiltrosModal count={qtdFiltros} onLimpar={limparFiltros} titulo={t('relinv.titulo')}>
+          <label className="campo">{t('rel.de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
+          <label className="campo">{t('rel.ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
+        </FiltrosModal>
         {linhas.length > 0 && (
           <><button className="btn-ghost" onClick={() => baixarCsv('inventarios_' + de + '_' + ate,
             [t('inv.data'), t('inv.responsavel'), t('inv.esperadas'), t('inv.encontradas'), t('inv.faltantes'), t('relinv.acuracidade'), t('inv.baixa')],
