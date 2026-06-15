@@ -1,11 +1,19 @@
 import type { Chamado, ChamadoRepository, NovoChamado, StatusChamado, TipoChamado } from '../../domain/superadmin/Chamado.js';
 import { STATUS_CHAMADO, TIPOS_CHAMADO } from '../../domain/superadmin/Chamado.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
-import type { EmailSender } from '../../domain/ports/EmailSender.js';
+import type { AnexoEmail, EmailSender } from '../../domain/ports/EmailSender.js';
 
 const ROTULO_TIPO: Record<TipoChamado, string> = { erro: 'Erro', sugestao: 'Sugestão', duvida: 'Dúvida' };
 function escaparHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+// Converte o print (data URI) em anexo de e-mail. Retorna null se não for uma imagem base64 válida.
+function printComoAnexo(print: string | null): AnexoEmail | null {
+  if (!print) return null;
+  const m = print.match(/^data:image\/([a-zA-Z0-9.+-]+);base64,(.+)$/);
+  if (!m) return null;
+  const ext = (m[1] || 'png').toLowerCase().replace('jpeg', 'jpg');
+  return { nomeArquivo: `print-chamado.${ext}`, conteudoBase64: m[2]! };
 }
 
 // Contexto do usuário autenticado que abre o chamado (vem do token, não do corpo).
@@ -82,16 +90,18 @@ export class SuporteService {
           <tr><td style="padding:2px 10px 2px 0;">Usuário</td><td>${escaparHtml(c.usuarioNome)} &lt;${escaparHtml(c.usuarioEmail)}&gt;</td></tr>
           <tr><td style="padding:2px 10px 2px 0;">Tela / versão</td><td>${escaparHtml(c.tela || '—')} · v${escaparHtml(c.versao || '—')}</td></tr>
         </table>
-        ${c.print ? '<p style="font-size:12px;color:#888;margin-top:12px;">(O chamado tem um print anexado — veja na tela de Chamados de suporte.)</p>' : ''}
+        ${c.print ? '<p style="font-size:12px;color:#888;margin-top:12px;">(Print da tela anexado a este e-mail.)</p>' : ''}
         <p style="font-size:12px;color:#888;margin-top:16px;">Abra o sistema em Super-admin › Chamados de suporte para responder/mudar o status.</p>
       </div>`;
     const texto = `Novo chamado (${ROTULO_TIPO[c.tipo]}): ${c.assunto}\n\n${c.descricao}\n\n`
       + `Empresa: ${c.empresaCodigo}\nUsuário: ${c.usuarioNome} <${c.usuarioEmail}>\nTela: ${c.tela || '—'} · v${c.versao || '—'}`;
+    const anexo = printComoAnexo(c.print);
     await this.email.enviar({
       para: this.destino,
       assunto: `[Suporte TRIADE] ${ROTULO_TIPO[c.tipo]}: ${c.assunto}`,
       html,
       texto,
+      ...(anexo ? { anexos: [anexo] } : {}),
     });
   }
 }

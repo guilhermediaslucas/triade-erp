@@ -188,6 +188,11 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-15** — **Suporte: print anexado no e-mail de notificação.** O `notificar()` agora **anexa a imagem** do
+  print ao e-mail (Resend `attachments`): `EmailSender.MensagemEmail` += `anexos[]` (`AnexoEmail{nomeArquivo,
+  conteudoBase64}`), `ResendEmailSender` mapeia p/ `attachments`, e `printComoAnexo()` no `SuporteService` converte o
+  data URI (`data:image/...;base64,...`) em anexo (nome `print-chamado.<ext>`, jpeg→jpg). Antes só avisava que havia
+  print. Só backend. **Pendente:** Gui commit+push (Render redeploia).
 - **2026-06-15** — **Suporte: colar/arrastar print no modal de chamado.** O campo de print do `Suporte.tsx` virou uma
   **zona única**: colar (Ctrl+V, `onPaste` no modal — só intercepta se há imagem, texto colado na descrição segue
   normal), **arrastar** (`onDrop`/`onDragOver`, com realce `.arrastando`) ou **Anexar imagem** (input file). Helper

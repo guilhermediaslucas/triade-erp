@@ -27,6 +27,9 @@ export class ResendEmailSender implements EmailSender {
           subject: msg.assunto,
           html: msg.html,
           ...(msg.texto ? { text: msg.texto } : {}),
+          ...(msg.anexos?.length
+            ? { attachments: msg.anexos.map((a) => ({ filename: a.nomeArquivo, content: a.conteudoBase64 })) }
+            : {}),
         }),
       });
       if (!resp.ok) {
