@@ -9,7 +9,8 @@ import { mascaraCep, buscarCep, UFS } from '../lib/br.js';
 import { ModalNovaPessoa } from '../components/SeletorPessoa.js';
 import { Ic } from '../components/Icones.js';
 import { MoedaInput } from '../components/MoedaInput.js';
-import { FORMAS_PAGAMENTO, ehAVista } from '../lib/pagamento.js';
+import { FORMAS_PAGAMENTO, ehAVista, liberaDireto } from '../lib/pagamento.js';
+import { notificarLiberadoSeparacao } from '../lib/notificarSeparacao.js';
 import { useToast } from '../components/Toast.js';
 
 interface Endereco { cep: string | null; logradouro: string | null; numero: string | null; complemento?: string | null; bairro: string | null; cidade: string | null; uf: string | null; favorito: boolean; }
@@ -274,9 +275,14 @@ export function NovoPedido() {
       await talvezVincularOport(id);
       let confirmou = false;
       try { await api.patch('/pedidos/' + id + '/status', { status: 'aguardando_pagamento' }, token!); confirmou = true; } catch { /* confirma no detalhe */ }
-      // Pix gerado → toast de ação persistente "Pendência de baixa" (Abrir → Contas a receber).
-      if (confirmou && ehAVista(formaPagamento)) {
-        try { const ped = await api.get<{ numero: number; clienteNome: string | null; total: number }>('/pedidos/' + id, token!); notificarPixPendente(ped.numero, ped.clienteNome, ped.total, t); }
+      // Pix/Link gerado → toast de ação "Pendência de baixa" (Abrir → Contas a receber).
+      // Cartão/Dinheiro liberam na hora → toast "liberado para separação" (Abrir → Expedição).
+      if (confirmou && (ehAVista(formaPagamento) || liberaDireto(formaPagamento))) {
+        try {
+          const ped = await api.get<{ numero: number; clienteNome: string | null; total: number }>('/pedidos/' + id, token!);
+          if (liberaDireto(formaPagamento)) notificarLiberadoSeparacao(ped.numero, ped.clienteNome, ped.total, t);
+          else notificarPixPendente(ped.numero, ped.clienteNome, ped.total, t);
+        }
         catch { toast(t('pedido.toast_pix_pendente')); }
       }
       nav('/comercial/pedidos/' + id);

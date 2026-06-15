@@ -10,3 +10,8 @@ export function ehAVista(f: string | null): boolean {
   const k = norm(f ?? '');
   return k.includes('pix') || k.includes('link');
 }
+// Cartão e Dinheiro liberam o pedido na hora (vão direto para aprovado/aguardando separação).
+export function liberaDireto(f: string | null): boolean {
+  const k = norm(f ?? '');
+  return k.includes('cartao') || k.includes('dinheiro');
+}

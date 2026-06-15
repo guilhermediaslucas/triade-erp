@@ -6,6 +6,7 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { useToast } from '../components/Toast.js';
 import { corStatus, moeda, numeroPedido, PROXIMOS, type StatusPedido } from '../lib/pedido.js';
 import { notificarPixPendente } from '../lib/notificarPix.js';
+import { notificarLiberadoSeparacao } from '../lib/notificarSeparacao.js';
 import { ModalDataEntrega, ModalFormaEnvio } from '../components/ExpedicaoModais.js';
 import { BotaoEscanear } from '../components/BotaoEscanear.js';
 import { Ic } from '../components/Icones.js';
@@ -70,6 +71,7 @@ export function PedidoDetalhe() {
       const forma = (p?.formaPagamento ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
       if (status === 'cancelado') toast(t('pedido.cancelado_ok'));
       else if (status === 'aguardando_pagamento' && (forma === 'pix' || forma === 'link')) notificarPixPendente(p!.numero, p!.clienteNome, p!.total, t);
+      else if (status === 'aguardando_pagamento' && (forma === 'cartao' || forma === 'dinheiro')) notificarLiberadoSeparacao(p!.numero, p!.clienteNome, p!.total, t);
       else toast(t('pedido.toast_status') + ' ' + t('status.' + status));
     }
     catch (e) { const k = (e as ErroApi).chaveI18n; setErro(k); toast(t(k), 'erro'); }

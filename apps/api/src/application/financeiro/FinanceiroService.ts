@@ -256,7 +256,7 @@ export class FinanceiroService {
     await this.repo.definirPrevisto(schema, id, !!previsto);
   }
 
-  async baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null, dataBaixa?: string | null, ajustesRaw?: { desconto?: any; multa?: any; juros?: any }): Promise<void> {
+  async baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null, dataBaixa?: string | null, ajustesRaw?: { desconto?: any; multa?: any; juros?: any }): Promise<{ pedidoLiberado: number | null }> {
     const t = await this.repo.buscarPorId(schema, id);
     if (!t) throw new ErroAplicacao('financeiro.nao_encontrado', 404);
     if (t.status === 'pago') throw new ErroAplicacao('financeiro.ja_pago', 409);
@@ -270,12 +270,15 @@ export class FinanceiroService {
     await this.repo.baixar(schema, id, (formaPagamento && String(formaPagamento).trim()) || null, contaCorrenteId || null, data, { desconto, multa, juros });
     // Confirmação do recebimento do título de um pedido (Pix/Boleto) libera o pedido:
     // aguardando_pagamento → aprovado, ficando disponível para Separação no Kanban.
+    let pedidoLiberado: number | null = null;
     if (this.pedidos && t.origem === 'pedido' && t.pedidoId) {
       const ped = await this.pedidos.buscarPorId(schema, t.pedidoId);
       if (ped && ped.status === 'aguardando_pagamento') {
         await this.pedidos.mudarStatus(schema, t.pedidoId, 'aprovado');
+        pedidoLiberado = ped.numero;
       }
     }
+    return { pedidoLiberado };
   }
   async cancelarBaixa(schema: string, id: string): Promise<void> {
     const t = await this.repo.buscarPorId(schema, id);

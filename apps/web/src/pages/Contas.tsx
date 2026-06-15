@@ -10,6 +10,7 @@ import { ModalNovaPessoa } from '../components/SeletorPessoa.js';
 import { Ic } from '../components/Icones.js';
 import { MoedaInput } from '../components/MoedaInput.js';
 import { FORMAS_BAIXA } from '../lib/pagamento.js';
+import { notificarLiberadoSeparacao } from '../lib/notificarSeparacao.js';
 
 type Tipo = 'receber' | 'pagar';
 interface Titulo { id: string; numero: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; pedidoFormaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; contaCorrenteNome: string | null; vendedorNome: string | null; previsto: boolean; tipoDocumento: string | null; numeroDocumento: string | null; emissao: string | null; criadoEm: string; pagoEm: string | null; desconto: number; multa: number; juros: number; }
@@ -501,14 +502,19 @@ function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos:
     if (contaFaltando) { setErro('fin.conta_obrigatoria'); return; }
     setSalv(true);
     let ok = 0;
+    const liberados: { numero: number; cliente: string | null; valor: number }[] = [];
     for (const tt of titulos) {
       // Composição só se aplica a baixa individual; em massa vai sem ajustes.
       const corpo = massa
         ? { formaPagamento: forma, contaCorrenteId: contaId || null, dataBaixa }
         : { formaPagamento: forma, contaCorrenteId: contaId || null, dataBaixa, desconto: nD, multa: nM, juros: nJ };
-      try { await api.patch('/financeiro/' + tipo + '/' + tt.id + '/baixar', corpo, token!); ok++; }
+      try {
+        const r = await api.patch<{ pedidoLiberado: number | null }>('/financeiro/' + tipo + '/' + tt.id + '/baixar', corpo, token!); ok++;
+        if (r?.pedidoLiberado) liberados.push({ numero: r.pedidoLiberado, cliente: tt.pessoaNome, valor: tt.valor });
+      }
       catch (e) { if (!massa) { setErro((e as ErroApi).chaveI18n); setSalv(false); return; } }
     }
+    liberados.forEach((l) => notificarLiberadoSeparacao(l.numero, l.cliente, l.valor, t));
     onSalvo(ok);
   }
   return (

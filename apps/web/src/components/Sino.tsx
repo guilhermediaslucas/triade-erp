@@ -64,6 +64,11 @@ export function Sino() {
         const qtd = Array.isArray(recs) ? recs.length : 0;
         if (qtd > 0) out.push({ chave: 'sino.recebimentos', icone: 'i-receipt', qtd, to: '/estoque/recebimento' });
       }
+      if (temCapability('comercial.pedido.gerenciar')) {
+        const peds = await api.get<{ status: string }[]>('/pedidos', token).catch(() => null);
+        const aSeparar = peds ? peds.filter((p) => p.status === 'aprovado').length : 0;
+        if (aSeparar > 0) out.push({ chave: 'sino.aguard_separacao', icone: 'i-box', qtd: aSeparar, to: '/estoque/expedicao' });
+      }
     } catch { /* silencioso */ }
     setGrupos(out);
   }

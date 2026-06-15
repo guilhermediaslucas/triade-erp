@@ -2398,3 +2398,19 @@ Object.assign(es, {
 Object.assign(pt, { 'sino.recebimentos': 'Entradas pendentes de recebimento' });
 Object.assign(en, { 'sino.recebimentos': 'Entries pending receipt' });
 Object.assign(es, { 'sino.recebimentos': 'Entradas pendientes de recepción' });
+
+Object.assign(pt, {
+  'sino.aguard_separacao': 'Pedidos aguardando separação',
+  'toastsep.titulo': 'Pedido liberado para separação',
+  'toastsep.corpo': '{n} ({c} · {v}) foi aprovado e está pronto para separação.',
+});
+Object.assign(en, {
+  'sino.aguard_separacao': 'Orders awaiting picking',
+  'toastsep.titulo': 'Order released for picking',
+  'toastsep.corpo': '{n} ({c} · {v}) was approved and is ready for picking.',
+});
+Object.assign(es, {
+  'sino.aguard_separacao': 'Pedidos esperando separación',
+  'toastsep.titulo': 'Pedido liberado para separación',
+  'toastsep.corpo': '{n} ({c} · {v}) fue aprobado y está listo para separación.',
+});
