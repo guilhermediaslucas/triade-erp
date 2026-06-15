@@ -188,6 +188,30 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-15** — **Esqueci a senha (real) + notificação ao autor do chamado (e-mail + sino).** Três frentes.
+  **(A) E-mail ao autor na mudança de status:** `SuporteService.mudarStatus` agora carrega o chamado e, ao virar
+  **em_andamento** ou **resolvido**, envia e-mail ao `usuarioEmail` (`notificarUsuario`, best-effort). Sem migration.
+  **(B) Esqueci a senha:** migration public **006** `reset_senha` (token_hash, email, schema_name [null=super-admin],
+  usuario_id, expira_em, usado_em). Domínio `ResetSenha`/`ResetSenhaRepository` (`domain/auth`), `SqlResetSenhaRepository`
+  (public). Use case `RecuperarSenha` (`application/auth`): `solicitar(email)` acha super-admin OU usuário ativo de
+  algum tenant (reusa a descoberta do login), gera token aleatório (`randomBytes(32)`), guarda só o **sha256** com
+  validade **1h**, e envia e-mail com link `${APP_URL}/redefinir-senha?token=...` — **sempre responde neutro** (não
+  revela se o e-mail existe). `redefinir(token,novaSenha)` valida (hash, não expirado, não usado), troca a senha
+  (super-admin→`atualizarSenha`; tenant→`definirSenha`) e marca **usado** (uso único). `env.appUrl` (`APP_URL`).
+  Rotas públicas `POST /auth/esqueci-senha` (reusa rate-limit do login) e `POST /auth/redefinir-senha`. Frontend:
+  `ModalRecuperar` (Login) chama a rota de verdade; página pública `pages/RedefinirSenha.tsx` (rota `/redefinir-senha`,
+  lê `?token=`, nova senha + confirmar). **(C) Sino + Meus chamados:** `ChamadoRepository.listarPorUsuario` +
+  `GET /suporte/meus` (qualquer logado, filtra por email+empresa do token); página `pages/MeusChamados.tsx` (rota
+  `/meus-chamados`); **Sino** ganhou grupo "Seus chamados atualizados" (conta os em_andamento/resolvido que mudaram
+  vs. snapshot `localStorage triade_chamados_vistos`; zera ao abrir Meus chamados); link "Ver meus chamados" no modal
+  de Suporte. CSS `.reset-page/.reset-card`; i18n `reset.*`/`meuschamados.*`/`sino.chamados_atualizados`/`suporte.ver_meus`/
+  `auth.reset_invalido` pt/en/es. `emailSender` hoisted no `composition.ts` (reusado por Suporte + RecuperarSenha).
+  `.env.example` += `APP_URL`. **Validação:** tsc do sandbox inútil de novo (truncagem → "} expected" no fim dos
+  arquivos grandes; os arquivos novos do reset compilaram limpos) + hand-review pelo file-tool. **Pendente:** Gui
+  commit+push (Render aplica a migration 006 no boot) + **setar `APP_URL` no Render** (= URL do site) + APK novo
+  (telas mudaram). Sem caps novas (não precisa relogar). **Sugiro e2e ao aplicar:** esqueci-senha gera token e e-mail;
+  redefinir troca a senha e invalida o token (2º uso → 400); token expirado → 400; mudança de status dispara e-mail
+  ao autor; `GET /suporte/meus` só traz os do próprio usuário.
 - **2026-06-15** — **Suporte: print anexado no e-mail de notificação.** O `notificar()` agora **anexa a imagem** do
   print ao e-mail (Resend `attachments`): `EmailSender.MensagemEmail` += `anexos[]` (`AnexoEmail{nomeArquivo,
   conteudoBase64}`), `ResendEmailSender` mapeia p/ `attachments`, e `printComoAnexo()` no `SuporteService` converte o

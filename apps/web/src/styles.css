@@ -922,6 +922,10 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
 .suporte-drop.arrastando { border-color: var(--accent, #7b61ff); background: var(--accent-soft, #f3effe); }
 .suporte-drop-txt { font-size: 13px; }
 .suporte-print-row { display: flex; align-items: center; gap: 12px; }
+.reset-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #9b1c17; padding: 24px; }
+.reset-card { width: 380px; max-width: 100%; }
+.reset-voltar { text-align: center; margin-top: 14px; }
+.reset-voltar a { color: var(--accent, #e1483b); font-size: 13px; text-decoration: none; }
 .suporte-print-full { max-width: 100%; max-height: 320px; border: 1px solid var(--borda); border-radius: 10px; }
 .suporte-nota { font-size: 12px; margin: 4px 0 0; }
 .suporte-desc { white-space: pre-wrap; background: var(--bg); border: 1px solid var(--borda); border-radius: 10px; padding: 12px 14px; margin: 10px 0 14px; font-size: 14px; }

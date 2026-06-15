@@ -1,4 +1,5 @@
 import { useRef, useState, type ChangeEvent, type ClipboardEvent, type DragEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
@@ -17,6 +18,7 @@ export function Suporte({ onFechar }: { onFechar: () => void }) {
   const { token } = useAuth();
   const { t } = useI18n();
   const toast = useToast();
+  const nav = useNavigate();
   const [tipo, setTipo] = useState<Tipo>('erro');
   const [assunto, setAssunto] = useState('');
   const [descricao, setDescricao] = useState('');
@@ -107,6 +109,7 @@ export function Suporte({ onFechar }: { onFechar: () => void }) {
       </div>
 
       <p className="muted suporte-nota">{t('suporte.nota_contexto')}</p>
+      <p className="suporte-nota"><a href="#" onClick={(e) => { e.preventDefault(); onFechar(); nav('/meus-chamados'); }}>{t('suporte.ver_meus')} →</a></p>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="modal-acoes">
         <button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button>

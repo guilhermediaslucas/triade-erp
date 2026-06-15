@@ -41,6 +41,7 @@ export class SuporteService {
   ) {}
 
   listar(): Promise<Chamado[]> { return this.repo.listar(); }
+  meus(email: string, empresaCodigo: string): Promise<Chamado[]> { return this.repo.listarPorUsuario(email, empresaCodigo); }
   contarAbertos(): Promise<number> { return this.repo.contarAbertos(); }
 
   async abrir(ctx: ContextoChamado, e: any): Promise<string> {
@@ -72,8 +73,30 @@ export class SuporteService {
   async mudarStatus(id: string, status: string): Promise<void> {
     const st = String(status ?? '').trim() as StatusChamado;
     if (!STATUS_CHAMADO.includes(st)) throw new ErroAplicacao('suporte.status_invalido', 400);
-    if (!(await this.repo.buscarPorId(id))) throw new ErroAplicacao('suporte.nao_encontrado', 404);
+    const chamado = await this.repo.buscarPorId(id);
+    if (!chamado) throw new ErroAplicacao('suporte.nao_encontrado', 404);
     await this.repo.definirStatus(id, st, st === 'resolvido' ? new Date() : null);
+    // Avisa o autor por e-mail nas movimentações relevantes (best-effort).
+    try { await this.notificarUsuario(chamado, st); } catch { /* notificação é best-effort */ }
+  }
+
+  // E-mail ao autor do chamado quando vira "em andamento" ou "resolvido".
+  private async notificarUsuario(c: Chamado, status: StatusChamado): Promise<void> {
+    if (!this.email || !c.usuarioEmail) return;
+    if (status !== 'em_andamento' && status !== 'resolvido') return;
+    const emAndamento = status === 'em_andamento';
+    const titulo = emAndamento ? 'Seu chamado está em andamento' : 'Seu chamado foi resolvido';
+    const frase = emAndamento
+      ? 'O suporte começou a analisar seu chamado.'
+      : 'O suporte marcou seu chamado como resolvido.';
+    const html = `
+      <div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1f2430;">
+        <h2 style="margin:0 0 12px;">${titulo}</h2>
+        <p style="margin:0 0 8px;">Seu chamado <b>"${escaparHtml(c.assunto)}"</b> — ${frase}</p>
+        <p style="font-size:12px;color:#888;margin-top:16px;">Você pode acompanhar seus chamados no sistema, em "Meus chamados".</p>
+      </div>`;
+    const texto = `${titulo}\n\nSeu chamado "${c.assunto}" — ${frase}`;
+    await this.email.enviar({ para: c.usuarioEmail, assunto: `[Suporte TRIADE] ${titulo}`, html, texto });
   }
 
   // Notifica o administrador do sistema por e-mail (Resend). Best-effort: se não

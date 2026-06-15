@@ -66,6 +66,31 @@ export function rotasAuth(deps: Dependencias): Router {
     }
   });
 
+  // Esqueci a senha: dispara o e-mail com o link de redefinição. Resposta SEMPRE
+  // neutra (não revela se o e-mail existe). Rate limit reusa o do login (por IP+e-mail).
+  r.post('/auth/esqueci-senha', limiteLogin, async (req: Request, res: Response) => {
+    const { email } = req.body ?? {};
+    try {
+      await deps.recuperarSenha.solicitar(String(email ?? ''));
+    } catch (e) {
+      console.error('[auth] esqueci-senha:', e);   // não vaza erro ao cliente
+    }
+    res.json({ ok: true });
+  });
+
+  // Redefinir a senha com o token recebido por e-mail.
+  r.post('/auth/redefinir-senha', async (req: Request, res: Response) => {
+    const { token, novaSenha } = req.body ?? {};
+    try {
+      await deps.recuperarSenha.redefinir(String(token ?? ''), String(novaSenha ?? ''));
+      res.json({ ok: true });
+    } catch (e) {
+      if (e instanceof ErroAplicacao) { res.status(e.status).json({ erro: e.chaveI18n }); return; }
+      console.error('[auth] redefinir-senha:', e);
+      res.status(500).json({ erro: 'erro.interno' });
+    }
+  });
+
   r.post('/auth/login', limiteLogin, async (req: Request, res: Response) => {
     const { codigoEmpresa, email, senha } = req.body ?? {};
     if (!email || !senha) {

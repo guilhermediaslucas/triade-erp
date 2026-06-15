@@ -2,7 +2,7 @@ import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
-import type { ErroApi } from '../api/client.js';
+import { api, type ErroApi } from '../api/client.js';
 import { useTema } from '../theme/ThemeContext.js';
 import { Ic, SpriteIcones } from '../components/Icones.js';
 
@@ -150,6 +150,15 @@ function ModalRecuperar({ onFechar }: { onFechar: () => void }) {
   const { t } = useI18n();
   const [email, setEmail] = useState('');
   const [enviado, setEnviado] = useState(false);
+  const [enviando, setEnviando] = useState(false);
+
+  async function enviar() {
+    setEnviando(true);
+    // Resposta sempre neutra (o backend não revela se o e-mail existe).
+    try { await api.post('/auth/esqueci-senha', { email }); } catch { /* ignora */ }
+    setEnviado(true);
+  }
+
   return (
     <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 440 }}>
       <h2><Ic name="i-key" className="sm" /> {t('login.rec_titulo')}</h2>
@@ -159,7 +168,7 @@ function ModalRecuperar({ onFechar }: { onFechar: () => void }) {
           <label className="campo">{t('login.email')}<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="seu@email.com" autoFocus /></label>
           <div className="modal-acoes">
             <button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button>
-            <button className="btn-primary" disabled={!email.trim()} onClick={() => setEnviado(true)}>{t('login.rec_enviar')}</button>
+            <button className="btn-primary" disabled={!email.trim() || enviando} onClick={enviar}>{t('login.rec_enviar')}</button>
           </div>
         </>
       ) : (

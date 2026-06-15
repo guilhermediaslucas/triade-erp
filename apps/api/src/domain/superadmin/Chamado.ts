@@ -39,6 +39,7 @@ export interface NovoChamado {
 
 export interface ChamadoRepository {
   listar(): Promise<Chamado[]>;
+  listarPorUsuario(email: string, empresaCodigo: string): Promise<Chamado[]>;
   buscarPorId(id: string): Promise<Chamado | null>;
   contarAbertos(): Promise<number>;
   criar(c: NovoChamado): Promise<string>;

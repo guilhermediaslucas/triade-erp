@@ -77,4 +77,20 @@ export const publicMigrations: MigracaoPublic[] = [
       CREATE INDEX IF NOT EXISTS idx_chamado_status ON public.chamado_suporte (status, criado_em DESC);
     `,
   },
+  {
+    nome: '006_reset_senha',
+    sql: `
+      CREATE TABLE IF NOT EXISTS public.reset_senha (
+        id          uuid PRIMARY KEY,
+        token_hash  text NOT NULL,
+        email       text NOT NULL,
+        schema_name text,
+        usuario_id  uuid,
+        expira_em   timestamptz NOT NULL,
+        usado_em    timestamptz,
+        criado_em   timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_reset_token ON public.reset_senha (token_hash);
+    `,
+  },
 ];

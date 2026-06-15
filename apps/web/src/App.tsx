@@ -6,6 +6,7 @@ import { I18nProvider } from './i18n/I18nContext.js';
 import { ToastProvider } from './components/Toast.js';
 import { ThemeProvider } from './theme/ThemeContext.js';
 import { Login } from './pages/Login.js';
+import { RedefinirSenha } from './pages/RedefinirSenha.js';
 import { DashboardSerie } from './pages/DashboardSerie.js';
 import { DashboardTV } from './pages/DashboardTV.js';
 import { DashboardTVExpedicao } from './pages/DashboardTVExpedicao.js';
@@ -15,6 +16,7 @@ import { Perfis } from './pages/Perfis.js';
 import { DadosEmpresa } from './pages/DadosEmpresa.js';
 import { Empresas } from './pages/Empresas.js';
 import { ChamadosSuporte } from './pages/ChamadosSuporte.js';
+import { MeusChamados } from './pages/MeusChamados.js';
 import { Categorias } from './pages/Categorias.js';
 import { FormasEntrega } from './pages/FormasEntrega.js';
 import { Produtos } from './pages/Produtos.js';
@@ -80,11 +82,13 @@ export function App() {
             <BrowserRouter>
               <Routes>
                 <Route path="/login" element={<Login />} />
+                <Route path="/redefinir-senha" element={<RedefinirSenha />} />
                 <Route path="/" element={<Protegida><PainelInicial /></Protegida>} />
                 <Route path="/dashboard/serie/:tipo" element={<Protegida cap="dashboard.ver"><DashboardSerie /></Protegida>} />
                 <Route path="/dashboard/tv" element={<ProtectedRoute capability="dashboard.ver"><DashboardTV /></ProtectedRoute>} />
                 <Route path="/estoque/tv" element={<ProtectedRoute capability="comercial.pedido.listar"><DashboardTVExpedicao /></ProtectedRoute>} />
                 <Route path="/notificacoes" element={<Protegida><Notificacoes /></Protegida>} />
+                <Route path="/meus-chamados" element={<Protegida><MeusChamados /></Protegida>} />
                 <Route path="/acesso/usuarios" element={<Protegida cap="acesso.usuario.listar"><Usuarios /></Protegida>} />
                 <Route path="/acesso/perfis" element={<Protegida cap="acesso.perfil.listar"><Perfis /></Protegida>} />
                 <Route path="/config/empresa" element={<Protegida cap="acesso.empresa.editar"><DadosEmpresa /></Protegida>} />

@@ -33,6 +33,14 @@ export class SqlChamadoRepository implements ChamadoRepository {
     return linhas.map(mapear);
   }
 
+  async listarPorUsuario(email: string, empresaCodigo: string): Promise<Chamado[]> {
+    const linhas = await this.ds.query(
+      `${SELECT} WHERE lower(c.usuario_email) = lower($1) AND c.empresa_codigo = $2 ORDER BY c.criado_em DESC`,
+      [email, empresaCodigo],
+    );
+    return linhas.map(mapear);
+  }
+
   async buscarPorId(id: string): Promise<Chamado | null> {
     const r = (await this.ds.query(`${SELECT} WHERE c.id = $1 LIMIT 1`, [id]))[0];
     return r ? mapear(r) : null;

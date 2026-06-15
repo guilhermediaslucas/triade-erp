@@ -75,6 +75,17 @@ export function Sino() {
         const abertos = sup ? sup.abertos : 0;
         if (abertos > 0) out.push({ chave: 'sino.chamados_suporte', icone: 'i-help', qtd: abertos, to: '/superadmin/chamados' });
       }
+      // Atualizações dos próprios chamados (qualquer usuário): conta os que mudaram
+      // para em andamento/resolvido desde a última vez que o usuário abriu "Meus chamados".
+      {
+        const meus = await api.get<{ id: string; status: string }[]>('/suporte/meus', token).catch(() => null);
+        if (meus && meus.length) {
+          let vistos: Record<string, string> = {};
+          try { vistos = JSON.parse(localStorage.getItem('triade_chamados_vistos') || '{}'); } catch { /* ignora */ }
+          const novos = meus.filter((c) => (c.status === 'em_andamento' || c.status === 'resolvido') && vistos[c.id] !== c.status).length;
+          if (novos > 0) out.push({ chave: 'sino.chamados_atualizados', icone: 'i-help', qtd: novos, to: '/meus-chamados' });
+        }
+      }
     } catch { /* silencioso */ }
     setGrupos(out);
   }

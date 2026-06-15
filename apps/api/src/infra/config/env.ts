@@ -43,6 +43,8 @@ export const env = {
   emailFrom: process.env.EMAIL_FROM ?? 'TRIADE ERP <notificacoes@triadeerp.com.br>',
   // Destino das notificações de suporte (cai no Gmail via Cloudflare Email Routing).
   suporteEmailDestino: process.env.SUPORTE_EMAIL_DESTINO ?? 'admin@triadeerp.com.br',
+  // URL pública do site (frontend), usada para montar o link de redefinição de senha.
+  appUrl: (process.env.APP_URL ?? '').replace(/\/+$/, ''),
   nodeEnv: process.env.NODE_ENV ?? 'development',
   get isProd(): boolean {
     return this.nodeEnv === 'production';

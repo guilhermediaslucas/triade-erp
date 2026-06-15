@@ -20,6 +20,14 @@ export function rotasSuporte(deps: Dependencias): Router {
     } catch (e) { tratarErro(res, e); }
   });
 
+  // Meus chamados: qualquer usuário logado vê os próprios (filtra pelo token).
+  r.get('/suporte/meus', aut, async (req: Request, res: Response) => {
+    try {
+      const u = req.usuario!;
+      res.json(await deps.suporteService.meus(u.email, u.empresa));
+    } catch (e) { tratarErro(res, e); }
+  });
+
   // Listar / contar / mudar status: só o administrador do sistema (super-admin).
   r.get('/suporte', aut, exigirSuperAdmin, async (_req: Request, res: Response) => {
     try { res.json(await deps.suporteService.listar()); } catch (e) { tratarErro(res, e); }

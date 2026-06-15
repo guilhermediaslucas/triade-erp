@@ -67,6 +67,8 @@ import { RelatoriosService } from '../application/relatorio/RelatoriosService.js
 import { SqlChamadoRepository } from '../infra/repositories/SqlChamadoRepository.js';
 import { SuporteService } from '../application/suporte/SuporteService.js';
 import { ResendEmailSender } from '../infra/email/ResendEmailSender.js';
+import { SqlResetSenhaRepository } from '../infra/repositories/SqlResetSenhaRepository.js';
+import { RecuperarSenha } from '../application/auth/RecuperarSenha.js';
 
 export function montarDependencias() {
   const empresasRepo = new SqlEmpresaRepository(AppDataSource);
@@ -94,6 +96,8 @@ export function montarDependencias() {
   const tituloRepo = new SqlTituloRepository(AppDataSource);
   const catFinRepo = new SqlCategoriaFinanceiraRepository(AppDataSource);
   const recebimentoRepo = new SqlRecebimentoRepository(AppDataSource);
+  const emailSender = new ResendEmailSender(env.resendApiKey, env.emailFrom);
+  const resetSenhaRepo = new SqlResetSenhaRepository(AppDataSource);
 
   return {
     tokens,
@@ -132,8 +136,11 @@ export function montarDependencias() {
     metasService: new MetasService(new SqlMetaRepository(AppDataSource)),
     suporteService: new SuporteService(
       new SqlChamadoRepository(AppDataSource),
-      new ResendEmailSender(env.resendApiKey, env.emailFrom),
+      emailSender,
       env.suporteEmailDestino,
+    ),
+    recuperarSenha: new RecuperarSenha(
+      empresasRepo, usuariosRepo, superAdminsRepo, resetSenhaRepo, hash, emailSender, env.appUrl,
     ),
   };
 }
