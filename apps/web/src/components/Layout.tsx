@@ -29,6 +29,7 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'menu.crm', to: '/comercial/crm', cap: 'comercial.crm.ver' },
       { rotulo: 'menu.metas', to: '/comercial/metas', cap: 'comercial.meta.ver' },
       { rotulo: 'menu.precos', to: '/comercial/precos', cap: 'comercial.preco.listar' },
+      { rotulo: 'menu.analise', to: '/comercial/analise', cap: 'comercial.analise.ver' },
     ] }],
   },
   {
@@ -40,7 +41,7 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'menu.fluxo', to: '/financeiro/fluxo', cap: 'financeiro.fluxo.ver' },
       { rotulo: 'menu.conciliacao', to: '/financeiro/conciliacao', cap: 'financeiro.conciliacao.ver' },
       { rotulo: 'menu.comissoes', to: '/financeiro/comissoes', cap: 'financeiro.comissao.ver' },
-      { rotulo: 'menu.dre', to: '/financeiro/dre', cap: 'financeiro.fluxo.ver' },
+      { rotulo: 'menu.conferencia', to: '/financeiro/conferencia-cartao', cap: 'financeiro.receber.listar' },
     ] }],
   },
   {
@@ -86,7 +87,6 @@ const GRUPOS: Grupo[] = [
         itens: [
           { rotulo: 'menu.produtos', to: '/cadastros/produtos', cap: 'cadastros.produto.listar' },
           { rotulo: 'menu.categorias', to: '/cadastros/categorias', cap: 'cadastros.categoria.listar' },
-          { rotulo: 'menu.marcas', to: '/cadastros/marcas', cap: 'cadastros.marca.listar' },
           { rotulo: 'menu.formas_entrega', to: '/cadastros/formas-entrega', cap: 'cadastros.forma_entrega.listar' },
         ],
       },

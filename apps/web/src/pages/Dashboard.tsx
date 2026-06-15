@@ -24,7 +24,7 @@ interface Resumo {
   faturamentoMensal: { mes: string; total: number }[];
   faturamentoAnterior: { mes: string; total: number }[];
   metaMensal: number[];
-  vendasCategoria: { categoria: string; total: number }[];
+  vendasProduto: { produto: string; total: number }[];
   saldosBancarios: { nome: string; saldo: number }[];
 }
 const CORES = ['#7b61ff', '#3b82f6', '#16a34a', '#ea9213', '#e1483b', '#6366f1'];
@@ -88,7 +88,7 @@ function GraficoBarras({ pontos, metas, onPick }: { pontos: { mes: string; total
   );
 }
 
-function Donut({ dados }: { dados: { categoria: string; total: number }[] }) {
+function Donut({ dados }: { dados: { nome: string; total: number }[] }) {
   const { t } = useI18n();
   const total = dados.reduce((a, d) => a + d.total, 0);
   const r = 52, c = 2 * Math.PI * r; let off = 0;
@@ -110,7 +110,7 @@ function Donut({ dados }: { dados: { categoria: string; total: number }[] }) {
         {dados.map((d, i) => (
           <div key={i} className="it">
             <span style={{ width: 10, height: 10, borderRadius: 3, background: CORES[i % CORES.length], flex: 'none' }} />
-            <div className="nm" style={{ flex: 1 }}>{d.categoria}</div>
+            <div className="nm" style={{ flex: 1 }}>{d.nome}</div>
             <b className="qt" style={{ color: 'var(--ink)' }}>{abrevMoeda(d.total)}</b>
           </div>
         ))}
@@ -187,8 +187,8 @@ export function Dashboard() {
           <div className="muted" style={{ fontSize: 11, marginTop: 4, textAlign: 'right' }}>{t('dash.clique_ponto')}</div>
         </div>
         <div className="card">
-          <div className="card-head"><h3>{t('dash.por_categoria')}</h3></div>
-          <Donut dados={d.vendasCategoria} />
+          <div className="card-head"><h3>{t('dash.por_produto')}</h3></div>
+          <Donut dados={d.vendasProduto.map((x) => ({ nome: x.produto, total: x.total }))} />
         </div>
         <div className="card">
           <div className="card-head"><h3>{t('dash.top_produtos')}</h3></div>

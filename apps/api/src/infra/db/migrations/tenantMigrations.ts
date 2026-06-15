@@ -664,4 +664,13 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS recebido_por text;
     `,
   },
+  {
+    // Conferência de cartão/dinheiro: confirmação de que o recebimento entrou na
+    // maquininha/caixa. NÃO é baixa (não mexe no saldo do banco).
+    nome: '048_titulo_conferido',
+    sql: (s) => `
+      ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS conferido boolean NOT NULL DEFAULT false;
+      ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS conferido_em timestamptz;
+    `,
+  },
 ];

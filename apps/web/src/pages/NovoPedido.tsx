@@ -9,6 +9,7 @@ import { mascaraCep, buscarCep, UFS } from '../lib/br.js';
 import { ModalNovaPessoa } from '../components/SeletorPessoa.js';
 import { Ic } from '../components/Icones.js';
 import { MoedaInput } from '../components/MoedaInput.js';
+import { FORMAS_PAGAMENTO, ehAVista } from '../lib/pagamento.js';
 import { useToast } from '../components/Toast.js';
 
 interface Endereco { cep: string | null; logradouro: string | null; numero: string | null; complemento?: string | null; bairro: string | null; cidade: string | null; uf: string | null; favorito: boolean; }
@@ -39,7 +40,6 @@ function novoEndTexto(e: NovoEndereco): string {
   return e.cep ? [t, e.cep].filter(Boolean).join(', ') : t;
 }
 const endVazio = (): NovoEndereco => ({ logradouro: '', numero: '', complemento: '', bairro: '', cep: '', cidade: '', uf: '' });
-const ehPix = (f: string) => f.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().includes('pix');
 
 export function NovoPedido() {
   const { token } = useAuth();
@@ -201,7 +201,7 @@ export function NovoPedido() {
   }, [formaEntrega, cep]);
 
   // Pix é somente à vista: trava o seletor de condição.
-  const pixTrava = ehPix(formaPagamento);
+  const pixTrava = ehAVista(formaPagamento);
   useEffect(() => { if (pixTrava && condicaoId) setCondicaoId(''); /* eslint-disable-next-line */ }, [pixTrava]);
 
   const precoDe = (pid: string) => produtos.find((p) => p.produtoId === pid)?.preco ?? 0;
@@ -275,7 +275,7 @@ export function NovoPedido() {
       let confirmou = false;
       try { await api.patch('/pedidos/' + id + '/status', { status: 'aguardando_pagamento' }, token!); confirmou = true; } catch { /* confirma no detalhe */ }
       // Pix gerado → toast de ação persistente "Pendência de baixa" (Abrir → Contas a receber).
-      if (confirmou && ehPix(formaPagamento)) {
+      if (confirmou && ehAVista(formaPagamento)) {
         try { const ped = await api.get<{ numero: number; clienteNome: string | null; total: number }>('/pedidos/' + id, token!); notificarPixPendente(ped.numero, ped.clienteNome, ped.total, t); }
         catch { toast(t('pedido.toast_pix_pendente')); }
       }
@@ -313,7 +313,7 @@ export function NovoPedido() {
           </label>
           <label className="campo">{t('pedidos.forma_pgto')}
             <select value={formaPagamento} onChange={(e) => setFormaPagamento(e.target.value)}>
-              <option>Pix</option><option>Boleto</option><option>Cartão</option><option>Dinheiro</option>
+              {FORMAS_PAGAMENTO.map((f) => <option key={f}>{f}</option>)}
             </select>
           </label>
           <label className="campo">{t('cond.titulo_s')}

@@ -23,6 +23,7 @@ const COLUNAS: { s: StatusPedido; cor: string; ic: string; label?: string }[] = 
 function pillForma(f: string | null): string {
   const k = (f ?? '').toLowerCase();
   if (k.includes('pix')) return 'pk-pill pix';
+  if (k.includes('link')) return 'pk-pill pix';
   if (k.includes('bole')) return 'pk-pill boleto';
   if (k.includes('cart')) return 'pk-pill cartao';
   return 'pk-pill';

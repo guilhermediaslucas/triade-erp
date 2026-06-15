@@ -20,6 +20,9 @@ function map(r: any): Titulo {
     categoriaFinanceiraId: r.categoria_financeira_id ?? null, categoriaFinanceiraNome: r.categoria_financeira_nome ?? null,
     favorecidoId: r.favorecido_id ?? null, favorecidoNome: r.favorecido_nome ?? null,
     vendedorNome: r.vendedor_nome ?? null,
+    pedidoFormaPagamento: r.pedido_forma_pagamento ?? null,
+    conferido: r.conferido === true,
+    conferidoEm: iso(r.conferido_em),
     previsto: r.previsto === true,
     tipoDocumento: r.tipo_documento ?? null,
     numeroDocumento: r.numero_documento ?? null,
@@ -77,7 +80,8 @@ export class SqlTituloRepository implements TituloRepository {
   async listar(schema: string, tipo: TipoTitulo): Promise<Titulo[]> {
     const s = validarSchema(schema);
     return (await this.ds.query(
-      `SELECT t.*, cf.nome AS categoria_financeira_nome, fv.nome AS favorecido_nome, vd.nome AS vendedor_nome, cc.nome AS conta_corrente_nome
+      `SELECT t.*, cf.nome AS categoria_financeira_nome, fv.nome AS favorecido_nome, vd.nome AS vendedor_nome, cc.nome AS conta_corrente_nome,
+              pd.forma_pagamento AS pedido_forma_pagamento
          FROM "${s}".titulo t
          LEFT JOIN "${s}".categoria_financeira cf ON cf.id = t.categoria_financeira_id
          LEFT JOIN "${s}".favorecido fv ON fv.id = t.favorecido_id
@@ -113,6 +117,10 @@ export class SqlTituloRepository implements TituloRepository {
   async definirPrevisto(schema: string, id: string, previsto: boolean): Promise<void> {
     const s = validarSchema(schema);
     await this.ds.query(`UPDATE "${s}".titulo SET previsto=$2 WHERE id=$1`, [id, previsto]);
+  }
+  async definirConferido(schema: string, id: string, conferido: boolean): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(`UPDATE "${s}".titulo SET conferido=$2, conferido_em=$3 WHERE id=$1`, [id, conferido, conferido ? new Date().toISOString() : null]);
   }
   async cancelarBaixa(schema: string, id: string): Promise<void> {
     const s = validarSchema(schema);

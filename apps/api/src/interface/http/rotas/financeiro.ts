@@ -55,6 +55,12 @@ export function rotasFinanceiro(deps: Dependencias): Router {
   r.get('/financeiro/dre/detalhe', autF, azF('financeiro.fluxo.ver'), async (req, res) => {
     try { res.json(await deps.financeiroService.dreDetalhe(req.usuario!.schema, req.query.de, req.query.ate, req.query.por, req.query.tipo, req.query.chave)); } catch (e) { tratarErro(res, e); }
   });
+  r.get('/financeiro/conferencia-cartao', autF, azF('financeiro.receber.listar'), async (req, res) => {
+    try { res.json(await deps.financeiroService.conferenciaCartao(req.usuario!.schema, req.query.dia)); } catch (e) { tratarErro(res, e); }
+  });
+  r.patch('/financeiro/conferencia-cartao/:id', autF, azF('financeiro.receber.gerenciar'), async (req, res) => {
+    try { await deps.financeiroService.marcarConferido(req.usuario!.schema, req.params.id!, (req.body ?? {}).conferido); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
   r.post('/financeiro/nota', autF, azF('financeiro.compra.criar'), async (req, res) => {
     try { res.status(201).json(await deps.comprasService.lancarNota(req.usuario!.schema, req.body ?? {})); } catch (e) { tratarErro(res, e); }
   });

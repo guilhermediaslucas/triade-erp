@@ -10,6 +10,7 @@ export interface RecebimentoRepository {
   criar(schema: string, r: Omit<Recebimento, 'id' | 'status' | 'criadoEm' | 'tituloId'> & { tituloId: string | null }): Promise<string>;
   listarPendentes(schema: string): Promise<Recebimento[]>;
   listar(schema: string, de: string | null, ate: string | null): Promise<Recebimento[]>;
+  listarPorTitulo(schema: string, tituloId: string): Promise<Recebimento[]>;
   buscarPorId(schema: string, id: string): Promise<Recebimento | null>;
   marcarRecebido(schema: string, id: string): Promise<void>;
   atualizar(schema: string, id: string, r: AtualizacaoRecebimento): Promise<void>;

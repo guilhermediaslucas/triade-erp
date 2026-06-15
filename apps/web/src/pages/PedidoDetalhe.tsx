@@ -69,7 +69,7 @@ export function PedidoDetalhe() {
       await api.patch('/pedidos/' + id + '/status', { status, ...extra }, token!); carregar();
       const forma = (p?.formaPagamento ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
       if (status === 'cancelado') toast(t('pedido.cancelado_ok'));
-      else if (status === 'aguardando_pagamento' && forma === 'pix') notificarPixPendente(p!.numero, p!.clienteNome, p!.total, t);
+      else if (status === 'aguardando_pagamento' && (forma === 'pix' || forma === 'link')) notificarPixPendente(p!.numero, p!.clienteNome, p!.total, t);
       else toast(t('pedido.toast_status') + ' ' + t('status.' + status));
     }
     catch (e) { const k = (e as ErroApi).chaveI18n; setErro(k); toast(t(k), 'erro'); }

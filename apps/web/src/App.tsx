@@ -15,7 +15,6 @@ import { Perfis } from './pages/Perfis.js';
 import { DadosEmpresa } from './pages/DadosEmpresa.js';
 import { Empresas } from './pages/Empresas.js';
 import { Categorias } from './pages/Categorias.js';
-import { Marcas } from './pages/Marcas.js';
 import { FormasEntrega } from './pages/FormasEntrega.js';
 import { Produtos } from './pages/Produtos.js';
 import { Clientes } from './pages/Clientes.js';
@@ -40,8 +39,9 @@ import { GestaoFretes } from './pages/GestaoFretes.js';
 import { Contas } from './pages/Contas.js';
 import { FluxoCaixa } from './pages/FluxoCaixa.js';
 import { Relatorios } from './pages/Relatorios.js';
-import { RelDRE } from './pages/RelDRE.js';
 import { NotaEntrada } from './pages/NotaEntrada.js';
+import { ConferenciaCartao } from './pages/ConferenciaCartao.js';
+import { AnaliseVendas } from './pages/AnaliseVendas.js';
 import { Recebimento } from './pages/Recebimento.js';
 import { RelVendas } from './pages/RelVendas.js';
 import { RelProdutos } from './pages/RelProdutos.js';
@@ -95,6 +95,7 @@ export function App() {
                 <Route path="/comercial/precos" element={<Protegida cap="comercial.preco.listar"><TabelaPreco /></Protegida>} />
                 <Route path="/comercial/crm" element={<Protegida cap="comercial.crm.ver"><Crm /></Protegida>} />
                 <Route path="/comercial/metas" element={<Protegida cap="comercial.meta.ver"><Metas /></Protegida>} />
+                <Route path="/comercial/analise" element={<Protegida cap="comercial.analise.ver"><AnaliseVendas /></Protegida>} />
                 <Route path="/estoque/expedicao" element={<Protegida cap="comercial.pedido.gerenciar"><KanbanExpedicao /></Protegida>} />
                 <Route path="/estoque/baixa" element={<Protegida cap="estoque.baixa.criar"><BaixaPerda /></Protegida>} />
                 <Route path="/estoque/posicao" element={<Protegida cap="estoque.saldo.ver"><PosicaoEstoque /></Protegida>} />
@@ -103,7 +104,7 @@ export function App() {
                 <Route path="/estoque/inventario" element={<Protegida cap="estoque.inventario.ver"><Inventario /></Protegida>} />
                 <Route path="/logistica/fretes" element={<Protegida cap="logistica.frete.ver"><GestaoFretes /></Protegida>} />
                 <Route path="/financeiro/receber" element={<Protegida cap="financeiro.receber.listar"><Contas tipo="receber" /></Protegida>} />
-                <Route path="/financeiro/dre" element={<Protegida cap="financeiro.fluxo.ver"><RelDRE /></Protegida>} />
+                <Route path="/financeiro/conferencia-cartao" element={<Protegida cap="financeiro.receber.listar"><ConferenciaCartao /></Protegida>} />
                 <Route path="/financeiro/nota" element={<Protegida cap="financeiro.compra.criar"><NotaEntrada /></Protegida>} />
                 <Route path="/estoque/recebimento" element={<Protegida cap="estoque.entrada.criar"><Recebimento /></Protegida>} />
                 <Route path="/financeiro/comissoes" element={<Protegida cap="financeiro.comissao.ver"><Comissoes /></Protegida>} />
@@ -132,7 +133,6 @@ export function App() {
                 <Route path="/cadastros/favorecidos" element={<Protegida cap="cadastros.favorecido.listar"><Favorecidos /></Protegida>} />
                 <Route path="/cadastros/motoboys" element={<Protegida cap="cadastros.motoboy.listar"><Motoboys /></Protegida>} />
                 <Route path="/cadastros/categorias" element={<Protegida cap="cadastros.categoria.listar"><Categorias /></Protegida>} />
-                <Route path="/cadastros/marcas" element={<Protegida cap="cadastros.marca.listar"><Marcas /></Protegida>} />
                 <Route path="/cadastros/formas-entrega" element={<Protegida cap="cadastros.forma_entrega.listar"><FormasEntrega /></Protegida>} />
                 <Route path="/cadastros/produtos" element={<Protegida cap="cadastros.produto.listar"><Produtos /></Protegida>} />
                 <Route path="/superadmin/empresas" element={<Protegida soSuper><Empresas /></Protegida>} />

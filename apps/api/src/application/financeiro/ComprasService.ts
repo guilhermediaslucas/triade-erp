@@ -2,11 +2,12 @@ import type { ProdutoRepository } from '../../domain/cadastro/Produto.js';
 import type { TituloRepository } from '../../domain/financeiro/Titulo.js';
 import type { Recebimento, RecebimentoRepository } from '../../domain/financeiro/Recebimento.js';
 import type { EstoqueRepository } from '../../domain/estoque/Estoque.js';
-import type { MarcaRepository } from '../../domain/cadastro/Marca.js';
 import type { EtiquetaRepository } from '../../domain/estoque/Etiqueta.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
 function venc30(): string { return new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10); }
+const r2 = (n: number) => Math.round(n * 100) / 100;
+const isoOk = (v: any) => (v && /^\d{4}-\d{2}-\d{2}$/.test(String(v))) ? String(v) : null;
 
 export class ComprasService {
   constructor(
@@ -14,35 +15,47 @@ export class ComprasService {
     private readonly titulos: TituloRepository,
     private readonly recebimentos: RecebimentoRepository,
     private readonly estoque: EstoqueRepository,
-    private readonly marcas: MarcaRepository,
     private readonly etiquetas: EtiquetaRepository,
   ) {}
 
-  // Lança a nota: cria título a pagar + pendência de recebimento.
-  async lancarNota(schema: string, e: any): Promise<{ recebimentoId: string }> {
-    const prod = await this.produtos.buscarPorId(schema, e?.produtoId);
-    if (!prod) throw new ErroAplicacao('pedido.produto_invalido', 400);
-    const quantidade = Number(e?.quantidade);
-    if (!Number.isFinite(quantidade) || quantidade <= 0) throw new ErroAplicacao('estoque.qtd_invalida', 400);
-    const custo = Number(e?.custoUnitario);
-    if (!Number.isFinite(custo) || custo < 0) throw new ErroAplicacao('estoque.custo_invalido', 400);
+  // Lança a nota com 1+ produtos: cria UM título a pagar (valor total) + UMA pendência
+  // de recebimento por produto (todas ligadas ao mesmo título). Aceita e.itens[] ou,
+  // por retrocompat, um único produto (e.produtoId/quantidade/custoUnitario).
+  async lancarNota(schema: string, e: any): Promise<{ recebimentoIds: string[] }> {
+    const itensRaw = Array.isArray(e?.itens) && e.itens.length > 0
+      ? e.itens
+      : [{ produtoId: e?.produtoId, quantidade: e?.quantidade, custoUnitario: e?.custoUnitario }];
+    const itens: { produtoId: string; produtoNome: string; quantidade: number; custoUnitario: number; total: number }[] = [];
+    for (const it of itensRaw) {
+      const prod = await this.produtos.buscarPorId(schema, it?.produtoId);
+      if (!prod) throw new ErroAplicacao('pedido.produto_invalido', 400);
+      const quantidade = Number(it?.quantidade);
+      if (!Number.isFinite(quantidade) || quantidade <= 0) throw new ErroAplicacao('estoque.qtd_invalida', 400);
+      const custo = Number(it?.custoUnitario);
+      if (!Number.isFinite(custo) || custo < 0) throw new ErroAplicacao('estoque.custo_invalido', 400);
+      itens.push({ produtoId: prod.id, produtoNome: prod.nome, quantidade, custoUnitario: custo, total: r2(quantidade * custo) });
+    }
     const fornecedorNome = (e?.fornecedorNome && String(e.fornecedorNome).trim()) || null;
     const nf = (e?.nf && String(e.nf).trim()) || null;
     const serie = (e?.serie && String(e.serie).trim()) || null;
     const numeroDocumento = nf ? (serie ? `${nf} / ${serie}` : nf) : serie;
-    const isoOk = (v: any) => (v && /^\d{4}-\d{2}-\d{2}$/.test(String(v))) ? String(v) : null;
     const emissao = isoOk(e?.emissao);
     const vencimento = isoOk(e?.vencimento) ?? venc30();
-    const total = Math.round(quantidade * custo * 100) / 100;
+    const total = r2(itens.reduce((a, i) => a + i.total, 0));
 
     const descricao = 'Compra' + (fornecedorNome ? ' - ' + fornecedorNome : '') + (nf ? ' (NF ' + nf + ')' : '');
     const tituloId = await this.titulos.criar(schema,
       { tipo: 'pagar', descricao, pessoaNome: fornecedorNome, valor: total, vencimento, emissao, numeroDocumento }, 'compra', null);
 
-    const recebimentoId = await this.recebimentos.criar(schema, {
-      fornecedorNome, produtoId: prod.id, produtoNome: prod.nome, quantidade, custoUnitario: custo, total, nf, tituloId,
-    });
-    return { recebimentoId };
+    const recebimentoIds: string[] = [];
+    for (const it of itens) {
+      const recId = await this.recebimentos.criar(schema, {
+        fornecedorNome, produtoId: it.produtoId, produtoNome: it.produtoNome, quantidade: it.quantidade,
+        custoUnitario: it.custoUnitario, total: it.total, nf, tituloId,
+      });
+      recebimentoIds.push(recId);
+    }
+    return { recebimentoIds };
   }
 
   listarPendentes(schema: string): Promise<Recebimento[]> { return this.recebimentos.listarPendentes(schema); }
@@ -51,7 +64,8 @@ export class ComprasService {
     return this.recebimentos.listar(schema, lim(de), lim(ate));
   }
 
-  // Editar nota — só enquanto pendente (não recebida). Atualiza a nota e o título a pagar vinculado.
+  // Editar um item da nota — só enquanto pendente. Atualiza a linha e recalcula o
+  // total do título a pagar (soma de todos os itens da mesma nota/título).
   async editarNota(schema: string, id: string, e: any): Promise<void> {
     const rec = await this.recebimentos.buscarPorId(schema, id);
     if (!rec) throw new ErroAplicacao('recebimento.nao_encontrado', 404);
@@ -64,26 +78,40 @@ export class ComprasService {
     const nf = (e?.nf && String(e.nf).trim()) || null;
     const serie = (e?.serie && String(e.serie).trim()) || null;
     const numeroDocumento = nf ? (serie ? `${nf} / ${serie}` : nf) : serie;
-    const isoOk = (v: any) => (v && /^\d{4}-\d{2}-\d{2}$/.test(String(v))) ? String(v) : null;
     const vencimento = isoOk(e?.vencimento) ?? venc30();
-    const total = Math.round(quantidade * custo * 100) / 100;
+    const total = r2(quantidade * custo);
     await this.recebimentos.atualizar(schema, id, { fornecedorNome, quantidade, custoUnitario: custo, total, nf });
     if (rec.tituloId) {
+      const irmaos = await this.recebimentos.listarPorTitulo(schema, rec.tituloId);
+      const valorTitulo = r2(irmaos.reduce((a, x) => a + (x.id === id ? total : x.total), 0));
       const descricao = 'Compra' + (fornecedorNome ? ' - ' + fornecedorNome : '') + (nf ? ' (NF ' + nf + ')' : '');
-      await this.titulos.atualizarCompra(schema, rec.tituloId, { descricao, pessoaNome: fornecedorNome, valor: total, vencimento, numeroDocumento });
+      await this.titulos.atualizarCompra(schema, rec.tituloId, { descricao, pessoaNome: fornecedorNome, valor: valorTitulo, vencimento, numeroDocumento });
     }
   }
 
-  // Excluir nota — só enquanto pendente. Remove a nota e o título a pagar que ela gerou.
+  // Excluir um item da nota — só enquanto pendente. Se for o último item do título,
+  // remove o título; senão, recalcula o total do título com os itens restantes.
   async excluirNota(schema: string, id: string): Promise<void> {
     const rec = await this.recebimentos.buscarPorId(schema, id);
     if (!rec) throw new ErroAplicacao('recebimento.nao_encontrado', 404);
     if (rec.status !== 'pendente') throw new ErroAplicacao('recebimento.so_pendente', 400);
-    if (rec.tituloId) await this.titulos.excluir(schema, rec.tituloId);
+    if (rec.tituloId) {
+      const irmaos = await this.recebimentos.listarPorTitulo(schema, rec.tituloId);
+      const restantes = irmaos.filter((x) => x.id !== id);
+      if (restantes.length === 0) {
+        await this.titulos.excluir(schema, rec.tituloId);
+      } else {
+        const tit = await this.titulos.buscarPorId(schema, rec.tituloId);
+        if (tit) {
+          const valorTitulo = r2(restantes.reduce((a, x) => a + x.total, 0));
+          await this.titulos.atualizarCompra(schema, rec.tituloId, { descricao: tit.descricao, pessoaNome: tit.pessoaNome, valor: valorTitulo, vencimento: String(tit.vencimento).slice(0, 10), numeroDocumento: tit.numeroDocumento });
+        }
+      }
+    }
     await this.recebimentos.excluir(schema, id);
   }
 
-  // Recebe a pendência em N lotes, cada um com marca (obrigatória) + bipagem das etiquetas.
+  // Recebe a pendência em N lotes (lote/validade + bipagem das etiquetas).
   // A soma das quantidades bipadas (todos os lotes) deve bater com a quantidade da nota.
   async receber(schema: string, id: string, e: any): Promise<void> {
     const rec = await this.recebimentos.buscarPorId(schema, id);
@@ -93,21 +121,17 @@ export class ComprasService {
     const lotesIn = Array.isArray(e?.lotes) ? e.lotes : [];
     if (lotesIn.length === 0) throw new ErroAplicacao('recebimento.lotes_obrigatorio', 400);
 
-    // Normaliza cada bloco: lote, validade, marca (obrigatória) e códigos bipados.
-    const blocos: { lote: string | null; validade: string | null; marcaId: string; codigos: string[] }[] = [];
+    // Normaliza cada bloco: lote, validade e códigos bipados.
+    const blocos: { lote: string | null; validade: string | null; codigos: string[] }[] = [];
     const todosCodigos: string[] = [];
     for (const l of lotesIn) {
-      const marcaId = (l?.marcaId && String(l.marcaId).trim()) || '';
-      if (!marcaId) throw new ErroAplicacao('recebimento.marca_obrigatoria', 400);
-      const marca = await this.marcas.buscarPorId(schema, marcaId);
-      if (!marca) throw new ErroAplicacao('marca.invalida', 400);
       const codigos = Array.isArray(l?.codigos)
         ? l.codigos.map((c: any) => String(c).trim().toUpperCase()).filter(Boolean)
         : [];
       if (codigos.length === 0) throw new ErroAplicacao('etiqueta.bipe_obrigatorio', 400);
       const validade = (l?.validade && String(l.validade).trim()) || null;
       const lote = (l?.lote && String(l.lote).trim()) || null;
-      blocos.push({ lote, validade, marcaId, codigos });
+      blocos.push({ lote, validade, codigos });
       todosCodigos.push(...codigos);
     }
     // Nenhum código pode se repetir entre os lotes desta leitura.
@@ -123,7 +147,7 @@ export class ComprasService {
     const emissao = tit?.emissao ?? null;
     for (const b of blocos) {
       await this.estoque.registrarEntrada(schema, {
-        produtoId: rec.produtoId, lote: b.lote, validade: b.validade, marcaId: b.marcaId,
+        produtoId: rec.produtoId, lote: b.lote, validade: b.validade,
         quantidade: b.codigos.length, custoUnitario: rec.custoUnitario, codigos: b.codigos,
         fornecedor: rec.fornecedorNome ?? null, nf: rec.nf ?? null, emissao,
       });

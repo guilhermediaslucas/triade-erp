@@ -23,7 +23,7 @@ export interface ResumoDashboard {
   faturamentoMensal: { mes: string; total: number }[];
   faturamentoAnterior: { mes: string; total: number }[];   // 6 meses imediatamente anteriores (série de comparação)
   metaMensal: number[];                                     // meta mensal repetida por mês (linha/barra de meta)
-  vendasCategoria: { categoria: string; total: number }[];
+  vendasProduto: { produto: string; total: number }[];     // top produtos por VALOR (pizza do dashboard)
   saldosBancarios: { nome: string; saldo: number }[];
 }
 // Série temporal para o drill dos KPIs (clique no card → gráfico do período).

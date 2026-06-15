@@ -11,9 +11,13 @@ import type { CondicaoRepository } from '../../domain/comercial/Condicao.js';
 import { FORMAS_ENTREGA } from '../../domain/comercial/FreteConfig.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
+// IMPORTANTE: 'aguardando_pagamento' → 'aprovado' NÃO é transição manual. A aprovação
+// só acontece pela BAIXA do título no Financeiro (FinanceiroService.baixar) ou direto
+// p/ Cartão/Dinheiro (liberaDireto), ambos via repositório. Assim o Estoque não consegue
+// mandar um pedido para separação sem o aval do Financeiro.
 const TRANSICOES: Record<StatusPedido, StatusPedido[]> = {
   orcamento: ['aguardando_pagamento', 'cancelado'],
-  aguardando_pagamento: ['aprovado', 'orcamento', 'cancelado'],
+  aguardando_pagamento: ['orcamento', 'cancelado'],
   aprovado: ['separacao', 'cancelado'],
   separacao: ['expedido', 'cancelado'],
   expedido: ['entregue', 'cancelado'],

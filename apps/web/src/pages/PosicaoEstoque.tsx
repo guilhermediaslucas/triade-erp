@@ -130,7 +130,7 @@ export function PosicaoEstoque() {
               {aberto[p.produtoId] && p.lotes.map((l) => (
                 <tr key={l.id} className="lote-row">
                   <td></td>
-                  <td colSpan={2} style={{ paddingLeft: 24 }}>{t('estoque.lote')}: <b>{l.lote ?? '—'}</b>{l.marca ? ' · ' + l.marca : ''} · <button className="btn-link" onClick={(e) => { e.stopPropagation(); abrirEtiquetas(p, l); }}>{t('etq.ver')}</button></td>
+                  <td colSpan={2} style={{ paddingLeft: 24 }}>{t('estoque.lote')}: <b>{l.lote ?? '—'}</b> · <button className="btn-link" onClick={(e) => { e.stopPropagation(); abrirEtiquetas(p, l); }}>{t('etq.ver')}</button></td>
                   <td>{l.quantidade}</td>
                   <td>{t('estoque.validade')}: {fmtData(l.validade)}</td>
                   <td>{loteBadge(l)}</td>

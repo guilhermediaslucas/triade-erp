@@ -215,6 +215,20 @@ export class FinanceiroService {
       .sort((a, b) => (a.pagoEm! < b.pagoEm! ? -1 : 1));
   }
 
+  // Conferência de cartão/dinheiro: recebíveis (origem pedido) pagos em cartão ou
+  // dinheiro, do dia informado (pela data do título). Confirmar NÃO dá baixa nem mexe no saldo.
+  async conferenciaCartao(schema: string, dia: any): Promise<Titulo[]> {
+    const d = lim(dia);
+    const norm = (f: string | null) => (f ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+    const todos = await this.repo.listar(schema, 'receber');
+    return todos.filter((t) => ['cartao', 'dinheiro'].includes(norm(t.pedidoFormaPagamento)) && (!d || String(t.criadoEm).slice(0, 10) === d));
+  }
+  async marcarConferido(schema: string, id: string, conferido: any): Promise<void> {
+    const t = await this.repo.buscarPorId(schema, id);
+    if (!t) throw new ErroAplicacao('financeiro.nao_encontrado', 404);
+    await this.repo.definirConferido(schema, id, !!conferido);
+  }
+
   async criar(schema: string, tipo: TipoTitulo, e: any): Promise<string> {
     if (!e?.descricao || String(e.descricao).trim().length < 2) throw new ErroAplicacao('financeiro.descricao_invalida', 400);
     const valor = Number(e?.valor);

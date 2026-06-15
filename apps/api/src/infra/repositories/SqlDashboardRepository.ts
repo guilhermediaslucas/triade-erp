@@ -78,11 +78,11 @@ export class SqlDashboardRepository implements DashboardRepository {
     const topCliVal = await this.ds.query(
       `SELECT COALESCE(c.nome,'—') nome, COALESCE(SUM(p.total),0) total
          FROM "${s}".pedido p LEFT JOIN "${s}".cliente c ON c.id = p.cliente_id
-        WHERE p.${NAO} GROUP BY c.nome ORDER BY total DESC LIMIT 5`);
+        WHERE p.${NAO} GROUP BY c.nome ORDER BY total DESC LIMIT 10`);
     const topCliQtd = await this.ds.query(
       `SELECT COALESCE(c.nome,'—') nome, COUNT(*)::int qtd
          FROM "${s}".pedido p LEFT JOIN "${s}".cliente c ON c.id = p.cliente_id
-        WHERE p.${NAO} GROUP BY c.nome ORDER BY qtd DESC LIMIT 5`);
+        WHERE p.${NAO} GROUP BY c.nome ORDER BY qtd DESC LIMIT 10`);
 
     const recentes = await this.ds.query(
       `SELECT p.numero, COALESCE(c.nome,'—') cliente, COALESCE(v.nome,'—') vendedor,
@@ -110,12 +110,11 @@ export class SqlDashboardRepository implements DashboardRepository {
     const metaMap: Record<string, number> = {};
     for (const r of metaRows) metaMap[`${r.ano}-${String(r.mes).padStart(2, '0')}`] = Number(r.valor) || 0;
 
-    const vendasCat = await this.ds.query(
-      `SELECT COALESCE(c.nome,'—') categoria, COALESCE(SUM(pi.subtotal),0) total
+    const vendasProd = await this.ds.query(
+      `SELECT COALESCE(pr.nome, pi.produto_nome, '—') produto, COALESCE(SUM(pi.subtotal),0) total
          FROM "${s}".pedido_item pi
          JOIN "${s}".pedido p ON p.id = pi.pedido_id AND p.${NAO}
          LEFT JOIN "${s}".produto pr ON pr.id = pi.produto_id
-         LEFT JOIN "${s}".categoria c ON c.id = pr.categoria_id
         WHERE p.criado_em >= date_trunc('month', now()) - interval '5 months'
         GROUP BY 1 ORDER BY total DESC LIMIT 6`);
 
@@ -144,7 +143,7 @@ export class SqlDashboardRepository implements DashboardRepository {
       faturamentoMensal: fatMensal.map((r: any) => ({ mes: r.mes, total: um(r.total) })),
       faturamentoAnterior: fatAnterior.map((r: any) => ({ mes: r.mes, total: um(r.total) })),
       metaMensal: fatMensal.map((r: any) => metaMap[r.mes] ?? 0),
-      vendasCategoria: vendasCat.map((r: any) => ({ categoria: r.categoria, total: um(r.total) })),
+      vendasProduto: vendasProd.map((r: any) => ({ produto: r.produto, total: um(r.total) })),
       saldosBancarios: saldos.map((r: any) => ({ nome: r.nome, saldo: um(r.saldo) })),
     };
   }

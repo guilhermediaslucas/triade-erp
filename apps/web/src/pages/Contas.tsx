@@ -9,9 +9,10 @@ import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
 import { ModalNovaPessoa } from '../components/SeletorPessoa.js';
 import { Ic } from '../components/Icones.js';
 import { MoedaInput } from '../components/MoedaInput.js';
+import { FORMAS_BAIXA } from '../lib/pagamento.js';
 
 type Tipo = 'receber' | 'pagar';
-interface Titulo { id: string; numero: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; contaCorrenteNome: string | null; vendedorNome: string | null; previsto: boolean; tipoDocumento: string | null; numeroDocumento: string | null; emissao: string | null; criadoEm: string; pagoEm: string | null; desconto: number; multa: number; juros: number; }
+interface Titulo { id: string; numero: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; pedidoFormaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; contaCorrenteNome: string | null; vendedorNome: string | null; previsto: boolean; tipoDocumento: string | null; numeroDocumento: string | null; emissao: string | null; criadoEm: string; pagoEm: string | null; desconto: number; multa: number; juros: number; }
 interface TipoDoc { id: string; nome: string; ativo: boolean; }
 interface CatFin { id: string; nome: string; tipo: 'receita' | 'despesa'; ativo: boolean; }
 
@@ -302,20 +303,21 @@ export function Contas({ tipo }: { tipo: Tipo }) {
 
       {pode && sel.size > 0 && <div className="muted" style={{ fontSize: 12, marginBottom: 8 }}>{t('bulk.selecionados').replace('{n}', String(sel.size))} · <button className="btn-link" onClick={() => setSel(new Set())}>{t('bulk.limpar')}</button></div>}
 
-      <div className="card pad0"><table className="tabela">
+      <div className="card pad0"><table className="tabela tabela-1linha">
         <thead><tr>
           {pode && <th style={{ width: 34 }}><input type="checkbox" checked={filtrados.length > 0 && sel.size === filtrados.length} onChange={toggleTodos} /></th>}
-          {thR('numero', t('fin.numero'))}{thR('descricao', t('fin.descricao'))}{!oc('cat') && thR('cat', t('catfin.titulo_s'))}{!oc('pessoa') && thR('pessoa', tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor'))}{!oc('doc') && thR('doc', t('fin.documento'))}{!oc('emissao') && thR('emissao', t('fin.emissao'))}{!oc('venc') && thR('venc', t('fin.vencimento'))}{!oc('baixa') && thR('baixa', t('fin.baixa'))}{!oc('valor') && thR('valor', t('fin.valor'))}{!oc('vendedor') && thR('vendedor', t('fin.vendedor'))}{!oc('sit') && thR('sit', t('fin.situacao'))}<th style={{ textAlign: 'center' }}>{t('fin.previsto')}</th><th>{t('usuarios.acoes')}</th>
+          {thR('numero', t('fin.numero'))}{thR('descricao', t('fin.descricao'))}{!oc('cat') && thR('cat', t('catfin.titulo_s'))}{!oc('pessoa') && thR('pessoa', tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor'))}{tipo === 'receber' && thR('forma', t('fin.forma'))}{!oc('doc') && thR('doc', t('fin.documento'))}{!oc('emissao') && thR('emissao', t('fin.emissao'))}{!oc('venc') && thR('venc', t('fin.vencimento'))}{!oc('baixa') && thR('baixa', t('fin.baixa'))}{!oc('valor') && thR('valor', t('fin.valor'))}{!oc('vendedor') && thR('vendedor', t('fin.vendedor'))}{!oc('sit') && thR('sit', t('fin.situacao'))}<th style={{ textAlign: 'center' }}>{t('fin.previsto')}</th><th>{t('usuarios.acoes')}</th>
         </tr></thead>
         <tbody>
-          {filtrados.length === 0 && <tr><td colSpan={(pode ? 1 : 0) + 4 + HIDEABLE.filter((k) => !oc(k)).length} className="vazio">{t('common.nenhum')}</td></tr>}
+          {filtrados.length === 0 && <tr><td colSpan={(pode ? 1 : 0) + 4 + (tipo === 'receber' ? 1 : 0) + HIDEABLE.filter((k) => !oc(k)).length} className="vazio">{t('common.nenhum')}</td></tr>}
           {filtrados.map((tt) => { const sit = situacao(tt); return (
             <tr key={tt.id} className={(sel.has(tt.id) ? 'linha-sel ' : '') + (tt.previsto ? 'linha-previsto' : '')} style={{ cursor: 'pointer' }} onDoubleClick={() => setVerT(tt)} title={t('fin.ver_detalhe')}>
               {pode && <td><input type="checkbox" checked={sel.has(tt.id)} onChange={() => toggle(tt.id)} /></td>}
               <td data-label={t('fin.numero')} style={{ fontWeight: 700 }}>{tt.numero}</td>
-              <td data-label={t('fin.descricao')}>{tt.descricao}{tt.origem === 'pedido' && <span className="tag-origem">{t('fin.do_pedido')}</span>}</td>
+              <td data-label={t('fin.descricao')}>{tt.descricao}</td>
               {!oc('cat') && <td data-label={t('catfin.titulo_s')}>{tt.categoriaFinanceiraNome ?? '—'}</td>}
               {!oc('pessoa') && <td data-label={tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor')}>{tt.pessoaNome ?? '—'}</td>}
+              {tipo === 'receber' && <td data-label={t('fin.forma')}>{tt.pedidoFormaPagamento ?? '—'}</td>}
               {!oc('doc') && <td data-label={t('fin.documento')}>{tt.tipoDocumento ?? '—'}</td>}
               {!oc('emissao') && <td data-label={t('fin.emissao')}>{(tt.emissao || tt.criadoEm) ? new Date((tt.emissao ? tt.emissao + 'T00:00:00' : tt.criadoEm)).toLocaleDateString('pt-BR') : '—'}</td>}
               {!oc('venc') && <td data-label={t('fin.vencimento')}>{new Date(tt.vencimento + 'T00:00:00').toLocaleDateString('pt-BR')}</td>}
@@ -515,7 +517,7 @@ function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos:
       <div className="cores-grid">
         <label className="campo">{t('fin.data_baixa')}<input type="date" value={dataBaixa} onChange={(e) => setDataBaixa(e.target.value)} /></label>
         <label className="campo">{t('pedidos.forma_pgto')}
-          <select value={forma} onChange={(e) => setForma(e.target.value)}><option>Pix</option><option>Boleto</option><option>Cartão</option><option>Dinheiro</option><option>Transferência</option></select>
+          <select value={forma} onChange={(e) => setForma(e.target.value)}>{FORMAS_BAIXA.map((f) => <option key={f}>{f}</option>)}</select>
         </label>
       </div>
       {contas.length > 0 && <label className="campo">{t('cc.conta')}{contaObrig && <span className="hint"> · {t('fin.conta_obrig_hint')}</span>}

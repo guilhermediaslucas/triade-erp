@@ -717,8 +717,11 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
 /* Título previsto (provisão): fica mais claro que os efetivos. */
 .linha-previsto td { color: var(--muted); font-style: italic; }
 /* Redimensionar colunas por arraste (alça na borda direita do cabeçalho). */
-.col-resize { position: absolute; top: 0; right: 0; width: 7px; height: 100%; cursor: col-resize; user-select: none; touch-action: none; }
-.col-resize:hover { background: var(--accent); opacity: .35; }
+.col-resize { position: absolute; top: 0; right: 0; width: 11px; height: 100%; cursor: col-resize; user-select: none; touch-action: none; display: flex; align-items: center; justify-content: center; }
+.col-resize::after { content: ''; width: 2px; height: 55%; background: var(--borda); border-radius: 2px; transition: background .12s; }
+.col-resize:hover { background: var(--accent-soft); }
+.col-resize:hover::after { background: var(--accent); width: 3px; }
+.tabela-1linha th, .tabela-1linha td { white-space: nowrap; }
 .dash-row.d2 { grid-template-columns: 1.55fr 1fr 1fr; }
 .dash-row.d3 { grid-template-columns: 1.7fr 1fr; }
 .dash-row > .card { max-width: none; margin: 0; }

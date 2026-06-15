@@ -41,6 +41,10 @@ export class SqlRecebimentoRepository implements RecebimentoRepository {
         WHERE ($1::date IS NULL OR criado_em::date >= $1) AND ($2::date IS NULL OR criado_em::date <= $2)
         ORDER BY criado_em DESC`, [de, ate])).map(map);
   }
+  async listarPorTitulo(schema: string, tituloId: string): Promise<Recebimento[]> {
+    const s = validarSchema(schema);
+    return (await this.ds.query(`SELECT * FROM "${s}".recebimento WHERE titulo_id = $1 ORDER BY criado_em`, [tituloId])).map(map);
+  }
   async atualizar(schema: string, id: string, r: AtualizacaoRecebimento): Promise<void> {
     const s = validarSchema(schema);
     await this.ds.query(

@@ -4,7 +4,7 @@ export type StatusPedido = (typeof STATUS_PEDIDO)[number];
 // próximas transições possíveis (espelha o backend)
 export const PROXIMOS: Record<StatusPedido, StatusPedido[]> = {
   orcamento: ['aguardando_pagamento', 'cancelado'],
-  aguardando_pagamento: ['aprovado', 'cancelado'],
+  aguardando_pagamento: ['cancelado'],
   aprovado: ['separacao', 'cancelado'],
   separacao: ['expedido', 'cancelado'],
   expedido: ['entregue', 'cancelado'],

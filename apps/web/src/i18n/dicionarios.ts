@@ -2339,3 +2339,62 @@ Object.assign(es, {
   'dre.total_receitas': 'Total de ingresos', 'dre.total_despesas': 'Total de gastos', 'dre.resultado_periodo': 'Resultado del período',
   'dre.vs_anterior': 'vs período anterior', 'dre.clique_linha': 'Haz clic en una línea para ver los títulos que la componen', 'dre.detalhe_titulo': 'Títulos de la línea',
 });
+
+// ===== Lote: conferência cartão/dinheiro, análise de vendas, nota multi-produto, link =====
+Object.assign(pt, {
+  'menu.analise': 'Análise de vendas', 'menu.conferencia': 'Conferência de cartão/dinheiro',
+  'cap.comercial.analise.ver': 'Análise de vendas',
+  'dash.por_produto': 'Vendas por produto', 'dash.top_cli_valor': 'Top 10 clientes', 'dash.top_cli_qtd': 'Top 10 clientes',
+  'fin.forma': 'Forma',
+  'conf.crumb': 'Financeiro / Conferência de cartão e dinheiro', 'conf.titulo': 'Conferência de cartão e dinheiro',
+  'conf.sub': 'Confirme no fim do dia os recebimentos em cartão e dinheiro (não dá baixa no banco)',
+  'conf.dia': 'Dia', 'conf.forma': 'Forma', 'conf.pedido': 'Título', 'conf.status': 'Conferido', 'conf.conferido_em': 'Conferido em',
+  'conf.cartao_sistema': 'Cartão (sistema)', 'conf.dinheiro_sistema': 'Dinheiro (sistema)', 'conf.conferido': 'Conferido', 'conf.conferido_st': 'Conferido', 'conf.pendente': 'pendente',
+  'conf.confirmar_sel': 'Confirmar selecionados ({n})', 'conf.desfazer': 'desfazer', 'conf.lista': 'Recebimentos em cartão/dinheiro',
+  'conf.vazio': 'Nenhum recebimento em cartão ou dinheiro neste dia', 'conf.f_todos': 'Todos', 'conf.f_pendentes': 'Pendentes', 'conf.f_conferidos': 'Conferidos',
+  'conf.aviso': 'Confirmar não dá baixa nem altera o saldo do banco — é só a conferência. A baixa acontece quando o valor entra na conta.',
+  'conf.toast_confirmado': 'Recebimento conferido', 'conf.toast_desfeito': 'Conferência desfeita',
+  'analise.crumb': 'Comercial / Análise de vendas', 'analise.titulo': 'Análise de vendas', 'analise.sub': 'Ranking de vendas por produto, categoria ou cliente',
+  'analise.item': 'Item', 'analise.produtos': 'Produtos', 'analise.categorias': 'Categorias', 'analise.clientes_valor': 'Clientes · valor', 'analise.clientes_pedidos': 'Clientes · pedidos',
+  'nota.itens': 'Produtos da nota', 'nota.add_produto': 'Adicionar produto', 'nota.subtotal': 'Subtotal',
+  'toastreceb.titulo': 'Nota lançada', 'toastreceb.corpo': '{n} produto(s) de {f} · {v} pendente(s) de recebimento no Estoque',
+});
+Object.assign(en, {
+  'menu.analise': 'Sales analysis', 'menu.conferencia': 'Card/cash reconciliation',
+  'cap.comercial.analise.ver': 'Sales analysis',
+  'dash.por_produto': 'Sales by product', 'dash.top_cli_valor': 'Top 10 customers', 'dash.top_cli_qtd': 'Top 10 customers',
+  'fin.forma': 'Method',
+  'conf.crumb': 'Finance / Card & cash reconciliation', 'conf.titulo': 'Card & cash reconciliation',
+  'conf.sub': 'Confirm card and cash receipts at end of day (no bank settlement)',
+  'conf.dia': 'Day', 'conf.forma': 'Method', 'conf.pedido': 'Title', 'conf.status': 'Reconciled', 'conf.conferido_em': 'Reconciled at',
+  'conf.cartao_sistema': 'Card (system)', 'conf.dinheiro_sistema': 'Cash (system)', 'conf.conferido': 'Reconciled', 'conf.conferido_st': 'Reconciled', 'conf.pendente': 'pending',
+  'conf.confirmar_sel': 'Confirm selected ({n})', 'conf.desfazer': 'undo', 'conf.lista': 'Card/cash receipts',
+  'conf.vazio': 'No card or cash receipts on this day', 'conf.f_todos': 'All', 'conf.f_pendentes': 'Pending', 'conf.f_conferidos': 'Reconciled',
+  'conf.aviso': 'Confirming does not settle nor change the bank balance — it is just the reconciliation. Settlement happens when the money arrives.',
+  'conf.toast_confirmado': 'Receipt reconciled', 'conf.toast_desfeito': 'Reconciliation undone',
+  'analise.crumb': 'Sales / Sales analysis', 'analise.titulo': 'Sales analysis', 'analise.sub': 'Sales ranking by product, category or customer',
+  'analise.item': 'Item', 'analise.produtos': 'Products', 'analise.categorias': 'Categories', 'analise.clientes_valor': 'Customers · value', 'analise.clientes_pedidos': 'Customers · orders',
+  'nota.itens': 'Note products', 'nota.add_produto': 'Add product', 'nota.subtotal': 'Subtotal',
+  'toastreceb.titulo': 'Note created', 'toastreceb.corpo': '{n} product(s) from {f} · {v} pending receipt in Stock',
+});
+Object.assign(es, {
+  'menu.analise': 'Análisis de ventas', 'menu.conferencia': 'Conciliación de tarjeta/efectivo',
+  'cap.comercial.analise.ver': 'Análisis de ventas',
+  'dash.por_produto': 'Ventas por producto', 'dash.top_cli_valor': 'Top 10 clientes', 'dash.top_cli_qtd': 'Top 10 clientes',
+  'fin.forma': 'Forma',
+  'conf.crumb': 'Finanzas / Conciliación de tarjeta y efectivo', 'conf.titulo': 'Conciliación de tarjeta y efectivo',
+  'conf.sub': 'Confirma al final del día los cobros con tarjeta y efectivo (no da baja en el banco)',
+  'conf.dia': 'Día', 'conf.forma': 'Forma', 'conf.pedido': 'Título', 'conf.status': 'Conciliado', 'conf.conferido_em': 'Conciliado el',
+  'conf.cartao_sistema': 'Tarjeta (sistema)', 'conf.dinheiro_sistema': 'Efectivo (sistema)', 'conf.conferido': 'Conciliado', 'conf.conferido_st': 'Conciliado', 'conf.pendente': 'pendiente',
+  'conf.confirmar_sel': 'Confirmar seleccionados ({n})', 'conf.desfazer': 'deshacer', 'conf.lista': 'Cobros con tarjeta/efectivo',
+  'conf.vazio': 'Ningún cobro con tarjeta o efectivo en este día', 'conf.f_todos': 'Todos', 'conf.f_pendentes': 'Pendientes', 'conf.f_conferidos': 'Conciliados',
+  'conf.aviso': 'Confirmar no da baja ni cambia el saldo del banco — es solo la conciliación. La baja ocurre cuando el dinero entra en la cuenta.',
+  'conf.toast_confirmado': 'Cobro conciliado', 'conf.toast_desfeito': 'Conciliación deshecha',
+  'analise.crumb': 'Comercial / Análisis de ventas', 'analise.titulo': 'Análisis de ventas', 'analise.sub': 'Ranking de ventas por producto, categoría o cliente',
+  'analise.item': 'Ítem', 'analise.produtos': 'Productos', 'analise.categorias': 'Categorías', 'analise.clientes_valor': 'Clientes · valor', 'analise.clientes_pedidos': 'Clientes · pedidos',
+  'nota.itens': 'Productos de la nota', 'nota.add_produto': 'Agregar producto', 'nota.subtotal': 'Subtotal',
+  'toastreceb.titulo': 'Nota emitida', 'toastreceb.corpo': '{n} producto(s) de {f} · {v} pendiente(s) de recepción en Stock',
+});
+Object.assign(pt, { 'sino.recebimentos': 'Entradas pendentes de recebimento' });
+Object.assign(en, { 'sino.recebimentos': 'Entries pending receipt' });
+Object.assign(es, { 'sino.recebimentos': 'Entradas pendientes de recepción' });

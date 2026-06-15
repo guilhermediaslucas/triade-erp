@@ -8,6 +8,9 @@ export interface Titulo {
   categoriaFinanceiraId: string | null; categoriaFinanceiraNome: string | null;
   favorecidoId: string | null; favorecidoNome: string | null;
   vendedorNome: string | null;     // vendedor do pedido vinculado (quando origem = pedido)
+  pedidoFormaPagamento: string | null; // forma de pagamento escolhida no pedido (Pix/Cartão/…)
+  conferido: boolean;              // recebimento conferido (maquininha/caixa) — NÃO é baixa
+  conferidoEm: string | null;
   previsto: boolean;   // lançamento previsto (provisão): mais claro na lista e NÃO pode ser baixado
   tipoDocumento: string | null;   // ex.: NF-e, Boleto, Fatura (cadastro Tipos de documento)
   numeroDocumento: string | null; // nº do documento (NF/boleto)
@@ -47,6 +50,7 @@ export interface TituloRepository {
   criar(schema: string, t: NovoTitulo, origem: string, pedidoId: string | null): Promise<string>;
   baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null, dataBaixa?: string | null, ajustes?: AjustesBaixa): Promise<void>;
   definirPrevisto(schema: string, id: string, previsto: boolean): Promise<void>;
+  definirConferido(schema: string, id: string, conferido: boolean): Promise<void>;
   cancelarBaixa(schema: string, id: string): Promise<void>;
   excluir(schema: string, id: string): Promise<void>;
   atualizarCompra(schema: string, id: string, dados: { descricao: string; pessoaNome: string | null; valor: number; vencimento: string; numeroDocumento: string | null }): Promise<void>;

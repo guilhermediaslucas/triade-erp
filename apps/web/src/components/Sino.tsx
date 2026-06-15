@@ -59,6 +59,11 @@ export function Sino() {
         const baixo = pos ? pos.filter((p) => p.abaixoMinimo).length : 0;
         if (baixo > 0) out.push({ chave: 'sino.estoque_baixo', icone: 'i-box', qtd: baixo, to: '/estoque/posicao' });
       }
+      if (temCapability('estoque.entrada.criar')) {
+        const recs = await api.get<unknown[]>('/estoque/recebimentos', token).catch(() => null);
+        const qtd = Array.isArray(recs) ? recs.length : 0;
+        if (qtd > 0) out.push({ chave: 'sino.recebimentos', icone: 'i-receipt', qtd, to: '/estoque/recebimento' });
+      }
     } catch { /* silencioso */ }
     setGrupos(out);
   }
