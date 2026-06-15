@@ -10,12 +10,16 @@ interface Grupo { chave: string; titulo: string; desc: string; icone: string; ti
 const GRUPOS: Grupo[] = [
   {
     chave: 'financeiro', titulo: 'rel.g_financeiro', desc: 'rel.g_financeiro_d', icone: 'i-dollar', tint: 'tint-gr',
-    itens: [{ rotulo: 'menu.rel_reembolsos', to: '/relatorios/reembolsos', cap: 'financeiro.pagar.listar' }],
+    itens: [
+      { rotulo: 'menu.rel_reembolsos', to: '/relatorios/reembolsos', cap: 'financeiro.pagar.listar' },
+      { rotulo: 'menu.rel_contas_pagar', to: '/relatorios/contas-pagar', cap: 'financeiro.pagar.listar' },
+    ],
   },
   {
     chave: 'comercial', titulo: 'rel.g_comercial', desc: 'rel.g_comercial_d', icone: 'i-cart', tint: 'tint-bl',
     itens: [
       { rotulo: 'menu.rel_vendas', to: '/relatorios/vendas', cap: 'relatorios.vendas.ver' },
+      { rotulo: 'menu.rel_vendas_contabil', to: '/relatorios/vendas-contabil', cap: 'relatorios.vendas.ver' },
       { rotulo: 'menu.rel_pedidos', to: '/relatorios/pedidos', cap: 'relatorios.pedidos.ver' },
       { rotulo: 'menu.rel_produtos', to: '/relatorios/produtos', cap: 'relatorios.produtos.ver' },
       { rotulo: 'menu.rel_categorias', to: '/relatorios/vendas-categoria', cap: 'relatorios.categorias.ver' },

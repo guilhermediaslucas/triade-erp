@@ -1,6 +1,8 @@
 import type { Campanha, PrecoBaseRepository, PrecoProduto } from '../../domain/comercial/PrecoBase.js';
-import type { PrecoClienteLinha, PrecoClienteRepository } from '../../domain/comercial/PrecoCliente.js';
+import type { PrecoClienteHistorico, PrecoClienteLinha, PrecoClienteRepository } from '../../domain/comercial/PrecoCliente.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
+
+export interface AtorPreco { usuarioId: string | null; usuarioNome: string | null; }
 
 export class PrecosService {
   constructor(private readonly repo: PrecoBaseRepository, private readonly clientes: PrecoClienteRepository) {}
@@ -13,7 +15,8 @@ export class PrecosService {
   }
 
   listarCliente(schema: string, clienteId: string): Promise<PrecoClienteLinha[]> { return this.clientes.listarPorCliente(schema, clienteId); }
-  async definirCliente(schema: string, clienteId: string, produtoId: string, e: any): Promise<void> {
+  listarHistoricoCliente(schema: string, clienteId: string): Promise<PrecoClienteHistorico[]> { return this.clientes.listarHistorico(schema, clienteId); }
+  async definirCliente(schema: string, clienteId: string, produtoId: string, e: any, ator?: AtorPreco): Promise<void> {
     const p = Number(e?.preco);
     if (!Number.isFinite(p) || p < 0) throw new ErroAplicacao('produto.preco_invalido', 400);
     const tipo = e?.tipo === 'periodo' ? 'periodo' : 'fixo';
@@ -25,6 +28,13 @@ export class PrecosService {
     }
     if (!(await this.repo.produtoExiste(schema, produtoId))) throw new ErroAplicacao('cadastro.nao_encontrado', 404);
     await this.clientes.definir(schema, clienteId, produtoId, { preco: p, tipo, de, ate });
+    // Histórico (quem/quando) — só quando há um preço negociado (preço 0 = remoção).
+    if (p > 0) {
+      await this.clientes.registrarHistorico(schema, {
+        clienteId, produtoId, preco: p, tipo, de, ate,
+        usuarioId: ator?.usuarioId ?? null, usuarioNome: ator?.usuarioNome ?? null,
+      });
+    }
   }
 
   listarCampanhas(schema: string, produtoId: string): Promise<Campanha[]> { return this.repo.listarCampanhas(schema, produtoId); }

@@ -20,8 +20,18 @@ export interface LinhaPedidoRel {
 export type ClasseAbc = 'A' | 'B' | 'C';
 export interface LinhaAbc { nome: string; quantidade: number; total: number; pct: number; acumuladoPct: number; classe: ClasseAbc; }
 export interface RelatorioAbc { linhas: LinhaAbc[]; totalGeral: number; resumo: Record<ClasseAbc, { itens: number; total: number }>; }
+// Relatório contábil de vendas: separa a VENDA (itens) do FRETE (cobrado/custo/absorvido).
+export interface LinhaVendaContabil {
+  numero: number; data: string; cliente: string | null;
+  venda: number; freteCobrado: number; freteCusto: number; absorvido: number; tipoFrete: string; total: number;
+}
+export interface RelatorioVendasContabil {
+  linhas: LinhaVendaContabil[];
+  venda: number; freteCobrado: number; freteCusto: number; absorvido: number; total: number;
+}
 export interface RelatorioRepository {
   vendas(schema: string, de: string | null, ate: string | null): Promise<RelatorioVendas>;
+  vendasContabil(schema: string, de: string | null, ate: string | null): Promise<RelatorioVendasContabil>;
   produtosVendidos(schema: string, de: string | null, ate: string | null): Promise<LinhaProduto[]>;
   vendasPorCategoria(schema: string, de: string | null, ate: string | null): Promise<LinhaCategoria[]>;
   curvaAbcProdutos(schema: string, de: string | null, ate: string | null): Promise<LinhaProduto[]>;

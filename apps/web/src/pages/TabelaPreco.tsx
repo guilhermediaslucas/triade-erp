@@ -34,6 +34,7 @@ export function TabelaPreco() {
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [campProduto, setCampProduto] = useState<PrecoProduto | null>(null);
+  const [histAberto, setHistAberto] = useState(false);
 
   async function carregarBase() {
     const l = await api.get<PrecoProduto[]>('/precos', token!);
@@ -108,6 +109,7 @@ export function TabelaPreco() {
             {modo === 'cliente' && (<>
               <select value={clienteId} onChange={(e) => carregarCliente(e.target.value)}><option value="">{t('precos.escolha_cliente')}</option>{clientes.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}</select>
               {temCapability('cadastros.cliente.gerenciar') && <button type="button" className="btn-link" style={{ fontSize: 12 }} onClick={() => setNovoCli(true)}>+ {t('fin.cadastrar_novo')}</button>}
+              {clienteId && <button type="button" className="btn-ghost" onClick={() => setHistAberto(true)}><Ic name="i-clock" className="sm" /> {t('precohist.botao')}</button>}
             </>)}
             {novoCli && <ModalNovaPessoa tipo="cliente" onFechar={() => setNovoCli(false)} onCriado={(nome) => { setNovoCli(false); recarregarClientes(nome); }} />}
             {pode && <button className="btn-primary" disabled={salvando} onClick={salvarTabela}><Ic name="i-check" className="sm" /> {t('precos.salvar_tabela')}</button>}
@@ -162,7 +164,37 @@ export function TabelaPreco() {
         <div className="nota-info" style={{ margin: 14 }}><Ic name="i-help" className="sm" /> <span>{t('precos.nota')}</span></div>
       </div>
       {campProduto && <ModalCampanhas produto={campProduto} pode={pode} onFechar={() => { setCampProduto(null); carregarBase().catch(() => {}); }} />}
+      {histAberto && clienteId && <ModalHistoricoCliente clienteId={clienteId} onFechar={() => setHistAberto(false)} />}
     </div>
+  );
+}
+
+interface HistLinha { produtoNome: string; preco: number; tipo: string; de: string | null; ate: string | null; usuarioNome: string | null; criadoEm: string; }
+function ModalHistoricoCliente({ clienteId, onFechar }: { clienteId: string; onFechar: () => void; }) {
+  const { token } = useAuth(); const { t } = useI18n();
+  const [linhas, setLinhas] = useState<HistLinha[]>([]);
+  useEffect(() => { api.get<HistLinha[]>('/precos/cliente/' + clienteId + '/historico', token!).then(setLinhas).catch(() => {}); /* eslint-disable-next-line */ }, []);
+  const fmt = (s: string) => new Date(s).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+  const fmtD = (s: string | null) => (s ? new Date(s.slice(0, 10) + 'T00:00:00').toLocaleDateString('pt-BR') : t('precohist.fixo'));
+  return (
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 560 }}>
+      <h2><Ic name="i-clock" className="sm" /> {t('precohist.titulo')}</h2>
+      <p className="muted" style={{ marginTop: -6 }}>{t('precohist.sub')}</p>
+      <table className="tabela">
+        <thead><tr><th>{t('precohist.produto')}</th><th style={{ textAlign: 'right' }}>{t('precohist.preco')}</th><th>{t('precohist.vigencia')}</th><th>{t('precohist.usuario')}</th><th>{t('precohist.quando')}</th></tr></thead>
+        <tbody>
+          {linhas.length === 0 && <tr><td colSpan={5} className="vazio">{t('precohist.vazio')}</td></tr>}
+          {linhas.map((l, i) => (
+            <tr key={i}>
+              <td>{l.produtoNome}</td><td style={{ textAlign: 'right' }}>{moeda(l.preco)}</td>
+              <td>{l.tipo === 'periodo' ? `${fmtD(l.de)} – ${fmtD(l.ate)}` : t('precohist.fixo')}</td>
+              <td>{l.usuarioNome ?? '—'}</td><td style={{ color: 'var(--muted)' }}>{fmt(l.criadoEm)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div className="modal-acoes"><button className="btn-primary" onClick={onFechar}>{t('common.fechar')}</button></div>
+    </div></div>
   );
 }
 

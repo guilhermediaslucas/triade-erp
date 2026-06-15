@@ -690,4 +690,54 @@ export const tenantMigrations: MigracaoTenant[] = [
         ADD COLUMN IF NOT EXISTS vendedor_id uuid REFERENCES "${s}".vendedor(id) ON DELETE SET NULL;
     `,
   },
+  {
+    nome: '051_frete_historico_auditoria',
+    sql: (s) => `
+      -- Frete: custo da empresa (o 'frete' do pedido passa a ser o COBRADO do cliente).
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS frete_custo numeric(14,2) NOT NULL DEFAULT 0;
+      UPDATE "${s}".pedido SET frete_custo = frete WHERE frete_custo = 0 AND frete <> 0;
+
+      -- Campanhas de frete por cliente (grátis / valor fixo / desconto %), com período.
+      CREATE TABLE IF NOT EXISTS "${s}".frete_campanha (
+        id         uuid PRIMARY KEY,
+        cliente_id uuid NOT NULL REFERENCES "${s}".cliente(id) ON DELETE CASCADE,
+        tipo       text NOT NULL,                 -- gratis | fixo | percentual
+        valor      numeric(14,2) NOT NULL DEFAULT 0,
+        motivo     text,
+        de         date NOT NULL,
+        ate        date NOT NULL,
+        criado_em  timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_frete_campanha_cli ON "${s}".frete_campanha (cliente_id, de, ate);
+
+      -- Histórico dos preços praticados por cliente (quem, quando).
+      CREATE TABLE IF NOT EXISTS "${s}".preco_cliente_historico (
+        id           uuid PRIMARY KEY,
+        cliente_id   uuid NOT NULL,
+        produto_id   uuid NOT NULL,
+        preco        numeric(14,2) NOT NULL,
+        tipo         text NOT NULL DEFAULT 'fixo',
+        de           date,
+        ate          date,
+        usuario_id   uuid,
+        usuario_nome text,
+        criado_em    timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_preco_cli_hist ON "${s}".preco_cliente_historico (cliente_id, produto_id, criado_em DESC);
+
+      -- Auditoria geral: quem fez o quê, quando (preenchido por middleware nas alterações).
+      CREATE TABLE IF NOT EXISTS "${s}".log_acao (
+        id           uuid PRIMARY KEY,
+        usuario_id   uuid,
+        usuario_nome text,
+        metodo       text NOT NULL,
+        caminho      text NOT NULL,
+        modulo       text,
+        acao         text,
+        status       int,
+        criado_em    timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_log_acao_data ON "${s}".log_acao (criado_em DESC);
+    `,
+  },
 ];

@@ -1,10 +1,11 @@
-import type { ClasseAbc, LinhaAbc, LinhaCategoria, LinhaEstoqueParado, LinhaPerda, LinhaProduto, RelatorioAbc, RelatorioRepository, RelatorioVendas } from '../../domain/relatorio/Relatorio.js';
+import type { ClasseAbc, LinhaAbc, LinhaCategoria, LinhaEstoqueParado, LinhaPerda, LinhaProduto, RelatorioAbc, RelatorioRepository, RelatorioVendas, RelatorioVendasContabil } from '../../domain/relatorio/Relatorio.js';
 const lim = (v: any): string | null => (v && /^\d{4}-\d{2}-\d{2}$/.test(String(v)) ? String(v) : null);
 const r2 = (n: number) => Math.round(n * 100) / 100;
 
 export class RelatoriosService {
   constructor(private readonly repo: RelatorioRepository) {}
   vendas(schema: string, de: any, ate: any): Promise<RelatorioVendas> { return this.repo.vendas(schema, lim(de), lim(ate)); }
+  vendasContabil(schema: string, de: any, ate: any): Promise<RelatorioVendasContabil> { return this.repo.vendasContabil(schema, lim(de), lim(ate)); }
   produtosVendidos(schema: string, de: any, ate: any): Promise<LinhaProduto[]> { return this.repo.produtosVendidos(schema, lim(de), lim(ate)); }
   vendasPorCategoria(schema: string, de: any, ate: any): Promise<LinhaCategoria[]> { return this.repo.vendasPorCategoria(schema, lim(de), lim(ate)); }
   validadeLotes(schema: string) { return this.repo.validadeLotes(schema); }

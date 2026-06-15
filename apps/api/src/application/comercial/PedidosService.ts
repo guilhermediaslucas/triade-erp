@@ -9,6 +9,7 @@ import type { EtiquetaRepository } from '../../domain/estoque/Etiqueta.js';
 import type { TituloRepository } from '../../domain/financeiro/Titulo.js';
 import type { CondicaoRepository } from '../../domain/comercial/Condicao.js';
 import type { UsuarioRepository } from '../../domain/usuario/UsuarioRepository.js';
+import type { FreteCampanhaRepository } from '../../domain/comercial/FreteCampanha.js';
 import { FORMAS_ENTREGA } from '../../domain/comercial/FreteConfig.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
@@ -59,6 +60,7 @@ export class PedidosService {
     private readonly condicoes: CondicaoRepository,
     private readonly motoboys: MotoboyRepository,
     private readonly usuarios: UsuarioRepository,
+    private readonly freteCampanhas: FreteCampanhaRepository,
   ) {}
 
   // Resolve o vendedor efetivo do pedido aplicando a trava:
@@ -138,8 +140,11 @@ export class PedidosService {
     if (!FORMAS_ENTREGA.includes(formaEntrega as any)) throw new ErroAplicacao('frete.forma_invalida', 400);
     const motoboyId: string | null = null;
     const distanciaKm: number | null = formaEntrega === 'motoboy' && e?.distanciaKm != null && Number.isFinite(Number(e.distanciaKm)) ? Number(e.distanciaKm) : null;
+    // O frete informado pelo front é o CUSTO real (motoboy/correios). A campanha
+    // vigente do cliente determina o que ele PAGA (cobrado); a diferença a empresa absorve.
     const freteInformado = Number(e?.frete ?? 0) || 0;
-    const frete = formaEntrega === 'retirada' ? 0 : (freteInformado >= 0 ? freteInformado : 0);
+    const freteCusto = formaEntrega === 'retirada' ? 0 : (freteInformado >= 0 ? freteInformado : 0);
+    const frete = freteCusto > 0 ? await this.freteCampanhas.freteCobrado(schema, cliente.id, freteCusto) : 0;
     const total = Math.round((subtotal + frete) * 100) / 100;
 
     let endereco: string | null = (e?.enderecoEntrega && String(e.enderecoEntrega).trim()) || null;
@@ -154,7 +159,7 @@ export class PedidosService {
       formaPagamento: (e?.formaPagamento && String(e.formaPagamento).trim()) || null,
       observacao: (e?.observacao && String(e.observacao).trim()) || null,
       enderecoEntrega: endereco, formaEntrega, motoboyId, distanciaKm,
-      frete, itens, subtotal, total, condicaoParcelas: condParcelas, condicaoIntervalo: condIntervalo,
+      frete, freteCusto, itens, subtotal, total, condicaoParcelas: condParcelas, condicaoIntervalo: condIntervalo,
     };
   }
 

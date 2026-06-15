@@ -17,6 +17,10 @@ import { DadosEmpresa } from './pages/DadosEmpresa.js';
 import { Empresas } from './pages/Empresas.js';
 import { ChamadosSuporte } from './pages/ChamadosSuporte.js';
 import { MeusChamados } from './pages/MeusChamados.js';
+import { CampanhasFrete } from './pages/CampanhasFrete.js';
+import { RelVendasContabil } from './pages/RelVendasContabil.js';
+import { RelContasPagarContabil } from './pages/RelContasPagarContabil.js';
+import { Auditoria } from './pages/Auditoria.js';
 import { Categorias } from './pages/Categorias.js';
 import { FormasEntrega } from './pages/FormasEntrega.js';
 import { Produtos } from './pages/Produtos.js';
@@ -92,6 +96,7 @@ export function App() {
                 <Route path="/acesso/usuarios" element={<Protegida cap="acesso.usuario.listar"><Usuarios /></Protegida>} />
                 <Route path="/acesso/perfis" element={<Protegida cap="acesso.perfil.listar"><Perfis /></Protegida>} />
                 <Route path="/config/empresa" element={<Protegida cap="acesso.empresa.editar"><DadosEmpresa /></Protegida>} />
+                <Route path="/config/auditoria" element={<Protegida cap="acesso.usuario.listar"><Auditoria /></Protegida>} />
                 <Route path="/comercial/pedidos" element={<Protegida cap="comercial.pedido.listar"><Pedidos /></Protegida>} />
                 <Route path="/comercial/pedidos/novo" element={<Protegida cap="comercial.pedido.criar"><NovoPedido /></Protegida>} />
                 <Route path="/comercial/pedidos/:id/editar" element={<Protegida cap="comercial.pedido.criar"><NovoPedido /></Protegida>} />
@@ -108,6 +113,7 @@ export function App() {
                 <Route path="/estoque/etiqueta" element={<Protegida cap="estoque.saldo.ver"><ConsultarEtiqueta /></Protegida>} />
                 <Route path="/estoque/inventario" element={<Protegida cap="estoque.inventario.ver"><Inventario /></Protegida>} />
                 <Route path="/logistica/fretes" element={<Protegida cap="logistica.frete.ver"><GestaoFretes /></Protegida>} />
+                <Route path="/logistica/campanhas-frete" element={<Protegida cap="logistica.frete.ver"><CampanhasFrete /></Protegida>} />
                 <Route path="/financeiro/receber" element={<Protegida cap="financeiro.receber.listar"><Contas tipo="receber" /></Protegida>} />
                 <Route path="/financeiro/conferencia-cartao" element={<Protegida cap="financeiro.receber.listar"><ConferenciaCartao /></Protegida>} />
                 <Route path="/financeiro/nota" element={<Protegida cap="financeiro.compra.criar"><NotaEntrada /></Protegida>} />
@@ -118,6 +124,8 @@ export function App() {
                 <Route path="/financeiro/pagar" element={<Protegida cap="financeiro.pagar.listar"><Contas tipo="pagar" /></Protegida>} />
                 <Route path="/relatorios" element={<Protegida cap="relatorios.ver"><Relatorios /></Protegida>} />
                 <Route path="/relatorios/vendas" element={<Protegida cap="relatorios.vendas.ver"><RelVendas /></Protegida>} />
+                <Route path="/relatorios/vendas-contabil" element={<Protegida cap="relatorios.vendas.ver"><RelVendasContabil /></Protegida>} />
+                <Route path="/relatorios/contas-pagar" element={<Protegida cap="financeiro.pagar.listar"><RelContasPagarContabil /></Protegida>} />
                 <Route path="/relatorios/pedidos" element={<Protegida cap="relatorios.pedidos.ver"><RelPedidos /></Protegida>} />
                 <Route path="/relatorios/reembolsos" element={<Protegida cap="financeiro.pagar.listar"><RelFavorecidos /></Protegida>} />
                 <Route path="/relatorios/produtos" element={<Protegida cap="relatorios.produtos.ver"><RelProdutos /></Protegida>} />

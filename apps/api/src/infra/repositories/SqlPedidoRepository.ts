@@ -20,10 +20,10 @@ export class SqlPedidoRepository implements PedidoRepository {
     const id = randomUUID();
     await this.ds.query(
       `INSERT INTO "${s}".pedido (id, numero, cliente_id, vendedor_id, status, forma_pagamento, observacao, endereco_entrega,
-                                  forma_entrega, motoboy_id, distancia_km, subtotal, frete, total, condicao_parcelas, condicao_intervalo)
-       VALUES ($1,$2,$3,$4,'orcamento',$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
+                                  forma_entrega, motoboy_id, distancia_km, subtotal, frete, total, condicao_parcelas, condicao_intervalo, frete_custo)
+       VALUES ($1,$2,$3,$4,'orcamento',$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
       [id, numero, p.clienteId, p.vendedorId, p.formaPagamento, p.observacao, p.enderecoEntrega,
-       p.formaEntrega, p.motoboyId, p.distanciaKm, p.subtotal, p.frete, p.total, p.condicaoParcelas, p.condicaoIntervalo]);
+       p.formaEntrega, p.motoboyId, p.distanciaKm, p.subtotal, p.frete, p.total, p.condicaoParcelas, p.condicaoIntervalo, p.freteCusto]);
     for (const it of p.itens) {
       await this.ds.query(
         `INSERT INTO "${s}".pedido_item (id, pedido_id, produto_id, produto_nome, quantidade, preco_unitario, subtotal)
@@ -41,10 +41,10 @@ export class SqlPedidoRepository implements PedidoRepository {
       `UPDATE "${s}".pedido
           SET cliente_id = $2, vendedor_id = $3, forma_pagamento = $4, observacao = $5, endereco_entrega = $6,
               forma_entrega = $7, motoboy_id = $8, distancia_km = $9, subtotal = $10, frete = $11, total = $12,
-              condicao_parcelas = $13, condicao_intervalo = $14
+              condicao_parcelas = $13, condicao_intervalo = $14, frete_custo = $15
         WHERE id = $1`,
       [id, p.clienteId, p.vendedorId, p.formaPagamento, p.observacao, p.enderecoEntrega,
-       p.formaEntrega, p.motoboyId, p.distanciaKm, p.subtotal, p.frete, p.total, p.condicaoParcelas, p.condicaoIntervalo]);
+       p.formaEntrega, p.motoboyId, p.distanciaKm, p.subtotal, p.frete, p.total, p.condicaoParcelas, p.condicaoIntervalo, p.freteCusto]);
     await this.ds.query(`DELETE FROM "${s}".pedido_item WHERE pedido_id = $1`, [id]);
     for (const it of p.itens) {
       await this.ds.query(
@@ -128,7 +128,7 @@ export class SqlPedidoRepository implements PedidoRepository {
       separadoPor: r.separado_por ?? null, separadoEm: r.separado_em ? new Date(r.separado_em).toISOString() : null,
       expedidoPor: r.expedido_por ?? null, expedidoEm: r.expedido_em ? new Date(r.expedido_em).toISOString() : null,
       recebidoPor: r.recebido_por ?? null,
-      subtotal: Number(r.subtotal), frete: Number(r.frete), total: Number(r.total),
+      subtotal: Number(r.subtotal), frete: Number(r.frete), freteCusto: Number(r.frete_custo ?? r.frete ?? 0), total: Number(r.total),
       condicaoParcelas: r.condicao_parcelas ?? 1, condicaoIntervalo: r.condicao_intervalo ?? 30, criadoEm: new Date(r.criado_em),
       itens: itens.map((i: any) => ({
         id: i.id, produtoId: i.produto_id ?? null, produtoNome: i.produto_nome,

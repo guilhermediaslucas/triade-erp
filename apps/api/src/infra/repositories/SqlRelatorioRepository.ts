@@ -1,5 +1,5 @@
 import type { DataSource } from 'typeorm';
-import type { LinhaCategoria, LinhaEstoqueParado, LinhaPedidoRel, LinhaPerda, LinhaProduto, LinhaValidadeLote, RelatorioRepository, RelatorioVendas } from '../../domain/relatorio/Relatorio.js';
+import type { LinhaCategoria, LinhaEstoqueParado, LinhaPedidoRel, LinhaPerda, LinhaProduto, LinhaValidadeLote, RelatorioRepository, RelatorioVendas, RelatorioVendasContabil } from '../../domain/relatorio/Relatorio.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 const ATIVO = "status NOT IN ('orcamento','cancelado')";
@@ -27,6 +27,30 @@ export class SqlRelatorioRepository implements RelatorioRepository {
     for (const l of map) { const k = l.vendedor ?? '—'; (agrup[k] ??= { quantidade: 0, total: 0 }); agrup[k].quantidade++; agrup[k].total += l.total; }
     const porVendedor = Object.entries(agrup).map(([vendedor, v]) => ({ vendedor, ...v })).sort((a, b) => b.total - a.total);
     return { linhas: map, total, quantidade: map.length, porVendedor };
+  }
+
+  // Relatório contábil: venda (subtotal) separada do frete (cobrado/custo/absorvido), por pedido.
+  async vendasContabil(schema: string, de: string | null, ate: string | null): Promise<RelatorioVendasContabil> {
+    const s = validarSchema(schema);
+    const linhas = await this.ds.query(
+      `SELECT p.numero, p.criado_em, c.nome cliente, p.subtotal, p.frete, p.frete_custo, p.total, p.forma_entrega
+         FROM "${s}".pedido p
+         LEFT JOIN "${s}".cliente c ON c.id = p.cliente_id
+        WHERE p.${ATIVO}
+          AND ($1::date IS NULL OR p.criado_em::date >= $1)
+          AND ($2::date IS NULL OR p.criado_em::date <= $2)
+        ORDER BY p.criado_em DESC`, [de, ate]);
+    const map = linhas.map((r: any) => {
+      const venda = Number(r.subtotal), freteCobrado = Number(r.frete), freteCusto = Number(r.frete_custo ?? r.frete ?? 0);
+      return {
+        numero: r.numero, data: new Date(r.criado_em).toISOString(), cliente: r.cliente ?? null,
+        venda, freteCobrado, freteCusto, absorvido: Math.round((freteCusto - freteCobrado) * 100) / 100,
+        tipoFrete: r.forma_entrega ?? 'retirada', total: Number(r.total),
+      };
+    });
+    const soma = (k: 'venda' | 'freteCobrado' | 'freteCusto' | 'absorvido' | 'total') =>
+      Math.round(map.reduce((a: number, l: any) => a + l[k], 0) * 100) / 100;
+    return { linhas: map, venda: soma('venda'), freteCobrado: soma('freteCobrado'), freteCusto: soma('freteCusto'), absorvido: soma('absorvido'), total: soma('total') };
   }
 
   // Relatório de pedidos: lista plana de TODOS os pedidos (inclui orçamento/cancelado),

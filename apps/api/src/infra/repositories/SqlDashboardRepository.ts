@@ -25,14 +25,14 @@ export class SqlDashboardRepository implements DashboardRepository {
     // Vendas por período + período anterior (uma query), bucketadas no fuso da empresa
     const vd = (await this.ds.query(
       `SELECT
-         COALESCE(SUM(total) FILTER (WHERE ${L}::date = ${HOJE}::date),0) dia,
-         COALESCE(SUM(total) FILTER (WHERE ${L}::date = ${HOJE}::date - 1),0) dia_ant,
-         COALESCE(SUM(total) FILTER (WHERE ${L} >= date_trunc('week', ${HOJE})),0) sem,
-         COALESCE(SUM(total) FILTER (WHERE ${L} >= date_trunc('week', ${HOJE}) - interval '7 days' AND ${L} < date_trunc('week', ${HOJE})),0) sem_ant,
-         COALESCE(SUM(total) FILTER (WHERE ${L} >= date_trunc('month', ${HOJE})),0) mes,
-         COALESCE(SUM(total) FILTER (WHERE ${L} >= date_trunc('month', ${HOJE}) - interval '1 month' AND ${L} < date_trunc('month', ${HOJE})),0) mes_ant,
-         COALESCE(SUM(total) FILTER (WHERE ${L} >= date_trunc('year', ${HOJE})),0) ano,
-         COALESCE(SUM(total) FILTER (WHERE ${L} >= date_trunc('year', ${HOJE}) - interval '1 year' AND ${L} < date_trunc('year', ${HOJE})),0) ano_ant
+         COALESCE(SUM(subtotal) FILTER (WHERE ${L}::date = ${HOJE}::date),0) dia,
+         COALESCE(SUM(subtotal) FILTER (WHERE ${L}::date = ${HOJE}::date - 1),0) dia_ant,
+         COALESCE(SUM(subtotal) FILTER (WHERE ${L} >= date_trunc('week', ${HOJE})),0) sem,
+         COALESCE(SUM(subtotal) FILTER (WHERE ${L} >= date_trunc('week', ${HOJE}) - interval '7 days' AND ${L} < date_trunc('week', ${HOJE})),0) sem_ant,
+         COALESCE(SUM(subtotal) FILTER (WHERE ${L} >= date_trunc('month', ${HOJE})),0) mes,
+         COALESCE(SUM(subtotal) FILTER (WHERE ${L} >= date_trunc('month', ${HOJE}) - interval '1 month' AND ${L} < date_trunc('month', ${HOJE})),0) mes_ant,
+         COALESCE(SUM(subtotal) FILTER (WHERE ${L} >= date_trunc('year', ${HOJE})),0) ano,
+         COALESCE(SUM(subtotal) FILTER (WHERE ${L} >= date_trunc('year', ${HOJE}) - interval '1 year' AND ${L} < date_trunc('year', ${HOJE})),0) ano_ant
        FROM "${s}".pedido WHERE ${NAO}`, [tz]))[0];
 
     const cli = (await this.ds.query(
@@ -71,12 +71,15 @@ export class SqlDashboardRepository implements DashboardRepository {
               COALESCE(SUM(valor) FILTER (WHERE tipo='pagar'),0) sai
          FROM "${s}".titulo WHERE status='pago' AND date_trunc('month', pago_em) = date_trunc('month', now())`))[0];
 
+    // Usa o nome ATUAL do produto (cadastro); snapshot só como reserva (produto excluído).
     const top = await this.ds.query(
-      `SELECT produto_nome nome, SUM(quantidade)::numeric q, COALESCE(SUM(subtotal),0) valor
-         FROM "${s}".pedido_item GROUP BY produto_nome ORDER BY q DESC LIMIT 5`);
+      `SELECT COALESCE(pr.nome, pi.produto_nome, '—') nome, SUM(pi.quantidade)::numeric q, COALESCE(SUM(pi.subtotal),0) valor
+         FROM "${s}".pedido_item pi
+         LEFT JOIN "${s}".produto pr ON pr.id = pi.produto_id
+        GROUP BY COALESCE(pr.nome, pi.produto_nome, '—') ORDER BY q DESC LIMIT 5`);
 
     const topCliVal = await this.ds.query(
-      `SELECT COALESCE(c.nome,'—') nome, COALESCE(SUM(p.total),0) total
+      `SELECT COALESCE(c.nome,'—') nome, COALESCE(SUM(p.subtotal),0) total
          FROM "${s}".pedido p LEFT JOIN "${s}".cliente c ON c.id = p.cliente_id
         WHERE p.${NAO} GROUP BY c.nome ORDER BY total DESC LIMIT 10`);
     const topCliQtd = await this.ds.query(
@@ -93,14 +96,14 @@ export class SqlDashboardRepository implements DashboardRepository {
         ORDER BY p.criado_em DESC LIMIT 5`);
 
     const fatMensal = await this.ds.query(
-      `SELECT to_char(m, 'YYYY-MM') mes, COALESCE(SUM(p.total),0) total
+      `SELECT to_char(m, 'YYYY-MM') mes, COALESCE(SUM(p.subtotal),0) total
          FROM generate_series(date_trunc('month', now()) - interval '5 months', date_trunc('month', now()), interval '1 month') m
          LEFT JOIN "${s}".pedido p ON date_trunc('month', p.criado_em) = m AND p.${NAO}
         GROUP BY m ORDER BY m`);
 
     // Faturamento dos 6 meses imediatamente anteriores (série de comparação "Período anterior").
     const fatAnterior = await this.ds.query(
-      `SELECT to_char(m, 'YYYY-MM') mes, COALESCE(SUM(p.total),0) total
+      `SELECT to_char(m, 'YYYY-MM') mes, COALESCE(SUM(p.subtotal),0) total
          FROM generate_series(date_trunc('month', now()) - interval '11 months', date_trunc('month', now()) - interval '6 months', interval '1 month') m
          LEFT JOIN "${s}".pedido p ON date_trunc('month', p.criado_em) = m AND p.${NAO}
         GROUP BY m ORDER BY m`);
@@ -175,21 +178,21 @@ export class SqlDashboardRepository implements DashboardRepository {
            SELECT COALESCE($2::date, (now() AT TIME ZONE $1)::date - 29) di,
                   COALESCE($3::date, (now() AT TIME ZONE $1)::date) df
          )
-         SELECT to_char(g.d,'DD/MM') rotulo, COALESCE(SUM(p.total),0) total
+         SELECT to_char(g.d,'DD/MM') rotulo, COALESCE(SUM(p.subtotal),0) total
            FROM faixa, generate_series((SELECT LEAST(di,df) FROM faixa), (SELECT GREATEST(di,df) FROM faixa), interval '1 day') g(d)
            LEFT JOIN "${s}".pedido p ON ${L}::date = g.d::date AND p.${NAO}
           GROUP BY g.d ORDER BY g.d`;
       params = [tz, ini, fim];
     } else if (tipo === 'semana') {
       sql =
-        `SELECT to_char(g.w,'DD/MM') rotulo, COALESCE(SUM(p.total),0) total
+        `SELECT to_char(g.w,'DD/MM') rotulo, COALESCE(SUM(p.subtotal),0) total
            FROM generate_series(date_trunc('week', now() AT TIME ZONE $1) - interval '11 weeks', date_trunc('week', now() AT TIME ZONE $1), interval '1 week') g(w)
            LEFT JOIN "${s}".pedido p ON date_trunc('week', ${L}) = g.w AND p.${NAO}
           GROUP BY g.w ORDER BY g.w`;
       params = [tz];
     } else if (tipo === 'mes') {
       sql =
-        `SELECT to_char(g.m,'MM/YYYY') rotulo, COALESCE(SUM(p.total),0) total
+        `SELECT to_char(g.m,'MM/YYYY') rotulo, COALESCE(SUM(p.subtotal),0) total
            FROM generate_series(date_trunc('month', now() AT TIME ZONE $1) - interval '11 months', date_trunc('month', now() AT TIME ZONE $1), interval '1 month') g(m)
            LEFT JOIN "${s}".pedido p ON date_trunc('month', ${L}) = g.m AND p.${NAO}
           GROUP BY g.m ORDER BY g.m`;
@@ -197,7 +200,7 @@ export class SqlDashboardRepository implements DashboardRepository {
     } else {
       // ano: últimos 5 anos
       sql =
-        `SELECT to_char(g.y,'YYYY') rotulo, COALESCE(SUM(p.total),0) total
+        `SELECT to_char(g.y,'YYYY') rotulo, COALESCE(SUM(p.subtotal),0) total
            FROM generate_series(date_trunc('year', now() AT TIME ZONE $1) - interval '4 years', date_trunc('year', now() AT TIME ZONE $1), interval '1 year') g(y)
            LEFT JOIN "${s}".pedido p ON date_trunc('year', ${L}) = g.y AND p.${NAO}
           GROUP BY g.y ORDER BY g.y`;
@@ -249,7 +252,7 @@ export class SqlDashboardRepository implements DashboardRepository {
 
     const rows = await this.ds.query(
       `SELECT p.numero, COALESCE(c.nome,'—') cliente, COALESCE(v.nome,'—') vendedor,
-              p.criado_em, p.status, p.total
+              p.criado_em, p.status, p.subtotal AS total
          FROM "${s}".pedido p
          LEFT JOIN "${s}".cliente c ON c.id = p.cliente_id
          LEFT JOIN "${s}".vendedor v ON v.id = p.vendedor_id
@@ -267,18 +270,18 @@ export class SqlDashboardRepository implements DashboardRepository {
     const um = (v: any) => Number(v ?? 0);
     const NAO = `status NOT IN ('orcamento','cancelado')`;
     const tot = (await this.ds.query(
-      `SELECT COALESCE(SUM(total),0) total, COUNT(*)::int pedidos
+      `SELECT COALESCE(SUM(subtotal),0) total, COUNT(*)::int pedidos
          FROM "${s}".pedido
         WHERE ${NAO} AND to_char(date_trunc('month', criado_em),'YYYY-MM') = $1`, [mes]))[0];
     const top = await this.ds.query(
-      `SELECT COALESCE(c.nome,'—') nome, COALESCE(SUM(p.total),0) total
+      `SELECT COALESCE(c.nome,'—') nome, COALESCE(SUM(p.subtotal),0) total
          FROM "${s}".pedido p
          LEFT JOIN "${s}".cliente c ON c.id = p.cliente_id
         WHERE p.${NAO} AND to_char(date_trunc('month', p.criado_em),'YYYY-MM') = $1
         GROUP BY 1 ORDER BY total DESC LIMIT 5`, [mes]);
     // Faturamento por dia do mês (para o gráfico realizado × meta).
     const porDiaRows = await this.ds.query(
-      `SELECT EXTRACT(DAY FROM criado_em)::int dia, COALESCE(SUM(total),0) total
+      `SELECT EXTRACT(DAY FROM criado_em)::int dia, COALESCE(SUM(subtotal),0) total
          FROM "${s}".pedido
         WHERE ${NAO} AND to_char(date_trunc('month', criado_em),'YYYY-MM') = $1
         GROUP BY 1`, [mes]);

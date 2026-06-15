@@ -9,6 +9,8 @@ export interface Titulo {
   favorecidoId: string | null; favorecidoNome: string | null;
   vendedorNome: string | null;     // vendedor do pedido vinculado (quando origem = pedido)
   pedidoFormaPagamento: string | null; // forma de pagamento escolhida no pedido (Pix/Cartão/…)
+  pedidoFrete: number | null;      // frete cobrado do cliente no pedido (origem = pedido)
+  pedidoFreteTipo: string | null;  // forma de entrega do pedido (retirada/motoboy/correios/…)
   conferido: boolean;              // recebimento conferido (maquininha/caixa) — NÃO é baixa
   conferidoEm: string | null;
   favorecidoForma: string | null;  // reembolso: forma usada pelo terceiro (favorecido)

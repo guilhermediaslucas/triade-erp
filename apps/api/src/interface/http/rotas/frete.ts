@@ -20,5 +20,16 @@ export function rotasFrete(deps: Dependencias): Router {
   r.post('/frete/calcular', aut, az('comercial.pedido.criar'), async (req, res: Response) => {
     try { res.json(await deps.freteService.calcular(sch(req), req.usuario!.empresa, req.body ?? {})); } catch (e) { tratarErro(res, e); }
   });
+
+  // Campanhas de frete por cliente (grátis / fixo / desconto %), com período.
+  r.get('/frete/campanhas', aut, az('logistica.frete.ver'), async (req, res: Response) => {
+    try { res.json(await deps.freteCampanhasService.listar(sch(req))); } catch (e) { tratarErro(res, e); }
+  });
+  r.post('/frete/campanhas', aut, az('logistica.frete.gerenciar'), async (req, res: Response) => {
+    try { await deps.freteCampanhasService.criar(sch(req), req.body ?? {}); res.status(201).json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
+  r.delete('/frete/campanhas/:id', aut, az('logistica.frete.gerenciar'), async (req, res: Response) => {
+    try { await deps.freteCampanhasService.remover(sch(req), req.params.id!); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
   return r;
 }

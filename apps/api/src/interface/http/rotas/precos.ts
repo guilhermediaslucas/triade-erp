@@ -19,7 +19,14 @@ export function rotasPrecos(deps: Dependencias): Router {
     try { res.json(await deps.precosService.listarCliente(sch(req), req.params.clienteId!)); } catch (e) { tratarErro(res, e); }
   });
   r.put('/precos/cliente/:clienteId/:produtoId', aut, az('comercial.preco.gerenciar'), async (req, res: Response) => {
-    try { await deps.precosService.definirCliente(sch(req), req.params.clienteId!, req.params.produtoId!, req.body ?? {}); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+    try {
+      await deps.precosService.definirCliente(sch(req), req.params.clienteId!, req.params.produtoId!, req.body ?? {},
+        { usuarioId: req.usuario!.sub, usuarioNome: req.usuario!.nome });
+      res.json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
+  });
+  r.get('/precos/cliente/:clienteId/historico', aut, az('comercial.preco.listar'), async (req, res: Response) => {
+    try { res.json(await deps.precosService.listarHistoricoCliente(sch(req), req.params.clienteId!)); } catch (e) { tratarErro(res, e); }
   });
   r.get('/precos/campanhas/:produtoId', aut, az('comercial.preco.listar'), async (req, res: Response) => {
     try { res.json(await deps.precosService.listarCampanhas(sch(req), req.params.produtoId!)); } catch (e) { tratarErro(res, e); }

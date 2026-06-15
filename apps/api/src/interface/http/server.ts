@@ -32,6 +32,8 @@ import { rotasRelatorios } from './rotas/relatorios.js';
 import { rotasCondicoes } from './rotas/condicoes.js';
 import { rotasContas } from './rotas/contas.js';
 import { rotasSuporte } from './rotas/suporte.js';
+import { rotasAuditoria } from './rotas/auditoria.js';
+import { criarAuditoria } from './middlewares/auditoria.js';
 
 export function criarServidor(): Express {
   const app = express();
@@ -64,6 +66,9 @@ export function criarServidor(): Express {
   });
 
   app.use(express.json({ limit: '3mb' }));
+
+  // Auditoria: registra toda alteração (POST/PUT/PATCH/DELETE) bem-sucedida (best-effort).
+  app.use(criarAuditoria(AppDataSource));
 
   const deps = montarDependencias();
 
@@ -108,6 +113,7 @@ export function criarServidor(): Express {
   app.use(rotasCondicoes(deps));
   app.use(rotasContas(deps));
   app.use(rotasSuporte(deps));
+  app.use(rotasAuditoria(deps));
 
   return app;
 }

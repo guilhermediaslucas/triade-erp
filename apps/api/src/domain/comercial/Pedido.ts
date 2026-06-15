@@ -40,7 +40,8 @@ export interface Pedido {
   expedidoEm: string | null;          // log: data/hora ISO da expedição
   recebidoPor: string | null;         // quem recebeu na entrega (opcional)
   subtotal: number;
-  frete: number;
+  frete: number;          // frete COBRADO do cliente (entra no total)
+  freteCusto: number;     // custo real do frete para a empresa (absorvido = custo - cobrado)
   total: number;
   condicaoParcelas: number;
   condicaoIntervalo: number;
@@ -73,7 +74,8 @@ export interface NovoPedido {
   formaEntrega: string;
   motoboyId: string | null;
   distanciaKm: number | null;
-  frete: number;
+  frete: number;          // cobrado do cliente
+  freteCusto: number;     // custo real para a empresa
   itens: PedidoItem[];
   subtotal: number;
   total: number;

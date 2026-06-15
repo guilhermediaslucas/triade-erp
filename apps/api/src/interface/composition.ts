@@ -41,6 +41,8 @@ import { SqlCondicaoRepository } from '../infra/repositories/SqlCondicaoReposito
 import { CondicoesService } from '../application/comercial/CondicoesService.js';
 import { SqlFreteConfigRepository } from '../infra/repositories/SqlFreteConfigRepository.js';
 import { FreteService } from '../application/comercial/FreteService.js';
+import { SqlFreteCampanhaRepository } from '../infra/repositories/SqlFreteCampanhaRepository.js';
+import { FreteCampanhasService } from '../application/comercial/FreteCampanhasService.js';
 import { SqlGestaoFreteRepository } from '../infra/repositories/SqlGestaoFreteRepository.js';
 import { GestaoFretesService } from '../application/comercial/GestaoFretesService.js';
 import { SqlPedidoRepository } from '../infra/repositories/SqlPedidoRepository.js';
@@ -66,6 +68,7 @@ import { SqlRelatorioRepository } from '../infra/repositories/SqlRelatorioReposi
 import { RelatoriosService } from '../application/relatorio/RelatoriosService.js';
 import { SqlChamadoRepository } from '../infra/repositories/SqlChamadoRepository.js';
 import { SuporteService } from '../application/suporte/SuporteService.js';
+import { SqlLogAcaoRepository } from '../infra/repositories/SqlLogAcaoRepository.js';
 import { ResendEmailSender } from '../infra/email/ResendEmailSender.js';
 import { SqlResetSenhaRepository } from '../infra/repositories/SqlResetSenhaRepository.js';
 import { RecuperarSenha } from '../application/auth/RecuperarSenha.js';
@@ -98,6 +101,7 @@ export function montarDependencias() {
   const recebimentoRepo = new SqlRecebimentoRepository(AppDataSource);
   const emailSender = new ResendEmailSender(env.resendApiKey, env.emailFrom);
   const resetSenhaRepo = new SqlResetSenhaRepository(AppDataSource);
+  const freteCampanhaRepo = new SqlFreteCampanhaRepository(AppDataSource);
 
   return {
     tokens,
@@ -122,7 +126,8 @@ export function montarDependencias() {
     precosService: new PrecosService(precoBaseRepo, precoClienteRepo),
     freteService: new FreteService(freteConfigRepo, empresasRepo),
     gestaoFretesService: new GestaoFretesService(new SqlGestaoFreteRepository(AppDataSource), tituloRepo),
-    pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, precoClienteRepo, clientesRepo, estoqueRepo, etiquetaRepo, tituloRepo, condicaoRepo, motoboysRepo, usuariosRepo),
+    pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, precoClienteRepo, clientesRepo, estoqueRepo, etiquetaRepo, tituloRepo, condicaoRepo, motoboysRepo, usuariosRepo, freteCampanhaRepo),
+    freteCampanhasService: new FreteCampanhasService(freteCampanhaRepo),
     condicoesService: new CondicoesService(condicaoRepo),
     financeiroService: new FinanceiroService(tituloRepo, pedidoRepo),
     categoriasFinanceirasService: new CategoriasFinanceirasService(catFinRepo),
@@ -140,6 +145,7 @@ export function montarDependencias() {
       emailSender,
       env.suporteEmailDestino,
     ),
+    auditoriaRepo: new SqlLogAcaoRepository(AppDataSource),
     recuperarSenha: new RecuperarSenha(
       empresasRepo, usuariosRepo, superAdminsRepo, resetSenhaRepo, hash, emailSender, env.appUrl,
     ),

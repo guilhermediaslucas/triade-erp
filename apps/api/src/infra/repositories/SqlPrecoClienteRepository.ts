@@ -1,5 +1,6 @@
 import type { DataSource } from 'typeorm';
-import type { PrecoClienteEntrada, PrecoClienteLinha, PrecoClienteRepository } from '../../domain/comercial/PrecoCliente.js';
+import { randomUUID } from 'node:crypto';
+import type { PrecoClienteEntrada, PrecoClienteHistorico, PrecoClienteLinha, PrecoClienteRepository, RegistroHistoricoPrecoCliente } from '../../domain/comercial/PrecoCliente.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 const iso = (v: any): string | null => (v ? new Date(v).toISOString().slice(0, 10) : null);
@@ -46,5 +47,27 @@ export class SqlPrecoClienteRepository implements PrecoClienteRepository {
           AND (tipo = 'fixo' OR (tipo = 'periodo' AND CURRENT_DATE BETWEEN de AND ate))`,
       [clienteId, produtoId]))[0];
     return r ? Number(r.preco) : null;
+  }
+
+  async registrarHistorico(schema: string, r: RegistroHistoricoPrecoCliente): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(
+      `INSERT INTO "${s}".preco_cliente_historico (id, cliente_id, produto_id, preco, tipo, de, ate, usuario_id, usuario_nome)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+      [randomUUID(), r.clienteId, r.produtoId, r.preco, r.tipo, r.de, r.ate, r.usuarioId, r.usuarioNome]);
+  }
+
+  async listarHistorico(schema: string, clienteId: string): Promise<PrecoClienteHistorico[]> {
+    const s = validarSchema(schema);
+    const linhas = await this.ds.query(
+      `SELECT h.preco, h.tipo, h.de, h.ate, h.usuario_nome, h.criado_em, p.nome produto_nome
+         FROM "${s}".preco_cliente_historico h
+         LEFT JOIN "${s}".produto p ON p.id = h.produto_id
+        WHERE h.cliente_id = $1 ORDER BY h.criado_em DESC`, [clienteId]);
+    return linhas.map((r: any) => ({
+      produtoNome: r.produto_nome ?? '—', preco: Number(r.preco), tipo: r.tipo,
+      de: iso(r.de), ate: iso(r.ate), usuarioNome: r.usuario_nome ?? null,
+      criadoEm: new Date(r.criado_em).toISOString(),
+    }));
   }
 }

@@ -61,6 +61,7 @@ const GRUPOS: Grupo[] = [
     rotulo: 'menu.logistica', icone: 'i-truck',
     secoes: [{ itens: [
       { rotulo: 'menu.gestao_fretes', to: '/logistica/fretes', cap: 'logistica.frete.ver' },
+      { rotulo: 'menu.campanhas_frete', to: '/logistica/campanhas-frete', cap: 'logistica.frete.ver' },
     ] }],
   },
   { secoes: [{ itens: [{ rotulo: 'menu.relatorios', icone: 'i-chart', to: '/relatorios', cap: 'relatorios.ver' }] }] },
@@ -109,6 +110,7 @@ const GRUPOS: Grupo[] = [
         { rotulo: 'menu.usuarios', to: '/acesso/usuarios', cap: 'acesso.usuario.listar' },
         { rotulo: 'menu.perfis', to: '/acesso/perfis', cap: 'acesso.perfil.listar' },
         { rotulo: 'menu.empresa', to: '/config/empresa', cap: 'acesso.empresa.editar' },
+        { rotulo: 'menu.auditoria', to: '/config/auditoria', cap: 'acesso.usuario.listar' },
       ],
     }],
   },

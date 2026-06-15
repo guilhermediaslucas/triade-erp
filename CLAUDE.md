@@ -188,6 +188,30 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-15** — **Frete (cobrado×custo) + campanhas de frete + vendas sem frete + relatórios contábeis + histórico de preço por cliente + auditoria.** Lote grande (tudo numa entrega). **Migration tenant 051:** `pedido.frete_custo`
+  (backfill = frete), tabelas `frete_campanha` (cliente, tipo gratis|fixo|percentual, valor, motivo, de, ate),
+  `preco_cliente_historico` (preço/tipo/vigência + usuario_id/nome + criado_em), `log_acao` (auditoria). **(1) Bug nome
+  produto:** dashboard "Produtos mais vendidos" (`SqlDashboardRepository.top`) passou a usar o **nome atual** do produto
+  (JOIN `produto`, snapshot só reserva). **(2) Indicadores sem frete:** todas as somas de venda do dashboard/série/drill
+  trocaram `SUM(total)`→`SUM(subtotal)` (financeiro de títulos inalterado). **(3) Frete cobrado×custo:** `pedido.frete` =
+  COBRADO do cliente (entra no total); `frete_custo` = custo real; `PedidosService.montar` trata o frete informado como
+  custo e resolve o **cobrado** pela campanha vigente do cliente (`FreteCampanhaRepository.freteCobrado`); absorvido =
+  custo−cobrado. Domínio `FreteCampanha`/repo/`FreteCampanhasService`, rotas `/frete/campanhas` (GET/POST/DELETE, cap
+  `logistica.frete.*`), tela `CampanhasFrete` (Logística). **(4) Frete no Contas a receber:** `SqlTituloRepository.listar`
+  estendeu o JOIN do pedido → `Titulo.pedidoFrete`/`pedidoFreteTipo`; coluna **Frete** na tela (receber). **(5) Relatórios
+  contábeis:** `RelVendasContabil` (venda/frete cobrado/custo/absorvido/tipo/total, backend `vendasContabil`) e
+  `RelContasPagarContabil` (reusa `/financeiro/pagar`); ambos no hub de Relatórios, CSV/Excel. **(6) Histórico preço
+  cliente:** `preco_cliente_historico` gravado no `definirCliente` com usuário/hora; `GET /precos/cliente/:id/historico`;
+  botão **Histórico** + modal no modo "Por cliente" da Tabela de preço. **(7) Auditoria geral:** **middleware único**
+  (`criarAuditoria`) registra toda alteração (POST/PUT/PATCH/DELETE 2xx) em `log_acao` (usuário/método/caminho/módulo);
+  `SqlLogAcaoRepository` + rota `/auditoria` (cap `acesso.usuario.listar`) + tela **Auditoria** (Configurações, filtros
+  usuário/módulo/período + CSV). i18n pt/en/es (`relvc.*`/`relcp.*`/`fretecamp.*`/`precohist.*`/`audit.*`/`frete.entrega_*`).
+  **Sem capability nova** (reusa logistica.frete/relatorios/financeiro/acesso) → **não precisa relogar**. **Validação:**
+  **tsc da API limpo** (0 erros de tipo reais; só `@triade/shared` não-resolvido no sandbox + aviso pré-existente do
+  MetasService); web por hand-review (sandbox trunca). **Pendente:** Gui `npm install` + build + commit+push → Render
+  aplica a **051** + **APK novo**. **Polimento deixado p/ depois:** no NovoPedido, mostrar "custo × cobrado" ao vivo
+  (hoje a campanha aplica no backend e o total já sai correto). **Sugiro e2e ao aplicar:** campanha grátis zera o frete
+  cobrado mantendo o custo; relatório contábil bate venda/frete; histórico registra usuário/hora; auditoria registra um POST.
 - **2026-06-15** — **Segurança: corrigida a vulnerabilidade do esbuild (npm audit "2 high") subindo a Vite 5→8.** As 2
   "high" eram do **esbuild** (transitivo da Vite, ferramenta de build): falhas do **dev server** (SSRF + leitura de
   arquivo no Windows) + uma específica de Deno — **zero impacto em produção** (Cloudflare serve estático; API não usa
