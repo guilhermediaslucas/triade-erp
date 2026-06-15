@@ -683,4 +683,11 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS favorecido_pago_em date;
     `,
   },
+  {
+    nome: '050_usuario_vendedor',
+    sql: (s) => `
+      ALTER TABLE "${s}".usuario
+        ADD COLUMN IF NOT EXISTS vendedor_id uuid REFERENCES "${s}".vendedor(id) ON DELETE SET NULL;
+    `,
+  },
 ];

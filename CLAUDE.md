@@ -188,6 +188,26 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-15** — **Vendedor só inclui pedido para si (vínculo login↔vendedor + permissão).** Migration tenant **050**
+  `usuario.vendedor_id` (FK→vendedor, ON DELETE SET NULL). Permissão nova **`comercial.pedido.vendedor_qualquer`**
+  ("Escolher qualquer vendedor no pedido", módulo Comercial) — vai pro Administrador no boot e pros perfis padrão
+  Diretor (TODAS) e **Comercial**; quem não tem fica restrito. **Backend:** `Usuario`/`UsuarioResumo` += `vendedorId`
+  (+ `vendedorNome` no resumo via JOIN); `SqlUsuarioRepository` grava/lê; `UsuariosService.criar/editar` e rotas
+  `/usuarios` aceitam `vendedorId`; `/me` devolve `vendedorId`+`vendedorNome` (via `vendedoresRepo`, exposto nas deps).
+  **Regra (`PedidosService`):** injeção de `usuariosRepo`; `criar/editar` recebem `AtorPedido {usuarioId, superAdmin}`
+  (passado pela rota a partir do token); `resolverVendedor`: super-admin OU quem tem a cap → vendedor livre (do corpo);
+  **sem a cap e vinculado a um Vendedor → FORÇA o próprio** (ignora o corpo, vale via API); sem a cap e sem vínculo →
+  livre (não quebra quem já usa). **Frontend:** `Usuários` ganhou select **"Vendedor vinculado"**; `AuthContext`/`/me`
+  guardam `vendedorId`/`vendedorNome`; `NovoPedido` — quando `!temCapability('comercial.pedido.vendedor_qualquer') &&
+  usuario.vendedorId`, o campo Vendedor vira **travado** (input desabilitado com o nome do próprio + hint) e força o id;
+  senão, dropdown normal. i18n `usuarios.vendedor*`/`pedidos.vendedor_travado|_voce`/`cap.comercial.pedido.vendedor_qualquer`
+  pt/en/es. **Validação:** tsc da API sem erros de tipo reais (só truncagem do mount nos arquivos grandes + `@triade/shared`
+  não-resolvido + aviso pré-existente do MetasService); hand-review. **Pendente:** Gui `npm install` (relink shared) +
+  build + commit+push → Render aplica a 050 + sincroniza a cap no Administrador + **relogar** (carrega a cap + `/me` com
+  vendedor) + **APK novo**. **Setup pelo Gui:** em Usuários, **vincular cada login de vendedor ao seu cadastro de Vendedor**
+  (é o que ativa a trava); dar a cap "qualquer vendedor" só a quem pode lançar por outros (Admin/Comercial já têm).
+  **Sugiro e2e ao aplicar:** vendedor vinculado sem a cap → pedido sai com ele mesmo (mesmo mandando outro id no corpo);
+  com a cap → escolhe qualquer; sem vínculo → livre.
 - **2026-06-15** — **Esqueci a senha (real) + notificação ao autor do chamado (e-mail + sino).** Três frentes.
   **(A) E-mail ao autor na mudança de status:** `SuporteService.mudarStatus` agora carrega o chamado e, ao virar
   **em_andamento** ou **resolvido**, envia e-mail ao `usuarioEmail` (`notificarUsuario`, best-effort). Sem migration.

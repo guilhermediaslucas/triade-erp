@@ -11,10 +11,17 @@ export function rotasMe(deps: Dependencias): Router {
     try {
       const u = req.usuario!;
       const capabilities = u.superAdmin ? [] : await deps.usuariosRepo.capabilities(u.schema, u.sub);
-      // foto vem do cadastro do usuário no tenant (super-admin não tem linha no tenant → null).
+      // foto + vendedor vinculado vêm do cadastro do usuário no tenant (super-admin → null).
       let foto: string | null = null;
-      if (!u.superAdmin) { const usr = await deps.usuariosRepo.buscarPorId(u.schema, u.sub); foto = usr?.foto ?? null; }
-      res.json({ id: u.sub, nome: u.nome, email: u.email, empresa: u.empresa, capabilities, superAdmin: u.superAdmin === true, foto });
+      let vendedorId: string | null = null;
+      let vendedorNome: string | null = null;
+      if (!u.superAdmin) {
+        const usr = await deps.usuariosRepo.buscarPorId(u.schema, u.sub);
+        foto = usr?.foto ?? null;
+        vendedorId = usr?.vendedorId ?? null;
+        if (vendedorId) { const v = await deps.vendedoresRepo.buscarPorId(u.schema, vendedorId); vendedorNome = v?.nome ?? null; }
+      }
+      res.json({ id: u.sub, nome: u.nome, email: u.email, empresa: u.empresa, capabilities, superAdmin: u.superAdmin === true, foto, vendedorId, vendedorNome });
     } catch (e) { tratarErro(res, e); }
   });
 

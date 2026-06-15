@@ -43,7 +43,10 @@ function novoEndTexto(e: NovoEndereco): string {
 const endVazio = (): NovoEndereco => ({ logradouro: '', numero: '', complemento: '', bairro: '', cep: '', cidade: '', uf: '' });
 
 export function NovoPedido() {
-  const { token } = useAuth();
+  const { token, usuario, temCapability } = useAuth();
+  // Vendedor travado: usuário sem a permissão "qualquer vendedor" e vinculado a um Vendedor
+  // só cria pedido para si (o backend também força isso).
+  const vendedorTravado = !temCapability('comercial.pedido.vendedor_qualquer') && !!usuario?.vendedorId;
   const { t } = useI18n();
   const nav = useNavigate();
   const toast = useToast();
@@ -97,6 +100,11 @@ export function NovoPedido() {
     /* eslint-disable-next-line */
   }, []);
   const dispDe = (pid: string) => estoque[pid] ?? 0;
+
+  // Quando o vendedor é travado, força o próprio vendedor vinculado.
+  useEffect(() => {
+    if (vendedorTravado && usuario?.vendedorId) setVendedorId(usuario.vendedorId);
+  }, [vendedorTravado, usuario?.vendedorId]);
 
   // Modo edição: carrega o pedido (orçamento) e preenche o formulário.
   useEffect(() => {
@@ -313,9 +321,16 @@ export function NovoPedido() {
           </label>
           {novoCli && <ModalNovaPessoa tipo="cliente" onFechar={() => setNovoCli(false)} onCriado={(nome) => { setNovoCli(false); recarregarClientes(nome); }} />}
           <label className="campo">{t('pedidos.vendedor')}
-            <select value={vendedorId} onChange={(e) => setVendedorId(e.target.value)}>
-              <option value="">—</option>{vendedores.map((v) => <option key={v.id} value={v.id}>{v.nome}</option>)}
-            </select>
+            {vendedorTravado ? (
+              <>
+                <input value={usuario?.vendedorNome ?? t('pedidos.vendedor_voce')} disabled />
+                <small className="hint">{t('pedidos.vendedor_travado')}</small>
+              </>
+            ) : (
+              <select value={vendedorId} onChange={(e) => setVendedorId(e.target.value)}>
+                <option value="">—</option>{vendedores.map((v) => <option key={v.id} value={v.id}>{v.nome}</option>)}
+              </select>
+            )}
           </label>
           <label className="campo">{t('pedidos.forma_pgto')}
             <select value={formaPagamento} onChange={(e) => setFormaPagamento(e.target.value)}>

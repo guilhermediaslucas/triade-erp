@@ -10,6 +10,7 @@ export interface CriarUsuarioEntrada {
   senha: string;
   perfilId: string | null;
   foto?: string | null;
+  vendedorId?: string | null;
 }
 
 function validarEmail(email: string): string {
@@ -50,15 +51,15 @@ export class UsuariosService {
     if (await this.usuarios.emailExiste(schema, email)) throw new ErroAplicacao('usuario.email_em_uso', 409);
     await this.validarPerfil(schema, e.perfilId);
     const senhaHash = await this.hash.gerar(e.senha);
-    return this.usuarios.criar(schema, { nome: e.nome.trim(), email, senhaHash, perfilId: e.perfilId, foto: normalizarFoto(e.foto) });
+    return this.usuarios.criar(schema, { nome: e.nome.trim(), email, senhaHash, perfilId: e.perfilId, foto: normalizarFoto(e.foto), vendedorId: e.vendedorId ?? null });
   }
 
-  async editar(schema: string, id: string, nome: string, perfilId: string | null, foto?: string | null): Promise<void> {
+  async editar(schema: string, id: string, nome: string, perfilId: string | null, foto?: string | null, vendedorId?: string | null): Promise<void> {
     if (!nome || nome.trim().length < 2) throw new ErroAplicacao('usuario.nome_invalido', 400);
     const u = await this.usuarios.buscarPorId(schema, id);
     if (!u) throw new ErroAplicacao('usuario.nao_encontrado', 404);
     await this.validarPerfil(schema, perfilId);
-    await this.usuarios.atualizar(schema, id, nome.trim(), perfilId, normalizarFoto(foto));
+    await this.usuarios.atualizar(schema, id, nome.trim(), perfilId, normalizarFoto(foto), vendedorId ?? null);
   }
 
   async alternarAtivo(schema: string, id: string, ativo: boolean): Promise<void> {

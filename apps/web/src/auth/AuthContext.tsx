@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 
-export interface UsuarioLogado { id: string; nome: string; email: string; empresa: string; foto: string | null; }
+export interface UsuarioLogado { id: string; nome: string; email: string; empresa: string; foto: string | null; vendedorId: string | null; vendedorNome: string | null; }
 interface LoginResp { token: string; usuario: { id: string; nome: string; email: string }; empresa: { codigo: string; fantasia: string }; superAdmin?: boolean; }
-interface MeResp { id: string; nome: string; email: string; empresa: string; capabilities: string[]; superAdmin?: boolean; foto?: string | null; }
+interface MeResp { id: string; nome: string; email: string; empresa: string; capabilities: string[]; superAdmin?: boolean; foto?: string | null; vendedorId?: string | null; vendedorNome?: string | null; }
 
 interface AuthCtx {
   token: string | null;
@@ -45,10 +45,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let capabilities: string[] = [];
     let superAdmin = r.superAdmin === true;
     let foto: string | null = null;
-    try { const me = await api.get<MeResp>('/me', r.token); capabilities = me.capabilities; superAdmin = me.superAdmin === true; foto = me.foto ?? null; } catch { /* ignora */ }
+    let vendedorId: string | null = null, vendedorNome: string | null = null;
+    try { const me = await api.get<MeResp>('/me', r.token); capabilities = me.capabilities; superAdmin = me.superAdmin === true; foto = me.foto ?? null; vendedorId = me.vendedorId ?? null; vendedorNome = me.vendedorNome ?? null; } catch { /* ignora */ }
     salvar({
       token: r.token,
-      usuario: { ...r.usuario, empresa: r.empresa.codigo, foto },
+      usuario: { ...r.usuario, empresa: r.empresa.codigo, foto, vendedorId, vendedorNome },
       empresaFantasia: r.empresa.fantasia,
       capabilities, superAdmin,
     }, lembrar);
@@ -62,7 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try { const me = await api.get<MeResp>('/me', r.token); capabilities = me.capabilities; foto = me.foto ?? null; } catch { /* ignora */ }
     salvar({
       token: r.token,
-      usuario: { ...r.usuario, empresa: r.empresa.codigo, foto },
+      usuario: { ...r.usuario, empresa: r.empresa.codigo, foto, vendedorId: null, vendedorNome: null },
       empresaFantasia: r.empresa.fantasia,
       capabilities, superAdmin: true,
     }, persistido());
@@ -81,8 +82,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .then((me) => {
         const sa = me.superAdmin === true;
         const foto = me.foto ?? null;
-        if (JSON.stringify(me.capabilities) !== JSON.stringify(sessao.capabilities) || sa !== sessao.superAdmin || foto !== sessao.usuario.foto) {
-          salvar({ ...sessao, capabilities: me.capabilities, superAdmin: sa, usuario: { ...sessao.usuario, foto } }, persist);
+        const vendedorId = me.vendedorId ?? null;
+        const vendedorNome = me.vendedorNome ?? null;
+        if (JSON.stringify(me.capabilities) !== JSON.stringify(sessao.capabilities) || sa !== sessao.superAdmin || foto !== sessao.usuario.foto
+            || vendedorId !== sessao.usuario.vendedorId) {
+          salvar({ ...sessao, capabilities: me.capabilities, superAdmin: sa, usuario: { ...sessao.usuario, foto, vendedorId, vendedorNome } }, persist);
         }
       })
       .catch((e: ErroApi) => { if (e?.status === 401) salvar(null); });

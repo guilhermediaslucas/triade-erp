@@ -6,6 +6,7 @@ export interface Usuario {
   ativo: boolean;
   perfilId: string | null;
   foto: string | null;   // data URI da foto/avatar (opcional)
+  vendedorId: string | null;   // cadastro de Vendedor vinculado a este login (opcional)
   criadoEm: Date; // UTC
 }
 
@@ -18,4 +19,6 @@ export interface UsuarioResumo {
   perfilId: string | null;
   perfilNome: string | null;
   foto: string | null;
+  vendedorId: string | null;
+  vendedorNome: string | null;
 }

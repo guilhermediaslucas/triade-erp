@@ -17,16 +17,16 @@ export function rotasUsuarios(deps: Dependencias): Router {
 
   r.post('/usuarios', autenticar, autorizar('acesso.usuario.gerenciar'), async (req, res: Response) => {
     try {
-      const { nome, email, senha, perfilId, foto } = req.body ?? {};
-      const id = await deps.usuariosService.criar(schema(req), { nome, email, senha, perfilId: perfilId ?? null, foto: foto ?? null });
+      const { nome, email, senha, perfilId, foto, vendedorId } = req.body ?? {};
+      const id = await deps.usuariosService.criar(schema(req), { nome, email, senha, perfilId: perfilId ?? null, foto: foto ?? null, vendedorId: vendedorId ?? null });
       res.status(201).json({ id });
     } catch (e) { tratarErro(res, e); }
   });
 
   r.put('/usuarios/:id', autenticar, autorizar('acesso.usuario.gerenciar'), async (req, res: Response) => {
     try {
-      const { nome, perfilId, foto } = req.body ?? {};
-      await deps.usuariosService.editar(schema(req), req.params.id!, nome, perfilId ?? null, foto ?? null);
+      const { nome, perfilId, foto, vendedorId } = req.body ?? {};
+      await deps.usuariosService.editar(schema(req), req.params.id!, nome, perfilId ?? null, foto ?? null, vendedorId ?? null);
       res.json({ ok: true });
     } catch (e) { tratarErro(res, e); }
   });

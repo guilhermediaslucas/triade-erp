@@ -5,7 +5,7 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { Avatar } from '../components/Avatar.js';
 import { Ic } from '../components/Icones.js';
 
-interface UsuarioResumo { id: string; nome: string; email: string; ativo: boolean; perfilId: string | null; perfilNome: string | null; foto: string | null; }
+interface UsuarioResumo { id: string; nome: string; email: string; ativo: boolean; perfilId: string | null; perfilNome: string | null; foto: string | null; vendedorId: string | null; }
 interface Perfil { id: string; nome: string; }
 
 export function Usuarios() {
@@ -94,7 +94,7 @@ export function Usuarios() {
 }
 
 function ModalUsuario({ usuario, perfis, onFechar, onSalvo }: {
-  usuario: { id: string; nome: string; perfilId: string | null; foto: string | null } | null;
+  usuario: { id: string; nome: string; perfilId: string | null; foto: string | null; vendedorId: string | null } | null;
   perfis: Perfil[]; onFechar: () => void; onSalvo: () => void;
 }) {
   const { token } = useAuth();
@@ -105,9 +105,13 @@ function ModalUsuario({ usuario, perfis, onFechar, onSalvo }: {
   const [senha, setSenha] = useState('');
   const [perfilId, setPerfilId] = useState(usuario?.perfilId ?? '');
   const [foto, setFoto] = useState<string | null>(usuario?.foto ?? null);
+  const [vendedorId, setVendedorId] = useState(usuario?.vendedorId ?? '');
+  const [vendedores, setVendedores] = useState<{ id: string; nome: string }[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { api.get<{ id: string; nome: string }[]>('/vendedores', token!).then(setVendedores).catch(() => {}); /* eslint-disable-next-line */ }, []);
 
   function escolherFoto(e: ChangeEvent<HTMLInputElement>) {
     const arq = e.target.files?.[0];
@@ -121,8 +125,8 @@ function ModalUsuario({ usuario, perfis, onFechar, onSalvo }: {
   async function salvar() {
     setErro(null); setSalvando(true);
     try {
-      if (editando) await api.put('/usuarios/' + usuario!.id, { nome, perfilId: perfilId || null, foto }, token!);
-      else await api.post('/usuarios', { nome, email, senha, perfilId: perfilId || null, foto }, token!);
+      if (editando) await api.put('/usuarios/' + usuario!.id, { nome, perfilId: perfilId || null, foto, vendedorId: vendedorId || null }, token!);
+      else await api.post('/usuarios', { nome, email, senha, perfilId: perfilId || null, foto, vendedorId: vendedorId || null }, token!);
       onSalvo();
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalvando(false); }
   }
@@ -158,6 +162,13 @@ function ModalUsuario({ usuario, perfis, onFechar, onSalvo }: {
             <option value="">{t('usuarios.sem_perfil')}</option>
             {perfis.map((p) => <option key={p.id} value={p.id}>{p.nome}</option>)}
           </select>
+        </label>
+        <label className="campo">{t('usuarios.vendedor')}
+          <select value={vendedorId} onChange={(e) => setVendedorId(e.target.value)}>
+            <option value="">{t('usuarios.sem_vendedor')}</option>
+            {vendedores.map((v) => <option key={v.id} value={v.id}>{v.nome}</option>)}
+          </select>
+          <small className="hint">{t('usuarios.vendedor_hint')}</small>
         </label>
         {erro && <div className="alerta-erro">{t(erro)}</div>}
         <div className="modal-acoes">

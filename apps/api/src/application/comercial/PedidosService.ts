@@ -8,8 +8,15 @@ import type { EstoqueRepository } from '../../domain/estoque/Estoque.js';
 import type { EtiquetaRepository } from '../../domain/estoque/Etiqueta.js';
 import type { TituloRepository } from '../../domain/financeiro/Titulo.js';
 import type { CondicaoRepository } from '../../domain/comercial/Condicao.js';
+import type { UsuarioRepository } from '../../domain/usuario/UsuarioRepository.js';
 import { FORMAS_ENTREGA } from '../../domain/comercial/FreteConfig.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
+
+// Quem está criando o pedido (vem do token). Usado para travar o vendedor:
+// quem não tem a capability "comercial.pedido.vendedor_qualquer" e está vinculado
+// a um Vendedor só cria pedido para si mesmo.
+export interface AtorPedido { usuarioId: string; superAdmin: boolean; }
+const CAP_VENDEDOR_QUALQUER = 'comercial.pedido.vendedor_qualquer';
 
 // IMPORTANTE: 'aguardando_pagamento' → 'aprovado' NÃO é transição manual. A aprovação
 // só acontece pela BAIXA do título no Financeiro (FinanceiroService.baixar) ou direto
@@ -51,7 +58,20 @@ export class PedidosService {
     private readonly titulos: TituloRepository,
     private readonly condicoes: CondicaoRepository,
     private readonly motoboys: MotoboyRepository,
+    private readonly usuarios: UsuarioRepository,
   ) {}
+
+  // Resolve o vendedor efetivo do pedido aplicando a trava:
+  // - super-admin ou quem tem a cap "vendedor_qualquer" → usa o vendedor escolhido (livre);
+  // - sem a cap, mas vinculado a um Vendedor → FORÇA o próprio (ignora o escolhido);
+  // - sem a cap e sem vínculo → livre (não quebra quem já usa hoje).
+  private async resolverVendedor(schema: string, ator: AtorPedido | undefined, vendedorSolicitado: string | null): Promise<string | null> {
+    if (!ator || ator.superAdmin) return vendedorSolicitado;
+    const caps = await this.usuarios.capabilities(schema, ator.usuarioId);
+    if (caps.includes(CAP_VENDEDOR_QUALQUER)) return vendedorSolicitado;
+    const usr = await this.usuarios.buscarPorId(schema, ator.usuarioId);
+    return usr?.vendedorId ?? vendedorSolicitado;
+  }
 
   listar(schema: string): Promise<PedidoResumo[]> { return this.pedidos.listar(schema); }
 
@@ -82,7 +102,7 @@ export class PedidosService {
 
   // Monta e valida o NovoPedido (preços/itens/frete/endereço) a partir do corpo da
   // requisição. Reusado pelo criar e pelo editar (orçamento).
-  private async montar(schema: string, e: any): Promise<NovoPedido> {
+  private async montar(schema: string, e: any, ator?: AtorPedido): Promise<NovoPedido> {
     if (!e?.clienteId) throw new ErroAplicacao('pedido.cliente_obrigatorio', 400);
     const cliente = await this.clientes.buscarPorId(schema, e.clienteId);
     if (!cliente) throw new ErroAplicacao('pedido.cliente_obrigatorio', 400);
@@ -128,8 +148,9 @@ export class PedidosService {
       if (fav) endereco = enderecoTexto(fav);
     }
 
+    const vendedorId = await this.resolverVendedor(schema, ator, e?.vendedorId || null);
     return {
-      clienteId: cliente.id, vendedorId: e?.vendedorId || null,
+      clienteId: cliente.id, vendedorId,
       formaPagamento: (e?.formaPagamento && String(e.formaPagamento).trim()) || null,
       observacao: (e?.observacao && String(e.observacao).trim()) || null,
       enderecoEntrega: endereco, formaEntrega, motoboyId, distanciaKm,
@@ -137,8 +158,8 @@ export class PedidosService {
     };
   }
 
-  async criar(schema: string, e: any): Promise<{ id: string; numero: number }> {
-    const novo = await this.montar(schema, e);
+  async criar(schema: string, e: any, ator?: AtorPedido): Promise<{ id: string; numero: number }> {
+    const novo = await this.montar(schema, e, ator);
     const numero = await this.pedidos.proximoNumero(schema);
     const id = await this.pedidos.criar(schema, numero, novo);
     return { id, numero };
@@ -147,11 +168,11 @@ export class PedidosService {
   // Edita um pedido — só permitido enquanto ele é ORÇAMENTO (rascunho). Recalcula
   // preços/itens/totais com a tabela de preço atual e regrava. Depois disso o usuário
   // pode confirmar (orçamento → aguardando pagamento) e ele "vira pedido".
-  async editar(schema: string, id: string, e: any): Promise<{ id: string }> {
+  async editar(schema: string, id: string, e: any, ator?: AtorPedido): Promise<{ id: string }> {
     const pedido = await this.pedidos.buscarPorId(schema, id);
     if (!pedido) throw new ErroAplicacao('pedido.nao_encontrado', 404);
     if (pedido.status !== 'orcamento') throw new ErroAplicacao('pedido.so_orcamento_edita', 400);
-    const novo = await this.montar(schema, e);
+    const novo = await this.montar(schema, e, ator);
     await this.pedidos.editar(schema, id, novo);
     return { id };
   }

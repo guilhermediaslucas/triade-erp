@@ -26,10 +26,10 @@ export function rotasPedidos(deps: Dependencias): Router {
     try { res.json(await deps.pedidosService.obter(sch(req), req.params.id!)); } catch (e) { tratarErro(res, e); }
   });
   r.post('/pedidos', aut, az('comercial.pedido.criar'), async (req, res: Response) => {
-    try { res.status(201).json(await deps.pedidosService.criar(sch(req), req.body ?? {})); } catch (e) { tratarErro(res, e); }
+    try { res.status(201).json(await deps.pedidosService.criar(sch(req), req.body ?? {}, { usuarioId: req.usuario!.sub, superAdmin: !!req.usuario!.superAdmin })); } catch (e) { tratarErro(res, e); }
   });
   r.put('/pedidos/:id', aut, az('comercial.pedido.criar'), async (req, res: Response) => {
-    try { res.json(await deps.pedidosService.editar(sch(req), req.params.id!, req.body ?? {})); } catch (e) { tratarErro(res, e); }
+    try { res.json(await deps.pedidosService.editar(sch(req), req.params.id!, req.body ?? {}, { usuarioId: req.usuario!.sub, superAdmin: !!req.usuario!.superAdmin })); } catch (e) { tratarErro(res, e); }
   });
   r.patch('/pedidos/:id/status', aut, async (req, res: Response) => {
     const b = req.body ?? {};
