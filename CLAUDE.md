@@ -188,6 +188,18 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-15** — **Segurança: corrigida a vulnerabilidade do esbuild (npm audit "2 high") subindo a Vite 5→8.** As 2
+  "high" eram do **esbuild** (transitivo da Vite, ferramenta de build): falhas do **dev server** (SSRF + leitura de
+  arquivo no Windows) + uma específica de Deno — **zero impacto em produção** (Cloudflare serve estático; API não usa
+  esbuild em runtime). Só a **Vite 8** zera o audit (6/7 ainda trazem esbuild ≤0.28; forçar esbuild 0.28.1 via
+  `overrides` na Vite 5 **quebra o build** — testado). `apps/web/package.json`: `vite ^5.4.10→^8.0.0`,
+  `@vitejs/plugin-react ^4.3.3→^5.2.0` (react 18/tsc inalterados). **Vite 8 exige Node ≥20.19/≥22.12** → criado
+  **`.nvmrc` = 22** na raiz (o Cloudflare Pages lê o `.nvmrc` no build; o Gui precisa de Node compatível local também).
+  Config da Vite é trivial (plugin-react + proxy /api) → migra limpo. **Validação:** projeto isolado em /tmp com a mesma
+  config (vite ^8 + plugin-react ^5.2.0 + react 18) → `npm install` limpo, **`npm audit` = 0 vulnerabilities**, `vite
+  build` OK. Build do app real não roda no sandbox (node_modules Windows) → validar no build local/Cloudflare.
+  **Pendente:** Gui `npm install` (regenera o package-lock) + `npm run build -w @triade/web` (validar) + commit+push.
+  **Reverter se quebrar:** `git checkout -- apps/web/package.json package-lock.json` e voltar vite 5.
 - **2026-06-15** — **Vendedor só inclui pedido para si (vínculo login↔vendedor + permissão).** Migration tenant **050**
   `usuario.vendedor_id` (FK→vendedor, ON DELETE SET NULL). Permissão nova **`comercial.pedido.vendedor_qualquer`**
   ("Escolher qualquer vendedor no pedido", módulo Comercial) — vai pro Administrador no boot e pros perfis padrão
