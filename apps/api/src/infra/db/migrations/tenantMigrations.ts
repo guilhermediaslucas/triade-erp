@@ -673,4 +673,14 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS conferido_em timestamptz;
     `,
   },
+  {
+    // Reembolso a terceiro: o título a pagar foi pago por um favorecido (cartão de
+    // terceiro) e a empresa precisa reembolsá-lo. favorecido_id já existe; aqui guardamos
+    // a forma usada pelo terceiro e a data em que ele pagou (a baixa = o reembolso).
+    nome: '049_titulo_reembolso_favorecido',
+    sql: (s) => `
+      ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS favorecido_forma text;
+      ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS favorecido_pago_em date;
+    `,
+  },
 ];

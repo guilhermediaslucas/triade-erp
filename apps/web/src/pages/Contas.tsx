@@ -13,7 +13,7 @@ import { FORMAS_BAIXA } from '../lib/pagamento.js';
 import { notificarLiberadoSeparacao } from '../lib/notificarSeparacao.js';
 
 type Tipo = 'receber' | 'pagar';
-interface Titulo { id: string; numero: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; pedidoFormaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; contaCorrenteNome: string | null; vendedorNome: string | null; previsto: boolean; tipoDocumento: string | null; numeroDocumento: string | null; emissao: string | null; criadoEm: string; pagoEm: string | null; desconto: number; multa: number; juros: number; }
+interface Titulo { id: string; numero: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; pedidoFormaPagamento: string | null; origem: string; categoriaFinanceiraNome: string | null; contaCorrenteNome: string | null; vendedorNome: string | null; favorecidoId: string | null; favorecidoNome: string | null; favorecidoForma: string | null; favorecidoPagoEm: string | null; previsto: boolean; tipoDocumento: string | null; numeroDocumento: string | null; emissao: string | null; criadoEm: string; pagoEm: string | null; desconto: number; multa: number; juros: number; }
 interface TipoDoc { id: string; nome: string; ativo: boolean; }
 interface CatFin { id: string; nome: string; tipo: 'receita' | 'despesa'; ativo: boolean; }
 
@@ -37,6 +37,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   const [multiplicarT, setMultiplicarT] = useState<Titulo | null>(null);
   const [baixar, setBaixar] = useState<Titulo | null>(null);
   const [cancelarT, setCancelarT] = useState<Titulo | null>(null);
+  const [reembolsoT, setReembolsoT] = useState<Titulo | null>(null);
   const [verT, setVerT] = useState<Titulo | null>(null);
   const [sel, setSel] = useState<Set<string>>(new Set());
   const [baixaMassa, setBaixaMassa] = useState(false);
@@ -335,12 +336,14 @@ export function Contas({ tipo }: { tipo: Tipo }) {
                 ? <>
                     {!tt.previsto && <button className="acao-ic ok" title={t('fin.baixar')} aria-label={t('fin.baixar')} onClick={() => setBaixar(tt)}><Ic name="i-check" className="sm" /></button>}
                     <button className="acao-ic" title={t('parcelar.acao')} aria-label={t('parcelar.acao')} onClick={() => abrirParcelar(tt, 'dividir')}><Ic name="i-clock" className="sm" /></button>
+                    {tipo === 'pagar' && <button className={'acao-ic' + (tt.favorecidoId ? ' ok' : '')} title={t('fin.reembolso')} aria-label={t('fin.reembolso')} onClick={() => setReembolsoT(tt)}><Ic name="i-user" className="sm" /></button>}
                   </>
                 : <button className="acao-ic danger" title={t('fin.cancelar_baixa')} aria-label={t('fin.cancelar_baixa')} onClick={() => setCancelarT(tt)}><Ic name="i-x" className="sm" /></button>)}</span></td>
             </tr>
           ); })}
         </tbody>
       </table></div>
+      {reembolsoT && <ModalReembolso titulo={reembolsoT} onFechar={() => setReembolsoT(null)} onSalvo={() => { setReembolsoT(null); carregar(); toast(t('fin.toast_reembolso')); }} />}
       {novo && <ModalNovo tipo={tipo} onFechar={() => setNovo(false)} onSalvo={() => { setNovo(false); carregar(); toast(t('fin.toast_criado')); }} />}
       {parcelarT && <ModalParcelar tipo={tipo} titulo={parcelarT} modoInicial={parcelarModo} onFechar={() => setParcelarT(null)} onSalvo={(n) => { setParcelarT(null); carregar(); toast(t('parcelar.toast').replace('{n}', String(n))); }} />}
       {multiplicarT && <ModalMultiplicar tipo={tipo} titulo={multiplicarT} onFechar={() => setMultiplicarT(null)} onSalvo={(n) => { setMultiplicarT(null); carregar(); toast(t('parcelar.toast').replace('{n}', String(n))); }} />}
@@ -408,6 +411,12 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
   const [previsto, setPrevisto] = useState(false);
   const [tipoDoc, setTipoDoc] = useState('');
   const [tiposDoc, setTiposDoc] = useState<TipoDoc[]>([]);
+  // Reembolso a terceiro (só a pagar): o título foi pago por um favorecido e a empresa o reembolsa.
+  const [reembolso, setReembolso] = useState(false);
+  const [favorecidoId, setFavorecidoId] = useState('');
+  const [favorecidoForma, setFavForma] = useState('Cartão');
+  const [favorecidoPagoEm, setFavPagoEm] = useState(hojeISO());
+  const [favorecidos, setFavorecidos] = useState<{ id: string; nome: string }[]>([]);
   const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
   const tipoCat = tipo === 'receber' ? 'receita' : 'despesa';
   const pagar = tipo === 'pagar';
@@ -420,6 +429,7 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
   useEffect(() => {
     if (temCapability('cadastros.catfin.listar')) api.get<CatFin[]>('/categorias-financeiras', token!).then((l) => setCats(l.filter((c) => c.ativo && c.tipo === tipoCat))).catch(() => {});
     if (temCapability('cadastros.tipodoc.listar')) api.get<TipoDoc[]>('/tipos-documento', token!).then((l) => setTiposDoc(l.filter((x) => x.ativo))).catch(() => {});
+    if (pagar && temCapability('cadastros.favorecido.listar')) api.get<{ id: string; nome: string; ativo?: boolean }[]>('/favorecidos', token!).then((l) => setFavorecidos(l.filter((x) => x.ativo !== false))).catch(() => {});
     carregarCad();
     /* eslint-disable-next-line */
   }, []);
@@ -428,7 +438,10 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
     try {
       await api.post('/financeiro/' + tipo, {
         descricao, pessoaNome, valor: Number(valor), vencimento, emissao: emissao || null,
-        categoriaFinanceiraId: categoriaFinanceiraId || null, favorecidoId: null,
+        categoriaFinanceiraId: categoriaFinanceiraId || null,
+        favorecidoId: (pagar && reembolso) ? (favorecidoId || null) : null,
+        favorecidoForma: (pagar && reembolso) ? favorecidoForma : null,
+        favorecidoPagoEm: (pagar && reembolso) ? (favorecidoPagoEm || null) : null,
         previsto, tipoDocumento: tipoDoc || null, numeroDocumento: numeroDoc || null,
       }, token!);
       onSalvo();
@@ -465,15 +478,86 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
       </label>
       <div className="cores-grid">
         <label className="campo">{t('fin.emissao')}<input type="date" value={emissao} onChange={(e) => setEmissao(e.target.value)} /></label>
-        <label className="campo">{t('fin.vencimento')}<input type="date" value={vencimento} onChange={(e) => setVenc(e.target.value)} /></label>
+        <label className="campo">{pagar && reembolso ? t('fin.data_reembolso') : t('fin.vencimento')}<input type="date" value={vencimento} onChange={(e) => setVenc(e.target.value)} /></label>
       </div>
       <label className="login-lembrar" style={{ marginTop: 4 }}>
         <input type="checkbox" checked={previsto} onChange={(e) => setPrevisto(e.target.checked)} /> {t('fin.previsto_label')}
       </label>
+      {pagar && (
+        <label className="login-lembrar" style={{ marginTop: 8, background: 'var(--accent-soft)', borderRadius: 8, padding: '8px 10px' }}>
+          <input type="checkbox" checked={reembolso} onChange={(e) => setReembolso(e.target.checked)} /> <b>{t('fin.reembolso')}</b> <span className="muted">{t('fin.reembolso_hint')}</span>
+        </label>
+      )}
+      {pagar && reembolso && (
+        <div style={{ border: '1px dashed var(--accent)', borderRadius: 10, padding: 12, marginTop: 8 }}>
+          <label className="campo">{t('fin.favorecido_reembolsar')}
+            <select value={favorecidoId} onChange={(e) => setFavorecidoId(e.target.value)}>
+              <option value="">{t('fin.favorecido_escolha')}</option>{favorecidos.map((f) => <option key={f.id} value={f.id}>{f.nome}</option>)}
+            </select>
+          </label>
+          <div className="cores-grid">
+            <label className="campo">{t('fin.favorecido_forma')}
+              <select value={favorecidoForma} onChange={(e) => setFavForma(e.target.value)}>{FORMAS_BAIXA.map((f) => <option key={f}>{f}</option>)}</select>
+            </label>
+            <label className="campo">{t('fin.favorecido_pago_em')}<input type="date" value={favorecidoPagoEm} onChange={(e) => setFavPagoEm(e.target.value)} /></label>
+          </div>
+          <div className="nota-info">{t('fin.reembolso_nota')}</div>
+        </div>
+      )}
       <div className="nota-info" style={{ marginTop: 12 }}>{t('fin.nota_conta')}</div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv} onClick={salvar}>{t('fin.salvar_lancamento')}</button></div>
       {novaPessoa && <ModalNovaPessoa tipo={pagar ? 'fornecedor' : 'cliente'} onFechar={() => setNovaPessoa(false)} onCriado={(nome) => { setNovaPessoa(false); setPessoa(nome); carregarCad(); }} />}
+    </div></div>
+  );
+}
+
+// Marca/desmarca um título a pagar EXISTENTE como reembolso a terceiro (a qualquer momento).
+function ModalReembolso({ titulo, onFechar, onSalvo }: { titulo: Titulo; onFechar: () => void; onSalvo: () => void; }) {
+  const { token, temCapability } = useAuth(); const { t } = useI18n();
+  const [reembolso, setReembolso] = useState(!!titulo.favorecidoId);
+  const [favorecidoId, setFavorecidoId] = useState(titulo.favorecidoId ?? '');
+  const [favorecidoForma, setFavForma] = useState(titulo.favorecidoForma ?? 'Cartão');
+  const [favorecidoPagoEm, setFavPagoEm] = useState((titulo.favorecidoPagoEm ?? '').slice(0, 10) || new Date().toISOString().slice(0, 10));
+  const [vencimento, setVenc] = useState((titulo.vencimento ?? '').slice(0, 10));
+  const [favorecidos, setFavorecidos] = useState<{ id: string; nome: string }[]>([]);
+  const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
+  useEffect(() => { if (temCapability('cadastros.favorecido.listar')) api.get<{ id: string; nome: string; ativo?: boolean }[]>('/favorecidos', token!).then((l) => setFavorecidos(l.filter((x) => x.ativo !== false))).catch(() => {}); /* eslint-disable-next-line */ }, []);
+  async function salvar() {
+    setErro(null); setSalv(true);
+    try {
+      await api.patch('/financeiro/pagar/' + titulo.id + '/reembolso', reembolso
+        ? { favorecidoId: favorecidoId || null, favorecidoForma, favorecidoPagoEm: favorecidoPagoEm || null, vencimento: vencimento || null }
+        : { favorecidoId: null }, token!);
+      onSalvo();
+    } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
+  }
+  return (
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 460 }}>
+      <h2>{t('fin.reembolso')}</h2>
+      <p className="muted" style={{ marginTop: -6 }}>{titulo.numero} · {titulo.descricao} · <b>{moeda(titulo.valor)}</b></p>
+      <label className="login-lembrar" style={{ background: 'var(--accent-soft)', borderRadius: 8, padding: '8px 10px' }}>
+        <input type="checkbox" checked={reembolso} onChange={(e) => setReembolso(e.target.checked)} /> <b>{t('fin.reembolso_marcar')}</b>
+      </label>
+      {reembolso && (
+        <div style={{ marginTop: 10 }}>
+          <label className="campo">{t('fin.favorecido_reembolsar')}
+            <select value={favorecidoId} onChange={(e) => setFavorecidoId(e.target.value)}>
+              <option value="">{t('fin.favorecido_escolha')}</option>{favorecidos.map((f) => <option key={f.id} value={f.id}>{f.nome}</option>)}
+            </select>
+          </label>
+          <div className="cores-grid">
+            <label className="campo">{t('fin.favorecido_forma')}
+              <select value={favorecidoForma} onChange={(e) => setFavForma(e.target.value)}>{FORMAS_BAIXA.map((f) => <option key={f}>{f}</option>)}</select>
+            </label>
+            <label className="campo">{t('fin.favorecido_pago_em')}<input type="date" value={favorecidoPagoEm} onChange={(e) => setFavPagoEm(e.target.value)} /></label>
+          </div>
+          <label className="campo">{t('fin.data_reembolso')}<input type="date" value={vencimento} onChange={(e) => setVenc(e.target.value)} /></label>
+          <div className="nota-info">{t('fin.reembolso_nota')}</div>
+        </div>
+      )}
+      {erro && <div className="alerta-erro">{t(erro)}</div>}
+      <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv} onClick={salvar}>{t('common.salvar')}</button></div>
     </div></div>
   );
 }

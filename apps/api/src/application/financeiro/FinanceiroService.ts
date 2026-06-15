@@ -241,11 +241,28 @@ export class FinanceiroService {
       tipo, descricao: String(e.descricao).trim(), pessoaNome: (e?.pessoaNome && String(e.pessoaNome).trim()) || null,
       valor, vencimento, categoriaFinanceiraId: (e?.categoriaFinanceiraId && String(e.categoriaFinanceiraId).trim()) || null,
       favorecidoId: (e?.favorecidoId && String(e.favorecidoId).trim()) || null,
+      favorecidoForma: (e?.favorecidoForma && String(e.favorecidoForma).trim()) || null,
+      favorecidoPagoEm: lim(e?.favorecidoPagoEm),
       previsto: e?.previsto === true,
       tipoDocumento: (e?.tipoDocumento && String(e.tipoDocumento).trim()) || null,
       numeroDocumento: (e?.numeroDocumento && String(e.numeroDocumento).trim()) || null,
       emissao,
     }, 'manual', null);
+  }
+
+  // Marca/desmarca o título como "reembolso a terceiro" (a qualquer momento).
+  // favorecidoId vazio = volta a ser pagamento normal da empresa.
+  async definirReembolso(schema: string, id: string, e: any): Promise<void> {
+    const t = await this.repo.buscarPorId(schema, id);
+    if (!t) throw new ErroAplicacao('financeiro.nao_encontrado', 404);
+    if (t.tipo !== 'pagar') throw new ErroAplicacao('financeiro.valor_invalido', 400);
+    const favorecidoId = (e?.favorecidoId && String(e.favorecidoId).trim()) || null;
+    await this.repo.definirReembolso(schema, id, {
+      favorecidoId,
+      favorecidoForma: favorecidoId ? ((e?.favorecidoForma && String(e.favorecidoForma).trim()) || null) : null,
+      favorecidoPagoEm: favorecidoId ? lim(e?.favorecidoPagoEm) : null,
+      vencimento: lim(e?.vencimento),
+    });
   }
 
   // Marca/desmarca o título como previsto (provisão). Só faz sentido em título em aberto.

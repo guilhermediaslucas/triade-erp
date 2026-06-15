@@ -23,6 +23,8 @@ function map(r: any): Titulo {
     pedidoFormaPagamento: r.pedido_forma_pagamento ?? null,
     conferido: r.conferido === true,
     conferidoEm: iso(r.conferido_em),
+    favorecidoForma: r.favorecido_forma ?? null,
+    favorecidoPagoEm: r.favorecido_pago_em ? dataISO(r.favorecido_pago_em) : null,
     previsto: r.previsto === true,
     tipoDocumento: r.tipo_documento ?? null,
     numeroDocumento: r.numero_documento ?? null,
@@ -102,9 +104,9 @@ export class SqlTituloRepository implements TituloRepository {
   async criar(schema: string, t: NovoTitulo, origem: string, pedidoId: string | null): Promise<string> {
     const s = validarSchema(schema); const id = randomUUID();
     await this.ds.query(
-      `INSERT INTO "${s}".titulo (id, numero, tipo, descricao, pessoa_nome, valor, vencimento, origem, pedido_id, categoria_financeira_id, favorecido_id, previsto, tipo_documento, numero_documento, emissao)
-       VALUES ($1, nextval('"${s}".titulo_numero_seq'), $2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13, COALESCE($14, CURRENT_DATE))`,
-      [id, t.tipo, t.descricao, t.pessoaNome, t.valor, t.vencimento, origem, pedidoId, t.categoriaFinanceiraId ?? null, t.favorecidoId ?? null, t.previsto === true, t.tipoDocumento ?? null, t.numeroDocumento ?? null, t.emissao ?? null]);
+      `INSERT INTO "${s}".titulo (id, numero, tipo, descricao, pessoa_nome, valor, vencimento, origem, pedido_id, categoria_financeira_id, favorecido_id, previsto, tipo_documento, numero_documento, emissao, favorecido_forma, favorecido_pago_em)
+       VALUES ($1, nextval('"${s}".titulo_numero_seq'), $2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13, COALESCE($14, CURRENT_DATE),$15,$16)`,
+      [id, t.tipo, t.descricao, t.pessoaNome, t.valor, t.vencimento, origem, pedidoId, t.categoriaFinanceiraId ?? null, t.favorecidoId ?? null, t.previsto === true, t.tipoDocumento ?? null, t.numeroDocumento ?? null, t.emissao ?? null, t.favorecidoForma ?? null, t.favorecidoPagoEm ?? null]);
     return id;
   }
   async baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null, dataBaixa?: string | null, ajustes?: AjustesBaixa): Promise<void> {
@@ -121,6 +123,12 @@ export class SqlTituloRepository implements TituloRepository {
   async definirConferido(schema: string, id: string, conferido: boolean): Promise<void> {
     const s = validarSchema(schema);
     await this.ds.query(`UPDATE "${s}".titulo SET conferido=$2, conferido_em=$3 WHERE id=$1`, [id, conferido, conferido ? new Date().toISOString() : null]);
+  }
+  async definirReembolso(schema: string, id: string, d: { favorecidoId: string | null; favorecidoForma: string | null; favorecidoPagoEm: string | null; vencimento: string | null }): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(
+      `UPDATE "${s}".titulo SET favorecido_id=$2, favorecido_forma=$3, favorecido_pago_em=$4, vencimento=COALESCE($5, vencimento) WHERE id=$1`,
+      [id, d.favorecidoId, d.favorecidoForma, d.favorecidoPagoEm, d.vencimento]);
   }
   async cancelarBaixa(schema: string, id: string): Promise<void> {
     const s = validarSchema(schema);

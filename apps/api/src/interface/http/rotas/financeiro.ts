@@ -25,6 +25,9 @@ function registrar(r: Router, deps: Dependencias, tipo: TipoTitulo, capBase: str
   r.patch(`${base}/:id/previsto`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
     try { await deps.financeiroService.definirPrevisto(sch(req), req.params.id!, !!(req.body ?? {}).previsto); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });
+  r.patch(`${base}/:id/reembolso`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
+    try { await deps.financeiroService.definirReembolso(sch(req), req.params.id!, req.body ?? {}); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
   r.delete(`${base}/:id`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
     try { await deps.financeiroService.excluir(sch(req), req.params.id!); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });

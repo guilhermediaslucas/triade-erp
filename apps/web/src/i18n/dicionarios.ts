@@ -2414,3 +2414,50 @@ Object.assign(es, {
   'toastsep.titulo': 'Pedido liberado para separación',
   'toastsep.corpo': '{n} ({c} · {v}) fue aprobado y está listo para separación.',
 });
+
+// ===== Lote: reembolso a terceiro (favorecido) =====
+Object.assign(pt, {
+  'fin.reembolso': 'Reembolso a terceiro', 'fin.reembolso_hint': '(pago por um favorecido)',
+  'fin.reembolso_marcar': 'Este título é reembolso a terceiro',
+  'fin.favorecido_reembolsar': 'Favorecido a reembolsar', 'fin.favorecido_escolha': 'Escolha o favorecido',
+  'fin.favorecido_forma': 'Forma de pagamento do favorecido', 'fin.favorecido_pago_em': 'Pago pelo favorecido em',
+  'fin.data_reembolso': 'Data de reembolso ao favorecido',
+  'fin.reembolso_nota': 'Vira um título a pagar ao favorecido. A baixa = quando você reembolsar (entra no fluxo de caixa).',
+  'fin.toast_reembolso': 'Reembolso atualizado',
+  'relfav.a_reembolsar': 'A reembolsar', 'relfav.reembolsado': 'Já reembolsado', 'relfav.terceiros': 'Terceiros',
+  'relfav.a_reembolsar_st': 'A reembolsar', 'relfav.reembolsado_st': 'Reembolsado',
+  'relfav.reembolsar': 'Reembolsar', 'relfav.toast_reembolsado': 'Reembolso efetuado',
+  'relfav.banco_conta': 'Banco (conta de saída)', 'relfav.sem_conta': 'Selecione a conta',
+  'relfav.reembolsar_nota': 'Baixa o título no Contas a pagar e lança a saída no fluxo de caixa nessa conta.',
+  'relfav.confirmar_reembolso': 'Confirmar reembolso',
+});
+Object.assign(en, {
+  'fin.reembolso': 'Reimburse a third party', 'fin.reembolso_hint': '(paid by a payee)',
+  'fin.reembolso_marcar': 'This title is a third-party reimbursement',
+  'fin.favorecido_reembolsar': 'Payee to reimburse', 'fin.favorecido_escolha': 'Choose the payee',
+  'fin.favorecido_forma': "Payee's payment method", 'fin.favorecido_pago_em': 'Paid by payee on',
+  'fin.data_reembolso': 'Reimbursement date',
+  'fin.reembolso_nota': 'Becomes a payable to the payee. Settlement = when you reimburse (hits cash flow).',
+  'fin.toast_reembolso': 'Reimbursement updated',
+  'relfav.a_reembolsar': 'To reimburse', 'relfav.reembolsado': 'Reimbursed', 'relfav.terceiros': 'Third parties',
+  'relfav.a_reembolsar_st': 'To reimburse', 'relfav.reembolsado_st': 'Reimbursed',
+  'relfav.reembolsar': 'Reimburse', 'relfav.toast_reembolsado': 'Reimbursement done',
+  'relfav.banco_conta': 'Bank (source account)', 'relfav.sem_conta': 'Select the account',
+  'relfav.reembolsar_nota': 'Settles the payable and posts the outflow to cash flow in that account.',
+  'relfav.confirmar_reembolso': 'Confirm reimbursement',
+});
+Object.assign(es, {
+  'fin.reembolso': 'Reembolso a tercero', 'fin.reembolso_hint': '(pagado por un favorecido)',
+  'fin.reembolso_marcar': 'Este título es reembolso a tercero',
+  'fin.favorecido_reembolsar': 'Favorecido a reembolsar', 'fin.favorecido_escolha': 'Elige el favorecido',
+  'fin.favorecido_forma': 'Forma de pago del favorecido', 'fin.favorecido_pago_em': 'Pagado por el favorecido el',
+  'fin.data_reembolso': 'Fecha de reembolso al favorecido',
+  'fin.reembolso_nota': 'Se vuelve un título a pagar al favorecido. La baja = cuando reembolses (entra al flujo de caja).',
+  'fin.toast_reembolso': 'Reembolso actualizado',
+  'relfav.a_reembolsar': 'A reembolsar', 'relfav.reembolsado': 'Ya reembolsado', 'relfav.terceiros': 'Terceros',
+  'relfav.a_reembolsar_st': 'A reembolsar', 'relfav.reembolsado_st': 'Reembolsado',
+  'relfav.reembolsar': 'Reembolsar', 'relfav.toast_reembolsado': 'Reembolso realizado',
+  'relfav.banco_conta': 'Banco (cuenta de salida)', 'relfav.sem_conta': 'Selecciona la cuenta',
+  'relfav.reembolsar_nota': 'Da de baja el título a pagar y registra la salida en el flujo de caja en esa cuenta.',
+  'relfav.confirmar_reembolso': 'Confirmar reembolso',
+});

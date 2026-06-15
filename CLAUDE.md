@@ -188,6 +188,22 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-14** — **Reembolso a terceiro (favorecido) no Contas a pagar.** Um título a pagar pode ser marcado como
+  **reembolso a terceiro** (pago por um favorecido no cartão dele; a empresa reembolsa). Modelo de **um título só**:
+  o título representa o que a empresa deve ao favorecido — **em aberto = a reembolsar**, **baixa = reembolso**
+  (entra no fluxo de caixa). Migration tenant **049** (`titulo.favorecido_forma`, `titulo.favorecido_pago_em`;
+  `favorecido_id` já existia). **Backend:** `Titulo`/`NovoTitulo` += `favorecidoForma`/`favorecidoPagoEm`;
+  `SqlTituloRepository` map/criar + `definirReembolso` (set/clear favorecido + forma + data pagamento + vencimento);
+  `FinanceiroService.criar` aceita os campos; `definirReembolso` (só tipo pagar); rota `PATCH /financeiro/pagar/:id/
+  reembolso`. **Frontend:** ModalNovo (a pagar) ganhou **checkbox "Reembolso a terceiro"** que revela favorecido +
+  forma do favorecido + data do pagamento pelo favorecido + data de reembolso (= vencimento, rótulo muda); ação na
+  linha do Contas a pagar (`ModalReembolso`) p/ **alternar em título existente a qualquer momento**; a tela
+  **Reembolsos a favorecidos** (`RelFavorecidos`) virou **controle por favorecido** (KPIs a reembolsar/reembolsado/
+  nº terceiros, agrupado por terceiro, com saldo) e botão **Reembolsar** (`ModalReembolsar`: banco + data + forma →
+  baixa o mesmo título via `/financeiro/pagar/:id/baixar`, reflete no Contas a pagar e no fluxo de caixa). i18n
+  `fin.reembolso*`/`relfav.*` pt/en/es. Conceito confirmado pelo Gui: todo título entra no fluxo (aberto pelo
+  vencimento = data de reembolso; baixado pela baixa). **Pendente:** Gui build + commit+push → Render aplica 049 +
+  APK novo. Sem caps novas (não precisa relogar).
 - **2026-06-14** — **Toast "pedido liberado para separação" + grupo no Sino.** Quando um pedido vira **aprovado**
   (baixa do Financeiro p/ Pix/Boleto/Link, ou confirmação Cartão/Dinheiro que libera direto), dispara um toast
   "liberado para separação" com link p/ a Expedição, para quem fez a ação. **Backend:** `FinanceiroService.baixar`
