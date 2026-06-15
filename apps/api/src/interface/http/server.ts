@@ -31,6 +31,7 @@ import { rotasDashboard } from './rotas/dashboard.js';
 import { rotasRelatorios } from './rotas/relatorios.js';
 import { rotasCondicoes } from './rotas/condicoes.js';
 import { rotasContas } from './rotas/contas.js';
+import { rotasSuporte } from './rotas/suporte.js';
 
 export function criarServidor(): Express {
   const app = express();
@@ -106,6 +107,7 @@ export function criarServidor(): Express {
   app.use(rotasRelatorios(deps));
   app.use(rotasCondicoes(deps));
   app.use(rotasContas(deps));
+  app.use(rotasSuporte(deps));
 
   return app;
 }

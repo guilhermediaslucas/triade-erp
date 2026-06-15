@@ -56,4 +56,25 @@ export const publicMigrations: MigracaoPublic[] = [
         ADD COLUMN IF NOT EXISTS cidade             text NOT NULL DEFAULT '';
     `,
   },
+  {
+    nome: '005_chamado_suporte',
+    sql: `
+      CREATE TABLE IF NOT EXISTS public.chamado_suporte (
+        id             uuid PRIMARY KEY,
+        tipo           text NOT NULL,
+        assunto        text NOT NULL,
+        descricao      text NOT NULL,
+        print          text,
+        tela           text NOT NULL DEFAULT '',
+        versao         text NOT NULL DEFAULT '',
+        empresa_codigo text NOT NULL DEFAULT '',
+        usuario_nome   text NOT NULL DEFAULT '',
+        usuario_email  text NOT NULL DEFAULT '',
+        status         text NOT NULL DEFAULT 'aberto',
+        criado_em      timestamptz NOT NULL DEFAULT now(),
+        resolvido_em   timestamptz
+      );
+      CREATE INDEX IF NOT EXISTS idx_chamado_status ON public.chamado_suporte (status, criado_em DESC);
+    `,
+  },
 ];

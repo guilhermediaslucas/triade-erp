@@ -188,6 +188,32 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-15** — **Suporte: abertura de chamados (in-app) + tela do super-admin.** Qualquer usuário logado abre um
+  chamado pelo **"Suporte"** do rodapé do menu (que virou clicável); o **administrador do sistema (super-admin)** vê
+  todos numa tela só. **Banco — migration public 005** (`public.chamado_suporte`: tipo erro/sugestao/duvida, assunto,
+  descricao, **print** text [data URI], tela, versao, empresa_codigo, usuario_nome/email, status aberto/em_andamento/
+  resolvido, criado_em, resolvido_em + índice por status). Tabela no **public** (não no tenant) p/ o super-admin ver
+  todas as empresas; fantasia vem via LEFT JOIN `public.empresa`. **Backend (hexagonal):** domínio `Chamado`/
+  `ChamadoRepository` + `TIPOS_CHAMADO`/`STATUS_CHAMADO` (`domain/superadmin/Chamado.ts`); `SqlChamadoRepository`
+  (public); `SuporteService` (`abrir` valida tipo/assunto≥3/descrição≥3 + normaliza print ~2,8MB como a foto de
+  usuário; `listar`; `contarAbertos`; `mudarStatus`; **gancho `notificar()` vazio** p/ a etapa 2 de e-mail). Rotas:
+  `POST /suporte` (qualquer logado — empresa/usuário vêm do **token**, não do corpo), `GET /suporte` +
+  `GET /suporte/abertos` + `PATCH /suporte/:id/status` (`exigirSuperAdmin`). Wiring em `composition.ts` + `server.ts`.
+  **Frontend:** `components/Suporte.tsx` (modal: tipo Erro/Sugestão/Dúvida, assunto, descrição, **anexo de print** via
+  FileReader→data URI com miniatura/remover; envia `tela`=pathname + `versao`); rodapé do `Layout` clicável
+  (`sidebar-foot-btn`) abre o modal; página `pages/ChamadosSuporte.tsx` (super-admin: KPIs aberto/andamento/resolvido,
+  chips de filtro, tabela, modal de detalhe com contexto + print + mudar status); rota `/superadmin/chamados`
+  (`soSuper`) + item no menu **Super-admin** + destino na **BuscaGlobal**; **Sino** ganhou grupo "Chamados de suporte
+  abertos" (só super-admin, via `/suporte/abertos`). CSS `suporte-*`/`sup-*`/`pill-erro|aviso|info|neutro` (+ dark) no
+  `styles.css`. i18n `suporte.*`/`chamados.*`/`menu.chamados`/`sino.chamados_suporte` pt/en/es. **Sem capability nova**
+  (gate pela flag `superAdmin` → **não precisa relogar**). **E-mail ao admin: fica p/ etapa 2** (exige infra de e-mail
+  — provedor + var no Render; o mesmo destrava o "Esqueci a senha"); o gancho `notificar()` já está no lugar.
+  **Validação:** type-check do sandbox inútil de novo (mount trunca → "unterminated string"/"JSX sem fechamento" nos
+  arquivos grandes; o tsc da API confirmou **0 erros nos arquivos novos** — só o `@triade/shared` não-resolvido
+  [I/O error no symlink] e o aviso pré-existente do `MetasService`); hand-review pelo file-tool. **Pendente:** Gui
+  `npm install` (relink shared) + build + commit+push → Render aplica a migration 005 no boot (`AUTO_MIGRATE`) +
+  **APK novo** (telas mudaram). **Sugiro e2e ao aplicar:** abrir chamado como usuário comum; super-admin lista/conta/
+  muda status; não-super-admin recebe 403 em `GET /suporte`.
 - **2026-06-14** — **Reembolso a terceiro (favorecido) no Contas a pagar.** Um título a pagar pode ser marcado como
   **reembolso a terceiro** (pago por um favorecido no cartão dele; a empresa reembolsa). Modelo de **um título só**:
   o título representa o que a empresa deve ao favorecido — **em aberto = a reembolsar**, **baixa = reembolso**

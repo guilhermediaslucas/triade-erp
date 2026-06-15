@@ -43,6 +43,7 @@ const DESTINOS: Destino[] = [
   { rotulo: 'menu.perfis', icone: 'i-key', to: '/acesso/perfis', cap: 'acesso.perfil.listar' },
   { rotulo: 'menu.empresa', icone: 'i-shop', to: '/config/empresa', cap: 'acesso.empresa.editar' },
   { rotulo: 'menu.empresas', icone: 'i-shop', to: '/superadmin/empresas', soSuperAdmin: true },
+  { rotulo: 'menu.chamados', icone: 'i-help', to: '/superadmin/chamados', soSuperAdmin: true },
 ];
 
 function normaliza(s: string): string {

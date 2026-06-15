@@ -15,7 +15,7 @@ function diasAteValidade(v: string | null): number | null {
 }
 
 export function Sino() {
-  const { token, temCapability } = useAuth();
+  const { token, temCapability, superAdmin } = useAuth();
   const { t } = useI18n();
   const toast = useToast();
   const nav = useNavigate();
@@ -68,6 +68,12 @@ export function Sino() {
         const peds = await api.get<{ status: string }[]>('/pedidos', token).catch(() => null);
         const aSeparar = peds ? peds.filter((p) => p.status === 'aprovado').length : 0;
         if (aSeparar > 0) out.push({ chave: 'sino.aguard_separacao', icone: 'i-box', qtd: aSeparar, to: '/estoque/expedicao' });
+      }
+      // Chamados de suporte abertos — só para o administrador do sistema.
+      if (superAdmin) {
+        const sup = await api.get<{ abertos: number }>('/suporte/abertos', token).catch(() => null);
+        const abertos = sup ? sup.abertos : 0;
+        if (abertos > 0) out.push({ chave: 'sino.chamados_suporte', icone: 'i-help', qtd: abertos, to: '/superadmin/chamados' });
       }
     } catch { /* silencioso */ }
     setGrupos(out);

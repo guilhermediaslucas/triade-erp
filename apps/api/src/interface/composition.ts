@@ -64,6 +64,8 @@ import { SqlDashboardRepository } from '../infra/repositories/SqlDashboardReposi
 import { DashboardService } from '../application/dashboard/DashboardService.js';
 import { SqlRelatorioRepository } from '../infra/repositories/SqlRelatorioRepository.js';
 import { RelatoriosService } from '../application/relatorio/RelatoriosService.js';
+import { SqlChamadoRepository } from '../infra/repositories/SqlChamadoRepository.js';
+import { SuporteService } from '../application/suporte/SuporteService.js';
 
 export function montarDependencias() {
   const empresasRepo = new SqlEmpresaRepository(AppDataSource);
@@ -127,6 +129,7 @@ export function montarDependencias() {
     inventarioService: new InventarioService(inventarioRepo, etiquetaRepo, estoqueRepo),
     crmService: new CrmService(new SqlCrmRepository(AppDataSource)),
     metasService: new MetasService(new SqlMetaRepository(AppDataSource)),
+    suporteService: new SuporteService(new SqlChamadoRepository(AppDataSource)),
   };
 }
 

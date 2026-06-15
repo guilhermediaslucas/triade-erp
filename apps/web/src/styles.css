@@ -910,3 +910,31 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
   .kpis { gap: 10px; }
   .alerts { grid-template-columns: 1fr; }
 }
+
+/* ===== Suporte (modal de chamado) + Chamados (tela super-admin) ===== */
+.sidebar-foot-btn { width: 100%; background: none; border: 0; cursor: pointer; color: inherit; font-family: inherit; text-align: left; border-radius: 10px; transition: background .12s, opacity .12s; }
+.sidebar-foot-btn:hover { background: rgba(255,255,255,.07); opacity: 1; }
+.suporte-tipos { display: flex; gap: 8px; margin-top: 6px; }
+.suporte-tipos .chip-f { display: inline-flex; align-items: center; gap: 6px; flex: 1; justify-content: center; }
+.suporte-print-thumb { width: 92px; height: 70px; object-fit: cover; border: 1px solid var(--borda); border-radius: 10px; }
+.suporte-print-vazio { width: 92px; height: 70px; display: grid; place-items: center; border: 1px dashed var(--borda); border-radius: 10px; color: var(--muted); }
+.suporte-print-full { max-width: 100%; max-height: 320px; border: 1px solid var(--borda); border-radius: 10px; }
+.suporte-nota { font-size: 12px; margin: 4px 0 0; }
+.suporte-desc { white-space: pre-wrap; background: var(--bg); border: 1px solid var(--borda); border-radius: 10px; padding: 12px 14px; margin: 10px 0 14px; font-size: 14px; }
+.sup-kpis { display: flex; gap: 12px; flex-wrap: wrap; }
+.sup-kpis .kpi-card { flex: 1; min-width: 140px; }
+.kpi-val.sup-erro { color: #e1483b; }
+.kpi-val.sup-aviso { color: #ea9213; }
+.kpi-val.sup-ok { color: #16a34a; }
+.sup-det { width: 100%; font-size: 14px; margin-bottom: 6px; border-collapse: collapse; }
+.sup-det td { padding: 4px 0; vertical-align: top; }
+.sup-det .det-rot { color: var(--muted); width: 130px; }
+.pill-erro { background: #fbe7e5; color: #b91c1c; }
+.pill-aviso { background: #fdf0dc; color: #b45309; }
+.pill-info { background: #e6effd; color: #1d4ed8; }
+.pill-neutro { background: #eef0f4; color: #475569; }
+body.theme-dark .suporte-desc { background: var(--card); }
+body.theme-dark .pill-erro { background: #3a1d1d; color: #f4a7a0; }
+body.theme-dark .pill-aviso { background: #3a2c12; color: #f0c270; }
+body.theme-dark .pill-info { background: #16263f; color: #93c0f4; }
+body.theme-dark .pill-neutro { background: #232733; color: #aab2c2; }

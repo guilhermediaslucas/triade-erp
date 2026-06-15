@@ -14,6 +14,7 @@ import { Usuarios } from './pages/Usuarios.js';
 import { Perfis } from './pages/Perfis.js';
 import { DadosEmpresa } from './pages/DadosEmpresa.js';
 import { Empresas } from './pages/Empresas.js';
+import { ChamadosSuporte } from './pages/ChamadosSuporte.js';
 import { Categorias } from './pages/Categorias.js';
 import { FormasEntrega } from './pages/FormasEntrega.js';
 import { Produtos } from './pages/Produtos.js';
@@ -136,6 +137,7 @@ export function App() {
                 <Route path="/cadastros/formas-entrega" element={<Protegida cap="cadastros.forma_entrega.listar"><FormasEntrega /></Protegida>} />
                 <Route path="/cadastros/produtos" element={<Protegida cap="cadastros.produto.listar"><Produtos /></Protegida>} />
                 <Route path="/superadmin/empresas" element={<Protegida soSuper><Empresas /></Protegida>} />
+                <Route path="/superadmin/chamados" element={<Protegida soSuper><ChamadosSuporte /></Protegida>} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </BrowserRouter>

@@ -11,6 +11,7 @@ import { useTema } from '../theme/ThemeContext.js';
 import { EmpresaSwitcher } from './EmpresaSwitcher.js';
 import { Ic, SpriteIcones } from './Icones.js';
 import { TrocarSenha } from './TrocarSenha.js';
+import { Suporte } from './Suporte.js';
 
 interface Item { rotulo: string; icone?: string; to: string; cap?: string; soSuperAdmin?: boolean; }
 interface Secao { sublabel?: string; itens: Item[]; }
@@ -113,7 +114,10 @@ const GRUPOS: Grupo[] = [
   },
   {
     rotulo: 'menu.superadmin', icone: 'i-shop',
-    secoes: [{ itens: [{ rotulo: 'menu.empresas', to: '/superadmin/empresas', soSuperAdmin: true }] }],
+    secoes: [{ itens: [
+      { rotulo: 'menu.empresas', to: '/superadmin/empresas', soSuperAdmin: true },
+      { rotulo: 'menu.chamados', to: '/superadmin/chamados', soSuperAdmin: true },
+    ] }],
   },
 ];
 
@@ -128,6 +132,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const [abertos, setAbertos] = useState<Set<number>>(() => new Set());
   const [sairOpen, setSairOpen] = useState(false);
   const [senhaOpen, setSenhaOpen] = useState(false);
+  const [suporteOpen, setSuporteOpen] = useState(false);
   // Drawer mobile: a sidebar vira off-canvas abaixo do breakpoint (CSS). Fecha ao navegar.
   const [menuAberto, setMenuAberto] = useState(false);
   const fecharMenu = () => setMenuAberto(false);
@@ -200,7 +205,9 @@ export function Layout({ children }: { children: ReactNode }) {
             <div className="lg">TR<span>Í</span>ADE</div>
             <div className="tg">E R P</div>
           </div>
-          <div className="sidebar-foot-sup"><Ic name="i-help" /><div><b>{t('menu.suporte')}</b><small>{t('menu.suporte_sub')}</small></div></div>
+          <button type="button" className="sidebar-foot-sup sidebar-foot-btn" onClick={() => setSuporteOpen(true)}>
+            <Ic name="i-help" /><div><b>{t('menu.suporte')}</b><small>{t('menu.suporte_sub')}</small></div>
+          </button>
         </div>
       </aside>
       <div className="app-main">
@@ -241,6 +248,7 @@ export function Layout({ children }: { children: ReactNode }) {
         </div></div>
       )}
       {senhaOpen && <TrocarSenha onFechar={() => setSenhaOpen(false)} />}
+      {suporteOpen && <Suporte onFechar={() => setSuporteOpen(false)} />}
     </div>
   );
 }
