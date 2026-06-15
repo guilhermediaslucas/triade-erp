@@ -16,8 +16,6 @@ import { SqlCategoriaRepository } from '../infra/repositories/SqlCategoriaReposi
 import { SqlProdutoRepository } from '../infra/repositories/SqlProdutoRepository.js';
 import { CategoriasService } from '../application/cadastro/CategoriasService.js';
 import { ProdutosService } from '../application/cadastro/ProdutosService.js';
-import { SqlMarcaRepository } from '../infra/repositories/SqlMarcaRepository.js';
-import { MarcasService } from '../application/cadastro/MarcasService.js';
 import { SqlFormaEntregaRepository } from '../infra/repositories/SqlFormaEntregaRepository.js';
 import { FormasEntregaService } from '../application/cadastro/FormasEntregaService.js';
 import { SqlTipoDocumentoRepository } from '../infra/repositories/SqlTipoDocumentoRepository.js';
@@ -77,7 +75,6 @@ export function montarDependencias() {
   const migrador = new TypeOrmMigrador(AppDataSource);
   const categoriasRepo = new SqlCategoriaRepository(AppDataSource);
   const produtosRepo = new SqlProdutoRepository(AppDataSource);
-  const marcasRepo = new SqlMarcaRepository(AppDataSource);
   const favorecidosRepo = new SqlFavorecidoRepository(AppDataSource);
   const clientesRepo = new SqlClienteRepository(AppDataSource);
   const fornecedoresRepo = new SqlFornecedorRepository(AppDataSource);
@@ -105,7 +102,6 @@ export function montarDependencias() {
     empresaService: new EmpresaService(empresasRepo, migrador, usuariosRepo, hash),
     provisionarEmpresa: new ProvisionarEmpresa(empresasRepo, migrador, perfisRepo, usuariosRepo, hash),
     categoriasService: new CategoriasService(categoriasRepo),
-    marcasService: new MarcasService(marcasRepo),
     formasEntregaService: new FormasEntregaService(new SqlFormaEntregaRepository(AppDataSource)),
     tiposDocumentoService: new TiposDocumentoService(new SqlTipoDocumentoRepository(AppDataSource)),
     bancosService: new BancosService(new SqlBancoRepository(AppDataSource)),
