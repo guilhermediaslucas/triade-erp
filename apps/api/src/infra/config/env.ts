@@ -37,6 +37,12 @@ export const env = {
   corsOrigin: process.env.CORS_ORIGIN ?? '*',
   autoMigrate: (process.env.AUTO_MIGRATE ?? 'true') !== 'false',
   jwtSecret: obrigatorio('JWT_SECRET'),
+  // E-mail transacional (Resend). Opcionais: sem RESEND_API_KEY o envio vira
+  // no-op (loga e segue) — local/dev não quebra e produção só envia quando configurado.
+  resendApiKey: process.env.RESEND_API_KEY ?? '',
+  emailFrom: process.env.EMAIL_FROM ?? 'TRIADE ERP <notificacoes@triadeerp.com.br>',
+  // Destino das notificações de suporte (cai no Gmail via Cloudflare Email Routing).
+  suporteEmailDestino: process.env.SUPORTE_EMAIL_DESTINO ?? 'admin@triadeerp.com.br',
   nodeEnv: process.env.NODE_ENV ?? 'development',
   get isProd(): boolean {
     return this.nodeEnv === 'production';

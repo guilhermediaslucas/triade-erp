@@ -188,6 +188,21 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-15** — **Suporte etapa 2: infra de e-mail (Resend) + notificação de chamado por e-mail.** Liga o gancho
+  `notificar()` do `SuporteService`: ao abrir um chamado, dispara e-mail ao admin do sistema. **Porta** `EmailSender`
+  (`domain/ports/EmailSender.ts`: `enviar({para,assunto,html,texto})`) — domínio agnóstico ao provedor. **Adapter**
+  `ResendEmailSender` (`infra/email/`) via **fetch nativo** (sem dependência nova — `fetch` já tipado por
+  `types:["node"]` e usado no `FreteService`); **sem `RESEND_API_KEY` vira no-op** (loga e segue → dev/local não
+  quebra) e nunca lança (best-effort). **`env.ts`** += `resendApiKey`/`emailFrom` (default
+  `TRIADE ERP <notificacoes@triadeerp.com.br>`)/`suporteEmailDestino` (default `admin@triadeerp.com.br`). `SuporteService`
+  recebe `EmailSender?`+`destino?` e o `notificar()` monta HTML+texto (tipo, assunto, descrição, empresa, usuário,
+  tela/versão; avisa se há print) e envia. Wiring no `composition.ts`. `.env.example` documentado. **Sem migration,
+  sem mudança de frontend.** **Setup externo feito pelo Gui (fora do código):** (1) **Cloudflare Email Routing** —
+  `admin@triadeerp.com.br` encaminha p/ o Gmail pessoal (recebimento); (2) **Resend** — domínio verificado + API key;
+  (3) **Render** — vars `RESEND_API_KEY`, `EMAIL_FROM`, `SUPORTE_EMAIL_DESTINO`. **Validação:** tsc do sandbox inútil
+  (truncagem do mount → "} expected" no fim dos arquivos); confirmado `fetch` ok (FreteService já usa) + hand-review.
+  **Pendente:** Gui commit+push → Render redeploia (lê as vars novas). **Próximo (sugestão):** "Esqueci a senha" real
+  reusa essa infra (token de reset + página de nova senha).
 - **2026-06-15** — **Suporte: abertura de chamados (in-app) + tela do super-admin.** Qualquer usuário logado abre um
   chamado pelo **"Suporte"** do rodapé do menu (que virou clicável); o **administrador do sistema (super-admin)** vê
   todos numa tela só. **Banco — migration public 005** (`public.chamado_suporte`: tipo erro/sugestao/duvida, assunto,
