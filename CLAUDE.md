@@ -188,6 +188,11 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-15** — **Suporte: colar/arrastar print no modal de chamado.** O campo de print do `Suporte.tsx` virou uma
+  **zona única**: colar (Ctrl+V, `onPaste` no modal — só intercepta se há imagem, texto colado na descrição segue
+  normal), **arrastar** (`onDrop`/`onDragOver`, com realce `.arrastando`) ou **Anexar imagem** (input file). Helper
+  `carregarImagem(File)` valida `image/*` + ~2,8MB e converte em data URI; miniatura + remover. CSS `.suporte-drop*`/
+  `.suporte-print-row`; i18n `suporte.print_zona` pt/en/es. Só frontend. **Pendente:** Gui build + commit+push + APK.
 - **2026-06-15** — **Suporte etapa 2: infra de e-mail (Resend) + notificação de chamado por e-mail.** Liga o gancho
   `notificar()` do `SuporteService`: ao abrir um chamado, dispara e-mail ao admin do sistema. **Porta** `EmailSender`
   (`domain/ports/EmailSender.ts`: `enviar({para,assunto,html,texto})`) — domínio agnóstico ao provedor. **Adapter**

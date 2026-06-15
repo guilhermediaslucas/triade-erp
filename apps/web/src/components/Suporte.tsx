@@ -1,4 +1,4 @@
-import { useRef, useState, type ChangeEvent } from 'react';
+import { useRef, useState, type ChangeEvent, type ClipboardEvent, type DragEvent } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
@@ -23,16 +23,28 @@ export function Suporte({ onFechar }: { onFechar: () => void }) {
   const [print, setPrint] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+  const [arrastando, setArrastando] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  function escolherPrint(e: ChangeEvent<HTMLInputElement>) {
-    const arq = e.target.files?.[0];
+  // Carrega uma imagem (de arquivo, colagem ou arraste) como data URI.
+  function carregarImagem(arq: File | null | undefined) {
     if (!arq) return;
+    if (!arq.type.startsWith('image/')) { setErro('suporte.print_invalido'); return; }
     if (arq.size > 2_800_000) { setErro('suporte.print_grande'); return; }
+    setErro(null);
     const leitor = new FileReader();
     leitor.onload = () => setPrint(String(leitor.result));
     leitor.readAsDataURL(arq);
   }
+  function escolherPrint(e: ChangeEvent<HTMLInputElement>) { carregarImagem(e.target.files?.[0]); }
+  // Colar print direto (Ctrl+V). Só intercepta quando há imagem — texto colado no
+  // campo de descrição segue normalmente.
+  function aoColar(e: ClipboardEvent) {
+    const item = Array.from(e.clipboardData.items).find((i) => i.type.startsWith('image/'));
+    const arq = item?.getAsFile();
+    if (arq) { e.preventDefault(); carregarImagem(arq); }
+  }
+  function aoSoltar(e: DragEvent) { e.preventDefault(); setArrastando(false); carregarImagem(e.dataTransfer.files?.[0]); }
 
   async function enviar() {
     setErro(null);
@@ -50,7 +62,7 @@ export function Suporte({ onFechar }: { onFechar: () => void }) {
   }
 
   return (
-    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 440 }}>
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} onPaste={aoColar} style={{ maxWidth: 440 }}>
       <h2><Ic name="i-help" /> {t('suporte.titulo')}</h2>
       <p className="muted" style={{ marginTop: 0 }}>{t('suporte.subtitulo')}</p>
 
@@ -74,15 +86,23 @@ export function Suporte({ onFechar }: { onFechar: () => void }) {
       </label>
 
       <div className="campo">{t('suporte.print')}
-        <div className="logo-area">
-          {print
-            ? <img src={print} alt="" className="suporte-print-thumb" />
-            : <div className="suporte-print-vazio"><Ic name="i-receipt" /></div>}
-          <div className="logo-btns">
-            <input ref={fileRef} type="file" accept="image/*" hidden onChange={escolherPrint} />
-            <button type="button" className="btn-ghost" onClick={() => fileRef.current?.click()}>{t('suporte.print_enviar')}</button>
-            {print && <button type="button" className="btn-link" onClick={() => setPrint(null)}>{t('suporte.print_remover')}</button>}
-          </div>
+        <div className={'suporte-drop' + (arrastando ? ' arrastando' : '')}
+          onDragOver={(e) => { e.preventDefault(); setArrastando(true); }}
+          onDragLeave={() => setArrastando(false)}
+          onDrop={aoSoltar}>
+          <input ref={fileRef} type="file" accept="image/*" hidden onChange={escolherPrint} />
+          {print ? (
+            <div className="suporte-print-row">
+              <img src={print} alt="" className="suporte-print-thumb" />
+              <button type="button" className="btn-link" onClick={() => setPrint(null)}>{t('suporte.print_remover')}</button>
+            </div>
+          ) : (
+            <>
+              <Ic name="i-receipt" />
+              <div className="suporte-drop-txt">{t('suporte.print_zona')}</div>
+              <button type="button" className="btn-ghost" onClick={() => fileRef.current?.click()}>{t('suporte.print_enviar')}</button>
+            </>
+          )}
         </div>
       </div>
 
