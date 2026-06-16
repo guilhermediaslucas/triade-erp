@@ -17,6 +17,10 @@ export class R2Storage implements ArquivoStorage {
           region: 'auto',
           endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
           credentials: { accessKeyId, secretAccessKey },
+          // O R2 não implementa os checksums (CRC32) que o aws-sdk recente envia por
+          // padrão — isso quebra o upload. Só calcular/validar quando realmente exigido.
+          requestChecksumCalculation: 'WHEN_REQUIRED',
+          responseChecksumValidation: 'WHEN_REQUIRED',
         })
       : null;
   }
