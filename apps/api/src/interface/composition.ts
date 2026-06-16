@@ -149,7 +149,7 @@ export function montarDependencias() {
     relatoriosService: new RelatoriosService(new SqlRelatorioRepository(AppDataSource)),
     estoqueService: new EstoqueService(estoqueRepo, etiquetaRepo),
     inventarioService: new InventarioService(inventarioRepo, etiquetaRepo, estoqueRepo),
-    crmService: new CrmService(new SqlCrmRepository(AppDataSource)),
+    crmService: new CrmService(new SqlCrmRepository(AppDataSource), clientesRepo),
     metasService: new MetasService(new SqlMetaRepository(AppDataSource)),
     suporteService: new SuporteService(
       new SqlChamadoRepository(AppDataSource),

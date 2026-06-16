@@ -16,6 +16,13 @@ function mapOport(r: any): Oportunidade {
     estagio: r.estagio, previsao: r.previsao ? new Date(r.previsao).toISOString().slice(0, 10) : null,
     pedidoId: r.pedido_id ?? null, pedidoNumero: r.pedido_numero != null ? Number(r.pedido_numero) : null,
     perdido: !!r.perdido,
+    contato: r.contato ?? null, email: r.email ?? null, telefone: r.telefone ?? null, origem: r.origem ?? null,
+  };
+}
+function mapInter(r: any): Interacao {
+  return {
+    id: r.id, clienteId: r.cliente_id ?? null, oportunidadeId: r.oportunidade_id ?? null, tipo: r.tipo,
+    data: r.data ? new Date(r.data).toISOString().slice(0, 10) : '', nota: r.nota ?? null,
   };
 }
 
@@ -46,9 +53,9 @@ export class SqlCrmRepository implements CrmRepository {
   async criarOportunidade(schema: string, o: NovaOportunidade): Promise<string> {
     const s = validarSchema(schema); const id = randomUUID();
     await this.ds.query(
-      `INSERT INTO "${s}".oportunidade (id, cliente_id, cliente_nome, titulo, valor, vendedor_id, estagio, previsao)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
-      [id, o.clienteId, o.clienteNome, o.titulo, o.valor, o.vendedorId, o.estagio, o.previsao]);
+      `INSERT INTO "${s}".oportunidade (id, cliente_id, cliente_nome, titulo, valor, vendedor_id, estagio, previsao, contato, email, telefone, origem)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+      [id, o.clienteId, o.clienteNome, o.titulo, o.valor, o.vendedorId, o.estagio, o.previsao, o.contato, o.email, o.telefone, o.origem]);
     return id;
   }
   async mudarEstagio(schema: string, id: string, estagio: EstagioOportunidade): Promise<void> {
@@ -63,23 +70,34 @@ export class SqlCrmRepository implements CrmRepository {
     const s = validarSchema(schema);
     await this.ds.query(`UPDATE "${s}".oportunidade SET pedido_id = $2 WHERE id = $1`, [id, pedidoId]);
   }
+  async vincularCliente(schema: string, id: string, clienteId: string): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(`UPDATE "${s}".oportunidade SET cliente_id = $2 WHERE id = $1`, [id, clienteId]);
+  }
 
   // ---- Interações ----
   async listarInteracoes(schema: string, clienteId: string): Promise<Interacao[]> {
     const s = validarSchema(schema);
     const linhas = await this.ds.query(
-      `SELECT id, cliente_id, tipo, data, nota FROM "${s}".interacao WHERE cliente_id = $1 ORDER BY data DESC, criado_em DESC`, [clienteId]);
-    return linhas.map((r: any) => ({
-      id: r.id, clienteId: r.cliente_id, tipo: r.tipo,
-      data: r.data ? new Date(r.data).toISOString().slice(0, 10) : '', nota: r.nota ?? null,
-    }));
+      `SELECT id, cliente_id, oportunidade_id, tipo, data, nota FROM "${s}".interacao WHERE cliente_id = $1 ORDER BY data DESC, criado_em DESC`, [clienteId]);
+    return linhas.map(mapInter);
+  }
+  async listarInteracoesOportunidade(schema: string, oportunidadeId: string): Promise<Interacao[]> {
+    const s = validarSchema(schema);
+    const linhas = await this.ds.query(
+      `SELECT id, cliente_id, oportunidade_id, tipo, data, nota FROM "${s}".interacao WHERE oportunidade_id = $1 ORDER BY data DESC, criado_em DESC`, [oportunidadeId]);
+    return linhas.map(mapInter);
   }
   async criarInteracao(schema: string, i: NovaInteracao): Promise<string> {
     const s = validarSchema(schema); const id = randomUUID();
     await this.ds.query(
-      `INSERT INTO "${s}".interacao (id, cliente_id, tipo, data, nota) VALUES ($1,$2,$3,$4,$5)`,
-      [id, i.clienteId, i.tipo, i.data, i.nota]);
+      `INSERT INTO "${s}".interacao (id, cliente_id, oportunidade_id, tipo, data, nota) VALUES ($1,$2,$3,$4,$5,$6)`,
+      [id, i.clienteId, i.oportunidadeId, i.tipo, i.data, i.nota]);
     return id;
+  }
+  async migrarInteracoesParaCliente(schema: string, oportunidadeId: string, clienteId: string): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(`UPDATE "${s}".interacao SET cliente_id = $2 WHERE oportunidade_id = $1`, [oportunidadeId, clienteId]);
   }
   async contarInteracoes(schema: string): Promise<number> {
     const s = validarSchema(schema);

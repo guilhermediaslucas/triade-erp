@@ -5,6 +5,28 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { UFS, buscarMunicipios } from '../lib/br.js';
 import { Ic } from '../components/Icones.js';
 import { MoedaInput } from '../components/MoedaInput.js';
+import { ImportadorPlanilha, type CampoImport } from '../components/ImportadorPlanilha.js';
+
+// Parser de número em formato BR ("1.234,56") ou simples; vazio → 0.
+function parseNumBR(v: string): number {
+  const s = String(v ?? '').trim();
+  if (!s) return 0;
+  const limpo = s.replace(/[^\d,.-]/g, '');
+  const n = Number(limpo.includes(',') ? limpo.replace(/\./g, '').replace(',', '.') : limpo);
+  return Number.isFinite(n) ? n : 0;
+}
+
+const CAMPOS_CLIENTE: CampoImport[] = [
+  { chave: 'nome', rotulo: 'Nome / Razão social', obrigatorio: true, exemplo: 'Clínica Bella Pele', aliases: ['cliente', 'razao social', 'razão social', 'nome completo', 'empresa'] },
+  { chave: 'tipoPessoa', rotulo: 'Tipo (PJ/PF)', exemplo: 'PJ', aliases: ['tipo', 'tipo de pessoa', 'pessoa'] },
+  { chave: 'fantasia', rotulo: 'Nome fantasia', exemplo: 'Bella Pele', aliases: ['fantasia'] },
+  { chave: 'documento', rotulo: 'CPF / CNPJ', exemplo: '12.345.678/0001-90', aliases: ['cpf', 'cnpj', 'cpf/cnpj', 'doc'] },
+  { chave: 'email', rotulo: 'E-mail', exemplo: 'contato@bellapele.com.br', aliases: ['e-mail'] },
+  { chave: 'telefone', rotulo: 'Telefone', exemplo: '(11) 99999-0000', aliases: ['celular', 'fone', 'whatsapp'] },
+  { chave: 'limiteCredito', rotulo: 'Limite de crédito', exemplo: '5000', aliases: ['limite', 'limite de credito', 'limite de crédito'] },
+  { chave: 'cidade', rotulo: 'Cidade', exemplo: 'São Paulo', aliases: ['municipio', 'município'] },
+  { chave: 'uf', rotulo: 'UF', exemplo: 'SP', aliases: ['estado'] },
+];
 
 type TipoPessoa = 'PJ' | 'PF';
 interface Endereco { cep: string; logradouro: string; numero: string; complemento: string; bairro: string; cidade: string; uf: string; favorito: boolean; }
@@ -28,10 +50,25 @@ export function Clientes() {
   const [itens, setItens] = useState<Cliente[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [edit, setEdit] = useState<Cliente | null>(null);
+  const [importar, setImportar] = useState(false);
   const [busca, setBusca] = useState('');
   const [statusF, setStatusF] = useState<'todos' | 'ativos' | 'inativos'>('todos');
 
   async function carregar() { try { setItens(await api.get('/clientes', token!)); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
+
+  async function enviarImportacao(linhas: Record<string, string>[]) {
+    const corpo = linhas.map((l) => {
+      const tp = (l.tipoPessoa ?? '').trim().toLowerCase();
+      const tipoPessoa = tp.startsWith('f') || tp.startsWith('pf') || tp.includes('fis') ? 'PF' : 'PJ';
+      const uf = (l.uf ?? '').trim().toUpperCase().slice(0, 2);
+      const enderecos = (l.cidade || uf) ? [{ cep: null, logradouro: null, numero: null, complemento: null, bairro: null, cidade: l.cidade || null, uf: uf || null, favorito: true }] : [];
+      return {
+        tipoPessoa, nome: l.nome ?? '', fantasia: l.fantasia || null, documento: l.documento || '',
+        email: l.email || null, telefone: l.telefone || null, limiteCredito: parseNumBR(l.limiteCredito ?? ''), enderecos,
+      };
+    });
+    return api.post<{ criados: number; ignorados: number; erros: { linha: number; motivo: string }[] }>('/clientes/importar', { linhas: corpo }, token!);
+  }
   useEffect(() => { carregar(); /* eslint-disable-next-line */ }, []);
   async function alternar(c: Cliente) { try { await api.patch('/clientes/' + c.id + '/ativo', { ativo: !c.ativo }, token!); carregar(); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
 
@@ -51,7 +88,10 @@ export function Clientes() {
     <div>
       <div className="crumb">{t('clientes.crumb')}</div>
       <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('clientes.titulo')}</h1><div className="muted page-sub">{t('clientes.sub')}</div></div>
-        {pode && <button className="btn-primary" onClick={() => setEdit(vazio())}>+ {t('clientes.novo')}</button>}</div>
+        {pode && <div style={{ display: 'flex', gap: 8 }}>
+          <button className="btn-ghost" onClick={() => setImportar(true)}><Ic name="i-upload" className="sm" /> {t('clientes.importar')}</button>
+          <button className="btn-primary" onClick={() => setEdit(vazio())}>+ {t('clientes.novo')}</button>
+        </div>}</div>
       <div className="toolbar">
         <div className="busca-box-tb"><Ic name="i-search" className="sm" /><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('clientes.buscar')} /></div>
         {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
@@ -81,6 +121,7 @@ export function Clientes() {
         </tbody>
       </table></div>
       {edit && <ModalCli c={edit} onFechar={() => setEdit(null)} onSalvo={() => { setEdit(null); carregar(); }} />}
+      {importar && <ImportadorPlanilha titulo={t('clientes.importar')} campos={CAMPOS_CLIENTE} modelo="modelo-clientes" onImportar={enviarImportacao} onConcluido={carregar} onFechar={() => setImportar(false)} />}
     </div>
   );
 }

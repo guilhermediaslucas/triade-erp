@@ -1841,6 +1841,14 @@ Object.assign(pt, {
   'crm.valor': 'Valor', 'crm.estagio': 'Estágio', 'crm.previsao': 'Previsão', 'crm.salvar_oport': 'Salvar oportunidade',
   'crm.tipo': 'Tipo', 'crm.data': 'Data', 'crm.anotacao': 'Anotação', 'crm.anotacao_ph': 'Resumo do contato, próximos passos...', 'crm.salvar_interacao': 'Salvar interação',
   'crm.cliente_obrigatorio': 'Informe o cliente.', 'crm.oportunidade_nao_encontrada': 'Oportunidade não encontrada.',
+  'crm.contato': 'Contato', 'crm.contato_ph': 'Pessoa de contato', 'crm.origem': 'Origem', 'crm.origem_ph': 'Ex.: Instagram, indicação, feira',
+  'crm.lead_tag': 'Lead', 'crm.converter': 'Converter em cliente', 'crm.convertido_ok': 'Lead convertido em cliente.',
+  'crm.importar_leads': 'Importar leads', 'crm.import_erro_linha': 'Não foi possível importar esta linha.',
+  'crm.alertas': 'Alertas do comercial', 'crm.alertas_sub': 'Comparados pelo ritmo de compra de cada cliente',
+  'crm.alertas_nota': 'A janela de comparação acompanha o ciclo médio de cada cliente — clientes semanais e mensais são avaliados de forma justa.',
+  'crm.al_queda': 'Em queda', 'crm.al_atrasados': 'Recompra atrasada', 'crm.al_inativos': 'Inativos',
+  'crm.al_sem_queda': 'Nenhum cliente em queda.', 'crm.al_sem_atraso': 'Ninguém atrasado.', 'crm.al_sem_inativo': 'Nenhum inativo.',
+  'crm.ritmo.semanal': 'Semanal', 'crm.ritmo.quinzenal': 'Quinzenal', 'crm.ritmo.mensal': 'Mensal', 'crm.ritmo.esporadico': 'Esporádico',
 });
 Object.assign(en, {
   'crm.crumb': 'Sales / CRM', 'crm.titulo': 'CRM', 'crm.sub': 'Customer relationship — indicators and interaction history',
@@ -1862,6 +1870,14 @@ Object.assign(en, {
   'crm.valor': 'Value', 'crm.estagio': 'Stage', 'crm.previsao': 'Forecast', 'crm.salvar_oport': 'Save opportunity',
   'crm.tipo': 'Type', 'crm.data': 'Date', 'crm.anotacao': 'Note', 'crm.anotacao_ph': 'Contact summary, next steps...', 'crm.salvar_interacao': 'Save interaction',
   'crm.cliente_obrigatorio': 'Enter the customer.', 'crm.oportunidade_nao_encontrada': 'Opportunity not found.',
+  'crm.contato': 'Contact', 'crm.contato_ph': 'Contact person', 'crm.origem': 'Source', 'crm.origem_ph': 'e.g. Instagram, referral, fair',
+  'crm.lead_tag': 'Lead', 'crm.converter': 'Convert to customer', 'crm.convertido_ok': 'Lead converted to customer.',
+  'crm.importar_leads': 'Import leads', 'crm.import_erro_linha': 'Could not import this row.',
+  'crm.alertas': 'Sales alerts', 'crm.alertas_sub': 'Compared by each customer purchase rhythm',
+  'crm.alertas_nota': 'The comparison window follows each customer average cycle — weekly and monthly customers are judged fairly.',
+  'crm.al_queda': 'Declining', 'crm.al_atrasados': 'Repurchase overdue', 'crm.al_inativos': 'Inactive',
+  'crm.al_sem_queda': 'No declining customers.', 'crm.al_sem_atraso': 'Nobody overdue.', 'crm.al_sem_inativo': 'No inactive customers.',
+  'crm.ritmo.semanal': 'Weekly', 'crm.ritmo.quinzenal': 'Biweekly', 'crm.ritmo.mensal': 'Monthly', 'crm.ritmo.esporadico': 'Sporadic',
 });
 Object.assign(es, {
   'crm.crumb': 'Comercial / CRM', 'crm.titulo': 'CRM', 'crm.sub': 'Relación con clientes — indicadores e historial de interacciones',
@@ -1883,6 +1899,14 @@ Object.assign(es, {
   'crm.valor': 'Valor', 'crm.estagio': 'Etapa', 'crm.previsao': 'Previsión', 'crm.salvar_oport': 'Guardar oportunidad',
   'crm.tipo': 'Tipo', 'crm.data': 'Fecha', 'crm.anotacao': 'Anotación', 'crm.anotacao_ph': 'Resumen del contacto, próximos pasos...', 'crm.salvar_interacao': 'Guardar interacción',
   'crm.cliente_obrigatorio': 'Informa el cliente.', 'crm.oportunidade_nao_encontrada': 'Oportunidad no encontrada.',
+  'crm.contato': 'Contacto', 'crm.contato_ph': 'Persona de contacto', 'crm.origem': 'Origen', 'crm.origem_ph': 'Ej.: Instagram, recomendación, feria',
+  'crm.lead_tag': 'Lead', 'crm.converter': 'Convertir en cliente', 'crm.convertido_ok': 'Lead convertido en cliente.',
+  'crm.importar_leads': 'Importar leads', 'crm.import_erro_linha': 'No se pudo importar esta fila.',
+  'crm.alertas': 'Alertas comerciales', 'crm.alertas_sub': 'Comparados por el ritmo de compra de cada cliente',
+  'crm.alertas_nota': 'La ventana de comparación sigue el ciclo medio de cada cliente — clientes semanales y mensuales se evalúan de forma justa.',
+  'crm.al_queda': 'En caída', 'crm.al_atrasados': 'Recompra atrasada', 'crm.al_inativos': 'Inactivos',
+  'crm.al_sem_queda': 'Ningún cliente en caída.', 'crm.al_sem_atraso': 'Nadie atrasado.', 'crm.al_sem_inativo': 'Ningún inactivo.',
+  'crm.ritmo.semanal': 'Semanal', 'crm.ritmo.quinzenal': 'Quincenal', 'crm.ritmo.mensal': 'Mensual', 'crm.ritmo.esporadico': 'Esporádico',
 });
 
 // --- Seletor de empresa (admin do sistema) ---
@@ -1988,6 +2012,35 @@ Object.assign(en, { 'common.todos': 'All', 'common.ativos': 'Active', 'common.in
   'clientes.crumb': 'Records / Customers', 'clientes.sub': 'Buying clinics and institutes', 'clientes.buscar': 'Search customer' });
 Object.assign(es, { 'common.todos': 'Todos', 'common.ativos': 'Activos', 'common.inativos': 'Inactivos',
   'clientes.crumb': 'Registros / Clientes', 'clientes.sub': 'Clínicas e institutos compradores', 'clientes.buscar': 'Buscar cliente' });
+
+// --- Importação de planilha (clientes/leads) ---
+Object.assign(pt, {
+  'clientes.importar': 'Importar clientes', 'cadastro.import_erro_linha': 'Não foi possível importar esta linha.',
+  'import.baixar_modelo': 'Baixar modelo (CSV)', 'import.aceita': 'Aceita CSV ou Excel (.xlsx). A 1ª linha deve conter os títulos das colunas.',
+  'import.mapear': 'Mapear colunas', 'import.ignorar': 'ignorar', 'import.coluna': 'coluna', 'import.previa': 'Prévia',
+  'import.linhas': 'linhas', 'import.validas': 'válidas', 'import.importar': 'Importar',
+  'import.criados': 'Criados', 'import.ignorados': 'Ignorados', 'import.erros': 'Erros',
+  'import.nota_dedup': 'Ignorados = já existiam (mesmo documento ou nome).', 'import.linha': 'Linha', 'import.motivo': 'Motivo',
+  'import.vazio': 'A planilha está vazia.', 'import.erro_ler': 'Não foi possível ler o arquivo.', 'import.erro_enviar': 'Falha ao enviar a importação.',
+});
+Object.assign(en, {
+  'clientes.importar': 'Import customers', 'cadastro.import_erro_linha': 'Could not import this row.',
+  'import.baixar_modelo': 'Download template (CSV)', 'import.aceita': 'Accepts CSV or Excel (.xlsx). The first row must contain the column headers.',
+  'import.mapear': 'Map columns', 'import.ignorar': 'ignore', 'import.coluna': 'column', 'import.previa': 'Preview',
+  'import.linhas': 'rows', 'import.validas': 'valid', 'import.importar': 'Import',
+  'import.criados': 'Created', 'import.ignorados': 'Skipped', 'import.erros': 'Errors',
+  'import.nota_dedup': 'Skipped = already existed (same document or name).', 'import.linha': 'Row', 'import.motivo': 'Reason',
+  'import.vazio': 'The spreadsheet is empty.', 'import.erro_ler': 'Could not read the file.', 'import.erro_enviar': 'Failed to send the import.',
+});
+Object.assign(es, {
+  'clientes.importar': 'Importar clientes', 'cadastro.import_erro_linha': 'No se pudo importar esta fila.',
+  'import.baixar_modelo': 'Descargar plantilla (CSV)', 'import.aceita': 'Acepta CSV o Excel (.xlsx). La 1ª fila debe contener los títulos de columna.',
+  'import.mapear': 'Mapear columnas', 'import.ignorar': 'ignorar', 'import.coluna': 'columna', 'import.previa': 'Vista previa',
+  'import.linhas': 'filas', 'import.validas': 'válidas', 'import.importar': 'Importar',
+  'import.criados': 'Creados', 'import.ignorados': 'Ignorados', 'import.erros': 'Errores',
+  'import.nota_dedup': 'Ignorados = ya existían (mismo documento o nombre).', 'import.linha': 'Fila', 'import.motivo': 'Motivo',
+  'import.vazio': 'La planilla está vacía.', 'import.erro_ler': 'No se pudo leer el archivo.', 'import.erro_enviar': 'Error al enviar la importación.',
+});
 
 // --- Pedidos (crumb + filtro de data) ---
 Object.assign(pt, { 'pedidos.crumb': 'Comercial / Pedidos', 'pedidos.data_de': 'Data início', 'pedidos.data_ate': 'Data fim', 'pedidos.filtro_dica': 'Filtra os pedidos pela data de criação.', 'pedidos.filtrar': 'Filtrar', 'pedidos.col_retirada': 'Aguardando retirada' });

@@ -57,8 +57,20 @@ function registrarCrud(r: Router, deps: Dependencias, caminho: string, capBase: 
 
 export function rotasPessoas(deps: Dependencias): Router {
   const r = Router();
+  const aut = criarAutenticar(deps.tokens);
+  const az = criarAutorizar(deps.usuariosRepo);
+  const sch = (req: Request) => req.usuario!.schema;
   registrarCrud(r, deps, 'clientes', 'cadastros.cliente', deps.clientesService, 'cliente');
   registrarCrud(r, deps, 'fornecedores', 'cadastros.fornecedor', deps.fornecedoresService, 'fornecedor');
   registrarCrud(r, deps, 'vendedores', 'cadastros.vendedor', deps.vendedoresService, 'vendedor');
+
+  // Importação em lote de clientes (CSV/XLSX parseado no front).
+  r.post('/clientes/importar', aut, az('cadastros.cliente.gerenciar'), async (req, res: Response) => {
+    try {
+      const resultado = await deps.clientesService.importar(sch(req), (req.body ?? {}).linhas ?? []);
+      auditar(req, { modulo: 'Cadastros', entidade: 'cliente', descricao: `Importou clientes: ${resultado.criados} criados, ${resultado.ignorados} ignorados` });
+      res.json(resultado);
+    } catch (e) { tratarErro(res, e); }
+  });
   return r;
 }

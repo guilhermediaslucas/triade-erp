@@ -30,6 +30,15 @@ export function rotasCrm(deps: Dependencias): Router {
   r.get('/crm/interacoes', aut, az('comercial.crm.ver'), async (req, res: Response) => {
     try { res.json(await crm.listarInteracoes(sch(req), String(req.query.clienteId ?? ''))); } catch (e) { tratarErro(res, e); }
   });
+  r.get('/crm/oportunidades/:id/interacoes', aut, az('comercial.crm.ver'), async (req, res: Response) => {
+    try { res.json(await crm.listarInteracoesOportunidade(sch(req), req.params.id!)); } catch (e) { tratarErro(res, e); }
+  });
+  r.get('/crm/alertas', aut, az('comercial.crm.ver'), async (req, res: Response) => {
+    try {
+      const q = req.query;
+      res.json(await crm.alertas(sch(req), { k: Number(q.k), limite: Number(q.limite), inativoDias: Number(q.inativoDias) }));
+    } catch (e) { tratarErro(res, e); }
+  });
 
   // Gestão (escrita)
   r.post('/crm/oportunidades', aut, az('comercial.crm.gerenciar'), async (req, res: Response) => {
@@ -46,6 +55,12 @@ export function rotasCrm(deps: Dependencias): Router {
   });
   r.post('/crm/interacoes', aut, az('comercial.crm.gerenciar'), async (req, res: Response) => {
     try { res.status(201).json(await crm.criarInteracao(sch(req), req.body ?? {})); } catch (e) { tratarErro(res, e); }
+  });
+  r.post('/crm/leads/importar', aut, az('comercial.crm.gerenciar'), async (req, res: Response) => {
+    try { res.json(await crm.importarLeads(sch(req), (req.body ?? {}).linhas ?? [])); } catch (e) { tratarErro(res, e); }
+  });
+  r.patch('/crm/oportunidades/:id/converter', aut, az('comercial.crm.gerenciar'), async (req, res: Response) => {
+    try { res.json(await crm.converterEmCliente(sch(req), req.params.id!)); } catch (e) { tratarErro(res, e); }
   });
 
   return r;

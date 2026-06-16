@@ -781,4 +781,21 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".usuario ADD COLUMN IF NOT EXISTS trocar_senha boolean NOT NULL DEFAULT false;
     `,
   },
+  {
+    // CRM — leads: a oportunidade no estágio 'lead' ganha campos de contato (sem
+    // depender de um cliente cadastrado). Interações passam a poder ser de um lead
+    // (oportunidade) OU de um cliente — por isso cliente_id deixa de ser obrigatório
+    // e ganhamos oportunidade_id. Ao "Converter em cliente", as interações do lead
+    // migram para o novo cliente.
+    nome: '056_crm_leads',
+    sql: (s) => `
+      ALTER TABLE "${s}".oportunidade ADD COLUMN IF NOT EXISTS contato  text;
+      ALTER TABLE "${s}".oportunidade ADD COLUMN IF NOT EXISTS email    text;
+      ALTER TABLE "${s}".oportunidade ADD COLUMN IF NOT EXISTS telefone text;
+      ALTER TABLE "${s}".oportunidade ADD COLUMN IF NOT EXISTS origem   text;
+      ALTER TABLE "${s}".interacao ALTER COLUMN cliente_id DROP NOT NULL;
+      ALTER TABLE "${s}".interacao ADD COLUMN IF NOT EXISTS oportunidade_id uuid
+        REFERENCES "${s}".oportunidade(id) ON DELETE CASCADE;
+    `,
+  },
 ];

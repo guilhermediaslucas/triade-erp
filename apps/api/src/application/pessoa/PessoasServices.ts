@@ -13,6 +13,7 @@ function docOpcional(d: any): string {
   return d == null ? '' : String(d).trim();
 }
 const limpo = (v: any): string | null => (v && String(v).trim() !== '' ? String(v).trim() : null);
+const so = (v: any): string => String(v ?? '').replace(/\D/g, '');
 
 function montarEnderecos(lista: any): EnderecoCliente[] {
   if (!Array.isArray(lista)) return [];
@@ -50,6 +51,32 @@ export class ClientesService {
   async alternarAtivo(s: string, id: string, ativo: boolean): Promise<void> {
     if (!(await this.repo.buscarPorId(s, id))) throw new ErroAplicacao('cadastro.nao_encontrado', 404);
     await this.repo.definirAtivo(s, id, ativo);
+  }
+
+  // Importação em lote (CSV/XLSX já normalizado em JSON pelo front).
+  // Dedup por documento (dígitos) e, na falta dele, por nome. Erro por linha não
+  // aborta o lote — volta no relatório.
+  async importar(s: string, linhas: any[]): Promise<{ criados: number; ignorados: number; erros: { linha: number; motivo: string }[] }> {
+    const lista = Array.isArray(linhas) ? linhas : [];
+    const existentes = await this.repo.listar(s);
+    const docs = new Set(existentes.map((c) => so(c.documento)).filter(Boolean));
+    const nomes = new Set(existentes.map((c) => c.nome.toLowerCase().trim()));
+    let criados = 0, ignorados = 0; const erros: { linha: number; motivo: string }[] = [];
+    for (let i = 0; i < lista.length; i++) {
+      try {
+        const novo = this.montar(lista[i] ?? {});
+        const docN = so(novo.documento);
+        const nomeN = novo.nome.toLowerCase().trim();
+        if ((docN && docs.has(docN)) || nomes.has(nomeN)) { ignorados++; continue; }
+        await this.repo.criar(s, novo);
+        if (docN) docs.add(docN);
+        nomes.add(nomeN);
+        criados++;
+      } catch (err) {
+        erros.push({ linha: i + 1, motivo: err instanceof ErroAplicacao ? err.chaveI18n : 'cadastro.import_erro_linha' });
+      }
+    }
+    return { criados, ignorados, erros };
   }
 }
 
