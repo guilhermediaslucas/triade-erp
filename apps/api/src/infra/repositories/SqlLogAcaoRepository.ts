@@ -3,7 +3,7 @@ import { validarSchema } from '../tenant/validarSchema.js';
 
 export interface LinhaLog {
   criadoEm: string; usuarioNome: string | null; modulo: string | null;
-  metodo: string; caminho: string; status: number | null;
+  metodo: string; caminho: string; status: number | null; descricao: string | null;
 }
 export interface FiltroLog { usuario?: string; modulo?: string; de?: string; ate?: string; }
 
@@ -19,11 +19,12 @@ export class SqlLogAcaoRepository {
     if (f.ate && /^\d{4}-\d{2}-\d{2}$/.test(f.ate)) { params.push(f.ate); cond.push(`criado_em < ($${params.length}::date + 1)`); }
     const where = cond.length ? `WHERE ${cond.join(' AND ')}` : '';
     const linhas = await this.ds.query(
-      `SELECT criado_em, usuario_nome, modulo, metodo, caminho, status
+      `SELECT criado_em, usuario_nome, modulo, metodo, caminho, status, descricao
          FROM "${s}".log_acao ${where} ORDER BY criado_em DESC LIMIT 500`, params);
     return linhas.map((r: any) => ({
       criadoEm: new Date(r.criado_em).toISOString(), usuarioNome: r.usuario_nome ?? null,
       modulo: r.modulo ?? null, metodo: r.metodo, caminho: r.caminho, status: r.status != null ? Number(r.status) : null,
+      descricao: r.descricao ?? null,
     }));
   }
 

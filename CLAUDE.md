@@ -188,6 +188,20 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-15** — **Auditoria rica (descrições humanas + antes→depois).** O log de auditoria deixou de mostrar
+  `método + caminho` cru. **Migration tenant 052:** `log_acao` += `descricao`/`entidade`/`referencia`. **Infra:**
+  helper `auditar(req, {descricao, modulo, entidade, referencia})` (`interface/http/audit.ts`, anexa `req.audit`);
+  o **middleware** `criarAuditoria` grava a descrição rica quando a rota a anexa, senão um **fallback genérico
+  legível** (verbo + caminho sem UUID via regex). `interface/http/fmt.ts` (`brl`/`dataBR`). Repos expostos nas deps
+  (`tituloRepo`/`clientesRepo`/`produtosRepo`/`precoBaseRepo`/`pedidoRepo`) p/ as rotas resolverem nomes/valores.
+  **Rotas instrumentadas com texto rico** (com **antes→depois** onde cabe): **Preços** (base de→para, por cliente,
+  campanha de preço), **Frete** (campanha), **Financeiro** (criar/baixar/cancelar baixa/excluir título, com nº REC/PAG
+  + valor + pessoa), **Comercial** (criar pedido PE-xxxx + cliente + total; mudar status de→para), **Cadastros**
+  (cliente/fornecedor/vendedor criar/editar/inativar; **limite de crédito de→para** no cliente), **Segurança**
+  (usuário criar/editar/inativar/senha). Tudo o que não foi instrumentado cai no fallback legível. **Tela Auditoria:**
+  mostra `descricao` (fallback verbo+caminho) e o **CSV exporta a descrição**. `SqlLogAcaoRepository.listar` += `descricao`.
+  **Validação:** tsc da API limpo (0 erros de tipo reais). **Pendente:** Gui build + commit+push → Render aplica a 052
+  + APK. **Sem permissão nova.** **Nota:** as descrições são geradas em pt-BR no servidor (dado operacional, não i18n).
 - **2026-06-15** — **Frete (cobrado×custo) + campanhas de frete + vendas sem frete + relatórios contábeis + histórico de preço por cliente + auditoria.** Lote grande (tudo numa entrega). **Migration tenant 051:** `pedido.frete_custo`
   (backfill = frete), tabelas `frete_campanha` (cliente, tipo gratis|fixo|percentual, valor, motivo, de, ate),
   `preco_cliente_historico` (preço/tipo/vigência + usuario_id/nome + criado_em), `log_acao` (auditoria). **(1) Bug nome
@@ -209,8 +223,10 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   **Sem capability nova** (reusa logistica.frete/relatorios/financeiro/acesso) → **não precisa relogar**. **Validação:**
   **tsc da API limpo** (0 erros de tipo reais; só `@triade/shared` não-resolvido no sandbox + aviso pré-existente do
   MetasService); web por hand-review (sandbox trunca). **Pendente:** Gui `npm install` + build + commit+push → Render
-  aplica a **051** + **APK novo**. **Polimento deixado p/ depois:** no NovoPedido, mostrar "custo × cobrado" ao vivo
-  (hoje a campanha aplica no backend e o total já sai correto). **Sugiro e2e ao aplicar:** campanha grátis zera o frete
+  aplica a **051** + **APK novo**. **Polimento FEITO:** no NovoPedido, endpoint `GET /frete/cobrado` (cap
+  `comercial.pedido.criar`) resolve o frete cobrado da campanha vigente; a tela mostra **custo × cliente paga ×
+  absorvido** e o **total usa o cobrado** (corrige o total exibido quando há campanha; o backend já reaplicava).
+  **Sugiro e2e ao aplicar:** campanha grátis zera o frete
   cobrado mantendo o custo; relatório contábil bate venda/frete; histórico registra usuário/hora; auditoria registra um POST.
 - **2026-06-15** — **Segurança: corrigida a vulnerabilidade do esbuild (npm audit "2 high") subindo a Vite 5→8.** As 2
   "high" eram do **esbuild** (transitivo da Vite, ferramenta de build): falhas do **dev server** (SSRF + leitura de

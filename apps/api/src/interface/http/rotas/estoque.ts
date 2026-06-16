@@ -3,6 +3,7 @@ import type { Dependencias } from '../../composition.js';
 import { criarAutenticar } from '../middlewares/autenticar.js';
 import { criarAutorizar } from '../middlewares/autorizar.js';
 import { tratarErro } from '../responder.js';
+import { auditar } from '../audit.js';
 
 export function rotasEstoque(deps: Dependencias): Router {
   const r = Router();
@@ -13,10 +14,25 @@ export function rotasEstoque(deps: Dependencias): Router {
     try { res.json(await deps.estoqueService.posicao(sch(req))); } catch (e) { tratarErro(res, e); }
   });
   r.post('/estoque/entrada', aut, az('estoque.entrada.criar'), async (req, res: Response) => {
-    try { await deps.estoqueService.entrada(sch(req), req.body ?? {}); res.status(201).json({ ok: true }); } catch (e) { tratarErro(res, e); }
+    try {
+      const b = req.body ?? {};
+      await deps.estoqueService.entrada(sch(req), b);
+      const prod = b.produtoId ? await deps.produtosRepo.buscarPorId(sch(req), b.produtoId).catch(() => null) : null;
+      const qtd = Array.isArray(b.codigos) ? b.codigos.length : Number(b.quantidade ?? 0);
+      auditar(req, { modulo: 'Estoque', entidade: 'Estoque', referencia: prod?.nome ?? null,
+        descricao: `Entrada de estoque: ${prod?.nome ?? 'produto'} +${qtd} un${b.lote ? ` (lote ${b.lote})` : ''}` });
+      res.status(201).json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
   });
   r.post('/estoque/baixa', aut, az('estoque.baixa.criar'), async (req, res: Response) => {
-    try { await deps.estoqueService.baixaPerda(sch(req), req.body ?? {}); res.status(201).json({ ok: true }); } catch (e) { tratarErro(res, e); }
+    try {
+      const b = req.body ?? {};
+      await deps.estoqueService.baixaPerda(sch(req), b);
+      const prod = b.produtoId ? await deps.produtosRepo.buscarPorId(sch(req), b.produtoId).catch(() => null) : null;
+      auditar(req, { modulo: 'Estoque', entidade: 'Estoque', referencia: prod?.nome ?? null,
+        descricao: `Baixa/perda de estoque: ${prod?.nome ?? 'produto'} −${Number(b.quantidade ?? 0)} un${b.motivo ? ` (${b.motivo})` : ''}` });
+      res.status(201).json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
   });
   r.get('/estoque/lotes/:loteId/etiquetas', aut, az('estoque.saldo.ver'), async (req, res: Response) => {
     try { res.json(await deps.estoqueService.etiquetasDoLote(sch(req), req.params.loteId!)); } catch (e) { tratarErro(res, e); }

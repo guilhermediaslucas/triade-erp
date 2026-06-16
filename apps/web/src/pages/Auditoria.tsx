@@ -4,11 +4,12 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { baixarCsv } from '../lib/csv.js';
 
-interface Linha { criadoEm: string; usuarioNome: string | null; modulo: string | null; metodo: string; caminho: string; status: number | null; }
+interface Linha { criadoEm: string; usuarioNome: string | null; modulo: string | null; metodo: string; caminho: string; status: number | null; descricao: string | null; }
 const primeiroDia = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10); };
 const hoje = () => new Date().toISOString().slice(0, 10);
 const fmtDataHora = (s: string) => new Date(s).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
 const VERBO: Record<string, string> = { POST: 'criou', PUT: 'editou', PATCH: 'alterou', DELETE: 'removeu' };
+const acaoTexto = (l: Linha) => l.descricao ?? ((VERBO[l.metodo] ?? l.metodo) + ' ' + l.caminho);
 
 export function Auditoria() {
   const { token } = useAuth(); const { t } = useI18n();
@@ -31,7 +32,7 @@ export function Auditoria() {
 
   function exportar() {
     const cab = [t('audit.data'), t('audit.usuario'), t('audit.modulo'), t('audit.acao')];
-    const dados = linhas.map((l) => [fmtDataHora(l.criadoEm), l.usuarioNome ?? '', l.modulo ?? '', (VERBO[l.metodo] ?? l.metodo) + ' ' + l.caminho]);
+    const dados = linhas.map((l) => [fmtDataHora(l.criadoEm), l.usuarioNome ?? '', l.modulo ?? '', acaoTexto(l)]);
     baixarCsv('auditoria_' + de + '_' + ate, cab, dados);
   }
 
@@ -60,7 +61,7 @@ export function Auditoria() {
                 <td style={{ color: 'var(--muted)' }}>{fmtDataHora(l.criadoEm)}</td>
                 <td>{l.usuarioNome ?? '—'}</td>
                 <td><span className="pill st-azul">{l.modulo ?? '—'}</span></td>
-                <td style={{ color: 'var(--muted)' }}>{(VERBO[l.metodo] ?? l.metodo) + ' '}{l.caminho}</td>
+                <td style={{ color: 'var(--muted)' }}>{acaoTexto(l)}</td>
               </tr>
             ))}
           </tbody>

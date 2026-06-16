@@ -740,4 +740,12 @@ export const tenantMigrations: MigracaoTenant[] = [
       CREATE INDEX IF NOT EXISTS idx_log_acao_data ON "${s}".log_acao (criado_em DESC);
     `,
   },
+  {
+    nome: '052_log_acao_descricao',
+    sql: (s) => `
+      ALTER TABLE "${s}".log_acao ADD COLUMN IF NOT EXISTS descricao   text;
+      ALTER TABLE "${s}".log_acao ADD COLUMN IF NOT EXISTS entidade    text;
+      ALTER TABLE "${s}".log_acao ADD COLUMN IF NOT EXISTS referencia  text;
+    `,
+  },
 ];

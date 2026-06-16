@@ -72,7 +72,8 @@ export function NovoPedido() {
   const [formaEntrega, setFormaEntrega] = useState<Forma>('retirada');
   const [distanciaKm, setDistanciaKm] = useState<number | null>(null);
   const [freteMemo, setFreteMemo] = useState<string | null>(null);
-  const [frete, setFrete] = useState('0');
+  const [frete, setFrete] = useState('0');                 // CUSTO real do frete (motoboy/correios)
+  const [freteCobrado, setFreteCobrado] = useState<number | null>(null);  // o que o cliente paga (campanha)
   const [obs, setObs] = useState('');
   const [itens, setItens] = useState<ItemForm[]>([{ produtoId: '', quantidade: '1' }]);
   const [sel, setSel] = useState<Set<number>>(new Set());
@@ -216,8 +217,22 @@ export function NovoPedido() {
   const precoDe = (pid: string) => produtos.find((p) => p.produtoId === pid)?.preco ?? 0;
   const subDe = (it: ItemForm) => precoDe(it.produtoId) * (Number(it.quantidade) || 0);
   const subtotal = useMemo(() => itens.reduce((acc, it) => acc + subDe(it), 0), [itens, produtos]);
-  const total = subtotal + (Number(frete) || 0);
+  const freteCusto = Number(frete) || 0;
+  const freteCobradoNum = freteCobrado != null ? freteCobrado : freteCusto;   // campanha aplicada (ou = custo)
+  const freteAbsorvido = Math.max(0, Math.round((freteCusto - freteCobradoNum) * 100) / 100);
+  const total = subtotal + freteCobradoNum;
   const freteAuto = formaEntrega === 'retirada' || formaEntrega === 'motoboy';
+
+  // Resolve o frete COBRADO do cliente (campanha vigente) p/ exibir o total certo.
+  // O custo continua sendo enviado ao backend, que reaplica a campanha de forma autoritativa.
+  useEffect(() => {
+    let vivo = true;
+    if (!clienteId || freteCusto <= 0) { setFreteCobrado(null); return; }
+    api.get<{ cobrado: number }>(`/frete/cobrado?clienteId=${clienteId}&custo=${freteCusto}`, token!)
+      .then((r) => { if (vivo) setFreteCobrado(r.cobrado); }).catch(() => { if (vivo) setFreteCobrado(null); });
+    return () => { vivo = false; };
+    /* eslint-disable-next-line */
+  }, [clienteId, freteCusto]);
 
   function setItem(i: number, campo: keyof ItemForm, val: string) { setItens(itens.map((it, idx) => idx === i ? { ...it, [campo]: val } : it)); }
   function addItem() { setItens([...itens, { produtoId: '', quantidade: '1' }]); }
@@ -430,9 +445,13 @@ export function NovoPedido() {
           </div>
           <div className="tl-row">
             {freteMemo && <span className="muted" style={{ fontSize: 12, marginRight: 'auto' }}>{freteMemo}</span>}
-            <span className="muted">{t('pedidos.frete')}</span>
+            <span className="muted">{freteCobrado != null && freteCobrado !== freteCusto ? t('pedidos.frete_custo') : t('pedidos.frete')}</span>
             <MoedaInput value={frete} disabled={freteAuto} onChange={(n) => setFrete(String(n))} style={{ width: 130, textAlign: 'right' }} />
           </div>
+          {freteCobrado != null && freteCobrado !== freteCusto && (<>
+            <div className="tl-row"><span className="muted" style={{ color: '#166534' }}>{t('pedidos.cliente_paga')}</span><b style={{ color: '#166534' }}>{moeda(freteCobradoNum)}</b></div>
+            <div className="tl-row"><span className="muted" style={{ fontSize: 12 }}>{t('pedidos.frete_absorvido')}</span><span className="muted" style={{ fontSize: 12 }}>{moeda(freteAbsorvido)}</span></div>
+          </>)}
           <div className="tl-row tl-total"><span className="muted">{t('pedidos.total')}</span><b style={{ fontSize: 20 }}>{moeda(total)}</b></div>
         </div>
       </div>

@@ -23,4 +23,11 @@ export class FreteCampanhasService {
   }
 
   remover(schema: string, id: string): Promise<void> { return this.repo.remover(schema, id); }
+
+  // Frete cobrado do cliente aplicando a campanha vigente (usado no Novo pedido p/ exibir o total certo).
+  cobrado(schema: string, clienteId: string, custo: number): Promise<number> {
+    const c = Number.isFinite(custo) && custo > 0 ? custo : 0;
+    if (!clienteId) return Promise.resolve(c);
+    return this.repo.freteCobrado(schema, clienteId, c);
+  }
 }

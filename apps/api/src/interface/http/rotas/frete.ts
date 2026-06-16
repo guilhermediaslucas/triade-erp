@@ -3,6 +3,8 @@ import type { Dependencias } from '../../composition.js';
 import { criarAutenticar } from '../middlewares/autenticar.js';
 import { criarAutorizar } from '../middlewares/autorizar.js';
 import { tratarErro } from '../responder.js';
+import { auditar } from '../audit.js';
+import { brl, dataBR } from '../fmt.js';
 
 export function rotasFrete(deps: Dependencias): Router {
   const r = Router();
@@ -26,10 +28,22 @@ export function rotasFrete(deps: Dependencias): Router {
     try { res.json(await deps.freteCampanhasService.listar(sch(req))); } catch (e) { tratarErro(res, e); }
   });
   r.post('/frete/campanhas', aut, az('logistica.frete.gerenciar'), async (req, res: Response) => {
-    try { await deps.freteCampanhasService.criar(sch(req), req.body ?? {}); res.status(201).json({ ok: true }); } catch (e) { tratarErro(res, e); }
+    try {
+      const s = sch(req); const b = req.body ?? {};
+      await deps.freteCampanhasService.criar(s, b);
+      const cli = b.clienteId ? await deps.clientesRepo.buscarPorId(s, b.clienteId).catch(() => null) : null;
+      const tipoTxt = b.tipo === 'gratis' ? 'frete grátis' : b.tipo === 'percentual' ? `desconto de ${Number(b.valor)}%` : `frete fixo ${brl(Number(b.valor))}`;
+      auditar(req, { modulo: 'Logística', entidade: 'CampanhaFrete', referencia: cli?.nome ?? null,
+        descricao: `Criou campanha de ${tipoTxt} para ${cli?.nome ?? 'cliente'} (${dataBR(b.de)} – ${dataBR(b.ate)})` });
+      res.status(201).json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
   });
   r.delete('/frete/campanhas/:id', aut, az('logistica.frete.gerenciar'), async (req, res: Response) => {
     try { await deps.freteCampanhasService.remover(sch(req), req.params.id!); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
+  // Frete cobrado do cliente (campanha vigente aplicada ao custo) — p/ o Novo pedido exibir o total certo.
+  r.get('/frete/cobrado', aut, az('comercial.pedido.criar'), async (req, res: Response) => {
+    try { res.json({ cobrado: await deps.freteCampanhasService.cobrado(sch(req), String(req.query.clienteId ?? ''), Number(req.query.custo ?? 0)) }); } catch (e) { tratarErro(res, e); }
   });
   return r;
 }

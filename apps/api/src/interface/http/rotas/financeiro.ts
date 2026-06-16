@@ -4,6 +4,8 @@ import type { TipoTitulo } from '../../../domain/financeiro/Titulo.js';
 import { criarAutenticar } from '../middlewares/autenticar.js';
 import { criarAutorizar } from '../middlewares/autorizar.js';
 import { tratarErro } from '../responder.js';
+import { auditar } from '../audit.js';
+import { brl } from '../fmt.js';
 
 function registrar(r: Router, deps: Dependencias, tipo: TipoTitulo, capBase: string): void {
   const aut = criarAutenticar(deps.tokens);
@@ -13,14 +15,34 @@ function registrar(r: Router, deps: Dependencias, tipo: TipoTitulo, capBase: str
   r.get(base, aut, az(`${capBase}.listar`), async (req, res: Response) => {
     try { res.json(await deps.financeiroService.listar(sch(req), tipo)); } catch (e) { tratarErro(res, e); }
   });
+  const rotuloTipo = tipo === 'receber' ? 'a receber' : 'a pagar';
   r.post(base, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
-    try { res.status(201).json({ id: await deps.financeiroService.criar(sch(req), tipo, req.body ?? {}) }); } catch (e) { tratarErro(res, e); }
+    try {
+      const b = req.body ?? {};
+      const id = await deps.financeiroService.criar(sch(req), tipo, b);
+      auditar(req, { modulo: 'Financeiro', entidade: 'Titulo',
+        descricao: `Criou título ${rotuloTipo}: ${b.descricao ?? '—'} (${brl(Number(b.valor))})` });
+      res.status(201).json({ id });
+    } catch (e) { tratarErro(res, e); }
   });
   r.patch(`${base}/:id/baixar`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
-    try { const b = req.body ?? {}; const r2 = await deps.financeiroService.baixar(sch(req), req.params.id!, b.formaPagamento ?? null, b.contaCorrenteId ?? null, b.dataBaixa ?? null, { desconto: b.desconto, multa: b.multa, juros: b.juros }); res.json({ ok: true, ...r2 }); } catch (e) { tratarErro(res, e); }
+    try {
+      const b = req.body ?? {};
+      const r2 = await deps.financeiroService.baixar(sch(req), req.params.id!, b.formaPagamento ?? null, b.contaCorrenteId ?? null, b.dataBaixa ?? null, { desconto: b.desconto, multa: b.multa, juros: b.juros });
+      const t = await deps.tituloRepo.buscarPorId(sch(req), req.params.id!).catch(() => null);
+      auditar(req, { modulo: 'Financeiro', entidade: 'Titulo', referencia: t?.numero ?? null,
+        descricao: `Baixou o título ${t?.numero ?? ''} (${brl(t?.valor)})${t?.pessoaNome ? ' — ' + t.pessoaNome : ''}${b.formaPagamento ? ', forma ' + b.formaPagamento : ''}` });
+      res.json({ ok: true, ...r2 });
+    } catch (e) { tratarErro(res, e); }
   });
   r.patch(`${base}/:id/cancelar`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
-    try { await deps.financeiroService.cancelarBaixa(sch(req), req.params.id!); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+    try {
+      const t = await deps.tituloRepo.buscarPorId(sch(req), req.params.id!).catch(() => null);
+      await deps.financeiroService.cancelarBaixa(sch(req), req.params.id!);
+      auditar(req, { modulo: 'Financeiro', entidade: 'Titulo', referencia: t?.numero ?? null,
+        descricao: `Cancelou a baixa do título ${t?.numero ?? ''} (${brl(t?.valor)})${t?.pessoaNome ? ' — ' + t.pessoaNome : ''}` });
+      res.json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
   });
   r.patch(`${base}/:id/previsto`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
     try { await deps.financeiroService.definirPrevisto(sch(req), req.params.id!, !!(req.body ?? {}).previsto); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
@@ -29,7 +51,13 @@ function registrar(r: Router, deps: Dependencias, tipo: TipoTitulo, capBase: str
     try { await deps.financeiroService.definirReembolso(sch(req), req.params.id!, req.body ?? {}); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });
   r.delete(`${base}/:id`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
-    try { await deps.financeiroService.excluir(sch(req), req.params.id!); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+    try {
+      const t = await deps.tituloRepo.buscarPorId(sch(req), req.params.id!).catch(() => null);
+      await deps.financeiroService.excluir(sch(req), req.params.id!);
+      auditar(req, { modulo: 'Financeiro', entidade: 'Titulo', referencia: t?.numero ?? null,
+        descricao: `Excluiu o título ${t?.numero ?? ''} (${brl(t?.valor)})${t?.pessoaNome ? ' — ' + t.pessoaNome : ''}` });
+      res.json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
   });
   r.post(`${base}/:id/parcelar`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
     try { res.status(201).json({ criados: await deps.financeiroService.parcelar(sch(req), req.params.id!, req.body ?? {}) }); } catch (e) { tratarErro(res, e); }
