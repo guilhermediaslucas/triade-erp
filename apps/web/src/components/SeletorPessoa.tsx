@@ -55,6 +55,8 @@ export function ModalNovaPessoa({ tipo, onFechar, onCriado }: {
   const [tipoPessoa, setTipoPessoa] = useState<'PJ' | 'PF'>('PJ');
   const [documento, setDoc] = useState(''); const [telefone, setTel] = useState(''); const [email, setEmail] = useState('');
   const [cep, setCep] = useState(''); const [cidade, setCidade] = useState(''); const [uf, setUf] = useState('');
+  const [logradouro, setLogradouro] = useState(''); const [numero, setNumero] = useState('');
+  const [complemento, setComplemento] = useState(''); const [bairro, setBairro] = useState('');
   const [buscandoCnpj, setBuscandoCnpj] = useState(false);
   const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
 
@@ -67,13 +69,13 @@ export function ModalNovaPessoa({ tipo, onFechar, onCriado }: {
   }
   async function cepLookup() {
     const d = await buscarCep(cep);
-    if (d) { if (d.cidade) setCidade(d.cidade); if (d.uf) setUf(d.uf); }
+    if (d) { if (d.cidade) setCidade(d.cidade); if (d.uf) setUf(d.uf); if (d.logradouro) setLogradouro(d.logradouro); if (d.bairro) setBairro(d.bairro); }
   }
   async function salvar() {
     setErro(null); setSalv(true);
     try {
       const corpo = fornecedor
-        ? { nome, fantasia, documento, telefone, email, cep, cidade, uf }
+        ? { nome, fantasia, documento, telefone, email, cep, cidade, uf, logradouro, numero, complemento, bairro }
         : { tipoPessoa, nome, fantasia: tipoPessoa === 'PJ' ? fantasia : '', documento, telefone, email, limiteCredito: 0,
             enderecos: (cep || cidade || uf) ? [{ cep, cidade, uf, favorito: true }] : [] };
       await api.post(fornecedor ? '/fornecedores' : '/clientes', corpo, token!);
@@ -142,8 +144,16 @@ export function ModalNovaPessoa({ tipo, onFechar, onCriado }: {
         </label>
       </div>
       <div className="cores-grid">
-        <label className="campo">{t('clientes.cidade')}<input value={cidade} onChange={(e) => setCidade(e.target.value)} /></label>
         <label className="campo">CEP<input value={cep} onChange={(e) => setCep(mascaraCep(e.target.value))} onBlur={cepLookup} placeholder="00000-000" maxLength={9} /></label>
+        <label className="campo">{t('clientes.bairro')}<input value={bairro} onChange={(e) => setBairro(e.target.value)} /></label>
+      </div>
+      <div className="cores-grid">
+        <label className="campo">{t('clientes.logradouro')}<input value={logradouro} onChange={(e) => setLogradouro(e.target.value)} /></label>
+        <label className="campo">{t('clientes.numero')}<input value={numero} onChange={(e) => setNumero(e.target.value)} /></label>
+      </div>
+      <div className="cores-grid">
+        <label className="campo">{t('clientes.complemento')}<input value={complemento} onChange={(e) => setComplemento(e.target.value)} /></label>
+        <label className="campo">{t('clientes.cidade')}<input value={cidade} onChange={(e) => setCidade(e.target.value)} /></label>
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv || nome.trim().length < 2} onClick={salvar}>{t('fin.salvar_fornecedor')}</button></div>

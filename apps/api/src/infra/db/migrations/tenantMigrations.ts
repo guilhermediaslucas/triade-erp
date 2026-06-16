@@ -764,4 +764,13 @@ export const tenantMigrations: MigracaoTenant[] = [
       CREATE INDEX IF NOT EXISTS idx_titulo_anexo ON "${s}".titulo_anexo (titulo_id, criado_em);
     `,
   },
+  {
+    nome: '054_fornecedor_endereco',
+    sql: (s) => `
+      ALTER TABLE "${s}".fornecedor ADD COLUMN IF NOT EXISTS logradouro  text;
+      ALTER TABLE "${s}".fornecedor ADD COLUMN IF NOT EXISTS numero      text;
+      ALTER TABLE "${s}".fornecedor ADD COLUMN IF NOT EXISTS complemento text;
+      ALTER TABLE "${s}".fornecedor ADD COLUMN IF NOT EXISTS bairro      text;
+    `,
+  },
 ];

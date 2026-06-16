@@ -5,8 +5,8 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { mascaraCnpj, mascaraCep, buscarCnpj, buscarCep, UFS, buscarMunicipios } from '../lib/br.js';
 import { Ic } from '../components/Icones.js';
 
-interface Fornecedor { id: string; nome: string; fantasia: string | null; documento: string; email: string | null; telefone: string | null; cep: string | null; cidade: string | null; uf: string | null; ativo: boolean; }
-const vazio = (): Fornecedor => ({ id: '', nome: '', fantasia: '', documento: '', email: '', telefone: '', cep: '', cidade: '', uf: '', ativo: true });
+interface Fornecedor { id: string; nome: string; fantasia: string | null; documento: string; email: string | null; telefone: string | null; cep: string | null; cidade: string | null; uf: string | null; logradouro: string | null; numero: string | null; complemento: string | null; bairro: string | null; ativo: boolean; }
+const vazio = (): Fornecedor => ({ id: '', nome: '', fantasia: '', documento: '', email: '', telefone: '', cep: '', cidade: '', uf: '', logradouro: '', numero: '', complemento: '', bairro: '', ativo: true });
 
 export function Fornecedores() {
   const { token, temCapability } = useAuth();
@@ -47,7 +47,7 @@ export function Fornecedores() {
               <td data-label={t('pessoa.razao')}>{f.nome}</td>
               <td data-label="CNPJ">{f.documento || '—'}</td><td data-label={t('forn.cidade_uf')}>{f.cidade ? `${f.cidade}${f.uf ? '/' + f.uf : ''}` : '—'}</td><td data-label={t('pessoa.telefone')}>{f.telefone ?? '—'}</td>
               <td style={{ textAlign: 'right' }}><span className="acoes-ic">
-                <button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...f, fantasia: f.fantasia ?? '', email: f.email ?? '', telefone: f.telefone ?? '', cep: f.cep ?? '', cidade: f.cidade ?? '', uf: f.uf ?? '' })}><Ic name="i-edit" className="sm" /></button>
+                <button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...f, fantasia: f.fantasia ?? '', email: f.email ?? '', telefone: f.telefone ?? '', cep: f.cep ?? '', cidade: f.cidade ?? '', uf: f.uf ?? '', logradouro: f.logradouro ?? '', numero: f.numero ?? '', complemento: f.complemento ?? '', bairro: f.bairro ?? '' })}><Ic name="i-edit" className="sm" /></button>
                 {pode && <button className="acao-ic danger" title={f.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternar(f)}><Ic name="i-trash" className="sm" /></button>}
               </span></td>
             </tr>
@@ -70,13 +70,13 @@ function ModalForn({ f, onFechar, onSalvo }: { f: Fornecedor; onFechar: () => vo
       setV((x) => ({ ...x, nome: d.razao ?? x.nome, fantasia: d.fantasia ?? x.fantasia, cep: d.cep ?? x.cep, cidade: d.cidade ?? x.cidade, uf: d.uf ?? x.uf })); }
     catch { setErro('clientes.cnpj_nao_encontrado'); } finally { setBusc(false); }
   }
-  async function acharCep() { const d = await buscarCep(v.cep ?? ''); if (d) setV((x) => ({ ...x, cidade: d.cidade ?? x.cidade, uf: d.uf ?? x.uf })); }
+  async function acharCep() { const d = await buscarCep(v.cep ?? ''); if (d) setV((x) => ({ ...x, cidade: d.cidade ?? x.cidade, uf: d.uf ?? x.uf, logradouro: d.logradouro ?? x.logradouro, bairro: d.bairro ?? x.bairro })); }
   // Municípios da UF (IBGE) para sugerir a cidade.
   const [munis, setMunis] = useState<string[]>([]);
   useEffect(() => { buscarMunicipios(v.uf ?? '').then(setMunis); }, [v.uf]);
   async function salvar() {
     setErro(null); setSalv(true);
-    const corpo = { nome: v.nome, fantasia: v.fantasia, documento: v.documento, email: v.email, telefone: v.telefone, cep: v.cep, cidade: v.cidade, uf: v.uf };
+    const corpo = { nome: v.nome, fantasia: v.fantasia, documento: v.documento, email: v.email, telefone: v.telefone, cep: v.cep, cidade: v.cidade, uf: v.uf, logradouro: v.logradouro, numero: v.numero, complemento: v.complemento, bairro: v.bairro };
     try { if (novo) await api.post('/fornecedores', corpo, token!); else await api.put('/fornecedores/' + f.id, corpo, token!); onSalvo(); }
     catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
@@ -107,6 +107,14 @@ function ModalForn({ f, onFechar, onSalvo }: { f: Fornecedor; onFechar: () => vo
             {UFS.map((uf) => <option key={uf} value={uf}>{uf}</option>)}
           </select>
         </label>
+      </div>
+      <div className="cores-grid">
+        <label className="campo">{t('clientes.logradouro')}<input value={v.logradouro ?? ''} onChange={(e) => set('logradouro', e.target.value)} /></label>
+        <label className="campo">{t('clientes.numero')}<input value={v.numero ?? ''} onChange={(e) => set('numero', e.target.value)} /></label>
+      </div>
+      <div className="cores-grid">
+        <label className="campo">{t('clientes.bairro')}<input value={v.bairro ?? ''} onChange={(e) => set('bairro', e.target.value)} /></label>
+        <label className="campo">{t('clientes.complemento')}<input value={v.complemento ?? ''} onChange={(e) => set('complemento', e.target.value)} /></label>
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv} onClick={salvar}>{t('common.salvar')}</button></div>

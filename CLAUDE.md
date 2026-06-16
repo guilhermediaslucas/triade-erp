@@ -188,6 +188,14 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-16** — **Fix upload de anexo (checksum R2) + endereço completo do fornecedor.** **(1)** O upload de anexo
+  dava erro genérico: o `@aws-sdk/client-s3` recente manda checksum CRC32 que o R2 recusa → adicionado
+  `requestChecksumCalculation:'WHEN_REQUIRED'` + `responseChecksumValidation:'WHEN_REQUIRED'` no `R2Storage`. **(2)**
+  Endereço completo do **fornecedor** (antes só CEP/cidade/UF): **migration tenant 054** (`fornecedor` += logradouro,
+  numero, complemento, bairro); domínio/repo/`FornecedoresService` repassam; preenchimento por **CEP (ViaCEP)** já fixa
+  logradouro/bairro. Campos adicionados na **tela de Fornecedores** e no **mini-modal de cadastro rápido** (`SeletorPessoa`).
+  Cliente já tinha endereço completo (multi-endereço) — inalterado. i18n `clientes.complemento` pt/en/es (logradouro/numero/
+  bairro já existiam). **Validação:** tsc da API limpo. **Pendente:** Gui build + commit+push (Render aplica 054) + APK.
 - **2026-06-16** — **Anexos de documentos nos títulos (Cloudflare R2).** Permite anexar NF/conta de energia/etc. a um
   título (a receber/pagar) — para o fechamento contábil. **Dependência nova:** `@aws-sdk/client-s3` (R2 é S3-compatível)
   → exige `npm install`. **Migration tenant 053:** `titulo_anexo` (titulo_id FK CASCADE, nome_arquivo, tipo, tamanho,

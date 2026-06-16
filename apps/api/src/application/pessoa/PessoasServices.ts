@@ -57,7 +57,7 @@ export class FornecedoresService {
   constructor(private readonly repo: FornecedorRepository) {}
   listar(s: string): Promise<Fornecedor[]> { return this.repo.listar(s); }
   private montar(e: any): NovoFornecedor {
-    return { nome: exigeNome(e?.nome), fantasia: limpo(e?.fantasia), documento: docOpcional(e?.documento), email: limpo(e?.email), telefone: limpo(e?.telefone), cep: limpo(e?.cep), cidade: limpo(e?.cidade), uf: limpo(e?.uf) };
+    return { nome: exigeNome(e?.nome), fantasia: limpo(e?.fantasia), documento: docOpcional(e?.documento), email: limpo(e?.email), telefone: limpo(e?.telefone), cep: limpo(e?.cep), cidade: limpo(e?.cidade), uf: limpo(e?.uf), logradouro: limpo(e?.logradouro), numero: limpo(e?.numero), complemento: limpo(e?.complemento), bairro: limpo(e?.bairro) };
   }
   criar(s: string, e: any): Promise<string> { return this.repo.criar(s, this.montar(e)); }
   async editar(s: string, id: string, e: any): Promise<void> {
