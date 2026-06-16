@@ -13,6 +13,7 @@ const GRUPOS: Grupo[] = [
     itens: [
       { rotulo: 'menu.rel_reembolsos', to: '/relatorios/reembolsos', cap: 'financeiro.pagar.listar' },
       { rotulo: 'menu.rel_contas_pagar', to: '/relatorios/contas-pagar', cap: 'financeiro.pagar.listar' },
+      { rotulo: 'menu.rel_contas_receber', to: '/relatorios/contas-receber', cap: 'financeiro.receber.listar' },
     ],
   },
   {

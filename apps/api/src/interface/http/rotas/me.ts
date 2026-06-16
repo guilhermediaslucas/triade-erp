@@ -21,7 +21,10 @@ export function rotasMe(deps: Dependencias): Router {
         vendedorId = usr?.vendedorId ?? null;
         if (vendedorId) { const v = await deps.vendedoresRepo.buscarPorId(u.schema, vendedorId); vendedorNome = v?.nome ?? null; }
       }
-      res.json({ id: u.sub, nome: u.nome, email: u.email, empresa: u.empresa, capabilities, superAdmin: u.superAdmin === true, foto, vendedorId, vendedorNome });
+      // Empresas que este login acessa (multi-tenant) — para o seletor de empresa.
+      // Super-admin usa a lista completa via /empresas, então aqui vai vazio p/ ele.
+      const empresas = u.superAdmin ? [] : await deps.autenticarUsuario.empresasDoUsuario(u.email).catch(() => []);
+      res.json({ id: u.sub, nome: u.nome, email: u.email, empresa: u.empresa, capabilities, superAdmin: u.superAdmin === true, foto, vendedorId, vendedorNome, empresas });
     } catch (e) { tratarErro(res, e); }
   });
 

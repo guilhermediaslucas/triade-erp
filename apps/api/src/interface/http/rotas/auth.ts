@@ -2,7 +2,6 @@ import { Router, type Request, type Response } from 'express';
 import type { Dependencias } from '../../composition.js';
 import { ErroAplicacao } from '../../../domain/erros/ErroAplicacao.js';
 import { criarAutenticar } from '../middlewares/autenticar.js';
-import { exigirSuperAdmin } from '../middlewares/exigirSuperAdmin.js';
 
 // Rate limit simples em memória p/ o login (anti brute force / credential stuffing).
 // Janela de 15 min, máx. 10 tentativas por IP+e-mail. Suficiente p/ 1 instância;
@@ -35,13 +34,16 @@ export function rotasAuth(deps: Dependencias): Router {
   const r = Router();
   const autenticar = criarAutenticar(deps.tokens);
 
-  // Admin global troca a empresa "ativa" (emite novo token p/ o schema escolhido).
-  r.post('/auth/trocar-empresa', autenticar, exigirSuperAdmin, async (req: Request, res: Response) => {
+  // Troca a empresa "ativa" (emite novo token p/ o schema escolhido). Super-admin
+  // troca para qualquer empresa; usuário comum só entre as empresas do seu login.
+  r.post('/auth/trocar-empresa', autenticar, async (req: Request, res: Response) => {
     const u = req.usuario!;
     const codigo = (req.body ?? {}).codigo;
     if (!codigo) { res.status(400).json({ erro: 'auth.campos_obrigatorios' }); return; }
     try {
-      const saida = await deps.autenticarUsuario.trocarEmpresa({ id: u.sub, nome: u.nome, email: u.email }, String(codigo));
+      const saida = u.superAdmin
+        ? await deps.autenticarUsuario.trocarEmpresa({ id: u.sub, nome: u.nome, email: u.email }, String(codigo))
+        : await deps.autenticarUsuario.trocarEmpresaUsuario(u.email, String(codigo));
       res.json(saida);
     } catch (e) {
       if (e instanceof ErroAplicacao) { res.status(e.status).json({ erro: e.chaveI18n }); return; }

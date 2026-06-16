@@ -188,6 +188,27 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-16** — **Relatório Contas a receber (contábil) + multi-empresa por login.** Duas frentes, **sem migration,
+  sem dep nova.** **(1) Relatório a receber (contábil):** espelha o de a pagar — nova página
+  `RelContasReceberContabil.tsx` (endpoint `GET /financeiro/receber`; **filtra/exibe por emissão** [competência;
+  `emissao ?? criadoEm`], colunas nº/descrição/categoria/**Cliente**/Emissão/Vencimento/valor/situação/**Anexos**; KPIs
+  Total a receber [abertos] + Recebido [pagos] + nº de títulos; botão 📎 abre o `AnexosTitulo` [gate
+  `financeiro.receber.gerenciar`]; CSV/Excel). Rota `/relatorios/contas-receber` (cap `financeiro.receber.listar`) +
+  entrada no hub de Relatórios (grupo Financeiro). i18n `relcr.*` + `menu.rel_contas_receber` pt/en/es (reusa
+  `relcp.anexos/anexar/emissao_de/categoria/titulos`). **(2) Multi-empresa por login (lógica do super-admin p/ usuário
+  comum):** um login (mesmo e-mail) presente em vários tenants passa a **ver e trocar entre as empresas dele** (só as
+  dele), igual o super-admin troca entre todas. **Backend:** `AutenticarUsuario.executar` — quando o login é sem
+  `codigoEmpresa`, percorre os tenants ativos e entra no 1º onde o e-mail é **usuário ativo E a senha confere** (funciona
+  com a mesma senha entre empresas); `AutenticarSaida` += `empresas[]`; novos `empresasDoUsuario(email)` (lista os tenants
+  ativos onde o e-mail é ativo) e `trocarEmpresaUsuario(email, codigo)` (valida pertencimento → emite novo token, não
+  super-admin). Rota `POST /auth/trocar-empresa` agora **sem** `exigirSuperAdmin`: super-admin → `trocarEmpresa`; comum →
+  `trocarEmpresaUsuario(u.email, codigo)`. `/me` devolve `empresas` (vazio p/ super-admin). **Frontend:** `AuthContext`
+  guarda/propaga `empresas` (login, troca, revalidação no reload; `trocarEmpresa` agora usa o `superAdmin` real do `/me`);
+  `EmpresaSwitcher` aparece p/ super-admin **OU** login com **2+ empresas** (`empresas` do contexto). **Validação:** tsc
+  do sandbox inútil de novo (truncagem → TS1005/TS1160 falsos em dezenas de arquivos não tocados); hand-review pelo
+  file-tool (AutenticarUsuario íntegro). **Pendente:** Gui build web + commit+push (Render aplica o backend) + APK.
+  **Sem caps novas, sem relogar obrigatório** (mas relogar recarrega `empresas` no `/me`). **Nota:** para o usuário ver
+  2 empresas, o **mesmo e-mail** precisa existir como usuário ativo (com a mesma senha) em cada tenant.
 - **2026-06-16** — **Anexos: contador no Contas + ver documentos pelos relatórios contábeis + relatório a pagar por emissão.**
   **(1)** `Titulo` += `anexosCount` (subquery no `SqlTituloRepository.listar`); no Contas a receber/pagar o botão 📎
   mostra a contagem e destaca quem tem documento. **(2)** **RelContasPagarContabil** passou a **filtrar/exibir por

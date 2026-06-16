@@ -4,21 +4,26 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { Ic } from './Icones.js';
 
-interface Emp { codigo: string; nome: string; fantasia: string; ativo: boolean; }
+interface Emp { codigo: string; fantasia: string; ativo?: boolean; }
 
-// Seletor de empresa do administrador global do sistema (espelha o mockup).
+// Seletor de empresa: super-admin troca entre TODAS as empresas; usuário comum
+// com o mesmo login em várias empresas troca só entre as dele.
 export function EmpresaSwitcher() {
-  const { token, superAdmin, usuario, trocarEmpresa } = useAuth();
+  const { token, superAdmin, usuario, empresas, trocarEmpresa } = useAuth();
   const { t } = useI18n();
   const [emps, setEmps] = useState<Emp[]>([]);
   const [aberto, setAberto] = useState(false);
 
   useEffect(() => {
-    if (!superAdmin) return;
-    api.get<Emp[]>('/empresas', token!).then((l) => setEmps(l.filter((e) => e.ativo))).catch(() => {});
-  }, [superAdmin, token]);
+    if (superAdmin) {
+      api.get<Emp[]>('/empresas', token!).then((l) => setEmps(l.filter((e) => e.ativo))).catch(() => {});
+    } else {
+      setEmps(empresas);
+    }
+  }, [superAdmin, token, empresas]);
 
-  if (!superAdmin) return null;
+  // Só aparece para o super-admin ou para login com acesso a 2+ empresas.
+  if (!superAdmin && empresas.length < 2) return null;
   const atual = emps.find((e) => e.codigo === usuario?.empresa);
 
   return (

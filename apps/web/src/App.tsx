@@ -20,6 +20,7 @@ import { MeusChamados } from './pages/MeusChamados.js';
 import { CampanhasFrete } from './pages/CampanhasFrete.js';
 import { RelVendasContabil } from './pages/RelVendasContabil.js';
 import { RelContasPagarContabil } from './pages/RelContasPagarContabil.js';
+import { RelContasReceberContabil } from './pages/RelContasReceberContabil.js';
 import { Auditoria } from './pages/Auditoria.js';
 import { Categorias } from './pages/Categorias.js';
 import { FormasEntrega } from './pages/FormasEntrega.js';
@@ -126,6 +127,7 @@ export function App() {
                 <Route path="/relatorios/vendas" element={<Protegida cap="relatorios.vendas.ver"><RelVendas /></Protegida>} />
                 <Route path="/relatorios/vendas-contabil" element={<Protegida cap="relatorios.vendas.ver"><RelVendasContabil /></Protegida>} />
                 <Route path="/relatorios/contas-pagar" element={<Protegida cap="financeiro.pagar.listar"><RelContasPagarContabil /></Protegida>} />
+                <Route path="/relatorios/contas-receber" element={<Protegida cap="financeiro.receber.listar"><RelContasReceberContabil /></Protegida>} />
                 <Route path="/relatorios/pedidos" element={<Protegida cap="relatorios.pedidos.ver"><RelPedidos /></Protegida>} />
                 <Route path="/relatorios/reembolsos" element={<Protegida cap="financeiro.pagar.listar"><RelFavorecidos /></Protegida>} />
                 <Route path="/relatorios/produtos" element={<Protegida cap="relatorios.produtos.ver"><RelProdutos /></Protegida>} />

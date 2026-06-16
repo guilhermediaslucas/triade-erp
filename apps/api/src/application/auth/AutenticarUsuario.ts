@@ -16,6 +16,7 @@ export interface AutenticarSaida {
   usuario: { id: string; nome: string; email: string };
   empresa: { codigo: string; fantasia: string };
   superAdmin?: boolean;
+  empresas?: { codigo: string; fantasia: string }[];   // empresas que este login acessa (multi-tenant)
 }
 
 // Caso de uso: recebe dependencias por injecao (nunca instancia conexao/ORM).
@@ -52,11 +53,13 @@ export class AutenticarUsuario {
       if (!empresa || !empresa.ativo) throw new ErroAplicacao('auth.empresa_invalida', 401);
       usuario = await this.usuarios.buscarPorEmail(empresa.schemaName, email);
     } else {
+      // Mesmo login em várias empresas: entra na 1ª onde o e-mail é usuário ativo
+      // E a senha confere (assim funciona com a mesma senha entre empresas).
       const todas = await this.empresas.listarTodas();
       for (const e of todas) {
         if (!e.ativo) continue;
         const u = await this.usuarios.buscarPorEmail(e.schemaName, email);
-        if (u && u.ativo) { empresa = e; usuario = u; break; }
+        if (u && u.ativo && await this.hash.comparar(entrada.senha, u.senhaHash)) { empresa = e; usuario = u; break; }
       }
     }
 
@@ -66,7 +69,33 @@ export class AutenticarUsuario {
     const ok = await this.hash.comparar(entrada.senha, usuario.senhaHash);
     if (!ok) throw new ErroAplicacao('auth.credenciais_invalidas', 401);
 
-    return this.emitir({ id: usuario.id, nome: usuario.nome, email: usuario.email }, empresa, false);
+    const saida = this.emitir({ id: usuario.id, nome: usuario.nome, email: usuario.email }, empresa, false);
+    saida.empresas = await this.empresasDoUsuario(email);
+    return saida;
+  }
+
+  // Empresas (tenants ativos) onde este e-mail é usuário ativo — para o seletor de empresa.
+  async empresasDoUsuario(email: string): Promise<{ codigo: string; fantasia: string }[]> {
+    const e = String(email ?? '').trim().toLowerCase();
+    if (!e) return [];
+    const out: { codigo: string; fantasia: string }[] = [];
+    for (const emp of await this.empresas.listarTodas()) {
+      if (!emp.ativo) continue;
+      const u = await this.usuarios.buscarPorEmail(emp.schemaName, e);
+      if (u && u.ativo) out.push({ codigo: emp.codigo, fantasia: emp.fantasia });
+    }
+    return out;
+  }
+
+  // Troca de empresa para um usuário comum: só entre as empresas onde o e-mail é ativo.
+  async trocarEmpresaUsuario(email: string, codigo: string): Promise<AutenticarSaida> {
+    const empresa = await this.empresas.buscarPorCodigo(codigo.trim().toLowerCase());
+    if (!empresa || !empresa.ativo) throw new ErroAplicacao('auth.empresa_invalida', 404);
+    const u = await this.usuarios.buscarPorEmail(empresa.schemaName, String(email).trim().toLowerCase());
+    if (!u || !u.ativo) throw new ErroAplicacao('auth.sem_permissao', 403);
+    const saida = this.emitir({ id: u.id, nome: u.nome, email: u.email }, empresa, false);
+    saida.empresas = await this.empresasDoUsuario(email);
+    return saida;
   }
 
   // Self-service: o usuário logado troca a própria senha (super-admin ou usuário de tenant).
