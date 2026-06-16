@@ -19,10 +19,18 @@ export class ProdutosService {
     if (categoriaId && !(await this.categorias.buscarPorId(schema, categoriaId))) {
       throw new ErroAplicacao('produto.categoria_invalida', 400);
     }
+    // Fiscal (Fase 7): normaliza. NCM = só dígitos (opcional na 7A; obrigatório p/ emitir na 7B).
+    const ncmDigitos = e.ncm ? String(e.ncm).replace(/\D/g, '') : '';
+    if (ncmDigitos !== '' && ncmDigitos.length !== 8) throw new ErroAplicacao('produto.ncm_invalido', 400);
+    const cfop = e.cfop ? String(e.cfop).replace(/\D/g, '') : '';
+    if (cfop !== '' && cfop.length !== 4) throw new ErroAplicacao('produto.cfop_invalido', 400);
+    const origem = limpo(e.origemFiscal);
+    if (origem !== null && !/^[0-8]$/.test(origem)) throw new ErroAplicacao('produto.origem_invalida', 400);
     return {
       nome: String(e.nome).trim(), categoriaId,
       unidade: (e.unidade && String(e.unidade).trim()) || 'UN',
       estoqueMinimo, localizacao: limpo(e.localizacao), registroAnvisa: limpo(e.registroAnvisa),
+      ncm: ncmDigitos || null, cfop: cfop || null, cstFiscal: limpo(e.cstFiscal), origemFiscal: origem,
     };
   }
   async criar(schema: string, e: any): Promise<string> { return this.produtos.criar(schema, await this.validar(schema, e)); }

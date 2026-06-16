@@ -93,4 +93,27 @@ export const publicMigrations: MigracaoPublic[] = [
       CREATE INDEX IF NOT EXISTS idx_reset_token ON public.reset_senha (token_hash);
     `,
   },
+  {
+    nome: '007_empresa_fiscal',
+    sql: `
+      CREATE TABLE IF NOT EXISTS public.empresa_fiscal (
+        empresa_codigo     text PRIMARY KEY REFERENCES public.empresa(codigo) ON DELETE CASCADE,
+        regime_tributario  smallint NOT NULL DEFAULT 1,            -- 1 Simples Nacional, 2 Simples (excesso sublimite), 3 Regime Normal
+        ambiente           text     NOT NULL DEFAULT 'homologacao', -- homologacao | producao
+        token_homologacao  text     NOT NULL DEFAULT '',
+        token_producao     text     NOT NULL DEFAULT '',
+        -- perfil de operação padrão (aplicado a toda venda; produto pode sobrescrever)
+        natureza_operacao  text     NOT NULL DEFAULT 'Venda de mercadoria',
+        cfop_dentro_uf     text     NOT NULL DEFAULT '5102',       -- operação dentro do estado
+        cfop_fora_uf       text     NOT NULL DEFAULT '6102',       -- operação interestadual
+        icms_origem        smallint NOT NULL DEFAULT 0,            -- 0..8 (origem da mercadoria)
+        csosn_padrao       text     NOT NULL DEFAULT '102',        -- usado quando regime = Simples
+        cst_icms_padrao    text     NOT NULL DEFAULT '00',         -- usado quando regime = Normal
+        aliquota_icms      numeric(5,2) NOT NULL DEFAULT 0,        -- alíquota de ICMS (regime Normal)
+        pis_cst_padrao     text     NOT NULL DEFAULT '07',
+        cofins_cst_padrao  text     NOT NULL DEFAULT '07',
+        atualizado_em      timestamptz NOT NULL DEFAULT now()
+      );
+    `,
+  },
 ];

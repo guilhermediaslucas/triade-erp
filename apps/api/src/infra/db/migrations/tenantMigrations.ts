@@ -798,4 +798,13 @@ export const tenantMigrations: MigracaoTenant[] = [
         REFERENCES "${s}".oportunidade(id) ON DELETE CASCADE;
     `,
   },
+  {
+    nome: '057_produto_fiscal',
+    sql: (s) => `
+      ALTER TABLE "${s}".produto ADD COLUMN IF NOT EXISTS ncm           text;  -- 8 dígitos (obrigatório p/ emitir a NF-e)
+      ALTER TABLE "${s}".produto ADD COLUMN IF NOT EXISTS cfop          text;  -- override opcional do perfil
+      ALTER TABLE "${s}".produto ADD COLUMN IF NOT EXISTS cst_fiscal    text;  -- override opcional CSOSN/CST de ICMS
+      ALTER TABLE "${s}".produto ADD COLUMN IF NOT EXISTS origem_fiscal text;  -- override opcional da origem (0..8)
+    `,
+  },
 ];

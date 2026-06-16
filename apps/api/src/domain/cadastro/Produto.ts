@@ -6,6 +6,11 @@ export interface Produto {
   estoqueMinimo: number;
   localizacao: string | null;
   registroAnvisa: string | null;
+  // Fiscal (Fase 7): NCM obrigatório p/ emitir NF-e; os demais sobrescrevem o perfil padrão da empresa.
+  ncm: string | null;
+  cfop: string | null;
+  cstFiscal: string | null;
+  origemFiscal: string | null;
   ativo: boolean;
   criadoEm: Date;
 }
@@ -17,6 +22,10 @@ export interface NovoProduto {
   estoqueMinimo: number;
   localizacao: string | null;
   registroAnvisa: string | null;
+  ncm: string | null;
+  cfop: string | null;
+  cstFiscal: string | null;
+  origemFiscal: string | null;
 }
 export interface ProdutoRepository {
   listar(schema: string): Promise<ProdutoResumo[]>;

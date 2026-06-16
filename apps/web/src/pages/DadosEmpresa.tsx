@@ -6,6 +6,7 @@ import { useBranding } from '../branding/BrandingContext.js';
 import type { Branding } from '../branding/tema.js';
 import { mascaraCnpj, mascaraCep, buscarCnpj, buscarCep, UFS } from '../lib/br.js';
 import { Ic } from '../components/Icones.js';
+import { ConfigFiscalCard } from '../components/ConfigFiscalCard.js';
 
 export function DadosEmpresa() {
   const { token } = useAuth();
@@ -136,6 +137,8 @@ export function DadosEmpresa() {
           </div>
         </div>
       </div>
+
+      <ConfigFiscalCard />
     </div>
   );
 }

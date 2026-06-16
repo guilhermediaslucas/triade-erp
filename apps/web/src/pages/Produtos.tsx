@@ -7,11 +7,12 @@ import { Ic } from '../components/Icones.js';
 interface Categoria { id: string; nome: string; }
 interface Produto {
   id: string; nome: string; categoriaId: string | null; categoriaNome: string | null;
-  unidade: string; estoqueMinimo: number; localizacao: string | null; registroAnvisa: string | null; ativo: boolean;
+  unidade: string; estoqueMinimo: number; localizacao: string | null; registroAnvisa: string | null;
+  ncm: string | null; cfop: string | null; cstFiscal: string | null; origemFiscal: string | null; ativo: boolean;
 }
 const UNIDADES = ['UN', 'CX', 'ML', 'G', 'KG', 'FR', 'AMP'];
 const TINTS = ['tint-pp', 'tint-bl', 'tint-or', 'tint-gr', 'tint-in', 'tint-rd'];
-const vazio = (): Produto => ({ id: '', nome: '', categoriaId: '', categoriaNome: null, unidade: 'UN', estoqueMinimo: 0, localizacao: '', registroAnvisa: '', ativo: true });
+const vazio = (): Produto => ({ id: '', nome: '', categoriaId: '', categoriaNome: null, unidade: 'UN', estoqueMinimo: 0, localizacao: '', registroAnvisa: '', ncm: '', cfop: '', cstFiscal: '', origemFiscal: '', ativo: true });
 
 export function Produtos() {
   const { token, temCapability } = useAuth();
@@ -75,7 +76,7 @@ export function Produtos() {
               <td data-label={t('produtos.unidade')}>{p.unidade}</td><td data-label={t('produtos.minimo')}>{p.estoqueMinimo}</td><td data-label={t('produtos.local')}>{p.localizacao ?? '—'}</td>
               <td data-label={t('usuarios.situacao')}><span className={p.ativo ? 'pill-ok' : 'pill-off'}>{p.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
               <td style={{ textAlign: 'right' }}><span className="acoes-ic">{pode && <>
-                <button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...p, categoriaId: p.categoriaId ?? '', localizacao: p.localizacao ?? '', registroAnvisa: p.registroAnvisa ?? '' })}><Ic name="i-edit" className="sm" /></button>
+                <button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...p, categoriaId: p.categoriaId ?? '', localizacao: p.localizacao ?? '', registroAnvisa: p.registroAnvisa ?? '', ncm: p.ncm ?? '', cfop: p.cfop ?? '', cstFiscal: p.cstFiscal ?? '', origemFiscal: p.origemFiscal ?? '' })}><Ic name="i-edit" className="sm" /></button>
                 <button className="acao-ic danger" title={p.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternar(p)}><Ic name="i-trash" className="sm" /></button>
               </>}</span></td>
             </tr>
@@ -93,7 +94,7 @@ function FormProduto({ prod, cats, onFechar, onSalvo }: { prod: Produto; cats: C
   const set = (c: keyof Produto, v: any) => setF({ ...f, [c]: v });
   async function salvar() {
     setErro(null); setSalv(true);
-    const corpo = { nome: f.nome, categoriaId: f.categoriaId || null, unidade: f.unidade, estoqueMinimo: Number(f.estoqueMinimo), localizacao: f.localizacao, registroAnvisa: f.registroAnvisa };
+    const corpo = { nome: f.nome, categoriaId: f.categoriaId || null, unidade: f.unidade, estoqueMinimo: Number(f.estoqueMinimo), localizacao: f.localizacao, registroAnvisa: f.registroAnvisa, ncm: f.ncm, cfop: f.cfop, cstFiscal: f.cstFiscal, origemFiscal: f.origemFiscal };
     try { if (novo) await api.post('/produtos', corpo, token!); else await api.put('/produtos/' + prod.id, corpo, token!); onSalvo(); }
     catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
@@ -121,6 +122,16 @@ function FormProduto({ prod, cats, onFechar, onSalvo }: { prod: Produto; cats: C
         <div className="cores-grid">
           <label className="campo">{t('produtos.local')}<input value={f.localizacao ?? ''} onChange={(e) => set('localizacao', e.target.value)} placeholder={t('produtos.local_ph')} /></label>
           <label className="campo">{t('produtos.anvisa')}<input value={f.registroAnvisa ?? ''} onChange={(e) => set('registroAnvisa', e.target.value)} /></label>
+        </div>
+        <h3 className="emp-sec" style={{ marginTop: 14 }}>{t('produtos.fiscal')}</h3>
+        <div className="muted" style={{ fontSize: 12, marginBottom: 8 }}>{t('produtos.fiscal_hint')}</div>
+        <div className="cores-grid">
+          <label className="campo">{t('produtos.ncm')}<input value={f.ncm ?? ''} onChange={(e) => set('ncm', e.target.value)} placeholder={t('produtos.ncm_ph')} /></label>
+          <label className="campo">{t('produtos.cfop_override')}<input value={f.cfop ?? ''} onChange={(e) => set('cfop', e.target.value)} /></label>
+        </div>
+        <div className="cores-grid">
+          <label className="campo">{t('produtos.cst_override')}<input value={f.cstFiscal ?? ''} onChange={(e) => set('cstFiscal', e.target.value)} /></label>
+          <label className="campo">{t('produtos.origem_override')}<input value={f.origemFiscal ?? ''} onChange={(e) => set('origemFiscal', e.target.value)} placeholder="0-8" /></label>
         </div>
         <div className="nota-info">{t('produtos.nota_preco')}</div>
         <div className="form-acoes">

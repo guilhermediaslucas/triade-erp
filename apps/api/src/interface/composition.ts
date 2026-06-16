@@ -13,6 +13,8 @@ import { AcessoMultiEmpresa } from '../application/usuario/AcessoMultiEmpresa.js
 import { PerfisService } from '../application/perfil/PerfisService.js';
 import { EmpresaService } from '../application/empresa/EmpresaService.js';
 import { ProvisionarEmpresa } from '../application/empresa/ProvisionarEmpresa.js';
+import { SqlConfigFiscalRepository } from '../infra/repositories/SqlConfigFiscalRepository.js';
+import { ConfigFiscalService } from '../application/fiscal/ConfigFiscalService.js';
 import { SqlCategoriaRepository } from '../infra/repositories/SqlCategoriaRepository.js';
 import { SqlProdutoRepository } from '../infra/repositories/SqlProdutoRepository.js';
 import { CategoriasService } from '../application/cadastro/CategoriasService.js';
@@ -124,6 +126,7 @@ export function montarDependencias() {
     perfisService: new PerfisService(perfisRepo),
     empresaService: new EmpresaService(empresasRepo, migrador, usuariosRepo, hash),
     provisionarEmpresa: new ProvisionarEmpresa(empresasRepo, migrador, perfisRepo, usuariosRepo, hash),
+    configFiscalService: new ConfigFiscalService(new SqlConfigFiscalRepository(AppDataSource)),
     categoriasService: new CategoriasService(categoriasRepo),
     formasEntregaService: new FormasEntregaService(new SqlFormaEntregaRepository(AppDataSource)),
     tiposDocumentoService: new TiposDocumentoService(new SqlTipoDocumentoRepository(AppDataSource)),

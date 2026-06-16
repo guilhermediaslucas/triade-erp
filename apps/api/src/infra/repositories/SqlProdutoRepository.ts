@@ -7,6 +7,7 @@ function mapProduto(r: any): Produto {
   return {
     id: r.id, nome: r.nome, categoriaId: r.categoria_id ?? null, unidade: r.unidade,
     estoqueMinimo: r.estoque_minimo, localizacao: r.localizacao ?? null, registroAnvisa: r.registro_anvisa ?? null,
+    ncm: r.ncm ?? null, cfop: r.cfop ?? null, cstFiscal: r.cst_fiscal ?? null, origemFiscal: r.origem_fiscal ?? null,
     ativo: r.ativo, criadoEm: new Date(r.criado_em),
   };
 }
@@ -28,16 +29,17 @@ export class SqlProdutoRepository implements ProdutoRepository {
   async criar(schema: string, d: NovoProduto): Promise<string> {
     const s = validarSchema(schema); const id = randomUUID();
     await this.ds.query(
-      `INSERT INTO "${s}".produto (id, nome, categoria_id, unidade, estoque_minimo, localizacao, registro_anvisa)
-       VALUES ($1,$2,$3,$4,$5,$6,$7)`,
-      [id, d.nome, d.categoriaId, d.unidade, d.estoqueMinimo, d.localizacao, d.registroAnvisa]);
+      `INSERT INTO "${s}".produto (id, nome, categoria_id, unidade, estoque_minimo, localizacao, registro_anvisa, ncm, cfop, cst_fiscal, origem_fiscal)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+      [id, d.nome, d.categoriaId, d.unidade, d.estoqueMinimo, d.localizacao, d.registroAnvisa, d.ncm, d.cfop, d.cstFiscal, d.origemFiscal]);
     return id;
   }
   async atualizar(schema: string, id: string, d: NovoProduto): Promise<void> {
     const s = validarSchema(schema);
     await this.ds.query(
-      `UPDATE "${s}".produto SET nome=$2, categoria_id=$3, unidade=$4, estoque_minimo=$5, localizacao=$6, registro_anvisa=$7 WHERE id=$1`,
-      [id, d.nome, d.categoriaId, d.unidade, d.estoqueMinimo, d.localizacao, d.registroAnvisa]);
+      `UPDATE "${s}".produto SET nome=$2, categoria_id=$3, unidade=$4, estoque_minimo=$5, localizacao=$6, registro_anvisa=$7,
+         ncm=$8, cfop=$9, cst_fiscal=$10, origem_fiscal=$11 WHERE id=$1`,
+      [id, d.nome, d.categoriaId, d.unidade, d.estoqueMinimo, d.localizacao, d.registroAnvisa, d.ncm, d.cfop, d.cstFiscal, d.origemFiscal]);
   }
   async definirAtivo(schema: string, id: string, ativo: boolean): Promise<void> {
     const s = validarSchema(schema);
