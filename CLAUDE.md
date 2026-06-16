@@ -188,6 +188,15 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-16** — **Fix: entrada manual de estoque grava fornecedor/NF/emissão na etiqueta + responsável do inventário = usuário logado.**
+  **(1)** A consulta de etiqueta mostrava Fornecedor/NF/Emissão "—" para etiquetas que entraram pela **Entrada de estoque
+  manual** (bipagem): o `EstoqueService.entrada` chamava `registrarEntrada` **sem** repassar esses campos (o fluxo de
+  Nota de entrada já repassava). Corrigido: `entrada` agora passa `fornecedor`/`nf`/`emissao` (normalizados); a tela
+  `EntradaEstoque` ganhou 3 campos **opcionais** (Fornecedor, Nº NF, Emissão). Vale para entradas novas (as antigas
+  seguem "—"). **(2)** No Inventário, o **responsável** agora é **sempre o usuário logado**: a rota `POST /inventario`
+  força `responsavel: req.usuario.nome` (ignora o corpo); a tela mostra o campo **desabilitado** com o nome do usuário.
+  i18n `entrada.fornecedor/nf/emissao*`/`inv.responsavel_auto` pt/en/es. **Sem migration.** **Validação:** tsc da API
+  limpo. **Pendente:** Gui build + commit+push + APK.
 - **2026-06-15** — **Auditoria rica (descrições humanas + antes→depois).** O log de auditoria deixou de mostrar
   `método + caminho` cru. **Migration tenant 052:** `log_acao` += `descricao`/`entidade`/`referencia`. **Infra:**
   helper `auditar(req, {descricao, modulo, entidade, referencia})` (`interface/http/audit.ts`, anexa `req.audit`);

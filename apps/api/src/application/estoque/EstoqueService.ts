@@ -43,6 +43,9 @@ export class EstoqueService {
 
     await this.repo.registrarEntrada(schema, {
       produtoId: e.produtoId, lote, validade, quantidade: codigos.length, custoUnitario: custo, codigos,
+      fornecedor: (e?.fornecedor && String(e.fornecedor).trim()) || null,
+      nf: (e?.nf && String(e.nf).trim()) || null,
+      emissao: (e?.emissao && /^\d{4}-\d{2}-\d{2}$/.test(String(e.emissao))) ? String(e.emissao) : null,
     });
   }
 

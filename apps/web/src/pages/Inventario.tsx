@@ -71,7 +71,7 @@ export function Inventario() {
             <>
               <div className="cores-grid">
                 <label className="campo">{t('inv.data_inv')}<input type="date" value={data} onChange={(e) => setData(e.target.value)} /></label>
-                <label className="campo">{t('inv.responsavel')}<input value={responsavel} onChange={(e) => setResponsavel(e.target.value)} /></label>
+                <label className="campo">{t('inv.responsavel')}<input value={usuario?.nome ?? responsavel} disabled title={t('inv.responsavel_auto')} /><small className="hint">{t('inv.responsavel_auto')}</small></label>
               </div>
               <div className="modal-acoes" style={{ justifyContent: 'flex-start' }}>
                 <button className="btn-primary" onClick={iniciar}><Ic name="i-check" className="sm" /> {t('inv.iniciar_btn')}</button>

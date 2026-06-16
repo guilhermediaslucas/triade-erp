@@ -48,7 +48,8 @@ export function rotasEstoque(deps: Dependencias): Router {
   });
   r.post('/inventario', aut, az('estoque.inventario.gerenciar'), async (req, res: Response) => {
     try {
-      const out: any = await deps.inventarioService.finalizar(sch(req), req.body ?? {});
+      // Responsável é SEMPRE o usuário logado (ignora o que vier no corpo).
+      const out: any = await deps.inventarioService.finalizar(sch(req), { ...(req.body ?? {}), responsavel: req.usuario!.nome });
       const enc = out?.encontradas ?? out?.resumo?.encontradas; const falt = out?.faltantes ?? out?.resumo?.faltantes;
       auditar(req, { modulo: 'Estoque', entidade: 'Inventario',
         descricao: `Finalizou um inventário${enc != null ? `: ${enc} encontradas` : ''}${falt != null ? `, ${falt} faltantes` : ''}${(req.body ?? {}).baixarPerda ? ' (faltantes baixados como perda)' : ''}` });

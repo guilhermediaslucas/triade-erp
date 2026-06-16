@@ -16,6 +16,9 @@ export function EntradaEstoque() {
   const [lote, setLote] = useState('');
   const [validade, setValidade] = useState('');
   const [custo, setCusto] = useState('');
+  const [fornecedor, setFornecedor] = useState('');
+  const [nf, setNf] = useState('');
+  const [emissao, setEmissao] = useState('');
   const [codigos, setCodigos] = useState<string[]>([]);
   const [scan, setScan] = useState('');
   const [erro, setErro] = useState<string | null>(null);
@@ -43,8 +46,8 @@ export function EntradaEstoque() {
   async function salvar() {
     setErro(null); setOk(false); setSalv(true);
     try {
-      await api.post('/estoque/entrada', { produtoId, lote, validade, custoUnitario: Number(custo) || 0, codigos }, token!);
-      setOk(true); setLote(''); setValidade(''); setCusto(''); setCodigos([]); setScan('');
+      await api.post('/estoque/entrada', { produtoId, lote, validade, custoUnitario: Number(custo) || 0, codigos, fornecedor: fornecedor || null, nf: nf || null, emissao: emissao || null }, token!);
+      setOk(true); setLote(''); setValidade(''); setCusto(''); setFornecedor(''); setNf(''); setEmissao(''); setCodigos([]); setScan('');
     } catch (e) { setErro((e as ErroApi).chaveI18n); }
     finally { setSalv(false); }
   }
@@ -67,6 +70,11 @@ export function EntradaEstoque() {
           <label className="campo">{t('estoque.validade')}<input type="date" value={validade} onChange={(e) => setValidade(e.target.value)} /></label>
         </div>
         <label className="campo">{t('entrada.custo')}<MoedaInput value={custo} onChange={(n) => setCusto(n ? String(n) : '')} /></label>
+        <div className="cores-grid">
+          <label className="campo">{t('entrada.fornecedor')}<input value={fornecedor} onChange={(e) => setFornecedor(e.target.value)} placeholder={t('entrada.fornecedor_ph')} /></label>
+          <label className="campo">{t('entrada.nf')}<input value={nf} onChange={(e) => setNf(e.target.value)} placeholder={t('entrada.nf_ph')} /></label>
+        </div>
+        <label className="campo">{t('entrada.emissao')}<input type="date" value={emissao} onChange={(e) => setEmissao(e.target.value)} /></label>
 
         <label className="campo">
           {t('etq.bipe')} <span className="muted">· {codigos.length} {t('etq.bipados')}</span>
