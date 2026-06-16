@@ -24,6 +24,7 @@ export interface RelatorioAbc { linhas: LinhaAbc[]; totalGeral: number; resumo: 
 export interface LinhaVendaContabil {
   numero: number; data: string; cliente: string | null;
   venda: number; freteCobrado: number; freteCusto: number; absorvido: number; tipoFrete: string; total: number;
+  tituloId: string | null; anexosCount: number;   // título a receber do pedido (p/ ver anexos)
 }
 export interface RelatorioVendasContabil {
   linhas: LinhaVendaContabil[];

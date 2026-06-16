@@ -14,7 +14,7 @@ import { FORMAS_BAIXA } from '../lib/pagamento.js';
 import { notificarLiberadoSeparacao } from '../lib/notificarSeparacao.js';
 
 type Tipo = 'receber' | 'pagar';
-interface Titulo { id: string; numero: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; pedidoFormaPagamento: string | null; pedidoFrete: number | null; pedidoFreteTipo: string | null; origem: string; categoriaFinanceiraNome: string | null; contaCorrenteNome: string | null; vendedorNome: string | null; favorecidoId: string | null; favorecidoNome: string | null; favorecidoForma: string | null; favorecidoPagoEm: string | null; previsto: boolean; tipoDocumento: string | null; numeroDocumento: string | null; emissao: string | null; criadoEm: string; pagoEm: string | null; desconto: number; multa: number; juros: number; }
+interface Titulo { id: string; numero: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; pedidoFormaPagamento: string | null; pedidoFrete: number | null; pedidoFreteTipo: string | null; anexosCount: number; origem: string; categoriaFinanceiraNome: string | null; contaCorrenteNome: string | null; vendedorNome: string | null; favorecidoId: string | null; favorecidoNome: string | null; favorecidoForma: string | null; favorecidoPagoEm: string | null; previsto: boolean; tipoDocumento: string | null; numeroDocumento: string | null; emissao: string | null; criadoEm: string; pagoEm: string | null; desconto: number; multa: number; juros: number; }
 interface TipoDoc { id: string; nome: string; ativo: boolean; }
 interface CatFin { id: string; nome: string; tipo: 'receita' | 'despesa'; ativo: boolean; }
 
@@ -335,7 +335,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
                   ? <button className={'pe-badge ' + (tt.previsto ? 'pe-pv' : 'pe-ef')} disabled={!pode} onClick={() => alternarPrevisto(tt)} title={t('fin.previsto_hint')}>{tt.previsto ? t('fluxo.previsto') : t('fluxo.efetivo')}</button>
                   : <span className="muted">—</span>}
               </td>
-              <td data-label={t('usuarios.acoes')}><span className="acoes-ic"><button className="acao-ic" title={t('anexo.titulo')} aria-label={t('anexo.titulo')} onClick={() => setAnexoT(tt)}><Ic name="i-clip" className="sm" /></button>{pode && (tt.status === 'aberto'
+              <td data-label={t('usuarios.acoes')}><span className="acoes-ic"><button className={'acao-ic' + (tt.anexosCount > 0 ? ' ok' : '')} title={t('anexo.titulo')} aria-label={t('anexo.titulo')} onClick={() => setAnexoT(tt)}><Ic name="i-clip" className="sm" />{tt.anexosCount > 0 ? ' ' + tt.anexosCount : ''}</button>{pode && (tt.status === 'aberto'
                 ? <>
                     {!tt.previsto && <button className="acao-ic ok" title={t('fin.baixar')} aria-label={t('fin.baixar')} onClick={() => setBaixar(tt)}><Ic name="i-check" className="sm" /></button>}
                     <button className="acao-ic" title={t('parcelar.acao')} aria-label={t('parcelar.acao')} onClick={() => abrirParcelar(tt, 'dividir')}><Ic name="i-clock" className="sm" /></button>

@@ -188,6 +188,15 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-16** — **Anexos: contador no Contas + ver documentos pelos relatórios contábeis + relatório a pagar por emissão.**
+  **(1)** `Titulo` += `anexosCount` (subquery no `SqlTituloRepository.listar`); no Contas a receber/pagar o botão 📎
+  mostra a contagem e destaca quem tem documento. **(2)** **RelContasPagarContabil** passou a **filtrar/exibir por
+  emissão** (competência; `emissao ?? criadoEm`) em vez de vencimento — col. Emissão + Vencimento; ganhou coluna
+  **Anexos** com botão que abre o modal `AnexosTitulo` (ver/baixar/anexar) ali mesmo; CSV inclui emissão + nº de anexos.
+  **(3)** **RelVendasContabil**: `vendasContabil` agora traz `tituloId` (título a receber do pedido, 1º por vencimento)
+  + `anexosCount`; coluna Anexos com o mesmo modal (gate `financeiro.receber.gerenciar`). i18n `relcp.anexos/anexar/
+  sub_emissao/emissao_de` pt/en/es. **Sem migration, sem dep nova.** **Validação:** tsc da API limpo. **Pendente:**
+  Gui build + commit+push + APK. **Nota:** pedido parcelado → o 📎 do relatório de vendas abre o 1º título a receber.
 - **2026-06-16** — **Fix upload de anexo (checksum R2) + endereço completo do fornecedor.** **(1)** O upload de anexo
   dava erro genérico: o `@aws-sdk/client-s3` recente manda checksum CRC32 que o R2 recusa → adicionado
   `requestChecksumCalculation:'WHEN_REQUIRED'` + `responseChecksumValidation:'WHEN_REQUIRED'` no `R2Storage`. **(1b)**

@@ -23,6 +23,7 @@ function map(r: any): Titulo {
     pedidoFormaPagamento: r.pedido_forma_pagamento ?? null,
     pedidoFrete: r.pedido_frete != null ? Number(r.pedido_frete) : null,
     pedidoFreteTipo: r.pedido_forma_entrega ?? null,
+    anexosCount: Number(r.anexos) || 0,
     conferido: r.conferido === true,
     conferidoEm: iso(r.conferido_em),
     favorecidoForma: r.favorecido_forma ?? null,
@@ -85,7 +86,8 @@ export class SqlTituloRepository implements TituloRepository {
     const s = validarSchema(schema);
     return (await this.ds.query(
       `SELECT t.*, cf.nome AS categoria_financeira_nome, fv.nome AS favorecido_nome, vd.nome AS vendedor_nome, cc.nome AS conta_corrente_nome,
-              pd.forma_pagamento AS pedido_forma_pagamento, pd.frete AS pedido_frete, pd.forma_entrega AS pedido_forma_entrega
+              pd.forma_pagamento AS pedido_forma_pagamento, pd.frete AS pedido_frete, pd.forma_entrega AS pedido_forma_entrega,
+              (SELECT COUNT(*) FROM "${s}".titulo_anexo ta WHERE ta.titulo_id = t.id) AS anexos
          FROM "${s}".titulo t
          LEFT JOIN "${s}".categoria_financeira cf ON cf.id = t.categoria_financeira_id
          LEFT JOIN "${s}".favorecido fv ON fv.id = t.favorecido_id

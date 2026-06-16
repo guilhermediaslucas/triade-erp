@@ -4,21 +4,24 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { CabecalhoRelatorio } from '../components/CabecalhoRelatorio.js';
 import { Ic } from '../components/Icones.js';
+import { AnexosTitulo } from '../components/AnexosTitulo.js';
 import { moeda } from '../lib/pedido.js';
 import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
 import { BotaoExcel } from '../components/BotaoExcel.js';
 
-interface Linha { numero: number; data: string; cliente: string | null; venda: number; freteCobrado: number; freteCusto: number; absorvido: number; tipoFrete: string; total: number; }
+interface Linha { numero: number; data: string; cliente: string | null; venda: number; freteCobrado: number; freteCusto: number; absorvido: number; tipoFrete: string; total: number; tituloId: string | null; anexosCount: number; }
 interface Resp { linhas: Linha[]; venda: number; freteCobrado: number; freteCusto: number; absorvido: number; total: number; }
 const primeiroDia = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10); };
 const hoje = () => new Date().toISOString().slice(0, 10);
 const fmtData = (s: string) => new Date(s).toLocaleDateString('pt-BR');
 
 export function RelVendasContabil() {
-  const { token } = useAuth(); const { t } = useI18n();
+  const { token, temCapability } = useAuth(); const { t } = useI18n();
+  const podeAnexo = temCapability('financeiro.receber.gerenciar');
   const [de, setDe] = useState(primeiroDia()); const [ate, setAte] = useState(hoje());
   const [r, setR] = useState<Resp | null>(null); const [erro, setErro] = useState<string | null>(null);
+  const [anexoT, setAnexoT] = useState<Linha | null>(null);
 
   function carregar() {
     api.get<Resp>(`/relatorios/vendas-contabil?de=${de}&ate=${ate}`, token!).then(setR).catch((e) => setErro((e as ErroApi).chaveI18n));
@@ -55,21 +58,25 @@ export function RelVendasContabil() {
             <th>{t('relvc.numero')}</th><th>{t('rel.data')}</th><th>{t('relvc.cliente')}</th>
             <th style={{ textAlign: 'right' }}>{t('relvc.venda')}</th><th style={{ textAlign: 'right' }}>{t('relvc.frete_cobrado')}</th>
             <th style={{ textAlign: 'right' }}>{t('relvc.frete_custo')}</th><th style={{ textAlign: 'right' }}>{t('relvc.absorvido')}</th>
-            <th>{t('relvc.tipo_frete')}</th><th style={{ textAlign: 'right' }}>{t('relvc.total')}</th>
+            <th>{t('relvc.tipo_frete')}</th><th style={{ textAlign: 'right' }}>{t('relvc.total')}</th><th style={{ textAlign: 'center' }}>{t('relcp.anexos')}</th>
           </tr></thead>
           <tbody>
-            {(!r || r.linhas.length === 0) && <tr><td colSpan={9} className="vazio">{t('rel.vazio')}</td></tr>}
+            {(!r || r.linhas.length === 0) && <tr><td colSpan={10} className="vazio">{t('rel.vazio')}</td></tr>}
             {r?.linhas.map((l) => (
               <tr key={l.numero}>
                 <td style={{ fontWeight: 700 }}>PE-{String(l.numero).padStart(6, '0')}</td><td>{fmtData(l.data)}</td><td>{l.cliente ?? '—'}</td>
                 <td style={{ textAlign: 'right' }}>{moeda(l.venda)}</td><td style={{ textAlign: 'right' }}>{moeda(l.freteCobrado)}</td>
                 <td style={{ textAlign: 'right' }}>{moeda(l.freteCusto)}</td><td style={{ textAlign: 'right', color: l.absorvido > 0 ? '#b91c1c' : undefined }}>{moeda(l.absorvido)}</td>
                 <td>{t('frete.entrega_' + l.tipoFrete)}</td><td style={{ textAlign: 'right', fontWeight: 500 }}>{moeda(l.total)}</td>
+                <td style={{ textAlign: 'center' }}>{l.tituloId
+                  ? <button className={'btn-ghost btn-mini' + (l.anexosCount > 0 ? '' : ' muted')} onClick={() => setAnexoT(l)}><Ic name="i-clip" className="sm" /> {l.anexosCount > 0 ? l.anexosCount : t('relcp.anexar')}</button>
+                  : <span className="muted">—</span>}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      {anexoT && anexoT.tituloId && <AnexosTitulo tituloId={anexoT.tituloId} numero={'PE-' + String(anexoT.numero).padStart(6, '0')} podeGerenciar={podeAnexo} onFechar={() => setAnexoT(null)} />}
     </div>
   );
 }

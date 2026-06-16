@@ -33,7 +33,9 @@ export class SqlRelatorioRepository implements RelatorioRepository {
   async vendasContabil(schema: string, de: string | null, ate: string | null): Promise<RelatorioVendasContabil> {
     const s = validarSchema(schema);
     const linhas = await this.ds.query(
-      `SELECT p.numero, p.criado_em, c.nome cliente, p.subtotal, p.frete, p.frete_custo, p.total, p.forma_entrega
+      `SELECT p.numero, p.criado_em, c.nome cliente, p.subtotal, p.frete, p.frete_custo, p.total, p.forma_entrega,
+              (SELECT t.id FROM "${s}".titulo t WHERE t.pedido_id = p.id ORDER BY t.vencimento LIMIT 1) AS titulo_id,
+              (SELECT COUNT(*) FROM "${s}".titulo_anexo a JOIN "${s}".titulo t ON t.id = a.titulo_id WHERE t.pedido_id = p.id) AS anexos
          FROM "${s}".pedido p
          LEFT JOIN "${s}".cliente c ON c.id = p.cliente_id
         WHERE p.${ATIVO}
@@ -46,6 +48,7 @@ export class SqlRelatorioRepository implements RelatorioRepository {
         numero: r.numero, data: new Date(r.criado_em).toISOString(), cliente: r.cliente ?? null,
         venda, freteCobrado, freteCusto, absorvido: Math.round((freteCusto - freteCobrado) * 100) / 100,
         tipoFrete: r.forma_entrega ?? 'retirada', total: Number(r.total),
+        tituloId: r.titulo_id ?? null, anexosCount: Number(r.anexos) || 0,
       };
     });
     const soma = (k: 'venda' | 'freteCobrado' | 'freteCusto' | 'absorvido' | 'total') =>
