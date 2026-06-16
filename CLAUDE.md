@@ -190,7 +190,10 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 - **2026-06-16** — **Fix upload de anexo (checksum R2) + endereço completo do fornecedor.** **(1)** O upload de anexo
   dava erro genérico: o `@aws-sdk/client-s3` recente manda checksum CRC32 que o R2 recusa → adicionado
-  `requestChecksumCalculation:'WHEN_REQUIRED'` + `responseChecksumValidation:'WHEN_REQUIRED'` no `R2Storage`. **(2)**
+  `requestChecksumCalculation:'WHEN_REQUIRED'` + `responseChecksumValidation:'WHEN_REQUIRED'` no `R2Storage`. **(1b)**
+  Causa REAL do erro no Gui: `R2_ACCOUNT_ID` no Render estava com a URL completa → endpoint virava `https://https://…` →
+  `getaddrinfo ENOTFOUND triade-anexos.https`. `R2Storage` agora **normaliza** o accountId (tira `https://` e
+  `.r2.cloudflarestorage.com`). Fix imediato p/ o Gui: pôr só o ID na var (sem deploy). **(2)**
   Endereço completo do **fornecedor** (antes só CEP/cidade/UF): **migration tenant 054** (`fornecedor` += logradouro,
   numero, complemento, bairro); domínio/repo/`FornecedoresService` repassam; preenchimento por **CEP (ViaCEP)** já fixa
   logradouro/bairro. Campos adicionados na **tela de Fornecedores** e no **mini-modal de cadastro rápido** (`SeletorPessoa`).

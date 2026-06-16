@@ -12,10 +12,16 @@ export class R2Storage implements ArquivoStorage {
     secretAccessKey: string,
     private readonly bucket: string,
   ) {
-    this.cliente = accountId && accessKeyId && secretAccessKey && bucket
+    // Aceita tanto o Account ID puro quanto a URL completa colada por engano:
+    // extrai só o ID (tira https://, o domínio do R2 e barras).
+    const acc = String(accountId).trim()
+      .replace(/^https?:\/\//i, '')
+      .replace(/\.r2\.cloudflarestorage\.com.*$/i, '')
+      .replace(/\/.*$/, '');
+    this.cliente = acc && accessKeyId && secretAccessKey && bucket
       ? new S3Client({
           region: 'auto',
-          endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
+          endpoint: `https://${acc}.r2.cloudflarestorage.com`,
           credentials: { accessKeyId, secretAccessKey },
           // O R2 não implementa os checksums (CRC32) que o aws-sdk recente envia por
           // padrão — isso quebra o upload. Só calcular/validar quando realmente exigido.
