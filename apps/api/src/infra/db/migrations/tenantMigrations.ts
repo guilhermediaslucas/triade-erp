@@ -748,4 +748,20 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".log_acao ADD COLUMN IF NOT EXISTS referencia  text;
     `,
   },
+  {
+    nome: '053_titulo_anexo',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".titulo_anexo (
+        id            uuid PRIMARY KEY,
+        titulo_id     uuid NOT NULL REFERENCES "${s}".titulo(id) ON DELETE CASCADE,
+        nome_arquivo  text NOT NULL,
+        tipo          text NOT NULL,
+        tamanho       int  NOT NULL DEFAULT 0,
+        chave         text NOT NULL,
+        usuario_nome  text,
+        criado_em     timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_titulo_anexo ON "${s}".titulo_anexo (titulo_id, criado_em);
+    `,
+  },
 ];

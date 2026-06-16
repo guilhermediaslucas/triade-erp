@@ -27,8 +27,15 @@ async function req<T>(metodo: string, caminho: string, token?: string, corpo?: u
   return dados as T;
 }
 
+async function baixarBlob(caminho: string, token?: string): Promise<Blob> {
+  const resp = await fetch(montarUrl(caminho), { headers: token ? { authorization: 'Bearer ' + token } : {} });
+  if (!resp.ok) throw { chaveI18n: 'erro.interno', status: resp.status } as ErroApi;
+  return resp.blob();
+}
+
 export const api = {
   get: <T>(c: string, token?: string) => req<T>('GET', c, token),
+  blob: baixarBlob,
   post: <T>(c: string, corpo: unknown, token?: string) => req<T>('POST', c, token, corpo),
   put: <T>(c: string, corpo: unknown, token?: string) => req<T>('PUT', c, token, corpo),
   patch: <T>(c: string, corpo: unknown, token?: string) => req<T>('PATCH', c, token, corpo),

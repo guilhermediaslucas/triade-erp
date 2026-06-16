@@ -33,6 +33,7 @@ import { rotasCondicoes } from './rotas/condicoes.js';
 import { rotasContas } from './rotas/contas.js';
 import { rotasSuporte } from './rotas/suporte.js';
 import { rotasAuditoria } from './rotas/auditoria.js';
+import { rotasAnexos } from './rotas/anexos.js';
 import { criarAuditoria } from './middlewares/auditoria.js';
 
 export function criarServidor(): Express {
@@ -65,7 +66,8 @@ export function criarServidor(): Express {
     next();
   });
 
-  app.use(express.json({ limit: '3mb' }));
+  // Limite maior para comportar upload de anexos (documentos até ~10 MB em base64).
+  app.use(express.json({ limit: '15mb' }));
 
   // Auditoria: registra toda alteração (POST/PUT/PATCH/DELETE) bem-sucedida (best-effort).
   app.use(criarAuditoria(AppDataSource));
@@ -114,6 +116,7 @@ export function criarServidor(): Express {
   app.use(rotasContas(deps));
   app.use(rotasSuporte(deps));
   app.use(rotasAuditoria(deps));
+  app.use(rotasAnexos(deps));
 
   return app;
 }

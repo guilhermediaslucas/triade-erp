@@ -69,6 +69,9 @@ import { RelatoriosService } from '../application/relatorio/RelatoriosService.js
 import { SqlChamadoRepository } from '../infra/repositories/SqlChamadoRepository.js';
 import { SuporteService } from '../application/suporte/SuporteService.js';
 import { SqlLogAcaoRepository } from '../infra/repositories/SqlLogAcaoRepository.js';
+import { R2Storage } from '../infra/storage/R2Storage.js';
+import { SqlTituloAnexoRepository } from '../infra/repositories/SqlTituloAnexoRepository.js';
+import { AnexosService } from '../application/financeiro/AnexosService.js';
 import { ResendEmailSender } from '../infra/email/ResendEmailSender.js';
 import { SqlResetSenhaRepository } from '../infra/repositories/SqlResetSenhaRepository.js';
 import { RecuperarSenha } from '../application/auth/RecuperarSenha.js';
@@ -152,6 +155,10 @@ export function montarDependencias() {
       env.suporteEmailDestino,
     ),
     auditoriaRepo: new SqlLogAcaoRepository(AppDataSource),
+    anexosService: new AnexosService(
+      new SqlTituloAnexoRepository(AppDataSource),
+      new R2Storage(env.r2AccountId, env.r2AccessKeyId, env.r2SecretAccessKey, env.r2Bucket),
+    ),
     recuperarSenha: new RecuperarSenha(
       empresasRepo, usuariosRepo, superAdminsRepo, resetSenhaRepo, hash, emailSender, env.appUrl,
     ),

@@ -926,6 +926,12 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
 .reset-card { width: 380px; max-width: 100%; }
 .reset-voltar { text-align: center; margin-top: 14px; }
 .reset-voltar a { color: var(--accent, #e1483b); font-size: 13px; text-decoration: none; }
+.anexo-linha { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border: 1px solid var(--borda); border-radius: 10px; margin-bottom: 8px; }
+.anexo-info { flex: 1; min-width: 0; }
+.anexo-nome { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.anexo-meta { font-size: 11px; color: var(--muted); }
+.anexo-upload { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; margin-top: 10px; }
+.btn-mini { font-size: 12px; padding: 5px 9px; }
 .suporte-print-full { max-width: 100%; max-height: 320px; border: 1px solid var(--borda); border-radius: 10px; }
 .suporte-nota { font-size: 12px; margin: 4px 0 0; }
 .suporte-desc { white-space: pre-wrap; background: var(--bg); border: 1px solid var(--borda); border-radius: 10px; padding: 12px 14px; margin: 10px 0 14px; font-size: 14px; }

@@ -188,6 +188,23 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-16** — **Anexos de documentos nos títulos (Cloudflare R2).** Permite anexar NF/conta de energia/etc. a um
+  título (a receber/pagar) — para o fechamento contábil. **Dependência nova:** `@aws-sdk/client-s3` (R2 é S3-compatível)
+  → exige `npm install`. **Migration tenant 053:** `titulo_anexo` (titulo_id FK CASCADE, nome_arquivo, tipo, tamanho,
+  chave R2, usuario_nome, criado_em). **Backend:** porta `ArquivoStorage` + adapter `R2Storage` (`infra/storage`, monta
+  o endpoint a partir do `R2_ACCOUNT_ID`; **sem as 4 vars → `configurado()=false`, recurso desligado**, não quebra nada);
+  domínio `TituloAnexo`/repo; `AnexosService` (valida tipo PDF/JPG/PNG/WEBP + limite 10 MB; gera chave
+  `schema/titulos/<id>/<uuid>-nome`; upload/baixar/remover). Rotas (gate any-of `financeiro.{receber,pagar}.{listar|gerenciar}`):
+  `GET /anexos/habilitado`, `GET/POST /financeiro/titulos/:id/anexos`, `GET /financeiro/anexos/:id/conteudo` (stream),
+  `DELETE /financeiro/anexos/:id`. **Upload passa pela API** (base64 → R2; `express.json` subiu p/ **15mb**) e **download
+  por fetch autenticado → blob** (sem CORS no bucket, sem presign). Auditoria registra anexar/remover. **Frontend:**
+  `components/AnexosTitulo.tsx` (modal: lista, enviar via FileReader→base64, ver/baixar via `api.blob`, remover) + botão
+  📎 (`i-clip`) na coluna de ações do Contas a receber/pagar. `api.blob` novo no client. i18n `anexo.*` + `common.excluir`
+  pt/en/es. CSS `.anexo-*`/`.btn-mini`. **Setup do Gui (R2):** bucket `triade-anexos` + API token (Object R/W) + as 4 vars
+  no Render (`R2_ACCOUNT_ID`/`R2_ACCESS_KEY_ID`/`R2_SECRET_ACCESS_KEY`/`R2_BUCKET`). **CORS no bucket dispensado** (upload
+  via API). **Validação:** tsc da API limpo (só `@aws-sdk` não-instalado no sandbox + `@triade/shared` + Metas). **Pendente:**
+  Gui `npm install` + build + commit+push (Render aplica 053) + setar as 4 vars no Render + APK. **Decidido:** sem coluna
+  de contagem "(N)" por enquanto (fica fácil de adicionar depois via subquery no `titulo.listar`).
 - **2026-06-16** — **Auditoria: menos ruído + descrições mais ricas.** Middleware passou a **ignorar** endpoints que não
   alteram dados (`/frete/calcular`, `/frete/cobrado`, `/auth/trocar-empresa`) — some o "Criou frete/calcular". **Nota de
   entrada** agora descreve fornecedor + NF + valor; **recebimento** descreve produto + qtd + fornecedor (`recebimentoRepo`

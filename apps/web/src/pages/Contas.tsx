@@ -8,6 +8,7 @@ import { baixarCsv } from '../lib/csv.js';
 import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
 import { ModalNovaPessoa } from '../components/SeletorPessoa.js';
 import { Ic } from '../components/Icones.js';
+import { AnexosTitulo } from '../components/AnexosTitulo.js';
 import { MoedaInput } from '../components/MoedaInput.js';
 import { FORMAS_BAIXA } from '../lib/pagamento.js';
 import { notificarLiberadoSeparacao } from '../lib/notificarSeparacao.js';
@@ -39,6 +40,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   const [cancelarT, setCancelarT] = useState<Titulo | null>(null);
   const [reembolsoT, setReembolsoT] = useState<Titulo | null>(null);
   const [verT, setVerT] = useState<Titulo | null>(null);
+  const [anexoT, setAnexoT] = useState<Titulo | null>(null);
   const [sel, setSel] = useState<Set<string>>(new Set());
   const [baixaMassa, setBaixaMassa] = useState(false);
   const [filtroAberto, setFiltroAberto] = useState(false);
@@ -333,7 +335,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
                   ? <button className={'pe-badge ' + (tt.previsto ? 'pe-pv' : 'pe-ef')} disabled={!pode} onClick={() => alternarPrevisto(tt)} title={t('fin.previsto_hint')}>{tt.previsto ? t('fluxo.previsto') : t('fluxo.efetivo')}</button>
                   : <span className="muted">—</span>}
               </td>
-              <td data-label={t('usuarios.acoes')}><span className="acoes-ic">{pode && (tt.status === 'aberto'
+              <td data-label={t('usuarios.acoes')}><span className="acoes-ic"><button className="acao-ic" title={t('anexo.titulo')} aria-label={t('anexo.titulo')} onClick={() => setAnexoT(tt)}><Ic name="i-clip" className="sm" /></button>{pode && (tt.status === 'aberto'
                 ? <>
                     {!tt.previsto && <button className="acao-ic ok" title={t('fin.baixar')} aria-label={t('fin.baixar')} onClick={() => setBaixar(tt)}><Ic name="i-check" className="sm" /></button>}
                     <button className="acao-ic" title={t('parcelar.acao')} aria-label={t('parcelar.acao')} onClick={() => abrirParcelar(tt, 'dividir')}><Ic name="i-clock" className="sm" /></button>
@@ -363,6 +365,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
       {baixar && <ModalBaixa tipo={tipo} titulos={[baixar]} onFechar={() => setBaixar(null)} onSalvo={() => { setBaixar(null); carregar(); toast(t('fin.toast_baixado')); }} />}
       {baixaMassa && <ModalBaixa tipo={tipo} titulos={abertosSel} onFechar={() => setBaixaMassa(false)} onSalvo={(n) => { setBaixaMassa(false); carregar(); toast(t('bulk.baixados').replace('{n}', String(n))); }} />}
       {verT && <ModalVerTitulo tipo={tipo} titulo={verT} onFechar={() => setVerT(null)} />}
+      {anexoT && <AnexosTitulo tituloId={anexoT.id} numero={anexoT.numero} podeGerenciar={pode} onFechar={() => setAnexoT(null)} />}
     </div>
   );
 }

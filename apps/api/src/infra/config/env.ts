@@ -45,6 +45,12 @@ export const env = {
   suporteEmailDestino: process.env.SUPORTE_EMAIL_DESTINO ?? 'admin@triadeerp.com.br',
   // URL pública do site (frontend), usada para montar o link de redefinição de senha.
   appUrl: (process.env.APP_URL ?? '').replace(/\/+$/, ''),
+  // Armazenamento de objetos (Cloudflare R2, S3-compatível) para anexos de documentos.
+  // Sem as 4 vars o recurso de anexos fica DESLIGADO (não quebra nada).
+  r2AccountId: process.env.R2_ACCOUNT_ID ?? '',
+  r2AccessKeyId: process.env.R2_ACCESS_KEY_ID ?? '',
+  r2SecretAccessKey: process.env.R2_SECRET_ACCESS_KEY ?? '',
+  r2Bucket: process.env.R2_BUCKET ?? '',
   nodeEnv: process.env.NODE_ENV ?? 'development',
   get isProd(): boolean {
     return this.nodeEnv === 'production';
