@@ -3,6 +3,7 @@ import type { Dependencias } from '../../composition.js';
 import { criarAutenticar } from '../middlewares/autenticar.js';
 import { criarAutorizar } from '../middlewares/autorizar.js';
 import { tratarErro } from '../responder.js';
+import { auditar } from '../audit.js';
 
 function brandingDe(e: any) {
   return {
@@ -38,6 +39,7 @@ export function rotasEmpresa(deps: Dependencias): Router {
         cnpj: b.cnpj, inscricaoEstadual: b.inscricaoEstadual, telefone: b.telefone, email: b.email,
         logradouro: b.logradouro, bairro: b.bairro, cep: b.cep, uf: b.uf, cidade: b.cidade,
       });
+      auditar(req, { modulo: 'Empresa', entidade: 'Empresa', descricao: 'Alterou os dados da empresa (identidade/branding)' });
       res.json({ ok: true });
     } catch (e) { tratarErro(res, e); }
   });

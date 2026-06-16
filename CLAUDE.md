@@ -198,7 +198,10 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   campanha de preço), **Frete** (campanha), **Financeiro** (criar/baixar/cancelar baixa/excluir título, com nº REC/PAG
   + valor + pessoa), **Comercial** (criar pedido PE-xxxx + cliente + total; mudar status de→para), **Cadastros**
   (cliente/fornecedor/vendedor criar/editar/inativar; **limite de crédito de→para** no cliente), **Segurança**
-  (usuário criar/editar/inativar/senha). Tudo o que não foi instrumentado cai no fallback legível. **Tela Auditoria:**
+  (usuário criar/editar/inativar/senha). **Ampliado depois:** Financeiro (previsto/reembolso/parcelar/multiplicar/
+  conferência/nota), Estoque (inventário/recebimento), Empresa (branding). O **fallback genérico ficou inteligente**
+  (mapa de rótulo por recurso + `body.nome` → ex.: "Criou banco: Itaú", "Inativou condição de pagamento"), cobrindo os
+  cadastros menores sem instrumentar um a um. Tudo o que sobra ainda cai no verbo+caminho legível. **Tela Auditoria:**
   mostra `descricao` (fallback verbo+caminho) e o **CSV exporta a descrição**. `SqlLogAcaoRepository.listar` += `descricao`.
   **Validação:** tsc da API limpo (0 erros de tipo reais). **Pendente:** Gui build + commit+push → Render aplica a 052
   + APK. **Sem permissão nova.** **Nota:** as descrições são geradas em pt-BR no servidor (dado operacional, não i18n).

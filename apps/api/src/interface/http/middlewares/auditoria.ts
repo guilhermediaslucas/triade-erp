@@ -23,8 +23,33 @@ function moduloDe(caminho: string): string {
   return mapa[seg] ?? (seg ? seg : 'Outro');
 }
 
-// Fallback genérico legível: "Alterou financeiro/receber/…/cancelar" (sem UUID).
-function descricaoGenerica(metodo: string, caminho: string): string {
+// Rótulo singular amigável por recurso (1º segmento do caminho).
+const ROTULO: Record<string, string> = {
+  bancos: 'banco', condicoes: 'condição de pagamento', categorias: 'categoria',
+  'categorias-financeiras': 'categoria financeira', 'tipos-documento': 'tipo de documento',
+  'contas-correntes': 'conta corrente', 'formas-entrega': 'forma de entrega', favorecidos: 'favorecido',
+  motoboys: 'motoboy', produtos: 'produto', perfis: 'perfil', metas: 'meta', crm: 'oportunidade (CRM)',
+  empresa: 'dados da empresa', empresas: 'empresa', clientes: 'cliente', fornecedores: 'fornecedor',
+  vendedores: 'vendedor', usuarios: 'usuário',
+};
+
+// Fallback genérico legível. Usa o nome do registro (req.body.nome) e o recurso amigável
+// quando dá; senão, cai no verbo + caminho sem UUID. Ex.: "Criou banco: Itaú".
+function descricaoGenerica(req: Request, caminho: string): string {
+  const metodo = req.method;
+  const seg = caminho.replace(/^\/+/, '').split('/')[0] ?? '';
+  const rotulo = ROTULO[seg];
+  const body = (req.body ?? {}) as any;
+  const nome = typeof body?.nome === 'string' && body.nome.trim() ? `: ${body.nome.trim()}` : '';
+  // Ativar/inativar (PATCH /…/ativo)
+  if (metodo === 'PATCH' && /\/ativo$/.test(caminho) && rotulo) {
+    return `${body?.ativo ? 'Ativou' : 'Inativou'} ${rotulo}${nome}`;
+  }
+  if (rotulo && (metodo === 'POST' || metodo === 'PUT' || metodo === 'DELETE')) {
+    const v = metodo === 'POST' ? 'Criou' : metodo === 'PUT' ? 'Editou' : 'Removeu';
+    return `${v} ${rotulo}${nome}`;
+  }
+  // Último recurso: verbo + caminho limpo (sem UUID).
   const limpo = caminho.replace(/^\/+/, '').replace(UUID_RE, '…');
   return `${VERBO[metodo] ?? metodo} ${limpo}`;
 }
@@ -45,7 +70,7 @@ export function criarAuditoria(ds: DataSource) {
         if (caminho.startsWith('/auth/login')) return;
         const a = req.audit;
         const modulo = a?.modulo ?? moduloDe(caminho);
-        const descricao = a?.descricao ?? descricaoGenerica(req.method, caminho);
+        const descricao = a?.descricao ?? descricaoGenerica(req, caminho);
         const s = validarSchema(u.schema);
         void ds.query(
           `INSERT INTO "${s}".log_acao (id, usuario_id, usuario_nome, metodo, caminho, modulo, acao, status, descricao, entidade, referencia)

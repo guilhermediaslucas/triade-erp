@@ -47,13 +47,23 @@ export function rotasEstoque(deps: Dependencias): Router {
     try { res.json(await deps.inventarioService.faltantesDe(sch(req), req.params.id!)); } catch (e) { tratarErro(res, e); }
   });
   r.post('/inventario', aut, az('estoque.inventario.gerenciar'), async (req, res: Response) => {
-    try { res.status(201).json(await deps.inventarioService.finalizar(sch(req), req.body ?? {})); } catch (e) { tratarErro(res, e); }
+    try {
+      const out: any = await deps.inventarioService.finalizar(sch(req), req.body ?? {});
+      const enc = out?.encontradas ?? out?.resumo?.encontradas; const falt = out?.faltantes ?? out?.resumo?.faltantes;
+      auditar(req, { modulo: 'Estoque', entidade: 'Inventario',
+        descricao: `Finalizou um inventário${enc != null ? `: ${enc} encontradas` : ''}${falt != null ? `, ${falt} faltantes` : ''}${(req.body ?? {}).baixarPerda ? ' (faltantes baixados como perda)' : ''}` });
+      res.status(201).json(out);
+    } catch (e) { tratarErro(res, e); }
   });
   r.get('/estoque/recebimentos', aut, az('estoque.entrada.criar'), async (req, res: Response) => {
     try { res.json(await deps.comprasService.listarPendentes(sch(req))); } catch (e) { tratarErro(res, e); }
   });
   r.post('/estoque/recebimentos/:id/receber', aut, az('estoque.entrada.criar'), async (req, res: Response) => {
-    try { await deps.comprasService.receber(sch(req), req.params.id!, req.body ?? {}); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+    try {
+      await deps.comprasService.receber(sch(req), req.params.id!, req.body ?? {});
+      auditar(req, { modulo: 'Estoque', entidade: 'Recebimento', descricao: 'Recebeu uma pendência de compra (entrada no estoque)' });
+      res.json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
   });
   return r;
 }

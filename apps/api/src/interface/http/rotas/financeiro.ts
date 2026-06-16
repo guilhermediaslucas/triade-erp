@@ -45,10 +45,23 @@ function registrar(r: Router, deps: Dependencias, tipo: TipoTitulo, capBase: str
     } catch (e) { tratarErro(res, e); }
   });
   r.patch(`${base}/:id/previsto`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
-    try { await deps.financeiroService.definirPrevisto(sch(req), req.params.id!, !!(req.body ?? {}).previsto); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+    try {
+      const prev = !!(req.body ?? {}).previsto;
+      await deps.financeiroService.definirPrevisto(sch(req), req.params.id!, prev);
+      const t = await deps.tituloRepo.buscarPorId(sch(req), req.params.id!).catch(() => null);
+      auditar(req, { modulo: 'Financeiro', entidade: 'Titulo', referencia: t?.numero ?? null,
+        descricao: `${prev ? 'Marcou' : 'Desmarcou'} o título ${t?.numero ?? ''} como previsto` });
+      res.json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
   });
   r.patch(`${base}/:id/reembolso`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
-    try { await deps.financeiroService.definirReembolso(sch(req), req.params.id!, req.body ?? {}); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+    try {
+      await deps.financeiroService.definirReembolso(sch(req), req.params.id!, req.body ?? {});
+      const t = await deps.tituloRepo.buscarPorId(sch(req), req.params.id!).catch(() => null);
+      auditar(req, { modulo: 'Financeiro', entidade: 'Titulo', referencia: t?.numero ?? null,
+        descricao: `Ajustou o reembolso a terceiro do título ${t?.numero ?? ''} (${brl(t?.valor)})` });
+      res.json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
   });
   r.delete(`${base}/:id`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
     try {
@@ -60,10 +73,22 @@ function registrar(r: Router, deps: Dependencias, tipo: TipoTitulo, capBase: str
     } catch (e) { tratarErro(res, e); }
   });
   r.post(`${base}/:id/parcelar`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
-    try { res.status(201).json({ criados: await deps.financeiroService.parcelar(sch(req), req.params.id!, req.body ?? {}) }); } catch (e) { tratarErro(res, e); }
+    try {
+      const t = await deps.tituloRepo.buscarPorId(sch(req), req.params.id!).catch(() => null);
+      const criados = await deps.financeiroService.parcelar(sch(req), req.params.id!, req.body ?? {});
+      auditar(req, { modulo: 'Financeiro', entidade: 'Titulo', referencia: t?.numero ?? null,
+        descricao: `Parcelou o título ${t?.numero ?? ''} (${brl(t?.valor)}) em ${(req.body ?? {}).parcelas ?? '?'}x` });
+      res.status(201).json({ criados });
+    } catch (e) { tratarErro(res, e); }
   });
   r.post(`${base}/:id/multiplicar`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
-    try { res.status(201).json({ criados: await deps.financeiroService.multiplicar(sch(req), req.params.id!, req.body ?? {}) }); } catch (e) { tratarErro(res, e); }
+    try {
+      const t = await deps.tituloRepo.buscarPorId(sch(req), req.params.id!).catch(() => null);
+      const criados = await deps.financeiroService.multiplicar(sch(req), req.params.id!, req.body ?? {});
+      auditar(req, { modulo: 'Financeiro', entidade: 'Titulo', referencia: t?.numero ?? null,
+        descricao: `Replicou o título ${t?.numero ?? ''} (${brl(t?.valor)}) em ${(req.body ?? {}).parcelas ?? '?'} cópias` });
+      res.status(201).json({ criados });
+    } catch (e) { tratarErro(res, e); }
   });
 }
 
@@ -90,10 +115,19 @@ export function rotasFinanceiro(deps: Dependencias): Router {
     try { res.json(await deps.financeiroService.conferenciaCartao(req.usuario!.schema, req.query.dia)); } catch (e) { tratarErro(res, e); }
   });
   r.patch('/financeiro/conferencia-cartao/:id', autF, azF('financeiro.receber.gerenciar'), async (req, res) => {
-    try { await deps.financeiroService.marcarConferido(req.usuario!.schema, req.params.id!, (req.body ?? {}).conferido); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+    try {
+      const conf = (req.body ?? {}).conferido;
+      await deps.financeiroService.marcarConferido(req.usuario!.schema, req.params.id!, conf);
+      auditar(req, { modulo: 'Financeiro', entidade: 'Conferencia', descricao: `${conf ? 'Conferiu' : 'Desfez a conferência de'} um recebimento de cartão/dinheiro` });
+      res.json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
   });
   r.post('/financeiro/nota', autF, azF('financeiro.compra.criar'), async (req, res) => {
-    try { res.status(201).json(await deps.comprasService.lancarNota(req.usuario!.schema, req.body ?? {})); } catch (e) { tratarErro(res, e); }
+    try {
+      const out = await deps.comprasService.lancarNota(req.usuario!.schema, req.body ?? {});
+      auditar(req, { modulo: 'Financeiro', entidade: 'NotaEntrada', descricao: `Lançou nota de entrada (compra)${(req.body ?? {}).numeroNota ? ' nº ' + (req.body ?? {}).numeroNota : ''}` });
+      res.status(201).json(out);
+    } catch (e) { tratarErro(res, e); }
   });
   r.get('/financeiro/notas', autF, azF('financeiro.compra.criar'), async (req, res) => {
     try { res.json(await deps.comprasService.listarNotas(req.usuario!.schema, req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
