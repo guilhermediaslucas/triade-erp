@@ -73,6 +73,9 @@ export const CAPABILITIES: Capability[] = [
   { id: 'relatorios.validade.ver',         moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.validade' },
   { id: 'relatorios.parado.ver',           moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.parado' },
   { id: 'relatorios.perdas.ver',           moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.perdas' },
+  { id: 'relatorios.contabil.pagar.ver',   moduloChave: 'cap.modulo.relatorios_contabil', labelChave: 'cap.relatorios.contabil.pagar' },
+  { id: 'relatorios.contabil.receber.ver', moduloChave: 'cap.modulo.relatorios_contabil', labelChave: 'cap.relatorios.contabil.receber' },
+  { id: 'relatorios.contabil.vendas.ver',  moduloChave: 'cap.modulo.relatorios_contabil', labelChave: 'cap.relatorios.contabil.vendas' },
   { id: 'painel.tv_comercial', moduloChave: 'cap.modulo.painel', labelChave: 'cap.painel.tv_comercial' },
   { id: 'painel.tv_expedicao', moduloChave: 'cap.modulo.painel', labelChave: 'cap.painel.tv_expedicao' },
 ];
@@ -109,7 +112,8 @@ export const PERFIS_PADRAO: PerfilPadrao[] = [
     caps: ['dashboard.ver', 'financeiro.receber.listar', 'financeiro.receber.gerenciar', 'financeiro.pagar.listar', 'financeiro.pagar.gerenciar',
       'financeiro.fluxo.ver', 'financeiro.compra.criar', 'financeiro.comissao.ver', 'financeiro.comissao.gerenciar', 'financeiro.conciliacao.ver', 'financeiro.conciliacao.gerenciar',
       'cadastros.catfin.listar', 'cadastros.catfin.gerenciar', 'cadastros.conta.listar', 'cadastros.conta.gerenciar', 'cadastros.tipodoc.listar', 'cadastros.tipodoc.gerenciar',
-      'cadastros.banco.listar', 'cadastros.banco.gerenciar', 'cadastros.favorecido.listar', 'cadastros.favorecido.gerenciar'],
+      'cadastros.banco.listar', 'cadastros.banco.gerenciar', 'cadastros.favorecido.listar', 'cadastros.favorecido.gerenciar',
+      'relatorios.ver', 'relatorios.contabil.pagar.ver', 'relatorios.contabil.receber.ver', 'relatorios.contabil.vendas.ver'],
   },
   {
     nome: 'Estoque', descricao: 'Apenas Estoque/Expedição',

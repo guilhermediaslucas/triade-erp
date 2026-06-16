@@ -9,18 +9,23 @@ interface Grupo { chave: string; titulo: string; desc: string; icone: string; ti
 
 const GRUPOS: Grupo[] = [
   {
+    chave: 'contabil', titulo: 'rel.g_contabil', desc: 'rel.g_contabil_d', icone: 'i-dollar', tint: 'tint-or',
+    itens: [
+      { rotulo: 'menu.rel_contas_pagar', to: '/relatorios/contas-pagar', cap: 'relatorios.contabil.pagar.ver' },
+      { rotulo: 'menu.rel_contas_receber', to: '/relatorios/contas-receber', cap: 'relatorios.contabil.receber.ver' },
+      { rotulo: 'menu.rel_vendas_contabil', to: '/relatorios/vendas-contabil', cap: 'relatorios.contabil.vendas.ver' },
+    ],
+  },
+  {
     chave: 'financeiro', titulo: 'rel.g_financeiro', desc: 'rel.g_financeiro_d', icone: 'i-dollar', tint: 'tint-gr',
     itens: [
       { rotulo: 'menu.rel_reembolsos', to: '/relatorios/reembolsos', cap: 'financeiro.pagar.listar' },
-      { rotulo: 'menu.rel_contas_pagar', to: '/relatorios/contas-pagar', cap: 'financeiro.pagar.listar' },
-      { rotulo: 'menu.rel_contas_receber', to: '/relatorios/contas-receber', cap: 'financeiro.receber.listar' },
     ],
   },
   {
     chave: 'comercial', titulo: 'rel.g_comercial', desc: 'rel.g_comercial_d', icone: 'i-cart', tint: 'tint-bl',
     itens: [
       { rotulo: 'menu.rel_vendas', to: '/relatorios/vendas', cap: 'relatorios.vendas.ver' },
-      { rotulo: 'menu.rel_vendas_contabil', to: '/relatorios/vendas-contabil', cap: 'relatorios.vendas.ver' },
       { rotulo: 'menu.rel_pedidos', to: '/relatorios/pedidos', cap: 'relatorios.pedidos.ver' },
       { rotulo: 'menu.rel_produtos', to: '/relatorios/produtos', cap: 'relatorios.produtos.ver' },
       { rotulo: 'menu.rel_categorias', to: '/relatorios/vendas-categoria', cap: 'relatorios.categorias.ver' },

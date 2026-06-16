@@ -11,6 +11,7 @@ export interface CriarUsuarioEntrada {
   perfilId: string | null;
   foto?: string | null;
   vendedorId?: string | null;
+  trocarSenha?: boolean;   // senha provisória: força troca no próximo login
 }
 
 function validarEmail(email: string): string {
@@ -51,7 +52,7 @@ export class UsuariosService {
     if (await this.usuarios.emailExiste(schema, email)) throw new ErroAplicacao('usuario.email_em_uso', 409);
     await this.validarPerfil(schema, e.perfilId);
     const senhaHash = await this.hash.gerar(e.senha);
-    return this.usuarios.criar(schema, { nome: e.nome.trim(), email, senhaHash, perfilId: e.perfilId, foto: normalizarFoto(e.foto), vendedorId: e.vendedorId ?? null });
+    return this.usuarios.criar(schema, { nome: e.nome.trim(), email, senhaHash, perfilId: e.perfilId, foto: normalizarFoto(e.foto), vendedorId: e.vendedorId ?? null, trocarSenha: e.trocarSenha === true });
   }
 
   async editar(schema: string, id: string, nome: string, perfilId: string | null, foto?: string | null, vendedorId?: string | null): Promise<void> {

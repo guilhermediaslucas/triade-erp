@@ -4,6 +4,8 @@
 // empresa, linhas zebradas, colunas de valor em R$, largura de coluna ajustada ao
 // conteúdo e linha de Total. Sem dependência externa.
 
+import { baixarArquivo } from './download.js';
+
 const ENC = new TextEncoder();
 
 function crc32(buf: Uint8Array): number {
@@ -327,8 +329,5 @@ export function gerarXlsx(cabecalho: string[], linhas: (string | number)[][], ti
 export function baixarExcel(nome: string, cabecalho: string[], linhas: (string | number)[][], opcoes?: OpcoesExcel): void {
   const bytes = gerarXlsx(cabecalho, linhas, humaniza(nome), opcoes);
   const blob = new Blob([bytes.buffer as ArrayBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = nome + '.xlsx'; a.click();
-  URL.revokeObjectURL(url);
+  void baixarArquivo(nome + '.xlsx', blob);
 }

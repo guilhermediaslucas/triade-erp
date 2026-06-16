@@ -15,16 +15,18 @@ export function rotasMe(deps: Dependencias): Router {
       let foto: string | null = null;
       let vendedorId: string | null = null;
       let vendedorNome: string | null = null;
+      let trocarSenha = false;
       if (!u.superAdmin) {
         const usr = await deps.usuariosRepo.buscarPorId(u.schema, u.sub);
         foto = usr?.foto ?? null;
         vendedorId = usr?.vendedorId ?? null;
+        trocarSenha = usr?.trocarSenha === true;
         if (vendedorId) { const v = await deps.vendedoresRepo.buscarPorId(u.schema, vendedorId); vendedorNome = v?.nome ?? null; }
       }
       // Empresas que este login acessa (multi-tenant) — para o seletor de empresa.
       // Super-admin usa a lista completa via /empresas, então aqui vai vazio p/ ele.
       const empresas = u.superAdmin ? [] : await deps.autenticarUsuario.empresasDoUsuario(u.email).catch(() => []);
-      res.json({ id: u.sub, nome: u.nome, email: u.email, empresa: u.empresa, capabilities, superAdmin: u.superAdmin === true, foto, vendedorId, vendedorNome, empresas });
+      res.json({ id: u.sub, nome: u.nome, email: u.email, empresa: u.empresa, capabilities, superAdmin: u.superAdmin === true, foto, vendedorId, vendedorNome, empresas, trocarSenha });
     } catch (e) { tratarErro(res, e); }
   });
 

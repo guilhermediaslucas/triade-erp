@@ -7,6 +7,7 @@ export interface NovoUsuario {
   perfilId: string | null;
   foto?: string | null;
   vendedorId?: string | null;
+  trocarSenha?: boolean;
 }
 
 export interface UsuarioRepository {
@@ -20,5 +21,6 @@ export interface UsuarioRepository {
   atualizar(schema: string, id: string, nome: string, perfilId: string | null, foto: string | null, vendedorId: string | null): Promise<void>;
   definirAtivo(schema: string, id: string, ativo: boolean): Promise<void>;
   definirSenha(schema: string, id: string, senhaHash: string): Promise<void>;
+  definirTrocarSenha(schema: string, id: string, valor: boolean): Promise<void>;
   capabilities(schema: string, usuarioId: string): Promise<string[]>;
 }

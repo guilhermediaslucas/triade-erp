@@ -12,7 +12,10 @@ function registrar(r: Router, deps: Dependencias, tipo: TipoTitulo, capBase: str
   const az = criarAutorizar(deps.usuariosRepo);
   const sch = (req: Request) => req.usuario!.schema;
   const base = `/financeiro/${tipo}`;
-  r.get(base, aut, az(`${capBase}.listar`), async (req, res: Response) => {
+  // A listagem alimenta a tela operacional (Contas) E o relatório contábil — por
+  // isso aceita tanto a cap de listar quanto a cap do relatório contábil (any-of).
+  const capContabil = `relatorios.contabil.${tipo}.ver`;
+  r.get(base, aut, az([`${capBase}.listar`, capContabil]), async (req, res: Response) => {
     try { res.json(await deps.financeiroService.listar(sch(req), tipo)); } catch (e) { tratarErro(res, e); }
   });
   const rotuloTipo = tipo === 'receber' ? 'a receber' : 'a pagar';

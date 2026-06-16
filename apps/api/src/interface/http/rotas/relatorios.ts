@@ -12,7 +12,7 @@ export function rotasRelatorios(deps: Dependencias): Router {
   r.get('/relatorios/vendas', aut, az('relatorios.vendas.ver'), async (req, res: Response) => {
     try { res.json(await deps.relatoriosService.vendas(sch(req), req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
   });
-  r.get('/relatorios/vendas-contabil', aut, az('relatorios.vendas.ver'), async (req, res: Response) => {
+  r.get('/relatorios/vendas-contabil', aut, az(['relatorios.vendas.ver', 'relatorios.contabil.vendas.ver']), async (req, res: Response) => {
     try { res.json(await deps.relatoriosService.vendasContabil(sch(req), req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
   });
   r.get('/relatorios/produtos-vendidos', aut, az('relatorios.produtos.ver'), async (req, res: Response) => {

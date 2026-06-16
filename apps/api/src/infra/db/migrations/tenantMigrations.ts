@@ -773,4 +773,12 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".fornecedor ADD COLUMN IF NOT EXISTS bairro      text;
     `,
   },
+  {
+    // Força a troca de senha no próximo login (senha provisória). É zerada quando
+    // o usuário troca a senha. Pré-marcada por padrão no cadastro de novo usuário.
+    nome: '055_usuario_trocar_senha',
+    sql: (s) => `
+      ALTER TABLE "${s}".usuario ADD COLUMN IF NOT EXISTS trocar_senha boolean NOT NULL DEFAULT false;
+    `,
+  },
 ];

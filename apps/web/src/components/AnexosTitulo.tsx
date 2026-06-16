@@ -3,6 +3,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { Ic } from './Icones.js';
+import { abrirArquivo, baixarArquivo } from '../lib/download.js';
 
 interface Anexo { id: string; nomeArquivo: string; tipo: string; tamanho: number; usuarioNome: string | null; criadoEm: string; }
 const fmtTam = (b: number) => b >= 1024 * 1024 ? (b / 1024 / 1024).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
@@ -45,10 +46,9 @@ export function AnexosTitulo({ tituloId, numero, podeGerenciar, onFechar }: {
   async function abrir(a: Anexo, baixar: boolean) {
     try {
       const blob = await api.blob(`/financeiro/anexos/${a.id}/conteudo`, token!);
-      const url = URL.createObjectURL(blob);
-      if (baixar) { const el = document.createElement('a'); el.href = url; el.download = a.nomeArquivo; el.click(); }
-      else window.open(url, '_blank');
-      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      // Web: nova aba / download. App (Capacitor): grava e abre via compartilhamento.
+      if (baixar) await baixarArquivo(a.nomeArquivo, blob);
+      else await abrirArquivo(a.nomeArquivo, blob);
     } catch (e) { setErro((e as ErroApi).chaveI18n); }
   }
 

@@ -2,8 +2,8 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import { api, type ErroApi } from '../api/client.js';
 
 export interface UsuarioLogado { id: string; nome: string; email: string; empresa: string; foto: string | null; vendedorId: string | null; vendedorNome: string | null; }
-interface LoginResp { token: string; usuario: { id: string; nome: string; email: string }; empresa: { codigo: string; fantasia: string }; superAdmin?: boolean; }
-interface MeResp { id: string; nome: string; email: string; empresa: string; capabilities: string[]; superAdmin?: boolean; foto?: string | null; vendedorId?: string | null; vendedorNome?: string | null; empresas?: EmpresaAcesso[]; }
+interface LoginResp { token: string; usuario: { id: string; nome: string; email: string }; empresa: { codigo: string; fantasia: string }; superAdmin?: boolean; trocarSenha?: boolean; }
+interface MeResp { id: string; nome: string; email: string; empresa: string; capabilities: string[]; superAdmin?: boolean; foto?: string | null; vendedorId?: string | null; vendedorNome?: string | null; empresas?: EmpresaAcesso[]; trocarSenha?: boolean; }
 export interface EmpresaAcesso { codigo: string; fantasia: string; }
 
 interface AuthCtx {
@@ -13,16 +13,18 @@ interface AuthCtx {
   capabilities: string[];
   superAdmin: boolean;
   empresas: EmpresaAcesso[];
+  trocarSenha: boolean;                 // senha provisória: força a troca antes de usar o sistema
   temCapability: (id: string) => boolean;
   login: (email: string, senha: string, lembrar?: boolean) => Promise<void>;
   trocarEmpresa: (codigo: string) => Promise<void>;
+  limparTrocarSenha: () => void;        // chamado após o usuário trocar a senha
   logout: () => void;
 }
 
 const Ctx = createContext<AuthCtx | null>(null);
 const CHAVE = 'triade_sessao';
 
-interface Sessao { token: string; usuario: UsuarioLogado; empresaFantasia: string; capabilities: string[]; superAdmin: boolean; empresas: EmpresaAcesso[]; }
+interface Sessao { token: string; usuario: UsuarioLogado; empresaFantasia: string; capabilities: string[]; superAdmin: boolean; empresas: EmpresaAcesso[]; trocarSenha?: boolean; }
 
 // "Lembrar-me": sessão persiste em localStorage; senão, só em sessionStorage (cai ao fechar o navegador).
 function carregar(): Sessao | null {
@@ -49,12 +51,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let foto: string | null = null;
     let vendedorId: string | null = null, vendedorNome: string | null = null;
     let empresas: EmpresaAcesso[] = (r as any).empresas ?? [];
-    try { const me = await api.get<MeResp>('/me', r.token); capabilities = me.capabilities; superAdmin = me.superAdmin === true; foto = me.foto ?? null; vendedorId = me.vendedorId ?? null; vendedorNome = me.vendedorNome ?? null; empresas = me.empresas ?? empresas; } catch { /* ignora */ }
+    let trocarSenha = r.trocarSenha === true;
+    try { const me = await api.get<MeResp>('/me', r.token); capabilities = me.capabilities; superAdmin = me.superAdmin === true; foto = me.foto ?? null; vendedorId = me.vendedorId ?? null; vendedorNome = me.vendedorNome ?? null; empresas = me.empresas ?? empresas; trocarSenha = me.trocarSenha === true; } catch { /* ignora */ }
     salvar({
       token: r.token,
       usuario: { ...r.usuario, empresa: r.empresa.codigo, foto, vendedorId, vendedorNome },
       empresaFantasia: r.empresa.fantasia,
-      capabilities, superAdmin, empresas,
+      capabilities, superAdmin, empresas, trocarSenha,
     }, lembrar);
   }
 
@@ -65,12 +68,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let foto: string | null = null; let superAdmin = sessao.superAdmin;
     let vendedorId: string | null = null, vendedorNome: string | null = null;
     let empresas: EmpresaAcesso[] = sessao.empresas;
-    try { const me = await api.get<MeResp>('/me', r.token); capabilities = me.capabilities; foto = me.foto ?? null; superAdmin = me.superAdmin === true; vendedorId = me.vendedorId ?? null; vendedorNome = me.vendedorNome ?? null; empresas = me.empresas ?? empresas; } catch { /* ignora */ }
+    let trocarSenha = false;
+    try { const me = await api.get<MeResp>('/me', r.token); capabilities = me.capabilities; foto = me.foto ?? null; superAdmin = me.superAdmin === true; vendedorId = me.vendedorId ?? null; vendedorNome = me.vendedorNome ?? null; empresas = me.empresas ?? empresas; trocarSenha = me.trocarSenha === true; } catch { /* ignora */ }
     salvar({
       token: r.token,
       usuario: { ...r.usuario, empresa: r.empresa.codigo, foto, vendedorId, vendedorNome },
       empresaFantasia: r.empresa.fantasia,
-      capabilities, superAdmin, empresas,
+      capabilities, superAdmin, empresas, trocarSenha,
     }, persistido());
     // Recarrega para refazer branding e dados da nova empresa.
     window.location.assign('/');
@@ -90,9 +94,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const vendedorId = me.vendedorId ?? null;
         const vendedorNome = me.vendedorNome ?? null;
         const empresas = me.empresas ?? [];
+        const trocarSenha = me.trocarSenha === true;
         if (JSON.stringify(me.capabilities) !== JSON.stringify(sessao.capabilities) || sa !== sessao.superAdmin || foto !== sessao.usuario.foto
-            || vendedorId !== sessao.usuario.vendedorId || JSON.stringify(empresas) !== JSON.stringify(sessao.empresas ?? [])) {
-          salvar({ ...sessao, capabilities: me.capabilities, superAdmin: sa, empresas, usuario: { ...sessao.usuario, foto, vendedorId, vendedorNome } }, persist);
+            || vendedorId !== sessao.usuario.vendedorId || JSON.stringify(empresas) !== JSON.stringify(sessao.empresas ?? []) || trocarSenha !== (sessao.trocarSenha === true)) {
+          salvar({ ...sessao, capabilities: me.capabilities, superAdmin: sa, empresas, trocarSenha, usuario: { ...sessao.usuario, foto, vendedorId, vendedorNome } }, persist);
         }
       })
       .catch((e: ErroApi) => { if (e?.status === 401) salvar(null); });
@@ -107,8 +112,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       capabilities: sessao?.capabilities ?? [],
       superAdmin: sessao?.superAdmin ?? false,
       empresas: sessao?.empresas ?? [],
+      trocarSenha: sessao?.trocarSenha === true,
       temCapability: (id) => (sessao?.superAdmin ? true : (sessao?.capabilities ?? []).includes(id)),
       login, trocarEmpresa,
+      limparTrocarSenha: () => setSessao((s) => {
+        if (!s) return s;
+        const novo = { ...s, trocarSenha: false };
+        try { (localStorage.getItem(CHAVE) != null ? localStorage : sessionStorage).setItem(CHAVE, JSON.stringify(novo)); } catch { /* ignora */ }
+        return novo;
+      }),
       logout: () => salvar(null),
     }}>{children}</Ctx.Provider>
   );

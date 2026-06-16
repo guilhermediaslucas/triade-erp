@@ -2,6 +2,7 @@ import { Router, type Request, type Response } from 'express';
 import type { Dependencias } from '../../composition.js';
 import { criarAutenticar } from '../middlewares/autenticar.js';
 import { criarAutorizar } from '../middlewares/autorizar.js';
+import { exigirSuperAdmin } from '../middlewares/exigirSuperAdmin.js';
 import { tratarErro } from '../responder.js';
 import { auditar } from '../audit.js';
 
@@ -18,8 +19,8 @@ export function rotasUsuarios(deps: Dependencias): Router {
 
   r.post('/usuarios', autenticar, autorizar('acesso.usuario.gerenciar'), async (req, res: Response) => {
     try {
-      const { nome, email, senha, perfilId, foto, vendedorId } = req.body ?? {};
-      const id = await deps.usuariosService.criar(schema(req), { nome, email, senha, perfilId: perfilId ?? null, foto: foto ?? null, vendedorId: vendedorId ?? null });
+      const { nome, email, senha, perfilId, foto, vendedorId, trocarSenha } = req.body ?? {};
+      const id = await deps.usuariosService.criar(schema(req), { nome, email, senha, perfilId: perfilId ?? null, foto: foto ?? null, vendedorId: vendedorId ?? null, trocarSenha: trocarSenha === true });
       auditar(req, { modulo: 'Segurança', entidade: 'Usuario', referencia: nome ?? email, descricao: `Criou o usuário ${nome ?? email}` });
       res.status(201).json({ id });
     } catch (e) { tratarErro(res, e); }
@@ -48,6 +49,26 @@ export function rotasUsuarios(deps: Dependencias): Router {
       await deps.usuariosService.definirSenha(schema(req), req.params.id!, (req.body ?? {}).senha);
       auditar(req, { modulo: 'Segurança', entidade: 'Usuario', descricao: 'Redefiniu a senha de um usuário' });
       res.json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
+  });
+
+  // ===== Super-admin: acesso de um login a várias empresas (sem recadastrar) =====
+  // Situação atual do e-mail em cada empresa ativa (acesso + perfil).
+  r.get('/superadmin/usuarios/acessos', autenticar, exigirSuperAdmin, async (req, res: Response) => {
+    try { res.json(await deps.acessoMultiEmpresa.situacao(String(req.query.email ?? ''))); }
+    catch (e) { tratarErro(res, e); }
+  });
+
+  // Sincroniza as empresas do login: cria/reativa nas marcadas, inativa nas demais.
+  r.put('/superadmin/usuarios/acessos', autenticar, exigirSuperAdmin, async (req, res: Response) => {
+    try {
+      const b = req.body ?? {};
+      const r2 = await deps.acessoMultiEmpresa.sincronizar({
+        email: b.email, nome: b.nome, perfilNome: b.perfilNome,
+        empresas: Array.isArray(b.empresas) ? b.empresas : [],
+        senha: b.senha ?? null, trocarSenha: b.trocarSenha === true,
+      });
+      res.json(r2);
     } catch (e) { tratarErro(res, e); }
   });
 

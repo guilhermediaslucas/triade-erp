@@ -7,6 +7,7 @@ export interface Usuario {
   perfilId: string | null;
   foto: string | null;   // data URI da foto/avatar (opcional)
   vendedorId: string | null;   // cadastro de Vendedor vinculado a este login (opcional)
+  trocarSenha: boolean;  // senha provisória: força a troca no próximo login
   criadoEm: Date; // UTC
 }
 
@@ -21,4 +22,5 @@ export interface UsuarioResumo {
   foto: string | null;
   vendedorId: string | null;
   vendedorNome: string | null;
+  trocarSenha: boolean;
 }

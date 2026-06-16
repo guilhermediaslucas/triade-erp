@@ -9,6 +9,7 @@ import { JwtGeradorToken } from '../infra/security/JwtGeradorToken.js';
 import { TypeOrmMigrador } from '../infra/db/TypeOrmMigrador.js';
 import { AutenticarUsuario } from '../application/auth/AutenticarUsuario.js';
 import { UsuariosService } from '../application/usuario/UsuariosService.js';
+import { AcessoMultiEmpresa } from '../application/usuario/AcessoMultiEmpresa.js';
 import { PerfisService } from '../application/perfil/PerfisService.js';
 import { EmpresaService } from '../application/empresa/EmpresaService.js';
 import { ProvisionarEmpresa } from '../application/empresa/ProvisionarEmpresa.js';
@@ -119,6 +120,7 @@ export function montarDependencias() {
     recebimentoRepo,
     autenticarUsuario: new AutenticarUsuario(empresasRepo, usuariosRepo, hash, tokens, superAdminsRepo),
     usuariosService: new UsuariosService(usuariosRepo, perfisRepo, hash),
+    acessoMultiEmpresa: new AcessoMultiEmpresa(empresasRepo, usuariosRepo, perfisRepo, hash),
     perfisService: new PerfisService(perfisRepo),
     empresaService: new EmpresaService(empresasRepo, migrador, usuariosRepo, hash),
     provisionarEmpresa: new ProvisionarEmpresa(empresasRepo, migrador, perfisRepo, usuariosRepo, hash),

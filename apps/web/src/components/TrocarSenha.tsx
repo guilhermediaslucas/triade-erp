@@ -5,7 +5,8 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { useToast } from './Toast.js';
 
 // Modal de auto-serviço: o usuário logado troca a própria senha (super-admin ou usuário de tenant).
-export function TrocarSenha({ onFechar }: { onFechar: () => void }) {
+// `obrigatorio`: 1º login com senha provisória — não dá pra fechar/cancelar até trocar.
+export function TrocarSenha({ onFechar, obrigatorio = false }: { onFechar: () => void; obrigatorio?: boolean }) {
   const { token } = useAuth();
   const { t } = useI18n();
   const toast = useToast();
@@ -30,12 +31,13 @@ export function TrocarSenha({ onFechar }: { onFechar: () => void }) {
   return (
     <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 400 }}>
       <h2>{t('senha.trocar')}</h2>
-      <label className="campo">{t('senha.atual')}<input type="password" value={atual} onChange={(e) => setAtual(e.target.value)} autoFocus /></label>
+      {obrigatorio && <div className="nota-info" style={{ marginBottom: 10 }}>{t('senha.obrigatoria')}</div>}
+      <label className="campo">{obrigatorio ? t('senha.provisoria') : t('senha.atual')}<input type="password" value={atual} onChange={(e) => setAtual(e.target.value)} autoFocus /></label>
       <label className="campo">{t('senha.nova')}<input type="password" value={nova} onChange={(e) => setNova(e.target.value)} /></label>
       <label className="campo">{t('senha.confirmar')}<input type="password" value={conf} onChange={(e) => setConf(e.target.value)} /></label>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="modal-acoes">
-        <button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button>
+        {!obrigatorio && <button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button>}
         <button className="btn-primary" disabled={salv || !atual || !nova} onClick={salvar}>{t('common.salvar')}</button>
       </div>
     </div></div>

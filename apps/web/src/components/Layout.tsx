@@ -49,6 +49,7 @@ const GRUPOS: Grupo[] = [
     rotulo: 'menu.estoque_exp', icone: 'i-box',
     secoes: [{ itens: [
       { rotulo: 'menu.expedicao', to: '/estoque/expedicao', cap: 'comercial.pedido.gerenciar' },
+      { rotulo: 'menu.disponibilidade', to: '/estoque/disponibilidade', cap: 'estoque.saldo.ver' },
       { rotulo: 'menu.posicao', to: '/estoque/posicao', cap: 'estoque.saldo.ver' },
       { rotulo: 'menu.consultar_etiqueta', to: '/estoque/etiqueta', cap: 'estoque.saldo.ver' },
       { rotulo: 'menu.entrada', to: '/estoque/entrada', cap: 'estoque.entrada.criar' },
@@ -124,7 +125,7 @@ const GRUPOS: Grupo[] = [
 ];
 
 export function Layout({ children }: { children: ReactNode }) {
-  const { usuario, logout, temCapability, superAdmin } = useAuth();
+  const { usuario, logout, temCapability, superAdmin, trocarSenha, limparTrocarSenha } = useAuth();
   const { escuro, alternar } = useTema();
   const { branding } = useBranding();
   const { t } = useI18n();
@@ -250,6 +251,8 @@ export function Layout({ children }: { children: ReactNode }) {
         </div></div>
       )}
       {senhaOpen && <TrocarSenha onFechar={() => setSenhaOpen(false)} />}
+      {/* 1º login com senha provisória: força a troca antes de liberar o sistema. */}
+      {trocarSenha && !senhaOpen && <TrocarSenha obrigatorio onFechar={limparTrocarSenha} />}
       {suporteOpen && <Suporte onFechar={() => setSuporteOpen(false)} />}
     </div>
   );

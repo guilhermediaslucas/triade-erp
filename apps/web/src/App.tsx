@@ -38,6 +38,7 @@ import { NovoPedido } from './pages/NovoPedido.js';
 import { PedidoDetalhe } from './pages/PedidoDetalhe.js';
 import { Romaneio } from './pages/Romaneio.js';
 import { PosicaoEstoque } from './pages/PosicaoEstoque.js';
+import { DisponibilidadeProdutos } from './pages/DisponibilidadeProdutos.js';
 import { ConsultarEtiqueta } from './pages/ConsultarEtiqueta.js';
 import { EntradaEstoque } from './pages/EntradaEstoque.js';
 import { Inventario } from './pages/Inventario.js';
@@ -110,6 +111,7 @@ export function App() {
                 <Route path="/estoque/expedicao" element={<Protegida cap="comercial.pedido.gerenciar"><KanbanExpedicao /></Protegida>} />
                 <Route path="/estoque/baixa" element={<Protegida cap="estoque.baixa.criar"><BaixaPerda /></Protegida>} />
                 <Route path="/estoque/posicao" element={<Protegida cap="estoque.saldo.ver"><PosicaoEstoque /></Protegida>} />
+                <Route path="/estoque/disponibilidade" element={<Protegida cap="estoque.saldo.ver"><DisponibilidadeProdutos /></Protegida>} />
                 <Route path="/estoque/entrada" element={<Protegida cap="estoque.entrada.criar"><EntradaEstoque /></Protegida>} />
                 <Route path="/estoque/etiqueta" element={<Protegida cap="estoque.saldo.ver"><ConsultarEtiqueta /></Protegida>} />
                 <Route path="/estoque/inventario" element={<Protegida cap="estoque.inventario.ver"><Inventario /></Protegida>} />
@@ -125,9 +127,9 @@ export function App() {
                 <Route path="/financeiro/pagar" element={<Protegida cap="financeiro.pagar.listar"><Contas tipo="pagar" /></Protegida>} />
                 <Route path="/relatorios" element={<Protegida cap="relatorios.ver"><Relatorios /></Protegida>} />
                 <Route path="/relatorios/vendas" element={<Protegida cap="relatorios.vendas.ver"><RelVendas /></Protegida>} />
-                <Route path="/relatorios/vendas-contabil" element={<Protegida cap="relatorios.vendas.ver"><RelVendasContabil /></Protegida>} />
-                <Route path="/relatorios/contas-pagar" element={<Protegida cap="financeiro.pagar.listar"><RelContasPagarContabil /></Protegida>} />
-                <Route path="/relatorios/contas-receber" element={<Protegida cap="financeiro.receber.listar"><RelContasReceberContabil /></Protegida>} />
+                <Route path="/relatorios/vendas-contabil" element={<Protegida cap="relatorios.contabil.vendas.ver"><RelVendasContabil /></Protegida>} />
+                <Route path="/relatorios/contas-pagar" element={<Protegida cap="relatorios.contabil.pagar.ver"><RelContasPagarContabil /></Protegida>} />
+                <Route path="/relatorios/contas-receber" element={<Protegida cap="relatorios.contabil.receber.ver"><RelContasReceberContabil /></Protegida>} />
                 <Route path="/relatorios/pedidos" element={<Protegida cap="relatorios.pedidos.ver"><RelPedidos /></Protegida>} />
                 <Route path="/relatorios/reembolsos" element={<Protegida cap="financeiro.pagar.listar"><RelFavorecidos /></Protegida>} />
                 <Route path="/relatorios/produtos" element={<Protegida cap="relatorios.produtos.ver"><RelProdutos /></Protegida>} />

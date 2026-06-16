@@ -17,6 +17,7 @@ export interface AutenticarSaida {
   empresa: { codigo: string; fantasia: string };
   superAdmin?: boolean;
   empresas?: { codigo: string; fantasia: string }[];   // empresas que este login acessa (multi-tenant)
+  trocarSenha?: boolean;   // senha provisória: o front força a troca antes de liberar o sistema
 }
 
 // Caso de uso: recebe dependencias por injecao (nunca instancia conexao/ORM).
@@ -71,6 +72,7 @@ export class AutenticarUsuario {
 
     const saida = this.emitir({ id: usuario.id, nome: usuario.nome, email: usuario.email }, empresa, false);
     saida.empresas = await this.empresasDoUsuario(email);
+    saida.trocarSenha = usuario.trocarSenha === true;
     return saida;
   }
 
@@ -95,6 +97,7 @@ export class AutenticarUsuario {
     if (!u || !u.ativo) throw new ErroAplicacao('auth.sem_permissao', 403);
     const saida = this.emitir({ id: u.id, nome: u.nome, email: u.email }, empresa, false);
     saida.empresas = await this.empresasDoUsuario(email);
+    saida.trocarSenha = u.trocarSenha === true;
     return saida;
   }
 
@@ -117,6 +120,7 @@ export class AutenticarUsuario {
     if (!u) throw new ErroAplicacao('auth.credenciais_invalidas', 404);
     if (!(await this.hash.comparar(senhaAtual, u.senhaHash))) throw new ErroAplicacao('auth.senha_atual_invalida', 400);
     await this.usuarios.definirSenha(ctx.schema, u.id, await this.hash.gerar(novaSenha));
+    await this.usuarios.definirTrocarSenha(ctx.schema, u.id, false);   // senha trocada → não exige mais
   }
 
   // Troca a empresa "ativa" do administrador global (emite novo token p/ o schema escolhido).

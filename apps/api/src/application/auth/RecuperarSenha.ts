@@ -83,6 +83,7 @@ export class RecuperarSenha {
     const senhaHash = await this.hash.gerar(novaSenha);
     if (reg.schemaName && reg.usuarioId) {
       await this.usuarios.definirSenha(reg.schemaName, reg.usuarioId, senhaHash);
+      await this.usuarios.definirTrocarSenha(reg.schemaName, reg.usuarioId, false);
     } else {
       await this.superAdmins.atualizarSenha(reg.email, senhaHash);
     }
