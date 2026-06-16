@@ -113,6 +113,7 @@ export function montarDependencias() {
     produtosRepo,
     precoBaseRepo,
     pedidoRepo,
+    recebimentoRepo,
     autenticarUsuario: new AutenticarUsuario(empresasRepo, usuariosRepo, hash, tokens, superAdminsRepo),
     usuariosService: new UsuariosService(usuariosRepo, perfisRepo, hash),
     perfisService: new PerfisService(perfisRepo),

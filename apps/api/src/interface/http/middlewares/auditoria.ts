@@ -68,6 +68,9 @@ export function criarAuditoria(ds: DataSource) {
         if (res.statusCode < 200 || res.statusCode >= 300) return;
         const caminho = (req.originalUrl || req.url || '').split('?')[0]!;
         if (caminho.startsWith('/auth/login')) return;
+        // Endpoints que NÃO representam alteração de dados (cálculos, troca de contexto) — não auditar.
+        const IGNORAR = ['/frete/calcular', '/frete/cobrado', '/auth/trocar-empresa'];
+        if (IGNORAR.some((p) => caminho.startsWith(p))) return;
         const a = req.audit;
         const modulo = a?.modulo ?? moduloDe(caminho);
         const descricao = a?.descricao ?? descricaoGenerica(req, caminho);

@@ -61,8 +61,11 @@ export function rotasEstoque(deps: Dependencias): Router {
   });
   r.post('/estoque/recebimentos/:id/receber', aut, az('estoque.entrada.criar'), async (req, res: Response) => {
     try {
+      const rec: any = await deps.recebimentoRepo.buscarPorId(sch(req), req.params.id!).catch(() => null);
       await deps.comprasService.receber(sch(req), req.params.id!, req.body ?? {});
-      auditar(req, { modulo: 'Estoque', entidade: 'Recebimento', descricao: 'Recebeu uma pendência de compra (entrada no estoque)' });
+      const item = rec ? `${rec.produtoNome ?? 'produto'} ${rec.quantidade ?? ''} un` : 'compra';
+      auditar(req, { modulo: 'Estoque', entidade: 'Recebimento', referencia: rec?.produtoNome ?? null,
+        descricao: `Recebeu compra: ${item}${rec?.fornecedorNome ? ' — ' + rec.fornecedorNome : ''} (entrada no estoque)` });
       res.json({ ok: true });
     } catch (e) { tratarErro(res, e); }
   });

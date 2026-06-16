@@ -19,6 +19,11 @@ coverage/
 .env.*
 !.env.example
 
+# Anotações de credenciais (NUNCA versionar) — R2, chaves, etc.
+R2 Storage.txt
+*credenciais*
+*secrets*.txt
+
 # Logs
 *.log
 npm-debug.log*

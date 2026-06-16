@@ -188,6 +188,11 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-16** — **Auditoria: menos ruído + descrições mais ricas.** Middleware passou a **ignorar** endpoints que não
+  alteram dados (`/frete/calcular`, `/frete/cobrado`, `/auth/trocar-empresa`) — some o "Criou frete/calcular". **Nota de
+  entrada** agora descreve fornecedor + NF + valor; **recebimento** descreve produto + qtd + fornecedor (`recebimentoRepo`
+  exposto nas deps). Só backend, sem migration. **Pendente:** Gui commit+push. (Decisão R2: uploads vão **passar pela API**
+  → **dispensa CORS no bucket**; só precisam das 4 vars no Render: Account ID, Access Key, Secret, bucket.)
 - **2026-06-16** — **Fix: entrada manual de estoque grava fornecedor/NF/emissão na etiqueta + responsável do inventário = usuário logado.**
   **(1)** A consulta de etiqueta mostrava Fornecedor/NF/Emissão "—" para etiquetas que entraram pela **Entrada de estoque
   manual** (bipagem): o `EstoqueService.entrada` chamava `registrarEntrada` **sem** repassar esses campos (o fluxo de

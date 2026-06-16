@@ -124,8 +124,12 @@ export function rotasFinanceiro(deps: Dependencias): Router {
   });
   r.post('/financeiro/nota', autF, azF('financeiro.compra.criar'), async (req, res) => {
     try {
-      const out = await deps.comprasService.lancarNota(req.usuario!.schema, req.body ?? {});
-      auditar(req, { modulo: 'Financeiro', entidade: 'NotaEntrada', descricao: `Lançou nota de entrada (compra)${(req.body ?? {}).numeroNota ? ' nº ' + (req.body ?? {}).numeroNota : ''}` });
+      const b = req.body ?? {};
+      const out = await deps.comprasService.lancarNota(req.usuario!.schema, b);
+      const total = Array.isArray(b.itens) ? b.itens.reduce((a: number, it: any) => a + (Number(it.total) || 0), 0) : (Number(b.total) || 0);
+      const partes = [b.fornecedorNome, b.nf ? 'NF ' + b.nf : null, total ? brl(total) : null].filter(Boolean).join(', ');
+      auditar(req, { modulo: 'Financeiro', entidade: 'NotaEntrada', referencia: b.nf ?? b.fornecedorNome ?? null,
+        descricao: `Lançou nota de entrada (compra)${partes ? ' — ' + partes : ''}` });
       res.status(201).json(out);
     } catch (e) { tratarErro(res, e); }
   });
