@@ -23,6 +23,9 @@ export function NotaFiscalCard({ pedidoId, pedidoStatus, podeEmitir }: { pedidoI
   const [carregando, setCarregando] = useState(true);
   const [emitindo, setEmitindo] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+  const [cancelando, setCancelando] = useState(false);
+  const [justif, setJustif] = useState('');
+  const [enviandoCancel, setEnviandoCancel] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const consultar = useCallback(async () => {
@@ -54,6 +57,16 @@ export function NotaFiscalCard({ pedidoId, pedidoStatus, podeEmitir }: { pedidoI
       const ext = tipo === 'xml' ? 'xml' : 'pdf';
       await baixarArquivo('nfe-' + (nota?.numero || pedidoId) + '.' + ext, blob);
     } catch (e) { toast(t((e as ErroApi).chaveI18n), 'erro'); }
+  }
+
+  async function cancelar() {
+    if (justif.trim().length < 15) { setErro('fiscal.nota.justificativa_invalida'); return; }
+    setEnviandoCancel(true); setErro(null);
+    try {
+      setNota(await api.post<NotaFiscal>('/pedidos/' + pedidoId + '/nota/cancelar', { justificativa: justif.trim() }, token!));
+      setCancelando(false); setJustif(''); toast(t('nf.cancelada_ok'));
+    } catch (e) { const k = (e as ErroApi).chaveI18n; setErro(k); toast(t(k), 'erro'); }
+    finally { setEnviandoCancel(false); }
   }
 
   if (carregando) return null;
@@ -90,10 +103,23 @@ export function NotaFiscalCard({ pedidoId, pedidoStatus, podeEmitir }: { pedidoI
             {nota.numero && <span className="muted">{t('nf.numero')} {nota.numero}{nota.serie ? ' / ' + t('nf.serie') + ' ' + nota.serie : ''}</span>}
           </div>
           {nota.chave && <div className="muted" style={{ fontFamily: 'monospace', fontSize: 12, marginBottom: 10, wordBreak: 'break-all' }}>{nota.chave}</div>}
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <button className="btn-acao verde" onClick={() => baixar('danfe')}><Ic name="i-download" className="sm" /> {t('nf.danfe')}</button>
             <button className="btn-ghost" onClick={() => baixar('xml')}><Ic name="i-download" className="sm" /> {t('nf.xml')}</button>
+            {podeEmitir && !cancelando && <button className="btn-acao vermelho" onClick={() => { setCancelando(true); setErro(null); }}><Ic name="i-x" className="sm" /> {t('nf.cancelar')}</button>}
           </div>
+          {cancelando && (
+            <div style={{ marginTop: 12 }}>
+              <label className="campo">{t('nf.justificativa')}
+                <textarea value={justif} onChange={(e) => setJustif(e.target.value)} rows={2} maxLength={255} placeholder={t('nf.justificativa_hint')} />
+              </label>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <button className="btn-acao vermelho" disabled={enviandoCancel || justif.trim().length < 15} onClick={cancelar}>{enviandoCancel ? t('nf.cancelando') : t('nf.confirmar_cancelamento')}</button>
+                <button className="btn-ghost" onClick={() => { setCancelando(false); setJustif(''); }}>{t('common.cancelar')}</button>
+                <span className="muted" style={{ fontSize: 12 }}>{justif.trim().length}/255</span>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

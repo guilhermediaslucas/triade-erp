@@ -147,4 +147,25 @@ export class NotasFiscaisService {
     const { ambiente, token } = await this.tokenDe(empresaCodigo);
     return this.emissor.baixarArquivo(ambiente, token, caminho);
   }
+
+  // Cancela a NF-e (só se autorizada). Justificativa 15–255. Só vira 'cancelado' no sucesso;
+  // se a SEFAZ/Focus recusar (fora do prazo, já cancelada, etc.), preserva a nota e devolve o erro.
+  async cancelar(schema: string, empresaCodigo: string, pedidoId: string, justificativa: string): Promise<NotaFiscal> {
+    const j = String(justificativa ?? '').trim();
+    if (j.length < 15 || j.length > 255) throw new ErroAplicacao('fiscal.nota.justificativa_invalida', 400);
+    const nota = await this.notas.buscarPorPedido(schema, pedidoId);
+    if (!nota || nota.status !== 'autorizado') throw new ErroAplicacao('fiscal.nota.nao_cancelavel', 400);
+    const { ambiente, token } = await this.tokenDe(empresaCodigo);
+    const resp = await this.emissor.cancelar(ambiente, token, nota.ref, j);
+    if (mapStatus(resp.status) !== 'cancelado') {
+      throw new ErroAplicacao(resp.mensagemSefaz || 'fiscal.nota.cancelamento_falhou', 400);
+    }
+    await this.notas.atualizar(schema, nota.ref, {
+      status: 'cancelado', statusFocus: resp.status, statusSefaz: resp.statusSefaz,
+      mensagemSefaz: resp.mensagemSefaz, chave: resp.chave ?? nota.chave,
+      numero: resp.numero ?? nota.numero, serie: resp.serie ?? nota.serie,
+      caminhoDanfe: nota.caminhoDanfe, caminhoXml: nota.caminhoXml,
+    });
+    return (await this.notas.buscarPorRef(schema, nota.ref))!;
+  }
 }

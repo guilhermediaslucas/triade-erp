@@ -188,6 +188,21 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-16** — **Fase 7 — Entrega 7C: CANCELAMENTO de NF-e. Fase 7 (Fiscal/NF-e via Focus NFe) concluída (emitir + consultar + DANFE/XML + cancelar).**
+  Porta `EmissorFiscal` += `cancelar(ambiente, token, ref, justificativa)`; adapter `FocusNFeEmissor.cancelar`
+  (**DELETE `/v2/nfe/:ref`** com body `{justificativa}`, normaliza resposta). `NotasFiscaisService.cancelar(schema,
+  empresaCodigo, pedidoId, justificativa)`: valida **justificativa 15–255**, exige nota **autorizada**, chama o adapter e
+  **só vira 'cancelado' no sucesso** — se a SEFAZ/Focus recusar (fora do prazo, já cancelada…), **preserva a nota** e
+  devolve o erro (mensagem do provedor). Rota **`POST /pedidos/:id/nota/cancelar`** (reusa a cap **`fiscal.nota.emitir`**,
+  auditada). **Frontend (`NotaFiscalCard`):** no estado **autorizado**, botão **Cancelar NF-e** revela um textarea de
+  justificativa (contador x/255, confirma só com ≥15) → `POST .../cancelar` → status vira **Cancelada**. i18n `nf.cancelar*`/
+  `nf.justificativa*`/`fiscal.nota.justificativa_invalida`/`nao_cancelavel`/`cancelamento_falhou` pt/en/es. **Sem capability
+  nova** (reusa `fiscal.nota.emitir`) → **não precisa relogar**. **Sem migration, sem dep nova.** Backend roda via tsx no
+  Render (redeploy pega). **Validação:** parse limpo (só o falso "}" do fim por truncagem do mount; arquivos íntegros);
+  hand-review das assinaturas. **Pendente Gui:** `npm run build -w @triade/web` → commit+push → `scripts\app-apk.bat`.
+  **Obs.:** cancelamento tem prazo legal (geralmente 24h após autorização, varia por UF) — se a SEFAZ recusar, a mensagem
+  dela aparece e a nota continua autorizada. **Fora do escopo (futuro, se precisar):** carta de correção (CC-e),
+  inutilização de numeração.
 - **2026-06-16** — **Fase 7B — ajustes pós-teste de emissão: card prefixa a resposta da Focus + adapter corrige grupo de ICMS (modBC/vBC).**
   **(1) Card:** mensagem de erro da nota agora vem prefixada por **"A Focus NFe respondeu:"** (`nf.resposta_provedor`
   pt/en/es) p/ deixar claro que o texto é do provedor/SEFAZ, não do suporte do TRIADE. **(2) Erro de schema

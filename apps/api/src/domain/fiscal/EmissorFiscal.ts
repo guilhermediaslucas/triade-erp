@@ -75,6 +75,7 @@ export interface ArquivoFiscal { conteudo: Buffer; tipo: string; }
 export interface EmissorFiscal {
   emitir(ambiente: AmbienteFiscal, token: string, ref: string, dados: DadosEmissaoNF): Promise<RespostaFiscal>;
   consultar(ambiente: AmbienteFiscal, token: string, ref: string): Promise<RespostaFiscal>;
+  cancelar(ambiente: AmbienteFiscal, token: string, ref: string, justificativa: string): Promise<RespostaFiscal>;
   // Baixa um arquivo (DANFE/XML) a partir do caminho relativo devolvido pelo provedor.
   baixarArquivo(ambiente: AmbienteFiscal, token: string, caminhoRelativo: string): Promise<ArquivoFiscal>;
 }

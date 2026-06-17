@@ -140,6 +140,16 @@ export class FocusNFeEmissor implements EmissorFiscal {
     return this.normalizar(body);
   }
 
+  async cancelar(ambiente: AmbienteFiscal, token: string, ref: string, justificativa: string): Promise<RespostaFiscal> {
+    const resp = await fetch(`${BASE[ambiente]}/v2/nfe/${encodeURIComponent(ref)}`, {
+      method: 'DELETE',
+      headers: { authorization: this.auth(token), 'content-type': 'application/json' },
+      body: JSON.stringify({ justificativa }),
+    });
+    const body = await resp.json().catch(() => ({}));
+    return this.normalizar(body);
+  }
+
   async baixarArquivo(ambiente: AmbienteFiscal, token: string, caminhoRelativo: string): Promise<ArquivoFiscal> {
     const url = caminhoRelativo.startsWith('http') ? caminhoRelativo : `${BASE[ambiente]}${caminhoRelativo}`;
     const resp = await fetch(url, { headers: { authorization: this.auth(token) } });

@@ -65,6 +65,15 @@ export function rotasFiscal(deps: Dependencias): Router {
     catch (e) { tratarErro(res, e); }
   });
 
+  // Cancelar a NF-e (justificativa 15–255). Reusa a cap de emitir.
+  r.post('/pedidos/:id/nota/cancelar', aut, az('fiscal.nota.emitir'), async (req: Request, res: Response) => {
+    try {
+      const nota = await deps.notasFiscaisService.cancelar(sch(req), emp(req), req.params.id!, (req.body ?? {}).justificativa);
+      auditar(req, { modulo: 'Fiscal', entidade: 'NotaFiscal', referencia: nota.ref, descricao: `Cancelou a NF-e do pedido (ref ${nota.ref})` });
+      res.json(nota);
+    } catch (e) { tratarErro(res, e); }
+  });
+
   async function baixar(req: Request, res: Response, tipo: 'danfe' | 'xml') {
     try {
       const arq = await deps.notasFiscaisService.baixar(sch(req), emp(req), req.params.id!, tipo);

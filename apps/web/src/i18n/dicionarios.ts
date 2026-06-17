@@ -3020,3 +3020,38 @@ Object.assign(es, {
 Object.assign(pt, { 'nf.resposta_provedor': 'A Focus NFe respondeu:' });
 Object.assign(en, { 'nf.resposta_provedor': 'Focus NFe replied:' });
 Object.assign(es, { 'nf.resposta_provedor': 'Focus NFe respondió:' });
+
+// ===== Fase 7C — Cancelamento de NF-e =====
+Object.assign(pt, {
+  'nf.cancelar': 'Cancelar NF-e',
+  'nf.justificativa': 'Justificativa do cancelamento',
+  'nf.justificativa_hint': 'Mínimo de 15 caracteres.',
+  'nf.confirmar_cancelamento': 'Confirmar cancelamento',
+  'nf.cancelando': 'Cancelando…',
+  'nf.cancelada_ok': 'NF-e cancelada.',
+  'fiscal.nota.justificativa_invalida': 'A justificativa deve ter entre 15 e 255 caracteres.',
+  'fiscal.nota.nao_cancelavel': 'Só é possível cancelar uma NF-e autorizada.',
+  'fiscal.nota.cancelamento_falhou': 'Não foi possível cancelar a NF-e.',
+});
+Object.assign(en, {
+  'nf.cancelar': 'Cancel NF-e',
+  'nf.justificativa': 'Cancellation reason',
+  'nf.justificativa_hint': 'Minimum 15 characters.',
+  'nf.confirmar_cancelamento': 'Confirm cancellation',
+  'nf.cancelando': 'Cancelling…',
+  'nf.cancelada_ok': 'NF-e cancelled.',
+  'fiscal.nota.justificativa_invalida': 'The reason must be 15 to 255 characters.',
+  'fiscal.nota.nao_cancelavel': 'Only an authorized NF-e can be cancelled.',
+  'fiscal.nota.cancelamento_falhou': 'Could not cancel the NF-e.',
+});
+Object.assign(es, {
+  'nf.cancelar': 'Cancelar NF-e',
+  'nf.justificativa': 'Justificación de la cancelación',
+  'nf.justificativa_hint': 'Mínimo 15 caracteres.',
+  'nf.confirmar_cancelamento': 'Confirmar cancelación',
+  'nf.cancelando': 'Cancelando…',
+  'nf.cancelada_ok': 'NF-e cancelada.',
+  'fiscal.nota.justificativa_invalida': 'La justificación debe tener entre 15 y 255 caracteres.',
+  'fiscal.nota.nao_cancelavel': 'Solo se puede cancelar una NF-e autorizada.',
+  'fiscal.nota.cancelamento_falhou': 'No se pudo cancelar la NF-e.',
+});
