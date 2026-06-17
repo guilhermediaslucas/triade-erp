@@ -188,6 +188,24 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-16** — **Anexos de documentos no cadastro de Cliente (espelha o Contas a pagar; mesmo R2).** O Gui escolheu **nos dois
+  lugares** (lista + formulário), confirmado por mockup antes de aplicar. **Migration tenant 059** `cliente_anexo` (cliente_id FK
+  CASCADE + nome_arquivo/tipo/tamanho/chave/usuario_nome/criado_em — igual `titulo_anexo`). **Backend:** domínio
+  `domain/pessoa/ClienteAnexo.ts` + repo, `SqlClienteAnexoRepository`, `application/pessoa/ClienteAnexosService` (cópia do
+  `AnexosService`: valida PDF/JPG/PNG/WEBP + 10 MB, chave `schema/clientes/<id>/<uuid>-nome`, upload/baixar/remover). Rotas
+  **no mesmo `anexos.ts`**: `GET/POST /clientes/:id/anexos`, `GET /clientes/anexos/:id/conteudo` (stream), `DELETE /clientes/anexos/:id`
+  — gate `cadastros.cliente.listar` (ver) / `cadastros.cliente.gerenciar` (anexar/remover), auditadas. **Sem capability nova**
+  → **não precisa relogar**. Wiring: `r2Storage` extraído no composition.ts p/ reuso entre `anexosService` e o novo
+  `clienteAnexosService`. **Frontend:** `AnexosTitulo` foi **generalizado** em `components/AnexosDocumentos.tsx` (recebe as URLs;
+  modo **modal** e modo **inline**) — `AnexosTitulo` virou wrapper fino (Contas/relatórios inalterados). Na **lista de Clientes**:
+  botão 📎 (`i-clip`) na coluna de ações abre o modal de documentos. No **formulário** (`ModalCli`): seção "Documentos do cliente"
+  **inline** ao editar (novo cliente mostra "salve primeiro"). i18n `anexo.cliente`/`anexo.salve_primeiro`/`anexo.cliente_invalido`
+  pt/en/es (demais `anexo.*` reusadas). CSS `.anexo-inline`. **Sem dep npm nova, sem env nova** (reusa o R2 do Contas — as 4 vars
+  já no Render). **Validação:** parse de sintaxe limpo nos arquivos novos/editados (só o `composition.ts` acusa o falso "}"/")" da
+  truncagem do mount — confirmado íntegro). **Pendente Gui:** `npm run build -w @triade/web` → commit+push (Render aplica a **059**
+  no boot via AUTO_MIGRATE) → `scripts\app-apk.bat` p/ APK novo (telas mudaram). **Pré-requisito:** R2 já configurado (mesmo do
+  Contas; se o anexo de título funciona, esse funciona). **e2e sugerido:** anexar PDF a um cliente pela lista e pelo formulário;
+  ver/baixar; remover; tipo inválido/>10 MB barra.
 - **2026-06-16** — **Fase 7 — Entrega 7B: EMISSÃO de NF-e (Focus NFe), consulta de status e DANFE/XML no detalhe do pedido.**
   **Decisões do Gui:** destinatário **sempre não contribuinte** (indicador IE 9, sem IE — não mexe no cadastro de cliente);
   botão **Emitir NF-e só com pedido Expedido/Entregue**; escopo emitir (cancelar = 7C). **Migrations:** tenant **058**

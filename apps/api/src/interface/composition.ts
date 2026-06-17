@@ -78,6 +78,8 @@ import { SqlLogAcaoRepository } from '../infra/repositories/SqlLogAcaoRepository
 import { R2Storage } from '../infra/storage/R2Storage.js';
 import { SqlTituloAnexoRepository } from '../infra/repositories/SqlTituloAnexoRepository.js';
 import { AnexosService } from '../application/financeiro/AnexosService.js';
+import { SqlClienteAnexoRepository } from '../infra/repositories/SqlClienteAnexoRepository.js';
+import { ClienteAnexosService } from '../application/pessoa/ClienteAnexosService.js';
 import { ResendEmailSender } from '../infra/email/ResendEmailSender.js';
 import { SqlResetSenhaRepository } from '../infra/repositories/SqlResetSenhaRepository.js';
 import { RecuperarSenha } from '../application/auth/RecuperarSenha.js';
@@ -112,6 +114,7 @@ export function montarDependencias() {
   const resetSenhaRepo = new SqlResetSenhaRepository(AppDataSource);
   const freteCampanhaRepo = new SqlFreteCampanhaRepository(AppDataSource);
   const configFiscalRepo = new SqlConfigFiscalRepository(AppDataSource);
+  const r2Storage = new R2Storage(env.r2AccountId, env.r2AccessKeyId, env.r2SecretAccessKey, env.r2Bucket);
 
   return {
     tokens,
@@ -168,10 +171,8 @@ export function montarDependencias() {
       env.suporteEmailDestino,
     ),
     auditoriaRepo: new SqlLogAcaoRepository(AppDataSource),
-    anexosService: new AnexosService(
-      new SqlTituloAnexoRepository(AppDataSource),
-      new R2Storage(env.r2AccountId, env.r2AccessKeyId, env.r2SecretAccessKey, env.r2Bucket),
-    ),
+    anexosService: new AnexosService(new SqlTituloAnexoRepository(AppDataSource), r2Storage),
+    clienteAnexosService: new ClienteAnexosService(new SqlClienteAnexoRepository(AppDataSource), r2Storage),
     recuperarSenha: new RecuperarSenha(
       empresasRepo, usuariosRepo, superAdminsRepo, resetSenhaRepo, hash, emailSender, env.appUrl,
     ),

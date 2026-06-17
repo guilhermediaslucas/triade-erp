@@ -6,6 +6,15 @@ import { UFS, buscarMunicipios } from '../lib/br.js';
 import { Ic } from '../components/Icones.js';
 import { MoedaInput } from '../components/MoedaInput.js';
 import { ImportadorPlanilha, type CampoImport } from '../components/ImportadorPlanilha.js';
+import { AnexosDocumentos } from '../components/AnexosDocumentos.js';
+
+// URLs dos anexos de documentos de um cliente (mesmo R2 do Contas).
+const urlsAnexoCli = (id: string) => ({
+  listar: `/clientes/${id}/anexos`,
+  enviar: `/clientes/${id}/anexos`,
+  conteudo: (aid: string) => `/clientes/anexos/${aid}/conteudo`,
+  remover: (aid: string) => `/clientes/anexos/${aid}`,
+});
 
 // Parser de número em formato BR ("1.234,56") ou simples; vazio → 0.
 function parseNumBR(v: string): number {
@@ -50,6 +59,7 @@ export function Clientes() {
   const [itens, setItens] = useState<Cliente[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [edit, setEdit] = useState<Cliente | null>(null);
+  const [anexCli, setAnexCli] = useState<Cliente | null>(null);
   const [importar, setImportar] = useState(false);
   const [busca, setBusca] = useState('');
   const [statusF, setStatusF] = useState<'todos' | 'ativos' | 'inativos'>('todos');
@@ -113,6 +123,7 @@ export function Clientes() {
                 <td data-label={t('fin.status')}><span className={c.ativo ? 'pill-ok' : 'pill-off'}>{c.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
                 <td style={{ textAlign: 'right' }}><span className="acoes-ic">
                   <button className="acao-ic" title={t('common.editar')} onClick={abrir}><Ic name="i-edit" className="sm" /></button>
+                  <button className="acao-ic" title={t('anexo.cliente')} onClick={() => setAnexCli(c)}><Ic name="i-clip" className="sm" /></button>
                   {pode && <button className="acao-ic danger" title={c.ativo ? t('usuarios.inativar') : t('usuarios.ativar')} onClick={() => alternar(c)}><Ic name="i-trash" className="sm" /></button>}
                 </span></td>
               </tr>
@@ -121,13 +132,15 @@ export function Clientes() {
         </tbody>
       </table></div>
       {edit && <ModalCli c={edit} onFechar={() => setEdit(null)} onSalvo={() => { setEdit(null); carregar(); }} />}
+      {anexCli && <AnexosDocumentos titulo={`${t('anexo.cliente')} — ${anexCli.nome}`} podeGerenciar={pode} onFechar={() => setAnexCli(null)} urls={urlsAnexoCli(anexCli.id)} />}
       {importar && <ImportadorPlanilha titulo={t('clientes.importar')} campos={CAMPOS_CLIENTE} modelo="modelo-clientes" onImportar={enviarImportacao} onConcluido={carregar} onFechar={() => setImportar(false)} />}
     </div>
   );
 }
 
 function ModalCli({ c, onFechar, onSalvo }: { c: Cliente; onFechar: () => void; onSalvo: () => void; }) {
-  const { token } = useAuth(); const { t } = useI18n();
+  const { token, temCapability } = useAuth(); const { t } = useI18n();
+  const podeAnexar = temCapability('cadastros.cliente.gerenciar');
   const novo = !c.id; const [v, setV] = useState(c);
   const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
   const [buscandoCnpj, setBuscandoCnpj] = useState(false);
@@ -239,6 +252,11 @@ function ModalCli({ c, onFechar, onSalvo }: { c: Cliente; onFechar: () => void; 
           </div>
         </div>
       ))}
+
+      <div className="perm-titulo" style={{ marginTop: 6 }}><span><Ic name="i-clip" className="sm" /> {t('anexo.cliente')}</span></div>
+      {novo
+        ? <div className="muted" style={{ fontSize: 13, marginBottom: 8 }}>{t('anexo.salve_primeiro')}</div>
+        : <AnexosDocumentos inline titulo="" podeGerenciar={podeAnexar} urls={urlsAnexoCli(c.id)} />}
 
       {erro && <div className="alerta-erro" style={{ marginTop: 12 }}>{t(erro)}</div>}
       <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv} onClick={salvar}>{t('common.salvar')}</button></div>

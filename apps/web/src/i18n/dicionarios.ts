@@ -2999,3 +2999,20 @@ Object.assign(es, {
   'fiscal.nota.sem_itens': 'El pedido no tiene ítems.',
   'fiscal.nota.indisponivel': 'DANFE/XML no disponible: la factura no está autorizada.',
 });
+
+// ===== Anexos de documentos no cadastro de cliente =====
+Object.assign(pt, {
+  'anexo.cliente': 'Documentos do cliente',
+  'anexo.salve_primeiro': 'Salve o cliente primeiro para anexar documentos.',
+  'anexo.cliente_invalido': 'Cliente inválido para anexar o documento.',
+});
+Object.assign(en, {
+  'anexo.cliente': 'Customer documents',
+  'anexo.salve_primeiro': 'Save the customer first to attach documents.',
+  'anexo.cliente_invalido': 'Invalid customer for attaching the document.',
+});
+Object.assign(es, {
+  'anexo.cliente': 'Documentos del cliente',
+  'anexo.salve_primeiro': 'Guarda el cliente primero para adjuntar documentos.',
+  'anexo.cliente_invalido': 'Cliente inválido para adjuntar el documento.',
+});

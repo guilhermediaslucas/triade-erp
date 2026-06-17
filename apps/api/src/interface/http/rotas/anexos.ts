@@ -2,7 +2,7 @@ import { Router, type Request, type Response } from 'express';
 import type { Readable } from 'node:stream';
 import type { Dependencias } from '../../composition.js';
 import { criarAutenticar } from '../middlewares/autenticar.js';
-import { criarTemCaps } from '../middlewares/autorizar.js';
+import { criarTemCaps, criarAutorizar } from '../middlewares/autorizar.js';
 import { tratarErro } from '../responder.js';
 import { auditar } from '../audit.js';
 
@@ -53,6 +53,41 @@ export function rotasAnexos(deps: Dependencias): Router {
     try {
       await deps.anexosService.remover(sch(req), req.params.id!);
       auditar(req, { modulo: 'Financeiro', entidade: 'Anexo', descricao: 'Removeu um documento anexado a um título' });
+      res.json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
+  });
+
+  // ===== Anexos no cadastro de CLIENTE (mesmo R2; caps de cliente) =====
+  const verCli = criarAutorizar('cadastros.cliente.listar');
+  const gerCli = criarAutorizar('cadastros.cliente.gerenciar');
+
+  r.get('/clientes/:clienteId/anexos', aut, verCli, async (req, res: Response) => {
+    try { res.json(await deps.clienteAnexosService.listar(sch(req), req.params.clienteId!)); } catch (e) { tratarErro(res, e); }
+  });
+
+  r.post('/clientes/:clienteId/anexos', aut, gerCli, async (req, res: Response) => {
+    try {
+      const a = await deps.clienteAnexosService.anexar(sch(req), req.params.clienteId!, req.body ?? {}, req.usuario?.nome ?? null);
+      auditar(req, { modulo: 'Cadastros', entidade: 'Anexo', referencia: a.nomeArquivo, descricao: `Anexou o documento "${a.nomeArquivo}" a um cliente` });
+      res.status(201).json(a);
+    } catch (e) { tratarErro(res, e); }
+  });
+
+  r.get('/clientes/anexos/:id/conteudo', aut, verCli, async (req, res: Response) => {
+    try {
+      const out = await deps.clienteAnexosService.baixar(sch(req), req.params.id!);
+      res.setHeader('Content-Type', out.contentType);
+      res.setHeader('Content-Disposition', `inline; filename="${out.nomeArquivo}"`);
+      const body = out.body as Readable;
+      body.on('error', () => { if (!res.headersSent) res.status(500).end(); });
+      body.pipe(res);
+    } catch (e) { tratarErro(res, e); }
+  });
+
+  r.delete('/clientes/anexos/:id', aut, gerCli, async (req, res: Response) => {
+    try {
+      await deps.clienteAnexosService.remover(sch(req), req.params.id!);
+      auditar(req, { modulo: 'Cadastros', entidade: 'Anexo', descricao: 'Removeu um documento anexado a um cliente' });
       res.json({ ok: true });
     } catch (e) { tratarErro(res, e); }
   });

@@ -829,4 +829,20 @@ export const tenantMigrations: MigracaoTenant[] = [
       CREATE INDEX IF NOT EXISTS idx_nota_fiscal_pedido ON "${s}".nota_fiscal (pedido_id);
     `,
   },
+  {
+    nome: '059_cliente_anexo',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".cliente_anexo (
+        id            uuid PRIMARY KEY,
+        cliente_id    uuid NOT NULL REFERENCES "${s}".cliente(id) ON DELETE CASCADE,
+        nome_arquivo  text NOT NULL,
+        tipo          text NOT NULL,
+        tamanho       int  NOT NULL DEFAULT 0,
+        chave         text NOT NULL,
+        usuario_nome  text,
+        criado_em     timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_cliente_anexo ON "${s}".cliente_anexo (cliente_id, criado_em);
+    `,
+  },
 ];
