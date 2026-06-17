@@ -195,7 +195,8 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   `pages/NotasFiscais.tsx` — KPIs (autorizadas/valor/canceladas/erro), chips de status + período + busca (nº/chave/cliente), tabela com
   **DANFE/XML por linha** (reusa `/pedidos/:id/nota/danfe|xml`) e clique abre o pedido; **Exportar CSV** do índice; **Baixar XMLs (zip)**
   = baixa todos os XMLs autorizados do filtro num zip só (novo `lib/zip.ts` — método store + CRC32, **sem dependência**, reaproveita a
-  lógica do `lib/excel.ts`). Menu **Comercial › Notas fiscais** + rota `/comercial/notas-fiscais` (cap `fiscal.nota.ver`) + i18n
+  lógica do `lib/excel.ts`). Menu **Financeiro › Notas fiscais** + rota `/financeiro/notas-fiscais` (cap `fiscal.nota.ver`) + i18n
+  (movido do Comercial p/ o Financeiro — comercial/expedição só usa a nota dentro do pedido; o controle central é do financeiro/contabilidade)
   `menu.notas_fiscais`/`nf.tela_*`/`nf.kpi_*`/`nf.baixar_xmls`/`nf.valor`/`nf.pedido`/`nf.emitida_em`/`nf.f_todas` pt/en/es.
   **Contabilidade:** um perfil só com **`fiscal.nota.ver`** (sem `emitir`) dá acesso de leitura+download (ver/baixar DANFE/XML/zip) sem
   poder emitir/cancelar — é o perfil ideal p/ o contador. O card dentro do pedido continua igual. **Sem relogar** (cap já existe).

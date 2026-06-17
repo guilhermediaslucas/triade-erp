@@ -109,7 +109,7 @@ export function App() {
                 <Route path="/comercial/crm" element={<Protegida cap="comercial.crm.ver"><Crm /></Protegida>} />
                 <Route path="/comercial/metas" element={<Protegida cap="comercial.meta.ver"><Metas /></Protegida>} />
                 <Route path="/comercial/analise" element={<Protegida cap="comercial.analise.ver"><AnaliseVendas /></Protegida>} />
-                <Route path="/comercial/notas-fiscais" element={<Protegida cap="fiscal.nota.ver"><NotasFiscais /></Protegida>} />
+                <Route path="/financeiro/notas-fiscais" element={<Protegida cap="fiscal.nota.ver"><NotasFiscais /></Protegida>} />
                 <Route path="/estoque/expedicao" element={<Protegida cap="comercial.pedido.gerenciar"><KanbanExpedicao /></Protegida>} />
                 <Route path="/estoque/baixa" element={<Protegida cap="estoque.baixa.criar"><BaixaPerda /></Protegida>} />
                 <Route path="/estoque/posicao" element={<Protegida cap="estoque.saldo.ver"><PosicaoEstoque /></Protegida>} />

@@ -95,7 +95,7 @@ export function NotasFiscais() {
 
   return (
     <div>
-      <div className="crumb">{t('menu.comercial')} / {t('menu.notas_fiscais')}</div>
+      <div className="crumb">{t('menu.financeiro')} / {t('menu.notas_fiscais')}</div>
       <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('nf.tela_titulo')}</h1><div className="muted page-sub">{t('nf.tela_sub')}</div></div>
         <div style={{ display: 'flex', gap: 8 }}>
           <button className="btn-ghost" onClick={exportarCsv}><Ic name="i-download" className="sm" /> CSV</button>

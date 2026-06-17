@@ -31,7 +31,6 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'menu.metas', to: '/comercial/metas', cap: 'comercial.meta.ver' },
       { rotulo: 'menu.precos', to: '/comercial/precos', cap: 'comercial.preco.listar' },
       { rotulo: 'menu.analise', to: '/comercial/analise', cap: 'comercial.analise.ver' },
-      { rotulo: 'menu.notas_fiscais', to: '/comercial/notas-fiscais', cap: 'fiscal.nota.ver' },
     ] }],
   },
   {
@@ -44,6 +43,7 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'menu.conciliacao', to: '/financeiro/conciliacao', cap: 'financeiro.conciliacao.ver' },
       { rotulo: 'menu.comissoes', to: '/financeiro/comissoes', cap: 'financeiro.comissao.ver' },
       { rotulo: 'menu.conferencia', to: '/financeiro/conferencia-cartao', cap: 'financeiro.receber.listar' },
+      { rotulo: 'menu.notas_fiscais', to: '/financeiro/notas-fiscais', cap: 'fiscal.nota.ver' },
     ] }],
   },
   {
