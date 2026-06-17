@@ -3,7 +3,7 @@ import type { ProdutoRepository } from '../../domain/cadastro/Produto.js';
 import type { ClienteRepository } from '../../domain/pessoa/Cliente.js';
 import type { EmpresaRepository } from '../../domain/empresa/EmpresaRepository.js';
 import type { ConfigFiscalRepository, AmbienteFiscal } from '../../domain/fiscal/ConfigFiscal.js';
-import type { NotaFiscal, NotaFiscalRepository, StatusNota } from '../../domain/fiscal/NotaFiscal.js';
+import type { FiltroNotas, NotaFiscal, NotaFiscalRepository, NotaFiscalResumo, StatusNota } from '../../domain/fiscal/NotaFiscal.js';
 import type { ArquivoFiscal, DadosEmissaoNF, EmissorFiscal, ItemNF } from '../../domain/fiscal/EmissorFiscal.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
@@ -31,6 +31,11 @@ export class NotasFiscaisService {
     const token = c.ambiente === 'producao' ? c.tokenProducao : c.tokenHomologacao;
     if (!token || token.trim() === '') throw new ErroAplicacao('fiscal.nota.token_ausente', 400);
     return { ambiente: c.ambiente, token };
+  }
+
+  // Lista central das notas do tenant (com dados do pedido/cliente) para a tela de controle.
+  listar(schema: string, filtro: FiltroNotas): Promise<NotaFiscalResumo[]> {
+    return this.notas.listar(schema, filtro);
   }
 
   async emitir(schema: string, empresaCodigo: string, pedidoId: string): Promise<NotaFiscal> {

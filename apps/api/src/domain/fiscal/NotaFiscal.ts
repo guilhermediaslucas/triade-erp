@@ -32,9 +32,31 @@ export interface AtualizacaoNota {
   caminhoXml: string | null;
 }
 
+// Linha da lista central de notas (junta dados do pedido/cliente).
+export interface NotaFiscalResumo {
+  id: string;
+  pedidoId: string;
+  pedidoNumero: number;
+  clienteNome: string | null;
+  status: StatusNota;
+  mensagemSefaz: string | null;
+  chave: string | null;
+  numero: string | null;
+  serie: string | null;
+  valor: number;
+  criadoEm: string;     // ISO
+}
+
+export interface FiltroNotas {
+  status?: StatusNota;
+  de?: string;          // ISO date
+  ate?: string;         // ISO date
+}
+
 export interface NotaFiscalRepository {
   buscarPorPedido(schema: string, pedidoId: string): Promise<NotaFiscal | null>;
   buscarPorRef(schema: string, ref: string): Promise<NotaFiscal | null>;
   criar(schema: string, pedidoId: string, ref: string): Promise<NotaFiscal>;
   atualizar(schema: string, ref: string, dados: AtualizacaoNota): Promise<void>;
+  listar(schema: string, filtro: FiltroNotas): Promise<NotaFiscalResumo[]>;
 }

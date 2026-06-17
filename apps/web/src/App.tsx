@@ -51,6 +51,7 @@ import { Relatorios } from './pages/Relatorios.js';
 import { NotaEntrada } from './pages/NotaEntrada.js';
 import { ConferenciaCartao } from './pages/ConferenciaCartao.js';
 import { AnaliseVendas } from './pages/AnaliseVendas.js';
+import { NotasFiscais } from './pages/NotasFiscais.js';
 import { Recebimento } from './pages/Recebimento.js';
 import { RelVendas } from './pages/RelVendas.js';
 import { RelProdutos } from './pages/RelProdutos.js';
@@ -108,6 +109,7 @@ export function App() {
                 <Route path="/comercial/crm" element={<Protegida cap="comercial.crm.ver"><Crm /></Protegida>} />
                 <Route path="/comercial/metas" element={<Protegida cap="comercial.meta.ver"><Metas /></Protegida>} />
                 <Route path="/comercial/analise" element={<Protegida cap="comercial.analise.ver"><AnaliseVendas /></Protegida>} />
+                <Route path="/comercial/notas-fiscais" element={<Protegida cap="fiscal.nota.ver"><NotasFiscais /></Protegida>} />
                 <Route path="/estoque/expedicao" element={<Protegida cap="comercial.pedido.gerenciar"><KanbanExpedicao /></Protegida>} />
                 <Route path="/estoque/baixa" element={<Protegida cap="estoque.baixa.criar"><BaixaPerda /></Protegida>} />
                 <Route path="/estoque/posicao" element={<Protegida cap="estoque.saldo.ver"><PosicaoEstoque /></Protegida>} />

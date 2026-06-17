@@ -31,6 +31,7 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'menu.metas', to: '/comercial/metas', cap: 'comercial.meta.ver' },
       { rotulo: 'menu.precos', to: '/comercial/precos', cap: 'comercial.preco.listar' },
       { rotulo: 'menu.analise', to: '/comercial/analise', cap: 'comercial.analise.ver' },
+      { rotulo: 'menu.notas_fiscais', to: '/comercial/notas-fiscais', cap: 'fiscal.nota.ver' },
     ] }],
   },
   {

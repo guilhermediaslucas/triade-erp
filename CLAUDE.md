@@ -188,6 +188,19 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-16** — **Tela central de Notas fiscais (Comercial › Notas fiscais) + baixar XMLs do período em zip (p/ a contabilidade).**
+  **Backend (sem migration, sem cap nova):** `NotaFiscal` domínio += `NotaFiscalResumo`/`FiltroNotas`; `SqlNotaFiscalRepository.listar`
+  (JOIN `nota_fiscal`×`pedido`×`cliente`; filtros status/de/ate por `criado_em`; traz nº/série/chave/status/cliente/valor[=pedido.total]/
+  data). `NotasFiscaisService.listar`. Rota `GET /fiscal/notas?status=&de=&ate=` (cap **`fiscal.nota.ver`** reusada). **Frontend:** página
+  `pages/NotasFiscais.tsx` — KPIs (autorizadas/valor/canceladas/erro), chips de status + período + busca (nº/chave/cliente), tabela com
+  **DANFE/XML por linha** (reusa `/pedidos/:id/nota/danfe|xml`) e clique abre o pedido; **Exportar CSV** do índice; **Baixar XMLs (zip)**
+  = baixa todos os XMLs autorizados do filtro num zip só (novo `lib/zip.ts` — método store + CRC32, **sem dependência**, reaproveita a
+  lógica do `lib/excel.ts`). Menu **Comercial › Notas fiscais** + rota `/comercial/notas-fiscais` (cap `fiscal.nota.ver`) + i18n
+  `menu.notas_fiscais`/`nf.tela_*`/`nf.kpi_*`/`nf.baixar_xmls`/`nf.valor`/`nf.pedido`/`nf.emitida_em`/`nf.f_todas` pt/en/es.
+  **Contabilidade:** um perfil só com **`fiscal.nota.ver`** (sem `emitir`) dá acesso de leitura+download (ver/baixar DANFE/XML/zip) sem
+  poder emitir/cancelar — é o perfil ideal p/ o contador. O card dentro do pedido continua igual. **Sem relogar** (cap já existe).
+  **Pendente Gui:** `npm run build -w @triade/web` → commit+push (Render pega o backend via tsx) → `scripts\app-apk.bat`. Parse limpo
+  (só o falso "}" do fim por truncagem do mount nos arquivos editados; íntegros pelo file-tool).
 - **2026-06-16** — **Fase 7 — Entrega 7C: CANCELAMENTO de NF-e. Fase 7 (Fiscal/NF-e via Focus NFe) concluída (emitir + consultar + DANFE/XML + cancelar).**
   Porta `EmissorFiscal` += `cancelar(ambiente, token, ref, justificativa)`; adapter `FocusNFeEmissor.cancelar`
   (**DELETE `/v2/nfe/:ref`** com body `{justificativa}`, normaliza resposta). `NotasFiscaisService.cancelar(schema,

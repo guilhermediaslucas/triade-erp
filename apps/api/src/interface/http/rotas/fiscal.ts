@@ -50,6 +50,18 @@ export function rotasFiscal(deps: Dependencias): Router {
   const sch = (req: Request) => req.usuario!.schema;
   const emp = (req: Request) => req.usuario!.empresa;
 
+  // Lista central das notas emitidas (tela de controle / contabilidade).
+  r.get('/fiscal/notas', aut, az('fiscal.nota.ver'), async (req: Request, res: Response) => {
+    try {
+      const q = req.query;
+      res.json(await deps.notasFiscaisService.listar(sch(req), {
+        status: (q.status as any) || undefined,
+        de: (q.de as string) || undefined,
+        ate: (q.ate as string) || undefined,
+      }));
+    } catch (e) { tratarErro(res, e); }
+  });
+
   // Emitir a NF-e de um pedido (só Expedido/Entregue).
   r.post('/pedidos/:id/nota', aut, az('fiscal.nota.emitir'), async (req: Request, res: Response) => {
     try {
