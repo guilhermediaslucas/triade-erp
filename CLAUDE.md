@@ -188,6 +188,11 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-16** — **Painel de referência da tabela de ICMS em Dados da empresa › Fiscal (só frontend).** `lib/icms.ts` (espelha o
+  `domain/fiscal/icms.ts`) + botão **"Ver tabela de ICMS interestadual"** no `ConfigFiscalCard` (recebe `ufEmpresa` de DadosEmpresa):
+  a partir da UF da empresa, mostra um chip por UF de destino com a alíquota (roxo=interna, verde=12%, laranja=7%), usando os pills
+  theme-safe `st-roxo/st-verde/st-laranja` e a alíquota interna configurada. i18n `fiscal.tabela_*` pt/en/es. **Sem backend/migration/cap.**
+  **Pendente Gui:** `npm run build -w @triade/web` → commit+push → APK.
 - **2026-06-16** — **Fiscal/contábil — Entrega 4/4: DRE por competência (emissão) por categoria financeira + conta contábil + buckets. Conjunto fiscal/contábil concluído.**
   `TituloRepository.dreCompetencia(schema, de, ate)` (SQL): competência = `COALESCE(emissao, criado_em::date)`, só `previsto=false`;
   agrega `valor` por **tipo × categoria financeira × conta contábil** (JOIN categoria_financeira → conta_contabil) e soma os **buckets**

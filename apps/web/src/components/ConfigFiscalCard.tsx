@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
+import { UFS } from '../lib/br.js';
+import { aliquotaIcms } from '../lib/icms.js';
 
 interface ConfigFiscal {
   empresaCodigo: string;
@@ -35,7 +37,7 @@ const ORIGENS = [
   '8 - Nacional (>70% importação)',
 ];
 
-export function ConfigFiscalCard() {
+export function ConfigFiscalCard({ ufEmpresa }: { ufEmpresa?: string }) {
   const { token } = useAuth();
   const { t } = useI18n();
   const [f, setF] = useState<ConfigFiscal | null>(null);
@@ -44,6 +46,7 @@ export function ConfigFiscalCard() {
   const [erro, setErro] = useState<string | null>(null);
   const [ok, setOk] = useState(false);
   const [salvando, setSalvando] = useState(false);
+  const [verTabela, setVerTabela] = useState(false);
 
   useEffect(() => {
     api.get<ConfigFiscal>('/fiscal/config', token!).then(setF).catch((e) => setErro((e as ErroApi).chaveI18n));
@@ -134,6 +137,28 @@ export function ConfigFiscalCard() {
         <label className="campo">{t('fiscal.pis_cst')}<input value={f.pisCstPadrao} onChange={(e) => set('pisCstPadrao', e.target.value)} placeholder="07" /></label>
         <label className="campo">{t('fiscal.cofins_cst')}<input value={f.cofinsCstPadrao} onChange={(e) => set('cofinsCstPadrao', e.target.value)} placeholder="07" /></label>
       </div>
+
+      <button type="button" className="btn-link" style={{ padding: 0, marginTop: 4 }} onClick={() => setVerTabela((v) => !v)}>
+        {verTabela ? '− ' : '+ '}{t('fiscal.tabela_ver')}
+      </button>
+      {verTabela && (
+        <div style={{ marginTop: 8 }}>
+          {!ufEmpresa
+            ? <small className="hint">{t('fiscal.tabela_sem_uf')}</small>
+            : <>
+                <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>{t('fiscal.tabela_origem')} <b>{ufEmpresa}</b> · {t('fiscal.tabela_interna')} {f.aliquotaIcms}%</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {UFS.map((uf) => {
+                    const a = aliquotaIcms(ufEmpresa, uf, f.aliquotaIcms);
+                    const interna = uf === ufEmpresa;
+                    const cls = interna ? 'st-roxo' : a === 12 ? 'st-verde' : 'st-laranja';
+                    return <span key={uf} className={'pill ' + cls} style={{ fontSize: 12, fontWeight: interna ? 700 : 500 }}>{uf} · {a}%</span>;
+                  })}
+                </div>
+                <small className="hint" style={{ display: 'block', marginTop: 6 }}>{t('fiscal.tabela_nota')}</small>
+              </>}
+        </div>
+      )}
 
       <div className="modal-acoes">
         <button className="btn-primary" disabled={salvando} onClick={salvar}>{t('common.salvar')}</button>

@@ -3209,3 +3209,26 @@ Object.assign(es, {
   'dre.receitas': 'Ingresos', 'dre.despesas': 'Gastos', 'dre.resultado': 'Resultado', 'dre.margem': 'Margen',
   'dre.total': 'Total', 'dre.grupo': 'Grupo', 'dre.receita': 'Ingreso', 'dre.despesa': 'Gasto',
 });
+
+// ===== Tabela de ICMS interestadual (referência em Dados da empresa › Fiscal) =====
+Object.assign(pt, {
+  'fiscal.tabela_ver': 'Ver tabela de ICMS interestadual',
+  'fiscal.tabela_origem': 'A partir da UF da empresa:',
+  'fiscal.tabela_interna': 'interna:',
+  'fiscal.tabela_sem_uf': 'Preencha a UF da empresa (em Identificação) para ver a tabela.',
+  'fiscal.tabela_nota': 'Roxo = operação interna · Verde = 12% · Laranja = 7%. Calculado pela região do destino (vale no Regime Normal).',
+});
+Object.assign(en, {
+  'fiscal.tabela_ver': 'Show interstate ICMS table',
+  'fiscal.tabela_origem': 'From the company state:',
+  'fiscal.tabela_interna': 'internal:',
+  'fiscal.tabela_sem_uf': 'Fill in the company state (in Identification) to see the table.',
+  'fiscal.tabela_nota': 'Purple = internal · Green = 12% · Orange = 7%. Computed by destination region (applies to the Regular regime).',
+});
+Object.assign(es, {
+  'fiscal.tabela_ver': 'Ver tabla de ICMS interestatal',
+  'fiscal.tabela_origem': 'Desde la UF de la empresa:',
+  'fiscal.tabela_interna': 'interna:',
+  'fiscal.tabela_sem_uf': 'Completa la UF de la empresa (en Identificación) para ver la tabla.',
+  'fiscal.tabela_nota': 'Morado = interna · Verde = 12% · Naranja = 7%. Calculado por la región del destino (vale en el Régimen Normal).',
+});

@@ -138,7 +138,7 @@ export function DadosEmpresa() {
         </div>
       </div>
 
-      <ConfigFiscalCard />
+      <ConfigFiscalCard ufEmpresa={f.uf} />
     </div>
   );
 }
