@@ -171,11 +171,15 @@ export function NovoPedido() {
   const usandoNovo = endSel === NOVO;
   const usandoAtual = endSel === ATUAL;
   useEffect(() => {
-    if (usandoAtual) return;                       // mantém o frete já carregado do pedido
+    if (usandoAtual) {                             // edição: deriva o CEP do endereço salvo (p/ recalcular motoboy)
+      const m = (enderecoAtual ?? '').match(/\d{5}-?\d{3}/);
+      setCep(m ? m[0] : null);
+      return;
+    }
     if (usandoNovo) setCep(novoEnd.cep || null);
     else { const e = ends[Number(endSel)]; setCep(e?.cep ?? null); }
     /* eslint-disable-next-line */
-  }, [endSel, novoEnd.cep]);
+  }, [endSel, novoEnd.cep, enderecoAtual]);
 
   function enderecoEfetivo(): string {
     if (usandoAtual) return enderecoAtual ?? '';
@@ -194,8 +198,7 @@ export function NovoPedido() {
     let vivo = true;
     async function calc() {
       if (formaEntrega === 'retirada') { setFrete('0'); setDistanciaKm(null); setFreteMemo(null); return; }
-      if (usandoAtual) return;                     // (edição) preserva o frete salvo enquanto mantém o endereço atual (motoboy/correios)
-      if (formaEntrega === 'motoboy') {
+      if (formaEntrega === 'motoboy') {            // frete automático: recalcula sempre, inclusive na edição
         try {
           const r = await api.post<FreteCalculo>('/frete/calcular', { formaEntrega: 'motoboy', cep }, token!);
           if (!vivo) return;
@@ -203,6 +206,7 @@ export function NovoPedido() {
         } catch { /* mantém valor */ }
         return;
       }
+      if (usandoAtual) return;                     // correios/transportadora em edição: preserva o frete manual salvo
       setDistanciaKm(null); setFreteMemo(null);
     }
     calc();

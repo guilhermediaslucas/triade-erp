@@ -188,6 +188,18 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-16** — **Fix: frete do motoboy não recalculava ao EDITAR orçamento (mantendo o endereço atual).** No `NovoPedido.tsx`
+  o efeito de recálculo tinha `if (usandoAtual) return` **antes** do ramo do motoboy → ao editar um orçamento com "Manter
+  endereço atual", trocar/escolher Motoboy não recalculava e o frete ficava no valor salvo (0,00). Além disso o CEP não era
+  definido nesse modo. **Correção (só frontend):** (1) o ramo **motoboy recalcula sempre** (frete automático), inclusive na
+  edição; o guard `usandoAtual` passou a valer só p/ **correios/transportadora** (frete manual, que não deve ser sobrescrito);
+  (2) quando `usandoAtual`, o **CEP é extraído do texto do endereço salvo** (`/\d{5}-?\d{3}/`) p/ o cálculo ter origem.
+  **Validação prévia (a pedido do Gui):** o Google Maps **está correto e é global** — `GOOGLE_MAPS_API_KEY` é env do servidor
+  (Render), igual p/ todas as empresas; a origem vem do endereço de **Dados da empresa** de cada empresa (fallback: CEP de
+  origem da Config de frete); a linha de memória do frete mostra `(Google Maps)` vs `(estimado)`. Se a iSKINS cair em
+  `(estimado)`, o endereço dela em Dados da empresa está vazio (preencher). **Sem migration/cap/dep.** **Pendente Gui:**
+  `npm run build -w @triade/web` → commit+push → `scripts\app-apk.bat`. Parse de sintaxe limpo (só o falso L466 da truncagem
+  do mount; arquivo íntegro).
 - **2026-06-16** — **Anexos de documentos no cadastro de Cliente (espelha o Contas a pagar; mesmo R2).** O Gui escolheu **nos dois
   lugares** (lista + formulário), confirmado por mockup antes de aplicar. **Migration tenant 059** `cliente_anexo` (cliente_id FK
   CASCADE + nome_arquivo/tipo/tamanho/chave/usuario_nome/criado_em — igual `titulo_anexo`). **Backend:** domínio
