@@ -188,6 +188,17 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-16** — **Perfil multi-empresa (super-admin): replica um perfil em várias empresas de uma vez (espelha o multi-empresa de usuários).**
+  **Backend (sem migration, sem cap nova):** use case `application/perfil/PerfilMultiEmpresa` — `situacao(nome)` (por empresa ativa:
+  existe?/ativo?/qtdCaps + `modelo` = 1º perfil achado p/ pré-preencher permissões/descrição) e `sincronizar({nome, descricao,
+  capabilities, empresas[]})` que, **só nas empresas marcadas**, cria (se não existe pelo nome) ou atualiza as permissões; **empresas
+  desmarcadas NÃO são tocadas** (decisão do Gui — um perfil pode ter usuários vinculados, inativá-lo tiraria o acesso deles). Rotas
+  super-admin `GET/PUT /superadmin/perfis/empresas` (gate `exigirSuperAdmin`, PUT auditado). Wire composition (`perfilMultiEmpresa`).
+  **Frontend (`Perfis.tsx`):** botão **Perfil multi-empresa** (só super-admin) abre `ModalPerfilMulti` — nome (com busca da situação),
+  descrição, o **mesmo editor de permissões por módulo** do perfil normal, e o **checklist de empresas** (badge "já existe · N caps" /
+  "novo"; pré-seleciona onde já existe e pré-preenche as permissões pelo modelo). i18n `perfis.multi*` pt/en/es. **Sem relogar.**
+  **Pendente Gui:** `npm run build -w @triade/web` → commit+push (Render pega o backend via tsx) → `scripts\app-apk.bat`. Parse limpo
+  (só o falso "}" do fim por truncagem do mount em perfis.ts/composition.ts; íntegros pelo file-tool).
 - **2026-06-16** — **Tela central de Notas fiscais (Comercial › Notas fiscais) + baixar XMLs do período em zip (p/ a contabilidade).**
   **Backend (sem migration, sem cap nova):** `NotaFiscal` domínio += `NotaFiscalResumo`/`FiltroNotas`; `SqlNotaFiscalRepository.listar`
   (JOIN `nota_fiscal`×`pedido`×`cliente`; filtros status/de/ate por `criado_em`; traz nº/série/chave/status/cliente/valor[=pedido.total]/

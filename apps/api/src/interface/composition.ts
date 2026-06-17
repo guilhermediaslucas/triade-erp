@@ -11,6 +11,7 @@ import { AutenticarUsuario } from '../application/auth/AutenticarUsuario.js';
 import { UsuariosService } from '../application/usuario/UsuariosService.js';
 import { AcessoMultiEmpresa } from '../application/usuario/AcessoMultiEmpresa.js';
 import { PerfisService } from '../application/perfil/PerfisService.js';
+import { PerfilMultiEmpresa } from '../application/perfil/PerfilMultiEmpresa.js';
 import { EmpresaService } from '../application/empresa/EmpresaService.js';
 import { ProvisionarEmpresa } from '../application/empresa/ProvisionarEmpresa.js';
 import { SqlConfigFiscalRepository } from '../infra/repositories/SqlConfigFiscalRepository.js';
@@ -131,6 +132,7 @@ export function montarDependencias() {
     usuariosService: new UsuariosService(usuariosRepo, perfisRepo, hash),
     acessoMultiEmpresa: new AcessoMultiEmpresa(empresasRepo, usuariosRepo, perfisRepo, hash),
     perfisService: new PerfisService(perfisRepo),
+    perfilMultiEmpresa: new PerfilMultiEmpresa(empresasRepo, perfisRepo),
     empresaService: new EmpresaService(empresasRepo, migrador, usuariosRepo, hash),
     provisionarEmpresa: new ProvisionarEmpresa(empresasRepo, migrador, perfisRepo, usuariosRepo, hash),
     configFiscalService: new ConfigFiscalService(configFiscalRepo),

@@ -3114,3 +3114,35 @@ Object.assign(es, {
   'nf.ver_pedido': 'Ver pedido',
   'nf.sem_xml': 'Ninguna factura autorizada en el filtro para descargar.',
 });
+
+// ===== Perfil multi-empresa (super-admin) =====
+Object.assign(pt, {
+  'perfis.multi': 'Perfil multi-empresa',
+  'perfis.multi_ajuda': 'Defina o perfil (nome + permissões) e aplique nas empresas marcadas. Onde já existir o mesmo nome, as permissões são atualizadas; as desmarcadas não são alteradas.',
+  'perfis.multi_buscar': 'Buscar',
+  'perfis.multi_empresas': 'Aplicar nas empresas',
+  'perfis.multi_vazio': 'Nenhuma empresa.',
+  'perfis.multi_existe': 'já existe',
+  'perfis.multi_novo': 'novo',
+  'perfis.multi_aplicar': 'Aplicar perfil',
+});
+Object.assign(en, {
+  'perfis.multi': 'Multi-company profile',
+  'perfis.multi_ajuda': 'Define the profile (name + permissions) and apply it to the checked companies. Where the same name already exists, permissions are updated; unchecked companies are left untouched.',
+  'perfis.multi_buscar': 'Search',
+  'perfis.multi_empresas': 'Apply to companies',
+  'perfis.multi_vazio': 'No company.',
+  'perfis.multi_existe': 'exists',
+  'perfis.multi_novo': 'new',
+  'perfis.multi_aplicar': 'Apply profile',
+});
+Object.assign(es, {
+  'perfis.multi': 'Perfil multiempresa',
+  'perfis.multi_ajuda': 'Define el perfil (nombre + permisos) y aplícalo en las empresas marcadas. Donde ya exista el mismo nombre, los permisos se actualizan; las no marcadas no se modifican.',
+  'perfis.multi_buscar': 'Buscar',
+  'perfis.multi_empresas': 'Aplicar en las empresas',
+  'perfis.multi_vazio': 'Ninguna empresa.',
+  'perfis.multi_existe': 'ya existe',
+  'perfis.multi_novo': 'nuevo',
+  'perfis.multi_aplicar': 'Aplicar perfil',
+});
