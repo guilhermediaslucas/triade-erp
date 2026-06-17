@@ -188,6 +188,18 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-16** — **Fiscal/contábil — Entrega 4/4: DRE por competência (emissão) por categoria financeira + conta contábil + buckets. Conjunto fiscal/contábil concluído.**
+  `TituloRepository.dreCompetencia(schema, de, ate)` (SQL): competência = `COALESCE(emissao, criado_em::date)`, só `previsto=false`;
+  agrega `valor` por **tipo × categoria financeira × conta contábil** (JOIN categoria_financeira → conta_contabil) e soma os **buckets**
+  (juros/multa/desconto por tipo + taxa_cartao). `FinanceiroService.dreCompetencia` monta receitas/despesas: categorias de receber→receita,
+  pagar→despesa; buckets fixos (Juros recebidos/Multa recebida/Desconto obtido = receita; Taxa de cartão/Desconto concedido/Juros pagos/
+  Multa paga = despesa); totais + resultado. Rota `GET /financeiro/dre-competencia?de=&ate=` (cap `financeiro.fluxo.ver`). **Frontend:**
+  `pages/RelDRECompetencia.tsx` — período, KPIs (receitas/despesas/resultado/margem), 2 tabelas (categoria + **conta contábil** + valor)
+  com totais, export CSV. Menu **Financeiro › DRE** + rota `/financeiro/dre` + i18n `dre.*`/`menu.dre` pt/en/es. (A DRE de caixa antiga
+  [`/financeiro/dre` API por origem/categoria] continua existindo inerte; a nova usa `/financeiro/dre-competencia`.) **Sem cap nova, sem
+  migration nova** (usa as 060/061), **não precisa relogar**. Parse limpo (só o falso fim por truncagem nos editados). **Pendente Gui:**
+  `npm run build -w @triade/web` → commit+push → APK. **As 4 entregas (ICMS interestadual, plano de contas, taxa de cartão, DRE) podem
+  subir juntas.** Buckets em pt-BR (data, não i18n). DIFAL/4% importado seguem fora de escopo.
 - **2026-06-16** — **Fiscal/contábil — Entrega 3/4: taxa de cartão como campo no recebimento (juros/multa/desconto já eram campos).** Migration
   tenant **061** `titulo += taxa_cartao numeric(14,2) NOT NULL DEFAULT 0`. `Titulo`/`AjustesBaixa` += `taxaCartao`;
   `SqlTituloRepository.baixar` grava `taxa_cartao=$8` e o map lê. `FinanceiroService.baixar` valida taxa ≥0 e repassa (não reduz o

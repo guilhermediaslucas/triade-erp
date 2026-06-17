@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { DataSource } from 'typeorm';
-import type { AjustesBaixa, LinhaConciliacao, MovimentoFluxo, NovoTitulo, PagoAgrupado, Titulo, TipoTitulo, TituloRepository } from '../../domain/financeiro/Titulo.js';
+import type { AjustesBaixa, DreAjustes, DreCatLinha, LinhaConciliacao, MovimentoFluxo, NovoTitulo, PagoAgrupado, Titulo, TipoTitulo, TituloRepository } from '../../domain/financeiro/Titulo.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 const iso = (d: any) => (d ? new Date(d).toISOString() : null);
@@ -81,6 +81,43 @@ export class SqlTituloRepository implements TituloRepository {
           AND ($2::date IS NULL OR t.pago_em::date <= $2)
         GROUP BY t.tipo, COALESCE(cf.nome, '—')`, [de, ate]);
     return linhas.map((r: any) => ({ tipo: r.tipo, chave: r.chave, total: Number(r.total) }));
+  }
+
+  // DRE por COMPETÊNCIA: títulos não previstos cuja emissão (emissao ?? criado_em) cai no período,
+  // agrupados por categoria financeira + conta contábil; e os buckets (juros/multa/desconto/taxa).
+  async dreCompetencia(schema: string, de: string | null, ate: string | null): Promise<{ categorias: DreCatLinha[]; ajustes: DreAjustes }> {
+    const s = validarSchema(schema);
+    const comp = `COALESCE(t.emissao, t.criado_em::date)`;
+    const where = `t.previsto = false AND ($1::date IS NULL OR ${comp} >= $1) AND ($2::date IS NULL OR ${comp} <= $2)`;
+    const cats = await this.ds.query(
+      `SELECT t.tipo, COALESCE(cf.nome, '—') categoria, cc.codigo conta_codigo, cc.descricao conta_descricao, SUM(t.valor)::numeric total
+         FROM "${s}".titulo t
+         LEFT JOIN "${s}".categoria_financeira cf ON cf.id = t.categoria_financeira_id
+         LEFT JOIN "${s}".conta_contabil cc ON cc.id = cf.conta_contabil_id
+        WHERE ${where}
+        GROUP BY t.tipo, COALESCE(cf.nome, '—'), cc.codigo, cc.descricao
+        ORDER BY total DESC`, [de, ate]);
+    const a = (await this.ds.query(
+      `SELECT
+         COALESCE(SUM(CASE WHEN tipo='receber' THEN juros END),0)::numeric juros_receber,
+         COALESCE(SUM(CASE WHEN tipo='receber' THEN multa END),0)::numeric multa_receber,
+         COALESCE(SUM(CASE WHEN tipo='receber' THEN desconto END),0)::numeric desconto_receber,
+         COALESCE(SUM(CASE WHEN tipo='pagar' THEN juros END),0)::numeric juros_pagar,
+         COALESCE(SUM(CASE WHEN tipo='pagar' THEN multa END),0)::numeric multa_pagar,
+         COALESCE(SUM(CASE WHEN tipo='pagar' THEN desconto END),0)::numeric desconto_pagar,
+         COALESCE(SUM(taxa_cartao),0)::numeric taxa_cartao
+       FROM "${s}".titulo t WHERE ${where}`, [de, ate]))[0];
+    return {
+      categorias: cats.map((r: any): DreCatLinha => ({
+        tipo: r.tipo, categoria: r.categoria, contaCodigo: r.conta_codigo ?? null,
+        contaDescricao: r.conta_descricao ?? null, total: Number(r.total),
+      })),
+      ajustes: {
+        jurosReceber: Number(a.juros_receber), multaReceber: Number(a.multa_receber), descontoReceber: Number(a.desconto_receber),
+        jurosPagar: Number(a.juros_pagar), multaPagar: Number(a.multa_pagar), descontoPagar: Number(a.desconto_pagar),
+        taxaCartao: Number(a.taxa_cartao),
+      },
+    };
   }
 
   async listar(schema: string, tipo: TipoTitulo): Promise<Titulo[]> {

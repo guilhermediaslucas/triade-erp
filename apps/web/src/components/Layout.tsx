@@ -43,6 +43,7 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'menu.conciliacao', to: '/financeiro/conciliacao', cap: 'financeiro.conciliacao.ver' },
       { rotulo: 'menu.comissoes', to: '/financeiro/comissoes', cap: 'financeiro.comissao.ver' },
       { rotulo: 'menu.conferencia', to: '/financeiro/conferencia-cartao', cap: 'financeiro.receber.listar' },
+      { rotulo: 'menu.dre', to: '/financeiro/dre', cap: 'financeiro.fluxo.ver' },
       { rotulo: 'menu.notas_fiscais', to: '/financeiro/notas-fiscais', cap: 'fiscal.nota.ver' },
     ] }],
   },

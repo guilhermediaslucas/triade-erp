@@ -3186,3 +3186,26 @@ Object.assign(es, {
 Object.assign(pt, { 'fin.taxa_cartao': 'Taxa do cartão', 'fin.liquido_cartao': 'Líquido recebido' });
 Object.assign(en, { 'fin.taxa_cartao': 'Card fee', 'fin.liquido_cartao': 'Net received' });
 Object.assign(es, { 'fin.taxa_cartao': 'Tasa de la tarjeta', 'fin.liquido_cartao': 'Neto recibido' });
+
+// ===== DRE por competência =====
+Object.assign(pt, {
+  'menu.dre': 'DRE', 'dre.titulo': 'DRE (resultado por competência)',
+  'dre.sub': 'Receitas e despesas por categoria financeira e conta contábil, pela data de emissão.',
+  'dre.competencia_nota': 'Regime de competência (pela emissão do título).',
+  'dre.receitas': 'Receitas', 'dre.despesas': 'Despesas', 'dre.resultado': 'Resultado', 'dre.margem': 'Margem',
+  'dre.total': 'Total', 'dre.grupo': 'Grupo', 'dre.receita': 'Receita', 'dre.despesa': 'Despesa',
+});
+Object.assign(en, {
+  'menu.dre': 'Income stmt', 'dre.titulo': 'Income statement (accrual)',
+  'dre.sub': 'Revenue and expenses by financial category and accounting account, by issue date.',
+  'dre.competencia_nota': 'Accrual basis (by the title issue date).',
+  'dre.receitas': 'Revenue', 'dre.despesas': 'Expenses', 'dre.resultado': 'Result', 'dre.margem': 'Margin',
+  'dre.total': 'Total', 'dre.grupo': 'Group', 'dre.receita': 'Revenue', 'dre.despesa': 'Expense',
+});
+Object.assign(es, {
+  'menu.dre': 'Estado res.', 'dre.titulo': 'Estado de resultados (devengo)',
+  'dre.sub': 'Ingresos y gastos por categoría financiera y cuenta contable, por fecha de emisión.',
+  'dre.competencia_nota': 'Régimen de devengo (por la emisión del título).',
+  'dre.receitas': 'Ingresos', 'dre.despesas': 'Gastos', 'dre.resultado': 'Resultado', 'dre.margem': 'Margen',
+  'dre.total': 'Total', 'dre.grupo': 'Grupo', 'dre.receita': 'Ingreso', 'dre.despesa': 'Gasto',
+});

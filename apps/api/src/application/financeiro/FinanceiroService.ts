@@ -20,6 +20,9 @@ export interface RelatorioDre {
   totalReceitas: number; totalDespesas: number; resultado: number;
   anterior: DreResumo | null;   // mesmo período imediatamente anterior (comparação); null se sem datas
 }
+// DRE por competência (emissão) — linha por categoria financeira, com a conta contábil.
+export interface DreCompLinha { categoria: string; contaCodigo: string | null; contaDescricao: string | null; total: number; }
+export interface DreCompetencia { receitas: DreCompLinha[]; despesas: DreCompLinha[]; totalReceitas: number; totalDespesas: number; resultado: number; }
 
 export interface RelatorioConciliacao {
   linhas: LinhaConciliacao[];
@@ -171,6 +174,31 @@ export class FinanceiroService {
       semanas.push({ rotulo: 'S' + (i + 1), de, ate, entradas, saidas, saldo });
     }
     return { saldoInicial, semanas };
+  }
+
+  // DRE por COMPETÊNCIA (data de emissão): receitas/despesas por categoria financeira (com conta
+  // contábil) + os buckets fixos da baixa (juros/multa/desconto/taxa de cartão).
+  async dreCompetencia(schema: string, de: any, ate: any): Promise<DreCompetencia> {
+    const { categorias, ajustes } = await this.repo.dreCompetencia(schema, lim(de), lim(ate));
+    const receitas: DreCompLinha[] = [];
+    const despesas: DreCompLinha[] = [];
+    for (const c of categorias) {
+      const l: DreCompLinha = { categoria: c.categoria, contaCodigo: c.contaCodigo, contaDescricao: c.contaDescricao, total: r2(c.total) };
+      (c.tipo === 'receber' ? receitas : despesas).push(l);
+    }
+    const bk = (categoria: string, total: number): DreCompLinha => ({ categoria, contaCodigo: null, contaDescricao: null, total: r2(total) });
+    if (ajustes.jurosReceber > 0) receitas.push(bk('Juros recebidos', ajustes.jurosReceber));
+    if (ajustes.multaReceber > 0) receitas.push(bk('Multa recebida', ajustes.multaReceber));
+    if (ajustes.descontoPagar > 0) receitas.push(bk('Desconto obtido', ajustes.descontoPagar));
+    if (ajustes.taxaCartao > 0) despesas.push(bk('Taxa de cartão', ajustes.taxaCartao));
+    if (ajustes.descontoReceber > 0) despesas.push(bk('Desconto concedido', ajustes.descontoReceber));
+    if (ajustes.jurosPagar > 0) despesas.push(bk('Juros pagos', ajustes.jurosPagar));
+    if (ajustes.multaPagar > 0) despesas.push(bk('Multa paga', ajustes.multaPagar));
+    receitas.sort((a, b) => b.total - a.total);
+    despesas.sort((a, b) => b.total - a.total);
+    const totalReceitas = r2(receitas.reduce((a, l) => a + l.total, 0));
+    const totalDespesas = r2(despesas.reduce((a, l) => a + l.total, 0));
+    return { receitas, despesas, totalReceitas, totalDespesas, resultado: r2(totalReceitas - totalDespesas) };
   }
 
   // DRE de caixa (resultado do período): títulos pagos no período, agrupados por origem ou categoria.

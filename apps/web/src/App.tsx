@@ -70,6 +70,7 @@ import { Conciliacao } from './pages/Conciliacao.js';
 import { ContasCorrentes } from './pages/ContasCorrentes.js';
 import { CategoriasFinanceiras } from './pages/CategoriasFinanceiras.js';
 import { PlanoContas } from './pages/PlanoContas.js';
+import { RelDRECompetencia } from './pages/RelDRECompetencia.js';
 import { TiposDocumento } from './pages/TiposDocumento.js';
 import { Bancos } from './pages/Bancos.js';
 import { Layout } from './components/Layout.js';
@@ -145,6 +146,7 @@ export function App() {
                 <Route path="/cadastros/contas-correntes" element={<Protegida cap="cadastros.conta.listar"><ContasCorrentes /></Protegida>} />
                 <Route path="/cadastros/categorias-financeiras" element={<Protegida cap="cadastros.catfin.listar"><CategoriasFinanceiras /></Protegida>} />
                 <Route path="/cadastros/plano-contas" element={<Protegida cap="cadastros.catfin.listar"><PlanoContas /></Protegida>} />
+                <Route path="/financeiro/dre" element={<Protegida cap="financeiro.fluxo.ver"><RelDRECompetencia /></Protegida>} />
                 <Route path="/cadastros/tipos-documento" element={<Protegida cap="cadastros.tipodoc.listar"><TiposDocumento /></Protegida>} />
                 <Route path="/cadastros/bancos" element={<Protegida cap="cadastros.banco.listar"><Bancos /></Protegida>} />
                 <Route path="/cadastros/condicoes" element={<Protegida cap="cadastros.condicao.listar"><Condicoes /></Protegida>} />
