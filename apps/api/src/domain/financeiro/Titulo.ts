@@ -24,10 +24,11 @@ export interface Titulo {
   desconto: number;   // composição da baixa (R$)
   multa: number;      // composição da baixa (R$)
   juros: number;      // composição da baixa (R$)
+  taxaCartao: number; // taxa da operadora de cartão (R$) — despesa; líquido = efetivo - taxa
   criadoEm: string;
 }
 // Ajustes da baixa (composição do valor). Valor efetivo = valor - desconto + multa + juros.
-export interface AjustesBaixa { desconto: number; multa: number; juros: number; }
+export interface AjustesBaixa { desconto: number; multa: number; juros: number; taxaCartao: number; }
 export interface NovoTitulo {
   tipo: TipoTitulo; descricao: string; pessoaNome: string | null; valor: number; vencimento: string;
   categoriaFinanceiraId?: string | null;

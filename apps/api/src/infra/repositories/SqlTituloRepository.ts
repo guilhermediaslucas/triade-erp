@@ -36,6 +36,7 @@ function map(r: any): Titulo {
     desconto: r.desconto != null ? Number(r.desconto) : 0,
     multa: r.multa != null ? Number(r.multa) : 0,
     juros: r.juros != null ? Number(r.juros) : 0,
+    taxaCartao: r.taxa_cartao != null ? Number(r.taxa_cartao) : 0,
     criadoEm: iso(r.criado_em)!,
   };
 }
@@ -117,8 +118,8 @@ export class SqlTituloRepository implements TituloRepository {
     const s = validarSchema(schema);
     // Data da baixa: usa a informada (YYYY-MM-DD) ou agora. Grava a composição (desconto/multa/juros).
     await this.ds.query(
-      `UPDATE "${s}".titulo SET status='pago', forma_pagamento=$2, conta_corrente_id=$3, pago_em=COALESCE($4::timestamptz, now()), desconto=$5, multa=$6, juros=$7 WHERE id=$1`,
-      [id, formaPagamento, contaCorrenteId, dataBaixa || null, ajustes?.desconto ?? 0, ajustes?.multa ?? 0, ajustes?.juros ?? 0]);
+      `UPDATE "${s}".titulo SET status='pago', forma_pagamento=$2, conta_corrente_id=$3, pago_em=COALESCE($4::timestamptz, now()), desconto=$5, multa=$6, juros=$7, taxa_cartao=$8 WHERE id=$1`,
+      [id, formaPagamento, contaCorrenteId, dataBaixa || null, ajustes?.desconto ?? 0, ajustes?.multa ?? 0, ajustes?.juros ?? 0, ajustes?.taxaCartao ?? 0]);
   }
   async definirPrevisto(schema: string, id: string, previsto: boolean): Promise<void> {
     const s = validarSchema(schema);

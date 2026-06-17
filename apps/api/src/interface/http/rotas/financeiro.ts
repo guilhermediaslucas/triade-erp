@@ -31,7 +31,7 @@ function registrar(r: Router, deps: Dependencias, tipo: TipoTitulo, capBase: str
   r.patch(`${base}/:id/baixar`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
     try {
       const b = req.body ?? {};
-      const r2 = await deps.financeiroService.baixar(sch(req), req.params.id!, b.formaPagamento ?? null, b.contaCorrenteId ?? null, b.dataBaixa ?? null, { desconto: b.desconto, multa: b.multa, juros: b.juros });
+      const r2 = await deps.financeiroService.baixar(sch(req), req.params.id!, b.formaPagamento ?? null, b.contaCorrenteId ?? null, b.dataBaixa ?? null, { desconto: b.desconto, multa: b.multa, juros: b.juros, taxaCartao: b.taxaCartao });
       const t = await deps.tituloRepo.buscarPorId(sch(req), req.params.id!).catch(() => null);
       auditar(req, { modulo: 'Financeiro', entidade: 'Titulo', referencia: t?.numero ?? null,
         descricao: `Baixou o título ${t?.numero ?? ''} (${brl(t?.valor)})${t?.pessoaNome ? ' — ' + t.pessoaNome : ''}${b.formaPagamento ? ', forma ' + b.formaPagamento : ''}` });

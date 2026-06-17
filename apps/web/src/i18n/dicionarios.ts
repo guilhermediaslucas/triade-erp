@@ -3181,3 +3181,8 @@ Object.assign(es, {
   'catfin.conta_contabil': 'Cuenta contable', 'catfin.sem_conta': 'Sin cuenta contable',
   'conta.codigo_invalido': 'Informa el código de la cuenta.', 'conta.tipo_invalido': 'Tipo de cuenta inválido.', 'conta.pai_invalido': 'Una cuenta no puede ser su propia padre.',
 });
+
+// ===== Taxa de cartão na baixa =====
+Object.assign(pt, { 'fin.taxa_cartao': 'Taxa do cartão', 'fin.liquido_cartao': 'Líquido recebido' });
+Object.assign(en, { 'fin.taxa_cartao': 'Card fee', 'fin.liquido_cartao': 'Net received' });
+Object.assign(es, { 'fin.taxa_cartao': 'Tasa de la tarjeta', 'fin.liquido_cartao': 'Neto recibido' });

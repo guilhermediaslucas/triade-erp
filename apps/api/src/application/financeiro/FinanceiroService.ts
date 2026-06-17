@@ -273,7 +273,7 @@ export class FinanceiroService {
     await this.repo.definirPrevisto(schema, id, !!previsto);
   }
 
-  async baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null, dataBaixa?: string | null, ajustesRaw?: { desconto?: any; multa?: any; juros?: any }): Promise<{ pedidoLiberado: number | null }> {
+  async baixar(schema: string, id: string, formaPagamento: string | null, contaCorrenteId: string | null, dataBaixa?: string | null, ajustesRaw?: { desconto?: any; multa?: any; juros?: any; taxaCartao?: any }): Promise<{ pedidoLiberado: number | null }> {
     const t = await this.repo.buscarPorId(schema, id);
     if (!t) throw new ErroAplicacao('financeiro.nao_encontrado', 404);
     if (t.status === 'pago') throw new ErroAplicacao('financeiro.ja_pago', 409);
@@ -281,10 +281,10 @@ export class FinanceiroService {
     const data = dataBaixa && /^\d{4}-\d{2}-\d{2}$/.test(String(dataBaixa)) ? String(dataBaixa) : null;
     // Composição do valor: desconto/multa/juros ≥ 0 e total a baixar não pode ficar negativo.
     const num = (v: any) => { const n = Number(v ?? 0); return Number.isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : NaN; };
-    const desconto = num(ajustesRaw?.desconto), multa = num(ajustesRaw?.multa), juros = num(ajustesRaw?.juros);
-    if (Number.isNaN(desconto) || Number.isNaN(multa) || Number.isNaN(juros)) throw new ErroAplicacao('financeiro.valor_invalido', 400);
+    const desconto = num(ajustesRaw?.desconto), multa = num(ajustesRaw?.multa), juros = num(ajustesRaw?.juros), taxaCartao = num(ajustesRaw?.taxaCartao);
+    if ([desconto, multa, juros, taxaCartao].some(Number.isNaN)) throw new ErroAplicacao('financeiro.valor_invalido', 400);
     if (t.valor - desconto + multa + juros < 0) throw new ErroAplicacao('financeiro.baixa_negativa', 400);
-    await this.repo.baixar(schema, id, (formaPagamento && String(formaPagamento).trim()) || null, contaCorrenteId || null, data, { desconto, multa, juros });
+    await this.repo.baixar(schema, id, (formaPagamento && String(formaPagamento).trim()) || null, contaCorrenteId || null, data, { desconto, multa, juros, taxaCartao });
     // Confirmação do recebimento do título de um pedido (Pix/Boleto) libera o pedido:
     // aguardando_pagamento → aprovado, ficando disponível para Separação no Kanban.
     let pedidoLiberado: number | null = null;

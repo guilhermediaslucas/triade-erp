@@ -14,7 +14,7 @@ import { FORMAS_BAIXA } from '../lib/pagamento.js';
 import { notificarLiberadoSeparacao } from '../lib/notificarSeparacao.js';
 
 type Tipo = 'receber' | 'pagar';
-interface Titulo { id: string; numero: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; pedidoFormaPagamento: string | null; pedidoFrete: number | null; pedidoFreteTipo: string | null; anexosCount: number; origem: string; categoriaFinanceiraNome: string | null; contaCorrenteNome: string | null; vendedorNome: string | null; favorecidoId: string | null; favorecidoNome: string | null; favorecidoForma: string | null; favorecidoPagoEm: string | null; previsto: boolean; tipoDocumento: string | null; numeroDocumento: string | null; emissao: string | null; criadoEm: string; pagoEm: string | null; desconto: number; multa: number; juros: number; }
+interface Titulo { id: string; numero: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; pedidoFormaPagamento: string | null; pedidoFrete: number | null; pedidoFreteTipo: string | null; anexosCount: number; origem: string; categoriaFinanceiraNome: string | null; contaCorrenteNome: string | null; vendedorNome: string | null; favorecidoId: string | null; favorecidoNome: string | null; favorecidoForma: string | null; favorecidoPagoEm: string | null; previsto: boolean; tipoDocumento: string | null; numeroDocumento: string | null; emissao: string | null; criadoEm: string; pagoEm: string | null; desconto: number; multa: number; juros: number; taxaCartao: number; }
 interface TipoDoc { id: string; nome: string; ativo: boolean; }
 interface CatFin { id: string; nome: string; tipo: 'receita' | 'despesa'; ativo: boolean; }
 
@@ -391,6 +391,7 @@ function ModalVerTitulo({ tipo, titulo, onFechar }: { tipo: Tipo; titulo: Titulo
       {titulo.status === 'pago' && titulo.desconto > 0 && linha(t('fin.desconto'), moeda(titulo.desconto))}
       {titulo.status === 'pago' && titulo.multa > 0 && linha(t('fin.multa'), moeda(titulo.multa))}
       {titulo.status === 'pago' && titulo.juros > 0 && linha(t('fin.juros'), moeda(titulo.juros))}
+      {titulo.status === 'pago' && titulo.taxaCartao > 0 && linha(t('fin.taxa_cartao'), moeda(titulo.taxaCartao))}
       {titulo.status === 'pago' && (titulo.desconto > 0 || titulo.multa > 0 || titulo.juros > 0) && linha(t('fin.total_baixar'), <b>{moeda(titulo.valor - titulo.desconto + titulo.multa + titulo.juros)}</b>)}
       {linha(t('fin.previsto'), titulo.previsto ? t('common.sim') : t('common.nao'))}
       {titulo.tipoDocumento && linha(t('tipodoc.titulo_s'), titulo.tipoDocumento)}
@@ -574,13 +575,17 @@ function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos:
   const [forma, setForma] = useState('Pix'); const [contaId, setContaId] = useState('');
   const [dataBaixa, setDataBaixa] = useState(new Date().toISOString().slice(0, 10));
   const [desconto, setDesconto] = useState('0'); const [multa, setMulta] = useState('0'); const [juros, setJuros] = useState('0');
+  const [taxaCartao, setTaxaCartao] = useState('0');
   const [contas, setContas] = useState<{ id: string; nome: string }[]>([]);
   const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
   const totalSel = titulos.reduce((a, x) => a + x.valor, 0);
   const massa = titulos.length > 1;
   // Composição (só no título único): total a baixar = valor - desconto + multa + juros.
   const nD = Math.max(0, Number(desconto) || 0), nM = Math.max(0, Number(multa) || 0), nJ = Math.max(0, Number(juros) || 0);
+  const nT = Math.max(0, Number(taxaCartao) || 0);
   const totalBaixar = Math.round((totalSel - nD + nM + nJ) * 100) / 100;
+  const ehCartao = forma === 'Cartão';
+  const liquidoCartao = Math.round((totalBaixar - nT) * 100) / 100; // líquido recebido após a taxa da operadora
   // Pix e Boleto entram numa conta bancária — selecionar o banco é obrigatório.
   const contaObrig = forma === 'Pix' || forma === 'Boleto';
   const contaFaltando = contaObrig && !contaId;
@@ -595,7 +600,7 @@ function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos:
       // Composição só se aplica a baixa individual; em massa vai sem ajustes.
       const corpo = massa
         ? { formaPagamento: forma, contaCorrenteId: contaId || null, dataBaixa }
-        : { formaPagamento: forma, contaCorrenteId: contaId || null, dataBaixa, desconto: nD, multa: nM, juros: nJ };
+        : { formaPagamento: forma, contaCorrenteId: contaId || null, dataBaixa, desconto: nD, multa: nM, juros: nJ, taxaCartao: ehCartao ? nT : 0 };
       try {
         const r = await api.patch<{ pedidoLiberado: number | null }>('/financeiro/' + tipo + '/' + tt.id + '/baixar', corpo, token!); ok++;
         if (r?.pedidoLiberado) liberados.push({ numero: r.pedidoLiberado, cliente: tt.pessoaNome, valor: tt.valor });
@@ -630,6 +635,10 @@ function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos:
           <span className="muted">{t('fin.total_baixar')}</span>
           <b style={{ fontSize: 20, color: totalBaixar < 0 ? '#e1483b' : 'var(--accent)' }}>{moeda(totalBaixar)}</b>
         </div>
+        {ehCartao && (<>
+          <label className="campo" style={{ marginTop: 6 }}>{t('fin.taxa_cartao')}<MoedaInput value={taxaCartao} onChange={(n) => setTaxaCartao(n ? String(n) : '')} /></label>
+          <div className="tl-row"><span className="muted">{t('fin.liquido_cartao')}</span><b style={{ color: '#16a34a' }}>{moeda(liquidoCartao)}</b></div>
+        </>)}
       </>)}
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv || (!massa && totalBaixar < 0) || contaFaltando} onClick={salvar}>{t('fin.confirmar_baixa')}</button></div>

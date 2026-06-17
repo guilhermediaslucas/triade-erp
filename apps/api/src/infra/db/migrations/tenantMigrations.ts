@@ -860,4 +860,10 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".categoria_financeira ADD COLUMN IF NOT EXISTS conta_contabil_id uuid REFERENCES "${s}".conta_contabil(id);
     `,
   },
+  {
+    nome: '061_titulo_taxa_cartao',
+    sql: (s) => `
+      ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS taxa_cartao numeric(14,2) NOT NULL DEFAULT 0;
+    `,
+  },
 ];

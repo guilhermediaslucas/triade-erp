@@ -188,6 +188,16 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-16** — **Fiscal/contábil — Entrega 3/4: taxa de cartão como campo no recebimento (juros/multa/desconto já eram campos).** Migration
+  tenant **061** `titulo += taxa_cartao numeric(14,2) NOT NULL DEFAULT 0`. `Titulo`/`AjustesBaixa` += `taxaCartao`;
+  `SqlTituloRepository.baixar` grava `taxa_cartao=$8` e o map lê. `FinanceiroService.baixar` valida taxa ≥0 e repassa (não reduz o
+  valor de baixa — é despesa da operadora). Rota `/financeiro/:tipo/:id/baixar` passa `taxaCartao: b.taxaCartao`. **Frontend (`Contas`
+  `ModalBaixa`):** quando forma = **Cartão**, aparece o campo **Taxa do cartão** + **Líquido recebido** (= total a baixar − taxa); só
+  na baixa individual; o detalhe do título mostra a taxa quando paga. i18n `fin.taxa_cartao`/`fin.liquido_cartao` pt/en/es. Desconto/
+  multa/juros já existiam como composição da baixa (decisão do Gui: tudo **campo** na baixa, sem lançamento separado; o DRE [Entrega 4]
+  agrega em categorias fixas). **Sem cap nova, sem dep, não precisa relogar.** Parse limpo (só o falso fim por truncagem do mount nos
+  editados; íntegros). **Pendente Gui:** `npm run build -w @triade/web` → commit+push (Render aplica a **061**) → APK. **Falta a
+  Entrega 4: DRE por competência** agregando categoria financeira + buckets fixos (juros/multa/taxa/desconto) com a conta contábil.
 - **2026-06-16** — **Fiscal/contábil — Entrega 2/4: Plano de contas (cadastro) + vínculo na categoria financeira.** Migration tenant
   **060** `conta_contabil` (codigo, descricao, tipo [receita/despesa/ativo/passivo], pai_id self-FK opcional, ativo) +
   `categoria_financeira += conta_contabil_id` (FK). **Backend:** domínio `financeiro/ContaContabil` + repo,
