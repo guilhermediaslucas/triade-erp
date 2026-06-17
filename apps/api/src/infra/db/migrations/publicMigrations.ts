@@ -116,4 +116,12 @@ export const publicMigrations: MigracaoPublic[] = [
       );
     `,
   },
+  {
+    nome: '008_empresa_fiscal_numero',
+    sql: `
+      ALTER TABLE public.empresa_fiscal
+        ADD COLUMN IF NOT EXISTS numero_emitente      text NOT NULL DEFAULT '',
+        ADD COLUMN IF NOT EXISTS complemento_emitente text NOT NULL DEFAULT '';
+    `,
+  },
 ];

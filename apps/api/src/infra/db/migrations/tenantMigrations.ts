@@ -807,4 +807,26 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".produto ADD COLUMN IF NOT EXISTS origem_fiscal text;  -- override opcional da origem (0..8)
     `,
   },
+  {
+    nome: '058_nota_fiscal',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".nota_fiscal (
+        id            uuid PRIMARY KEY,
+        pedido_id     uuid NOT NULL REFERENCES "${s}".pedido(id) ON DELETE CASCADE,
+        ref           text UNIQUE NOT NULL,           -- idempotência na Focus NFe
+        status        text NOT NULL DEFAULT 'processando', -- processando | autorizado | erro | cancelado
+        status_focus  text,                            -- status cru retornado pela Focus
+        status_sefaz  text,
+        mensagem_sefaz text,
+        chave         text,
+        numero        text,
+        serie         text,
+        caminho_danfe text,
+        caminho_xml   text,
+        criado_em     timestamptz NOT NULL DEFAULT now(),
+        atualizado_em timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_nota_fiscal_pedido ON "${s}".nota_fiscal (pedido_id);
+    `,
+  },
 ];

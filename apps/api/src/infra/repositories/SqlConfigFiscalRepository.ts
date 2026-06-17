@@ -8,6 +8,8 @@ function mapear(r: any): ConfigFiscal {
     ambiente: (r.ambiente as AmbienteFiscal),
     tokenHomologacao: r.token_homologacao ?? '',
     tokenProducao: r.token_producao ?? '',
+    numeroEmitente: r.numero_emitente ?? '',
+    complementoEmitente: r.complemento_emitente ?? '',
     naturezaOperacao: r.natureza_operacao ?? '',
     cfopDentroUf: r.cfop_dentro_uf ?? '',
     cfopForaUf: r.cfop_fora_uf ?? '',
@@ -36,8 +38,9 @@ export class SqlConfigFiscalRepository implements ConfigFiscalRepository {
       `INSERT INTO public.empresa_fiscal
          (empresa_codigo, regime_tributario, ambiente, token_homologacao, token_producao,
           natureza_operacao, cfop_dentro_uf, cfop_fora_uf, icms_origem, csosn_padrao,
-          cst_icms_padrao, aliquota_icms, pis_cst_padrao, cofins_cst_padrao, atualizado_em)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14, now())
+          cst_icms_padrao, aliquota_icms, pis_cst_padrao, cofins_cst_padrao,
+          numero_emitente, complemento_emitente, atualizado_em)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16, now())
        ON CONFLICT (empresa_codigo) DO UPDATE SET
          regime_tributario = EXCLUDED.regime_tributario,
          ambiente          = EXCLUDED.ambiente,
@@ -52,10 +55,13 @@ export class SqlConfigFiscalRepository implements ConfigFiscalRepository {
          aliquota_icms     = EXCLUDED.aliquota_icms,
          pis_cst_padrao    = EXCLUDED.pis_cst_padrao,
          cofins_cst_padrao = EXCLUDED.cofins_cst_padrao,
+         numero_emitente      = EXCLUDED.numero_emitente,
+         complemento_emitente = EXCLUDED.complemento_emitente,
          atualizado_em     = now()`,
       [d.empresaCodigo, d.regimeTributario, d.ambiente, d.tokenHomologacao, d.tokenProducao,
         d.naturezaOperacao, d.cfopDentroUf, d.cfopForaUf, d.icmsOrigem, d.csosnPadrao,
-        d.cstIcmsPadrao, d.aliquotaIcms, d.pisCstPadrao, d.cofinsCstPadrao],
+        d.cstIcmsPadrao, d.aliquotaIcms, d.pisCstPadrao, d.cofinsCstPadrao,
+        d.numeroEmitente, d.complementoEmitente],
     );
   }
 }

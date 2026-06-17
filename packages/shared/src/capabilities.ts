@@ -76,6 +76,8 @@ export const CAPABILITIES: Capability[] = [
   { id: 'relatorios.contabil.pagar.ver',   moduloChave: 'cap.modulo.relatorios_contabil', labelChave: 'cap.relatorios.contabil.pagar' },
   { id: 'relatorios.contabil.receber.ver', moduloChave: 'cap.modulo.relatorios_contabil', labelChave: 'cap.relatorios.contabil.receber' },
   { id: 'relatorios.contabil.vendas.ver',  moduloChave: 'cap.modulo.relatorios_contabil', labelChave: 'cap.relatorios.contabil.vendas' },
+  { id: 'fiscal.nota.ver',    moduloChave: 'cap.modulo.fiscal', labelChave: 'cap.fiscal.nota.ver' },
+  { id: 'fiscal.nota.emitir', moduloChave: 'cap.modulo.fiscal', labelChave: 'cap.fiscal.nota.emitir' },
   { id: 'painel.tv_comercial', moduloChave: 'cap.modulo.painel', labelChave: 'cap.painel.tv_comercial' },
   { id: 'painel.tv_expedicao', moduloChave: 'cap.modulo.painel', labelChave: 'cap.painel.tv_expedicao' },
 ];
@@ -119,7 +121,7 @@ export const PERFIS_PADRAO: PerfilPadrao[] = [
     nome: 'Estoque', descricao: 'Apenas Estoque/Expedição',
     caps: ['dashboard.ver', 'estoque.saldo.ver', 'estoque.entrada.criar', 'estoque.baixa.criar', 'estoque.inventario.ver', 'estoque.inventario.gerenciar',
       'comercial.pedido.listar', 'comercial.pedido.gerenciar', 'comercial.pedido.separar', 'comercial.pedido.expedir', 'financeiro.compra.criar', 'cadastros.produto.listar',
-      'cadastros.forma_entrega.listar', 'cadastros.motoboy.listar', 'relatorios.ver', 'relatorios.validade.ver', 'relatorios.parado.ver', 'relatorios.perdas.ver'],
+      'cadastros.forma_entrega.listar', 'cadastros.motoboy.listar', 'fiscal.nota.ver', 'fiscal.nota.emitir', 'relatorios.ver', 'relatorios.validade.ver', 'relatorios.parado.ver', 'relatorios.perdas.ver'],
   },
   {
     nome: 'Gestão à Vista Comercial', descricao: 'Painel de vendas em TV (somente leitura)',

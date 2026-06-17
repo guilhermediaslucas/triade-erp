@@ -9,6 +9,7 @@ import { notificarPixPendente } from '../lib/notificarPix.js';
 import { notificarLiberadoSeparacao } from '../lib/notificarSeparacao.js';
 import { ModalDataEntrega, ModalFormaEnvio } from '../components/ExpedicaoModais.js';
 import { BotaoEscanear } from '../components/BotaoEscanear.js';
+import { NotaFiscalCard } from '../components/NotaFiscalCard.js';
 import { Ic } from '../components/Icones.js';
 import { useAutoBip } from '../lib/useAutoBip.js';
 
@@ -182,6 +183,10 @@ export function PedidoDetalhe() {
             </div>
           ))}
         </div>
+      )}
+
+      {temCapability('fiscal.nota.ver') && p.status !== 'orcamento' && (
+        <NotaFiscalCard pedidoId={p.id} pedidoStatus={p.status} podeEmitir={temCapability('fiscal.nota.emitir')} />
       )}
 
       <div className="card pad0" style={{ maxWidth: 820, marginBottom: 16 }}><table className="tabela">

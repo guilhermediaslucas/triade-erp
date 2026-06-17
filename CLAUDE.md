@@ -188,6 +188,42 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-16** — **Fase 7 — Entrega 7B: EMISSÃO de NF-e (Focus NFe), consulta de status e DANFE/XML no detalhe do pedido.**
+  **Decisões do Gui:** destinatário **sempre não contribuinte** (indicador IE 9, sem IE — não mexe no cadastro de cliente);
+  botão **Emitir NF-e só com pedido Expedido/Entregue**; escopo emitir (cancelar = 7C). **Migrations:** tenant **058**
+  `nota_fiscal` (pedido_id FK CASCADE, ref UNIQUE [idempotência Focus], status [processando|autorizado|erro|cancelado],
+  status_focus/status_sefaz/mensagem_sefaz, chave/numero/serie, caminho_danfe/caminho_xml, timestamps). public **008**
+  `empresa_fiscal += numero_emitente, complemento_emitente` (o resto do endereço do emitente vem de Dados da empresa;
+  número faltava e a NF-e exige). **Backend (porta+adapter):** domínio `domain/fiscal/EmissorFiscal.ts` (porta +
+  DTOs neutros DadosEmissaoNF/EmitenteNF/DestinatarioNF/ItemNF/RespostaFiscal/ArquivoFiscal) e `NotaFiscal.ts`
+  (NotaFiscal/StatusNota/AtualizacaoNota + repo). Adapter `infra/fiscal/FocusNFeEmissor.ts` (fetch nativo, Basic Auth
+  `base64(token+':')`, base homologação/produção; `POST /v2/nfe?ref=`, `GET /v2/nfe/:ref`, baixa DANFE/XML; **monta o
+  JSON da Focy**: ramifica **CSOSN [Simples] / CST [Normal] no mesmo campo `icms_situacao_tributaria`**, base/alíquota/valor
+  só quando alíquota>0, destinatário com `indicador_inscricao_estadual_destinatario:9`, CPF/CNPJ conforme PF/PJ; normaliza
+  resposta e erros `codigo`/`erros[]`). `SqlNotaFiscalRepository` (tenant). `application/fiscal/NotasFiscaisService`:
+  `emitir(schema, empresaCodigo, pedidoId)` (valida status Expedido/Entregue, nota não duplicada, emitente completo
+  [CNPJ/IE/endereço+numero_emitente], token do ambiente presente, destinatário [cliente + endereço favorito + documento],
+  **todo item com NCM 8 díg.**; CFOP por UF emitente×destinatário [override do produto > perfil]; CST/CSOSN/origem do produto
+  ou do perfil; ref `<empresa>-<numero>-<ts36>`; persiste 'processando' → chama o adapter → atualiza), `statusAtual`
+  (reconsulta a Focus se 'processando'), `baixar` (DANFE/XML stream). **Rotas** (em `fiscal.ts`): `POST /pedidos/:id/nota`
+  (cap `fiscal.nota.emitir`, auditada), `GET /pedidos/:id/nota` (status, cap `fiscal.nota.ver`), `GET /pedidos/:id/nota/danfe|xml`
+  (stream autenticado). Wiring composition.ts (configFiscalRepo extraído p/ reuso) + server.ts (rotasFiscal já registrado na 7A).
+  **Caps novas** `fiscal.nota.ver`/`fiscal.nota.emitir` (módulo `cap.modulo.fiscal`) — no Administrador (sync no boot) e no
+  perfil padrão **Estoque** (quem expede). **Frontend:** componente `components/NotaFiscalCard.tsx` no **detalhe do pedido**
+  (Emitir quando expedido/entregue; **polling** a cada 4s enquanto 'processando'; Baixar **DANFE/XML** via `api.blob`+`lib/download`;
+  mensagem da SEFAZ no erro + reemitir) — só aparece com `fiscal.nota.ver` e status ≠ orçamento. `ConfigFiscalCard` += número/
+  complemento do emitente. i18n pt/en/es (`nf.*`, `fiscal.nota.*` [erros], `fiscal.numero_emitente`, labels das caps).
+  **Sem dep npm nova** (fetch/Buffer nativos). **Validação:** parse de sintaxe limpo nos arquivos escritos de uma vez;
+  os editados acusam o falso "} expected" da truncagem do mount (confirmado íntegros pelo file-tool); hand-review das
+  assinaturas/wiring/ordem de params. **Pendente Gui:** `npm install` (relink @triade/shared p/ as caps novas) →
+  `npm run build -w @triade/web` (tsc local = fonte de verdade) → commit+push (Render aplica **public 008** + **tenant 058**
+  no boot via AUTO_MIGRATE + sincroniza as caps no Administrador) → **relogar** (carrega `fiscal.nota.*`) → `scripts\app-apk.bat`
+  p/ APK novo (telas mudaram). **Pra não-admin emitir:** marcar as caps `fiscal.nota.*` no perfil dele em Configurações › Perfis.
+  **Setup Focus (pré-requisito p/ autorizar):** certificado **A1 (.pfx)** no painel Focus, emitente credenciado na SEFAZ
+  (homologação primeiro), **token** colado em Dados da empresa › Fiscal, e **número do endereço do emitente** preenchido lá.
+  **Sugiro e2e (homologação) ao aplicar:** produto com NCM + cliente com endereço favorito → expedir pedido → Emitir NF-e →
+  status vira 'autorizado' → baixar DANFE e XML; pedido sem NCM/sem token/sem número do emitente → erro claro; pedido em
+  orçamento não mostra o card. **Próximo: 7C** — cancelamento (`DELETE /v2/nfe/:ref` + justificativa ≥15, cap reusa `fiscal.nota.emitir`).
 - **2026-06-16** — **Fase 7 (Fiscal/NF-e via Focus NFe) — Entrega 7A: configuração fiscal por empresa + perfil padrão + NCM no produto (NADA emite ainda).**
   Base para a emissão (7B) e cancelamento (7C). **Decisões do Gui:** regime tributário **por empresa** (multi-tenant);
   **perfil de operação padrão + NCM por produto** (overrides opcionais p/ exceções); escopo **emitir + cancelar** (7B/7C).

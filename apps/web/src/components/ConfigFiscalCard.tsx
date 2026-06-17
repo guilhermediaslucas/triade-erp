@@ -7,6 +7,8 @@ interface ConfigFiscal {
   empresaCodigo: string;
   regimeTributario: 1 | 2 | 3;
   ambiente: 'homologacao' | 'producao';
+  numeroEmitente: string;
+  complementoEmitente: string;
   naturezaOperacao: string;
   cfopDentroUf: string;
   cfopForaUf: string;
@@ -56,6 +58,7 @@ export function ConfigFiscalCard() {
     try {
       await api.put('/fiscal/config', {
         regimeTributario: f.regimeTributario, ambiente: f.ambiente,
+        numeroEmitente: f.numeroEmitente, complementoEmitente: f.complementoEmitente,
         naturezaOperacao: f.naturezaOperacao, cfopDentroUf: f.cfopDentroUf, cfopForaUf: f.cfopForaUf,
         icmsOrigem: f.icmsOrigem, csosnPadrao: f.csosnPadrao, cstIcmsPadrao: f.cstIcmsPadrao,
         aliquotaIcms: f.aliquotaIcms, pisCstPadrao: f.pisCstPadrao, cofinsCstPadrao: f.cofinsCstPadrao,
@@ -104,6 +107,10 @@ export function ConfigFiscalCard() {
 
       <h3 className="emp-sec">{t('fiscal.perfil')}</h3>
       <div className="muted" style={{ fontSize: 12, marginBottom: 8 }}>{t('fiscal.perfil_hint')}</div>
+      <div className="cores-grid">
+        <label className="campo">{t('fiscal.numero_emitente')}<input value={f.numeroEmitente} onChange={(e) => set('numeroEmitente', e.target.value)} placeholder="123" /></label>
+        <label className="campo">{t('fiscal.complemento_emitente')}<input value={f.complementoEmitente} onChange={(e) => set('complementoEmitente', e.target.value)} /></label>
+      </div>
       <label className="campo">{t('fiscal.natureza')}<input value={f.naturezaOperacao} onChange={(e) => set('naturezaOperacao', e.target.value)} /></label>
       <div className="cores-grid">
         <label className="campo">{t('fiscal.cfop_dentro')}<input value={f.cfopDentroUf} onChange={(e) => set('cfopDentroUf', e.target.value)} placeholder="5102" /></label>

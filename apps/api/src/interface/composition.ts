@@ -15,6 +15,9 @@ import { EmpresaService } from '../application/empresa/EmpresaService.js';
 import { ProvisionarEmpresa } from '../application/empresa/ProvisionarEmpresa.js';
 import { SqlConfigFiscalRepository } from '../infra/repositories/SqlConfigFiscalRepository.js';
 import { ConfigFiscalService } from '../application/fiscal/ConfigFiscalService.js';
+import { SqlNotaFiscalRepository } from '../infra/repositories/SqlNotaFiscalRepository.js';
+import { FocusNFeEmissor } from '../infra/fiscal/FocusNFeEmissor.js';
+import { NotasFiscaisService } from '../application/fiscal/NotasFiscaisService.js';
 import { SqlCategoriaRepository } from '../infra/repositories/SqlCategoriaRepository.js';
 import { SqlProdutoRepository } from '../infra/repositories/SqlProdutoRepository.js';
 import { CategoriasService } from '../application/cadastro/CategoriasService.js';
@@ -108,6 +111,7 @@ export function montarDependencias() {
   const emailSender = new ResendEmailSender(env.resendApiKey, env.emailFrom);
   const resetSenhaRepo = new SqlResetSenhaRepository(AppDataSource);
   const freteCampanhaRepo = new SqlFreteCampanhaRepository(AppDataSource);
+  const configFiscalRepo = new SqlConfigFiscalRepository(AppDataSource);
 
   return {
     tokens,
@@ -126,7 +130,11 @@ export function montarDependencias() {
     perfisService: new PerfisService(perfisRepo),
     empresaService: new EmpresaService(empresasRepo, migrador, usuariosRepo, hash),
     provisionarEmpresa: new ProvisionarEmpresa(empresasRepo, migrador, perfisRepo, usuariosRepo, hash),
-    configFiscalService: new ConfigFiscalService(new SqlConfigFiscalRepository(AppDataSource)),
+    configFiscalService: new ConfigFiscalService(configFiscalRepo),
+    notasFiscaisService: new NotasFiscaisService(
+      new SqlNotaFiscalRepository(AppDataSource), pedidoRepo, produtosRepo, clientesRepo,
+      empresasRepo, configFiscalRepo, new FocusNFeEmissor(),
+    ),
     categoriasService: new CategoriasService(categoriasRepo),
     formasEntregaService: new FormasEntregaService(new SqlFormaEntregaRepository(AppDataSource)),
     tiposDocumentoService: new TiposDocumentoService(new SqlTipoDocumentoRepository(AppDataSource)),

@@ -46,6 +46,8 @@ export class ConfigFiscalService {
     await this.repo.salvar({
       empresaCodigo,
       regimeTributario, ambiente, tokenHomologacao, tokenProducao,
+      numeroEmitente: txt(b.numeroEmitente, atual.numeroEmitente),
+      complementoEmitente: txt(b.complementoEmitente, atual.complementoEmitente),
       naturezaOperacao, cfopDentroUf, cfopForaUf, icmsOrigem,
       csosnPadrao: txt(b.csosnPadrao, atual.csosnPadrao) || '102',
       cstIcmsPadrao: txt(b.cstIcmsPadrao, atual.cstIcmsPadrao) || '00',

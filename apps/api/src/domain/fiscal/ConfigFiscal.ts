@@ -27,6 +27,9 @@ export interface ConfigFiscal extends PerfilFiscal {
   // Tokens da Focus NFe — só no servidor, nunca devolvidos ao frontend.
   tokenHomologacao: string;
   tokenProducao: string;
+  // Número/complemento do endereço do emitente (o resto do endereço vem de "Dados da empresa").
+  numeroEmitente: string;
+  complementoEmitente: string;
 }
 
 // Valores padrão para uma empresa que ainda não configurou o fiscal.
@@ -37,6 +40,8 @@ export function configFiscalPadrao(empresaCodigo: string): ConfigFiscal {
     ambiente: 'homologacao',
     tokenHomologacao: '',
     tokenProducao: '',
+    numeroEmitente: '',
+    complementoEmitente: '',
     naturezaOperacao: 'Venda de mercadoria',
     cfopDentroUf: '5102',
     cfopForaUf: '6102',

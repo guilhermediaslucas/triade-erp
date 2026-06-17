@@ -12,6 +12,8 @@ function publico(c: ConfigFiscal) {
     empresaCodigo: c.empresaCodigo,
     regimeTributario: c.regimeTributario,
     ambiente: c.ambiente,
+    numeroEmitente: c.numeroEmitente,
+    complementoEmitente: c.complementoEmitente,
     naturezaOperacao: c.naturezaOperacao,
     cfopDentroUf: c.cfopDentroUf,
     cfopForaUf: c.cfopForaUf,
@@ -43,6 +45,35 @@ export function rotasFiscal(deps: Dependencias): Router {
       res.json({ ok: true });
     } catch (e) { tratarErro(res, e); }
   });
+
+  // ===== NF-e por pedido =====
+  const sch = (req: Request) => req.usuario!.schema;
+  const emp = (req: Request) => req.usuario!.empresa;
+
+  // Emitir a NF-e de um pedido (só Expedido/Entregue).
+  r.post('/pedidos/:id/nota', aut, az('fiscal.nota.emitir'), async (req: Request, res: Response) => {
+    try {
+      const nota = await deps.notasFiscaisService.emitir(sch(req), emp(req), req.params.id!);
+      auditar(req, { modulo: 'Fiscal', entidade: 'NotaFiscal', referencia: nota.ref, descricao: `Emitiu NF-e do pedido (ref ${nota.ref})` });
+      res.status(201).json(nota);
+    } catch (e) { tratarErro(res, e); }
+  });
+
+  // Estado atual da nota do pedido (consulta a Focus se ainda processando).
+  r.get('/pedidos/:id/nota', aut, az('fiscal.nota.ver'), async (req: Request, res: Response) => {
+    try { res.json(await deps.notasFiscaisService.statusAtual(sch(req), emp(req), req.params.id!)); }
+    catch (e) { tratarErro(res, e); }
+  });
+
+  async function baixar(req: Request, res: Response, tipo: 'danfe' | 'xml') {
+    try {
+      const arq = await deps.notasFiscaisService.baixar(sch(req), emp(req), req.params.id!, tipo);
+      res.setHeader('content-type', arq.tipo);
+      res.send(arq.conteudo);
+    } catch (e) { tratarErro(res, e); }
+  }
+  r.get('/pedidos/:id/nota/danfe', aut, az('fiscal.nota.ver'), (req: Request, res: Response) => baixar(req, res, 'danfe'));
+  r.get('/pedidos/:id/nota/xml', aut, az('fiscal.nota.ver'), (req: Request, res: Response) => baixar(req, res, 'xml'));
 
   return r;
 }
