@@ -5,6 +5,7 @@ import type { EmpresaRepository } from '../../domain/empresa/EmpresaRepository.j
 import type { ConfigFiscalRepository, AmbienteFiscal } from '../../domain/fiscal/ConfigFiscal.js';
 import type { FiltroNotas, NotaFiscal, NotaFiscalRepository, NotaFiscalResumo, StatusNota } from '../../domain/fiscal/NotaFiscal.js';
 import type { ArquivoFiscal, DadosEmissaoNF, EmissorFiscal, ItemNF } from '../../domain/fiscal/EmissorFiscal.js';
+import { aliquotaIcms } from '../../domain/fiscal/icms.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
 function mapStatus(focus: string): StatusNota {
@@ -92,7 +93,8 @@ export class NotasFiscaisService {
         valorBruto: it.subtotal,
         icmsOrigem: prod?.origemFiscal != null && prod.origemFiscal !== '' ? Number(prod.origemFiscal) : cfg.icmsOrigem,
         icmsCst: (prod?.cstFiscal && prod.cstFiscal.trim()) || (simples ? cfg.csosnPadrao : cfg.cstIcmsPadrao),
-        icmsAliquota: simples ? 0 : cfg.aliquotaIcms,
+        // Regime Normal: alíquota interestadual automática (7%/12%) ou interna (mesma UF, configurada).
+        icmsAliquota: simples ? 0 : aliquotaIcms(empresa.uf, end.uf, cfg.aliquotaIcms),
         pisCst: cfg.pisCstPadrao,
         cofinsCst: cfg.cofinsCstPadrao,
       });

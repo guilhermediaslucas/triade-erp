@@ -188,6 +188,17 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-16** — **Fiscal/contábil — Entrega 1/4: alíquota de ICMS interestadual automática na NF-e (origem×destino).** Novo
+  `domain/fiscal/icms.ts` `aliquotaIcms(ufOrigem, ufDestino, aliquotaInterna)`: mesma UF → **interna** (configurada, ex. MG 18%);
+  origem no **Sul/Sudeste exc. ES** (PR/RS/SC/SP/RJ/MG) → **12%** p/ S/SE-exc-ES e **7%** p/ N/NE/CO+ES; origem N/NE/CO/ES → **12%**.
+  `NotasFiscaisService` usa isso no item (Regime Normal/CST tributado): `icmsAliquota = simples ? 0 : aliquotaIcms(empresa.uf, dest.uf, cfg.aliquotaIcms)`
+  → a alíquota correta entra na NF (icms_aliquota/base/valor). `cfg.aliquotaIcms` passou a ser a **alíquota interna** (label/hint
+  atualizados em Dados da empresa › Fiscal; a interestadual é automática). Validado: MG→MG 18, MG→SP/RJ/PR/RS/SC 12, MG→ES/BA/AM/DF/GO/PE/RO 7
+  (bate com a matriz do tax group). Só vale no **Regime Normal** (no Simples o item usa CSOSN, sem alíquota). **Sem migration/cap/dep.**
+  **Pendente Gui:** `npm run build -w @triade/web` → commit+push → APK. **Próximas entregas (decididas com o Gui):** 2) **plano de
+  contas completo** (cadastro) + FK na categoria financeira; 3) **taxa de cartão** como campo no recebimento (+ juros/multa/desconto
+  como campos, sem lançamento); 4) **DRE por competência** (emissão) agregando por categoria financeira + buckets fixos
+  (juros/multa/taxa/desconto), mostrando a conta contábil.
 - **2026-06-16** — **Perfil multi-empresa (super-admin): replica um perfil em várias empresas de uma vez (espelha o multi-empresa de usuários).**
   **Backend (sem migration, sem cap nova):** use case `application/perfil/PerfilMultiEmpresa` — `situacao(nome)` (por empresa ativa:
   existe?/ativo?/qtdCaps + `modelo` = 1º perfil achado p/ pré-preencher permissões/descrição) e `sincronizar({nome, descricao,

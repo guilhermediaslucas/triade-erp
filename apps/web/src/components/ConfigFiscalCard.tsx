@@ -129,6 +129,7 @@ export function ConfigFiscalCard() {
               <label className="campo">{t('fiscal.aliquota_icms')}<input type="number" step="0.01" min="0" max="100" value={f.aliquotaIcms} onChange={(e) => set('aliquotaIcms', Number(e.target.value))} /></label>
             </>}
       </div>
+      {!simples && <small className="hint" style={{ display: 'block', marginBottom: 8 }}>{t('fiscal.aliquota_icms_hint')}</small>}
       <div className="cores-grid">
         <label className="campo">{t('fiscal.pis_cst')}<input value={f.pisCstPadrao} onChange={(e) => set('pisCstPadrao', e.target.value)} placeholder="07" /></label>
         <label className="campo">{t('fiscal.cofins_cst')}<input value={f.cofinsCstPadrao} onChange={(e) => set('cofinsCstPadrao', e.target.value)} placeholder="07" /></label>
