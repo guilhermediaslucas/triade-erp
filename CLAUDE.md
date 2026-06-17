@@ -188,6 +188,17 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-16** — **Fiscal/contábil — Entrega 2/4: Plano de contas (cadastro) + vínculo na categoria financeira.** Migration tenant
+  **060** `conta_contabil` (codigo, descricao, tipo [receita/despesa/ativo/passivo], pai_id self-FK opcional, ativo) +
+  `categoria_financeira += conta_contabil_id` (FK). **Backend:** domínio `financeiro/ContaContabil` + repo,
+  `SqlContaContabilRepository`, `ContasContabeisService` (CRUD; valida codigo/descricao/tipo; não deixa ser pai de si mesma);
+  rotas `/contas-contabeis` (GET/POST/PUT/PATCH ativo, **reusa cap `cadastros.catfin.*`** → sem cap nova). `CategoriaFinanceira`
+  domínio/repo/serviço += `contaContabilId` (criar/atualizar passam a FK). Wire composition + server. **Frontend:** tela
+  `pages/PlanoContas.tsx` (Cadastros › Financeiro › Plano de contas — código/descrição/tipo/conta-pai/ativo) + select **Conta
+  contábil** no modal de Categorias financeiras. Menu + rota `/cadastros/plano-contas` + i18n `plano.*`/`catfin.conta_contabil`
+  pt/en/es. **Sem relogar** (cap reusada). Parse de sintaxe limpo em todos os arquivos. **Pendente Gui:** `npm install`? não
+  (sem dep) → `npm run build -w @triade/web` → commit+push (Render aplica a **060** no boot) → APK. **Próximas:** 3) taxa de
+  cartão + campos na baixa; 4) DRE por competência agregando categoria financeira + conta contábil.
 - **2026-06-16** — **Fiscal/contábil — Entrega 1/4: alíquota de ICMS interestadual automática na NF-e (origem×destino).** Novo
   `domain/fiscal/icms.ts` `aliquotaIcms(ufOrigem, ufDestino, aliquotaInterna)`: mesma UF → **interna** (configurada, ex. MG 18%);
   origem no **Sul/Sudeste exc. ES** (PR/RS/SC/SP/RJ/MG) → **12%** p/ S/SE-exc-ES e **7%** p/ N/NE/CO+ES; origem N/NE/CO/ES → **12%**.

@@ -845,4 +845,19 @@ export const tenantMigrations: MigracaoTenant[] = [
       CREATE INDEX IF NOT EXISTS idx_cliente_anexo ON "${s}".cliente_anexo (cliente_id, criado_em);
     `,
   },
+  {
+    nome: '060_plano_contas',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".conta_contabil (
+        id          uuid PRIMARY KEY,
+        codigo      text NOT NULL,
+        descricao   text NOT NULL,
+        tipo        text NOT NULL DEFAULT 'despesa',  -- receita | despesa | ativo | passivo
+        pai_id      uuid REFERENCES "${s}".conta_contabil(id),
+        ativo       boolean NOT NULL DEFAULT true,
+        criado_em   timestamptz NOT NULL DEFAULT now()
+      );
+      ALTER TABLE "${s}".categoria_financeira ADD COLUMN IF NOT EXISTS conta_contabil_id uuid REFERENCES "${s}".conta_contabil(id);
+    `,
+  },
 ];

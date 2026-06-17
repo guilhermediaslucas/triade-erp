@@ -3149,3 +3149,35 @@ Object.assign(es, {
   'perfis.multi_novo': 'nuevo',
   'perfis.multi_aplicar': 'Aplicar perfil',
 });
+
+// ===== Plano de contas + vínculo na categoria financeira =====
+Object.assign(pt, {
+  'menu.plano_contas': 'Plano de contas',
+  'plano.crumb': 'Cadastros / Financeiro / Plano de contas',
+  'plano.titulo': 'Plano de contas', 'plano.sub': 'Contas contábeis usadas na categoria financeira e no DRE.',
+  'plano.nova': 'Nova conta', 'plano.buscar': 'Buscar conta', 'plano.codigo': 'Código', 'plano.descricao': 'Descrição',
+  'plano.tipo': 'Tipo', 'plano.pai': 'Conta-pai', 'plano.sem_pai': 'Nenhuma (conta de topo)',
+  'plano.tipo_receita': 'Receita', 'plano.tipo_despesa': 'Despesa', 'plano.tipo_ativo': 'Ativo', 'plano.tipo_passivo': 'Passivo',
+  'catfin.conta_contabil': 'Conta contábil', 'catfin.sem_conta': 'Sem conta contábil',
+  'conta.codigo_invalido': 'Informe o código da conta.', 'conta.tipo_invalido': 'Tipo de conta inválido.', 'conta.pai_invalido': 'A conta não pode ser pai dela mesma.',
+});
+Object.assign(en, {
+  'menu.plano_contas': 'Chart of accounts',
+  'plano.crumb': 'Registers / Financial / Chart of accounts',
+  'plano.titulo': 'Chart of accounts', 'plano.sub': 'Accounting accounts used by the financial category and the income statement.',
+  'plano.nova': 'New account', 'plano.buscar': 'Search account', 'plano.codigo': 'Code', 'plano.descricao': 'Description',
+  'plano.tipo': 'Type', 'plano.pai': 'Parent account', 'plano.sem_pai': 'None (top-level)',
+  'plano.tipo_receita': 'Revenue', 'plano.tipo_despesa': 'Expense', 'plano.tipo_ativo': 'Asset', 'plano.tipo_passivo': 'Liability',
+  'catfin.conta_contabil': 'Accounting account', 'catfin.sem_conta': 'No accounting account',
+  'conta.codigo_invalido': 'Enter the account code.', 'conta.tipo_invalido': 'Invalid account type.', 'conta.pai_invalido': 'An account cannot be its own parent.',
+});
+Object.assign(es, {
+  'menu.plano_contas': 'Plan de cuentas',
+  'plano.crumb': 'Registros / Financiero / Plan de cuentas',
+  'plano.titulo': 'Plan de cuentas', 'plano.sub': 'Cuentas contables usadas en la categoría financiera y en el DRE.',
+  'plano.nova': 'Nueva cuenta', 'plano.buscar': 'Buscar cuenta', 'plano.codigo': 'Código', 'plano.descricao': 'Descripción',
+  'plano.tipo': 'Tipo', 'plano.pai': 'Cuenta padre', 'plano.sem_pai': 'Ninguna (cuenta de nivel superior)',
+  'plano.tipo_receita': 'Ingreso', 'plano.tipo_despesa': 'Gasto', 'plano.tipo_ativo': 'Activo', 'plano.tipo_passivo': 'Pasivo',
+  'catfin.conta_contabil': 'Cuenta contable', 'catfin.sem_conta': 'Sin cuenta contable',
+  'conta.codigo_invalido': 'Informa el código de la cuenta.', 'conta.tipo_invalido': 'Tipo de cuenta inválido.', 'conta.pai_invalido': 'Una cuenta no puede ser su propia padre.',
+});

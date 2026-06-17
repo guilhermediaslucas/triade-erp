@@ -6,7 +6,8 @@ import { useToast } from '../components/Toast.js';
 import { Ic } from '../components/Icones.js';
 
 type TipoCat = 'receita' | 'despesa';
-interface Cat { id: string; nome: string; tipo: TipoCat; ativo: boolean; }
+interface Cat { id: string; nome: string; tipo: TipoCat; ativo: boolean; contaContabilId: string | null; }
+interface ContaContabil { id: string; codigo: string; descricao: string; tipo: string; ativo: boolean; }
 
 export function CategoriasFinanceiras() {
   const { token, temCapability } = useAuth();
@@ -40,7 +41,7 @@ export function CategoriasFinanceiras() {
       <div className="crumb">{t('catfin.crumb')}</div>
       <div className="page-head">
         <div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('catfin.titulo')}</h1><div className="muted page-sub">{t('catfin.sub')}</div></div>
-        {pode && <button className="btn-primary" onClick={() => setEdit({ id: '', nome: '', tipo: 'despesa', ativo: true })}>+ {t('catfin.nova')}</button>}
+        {pode && <button className="btn-primary" onClick={() => setEdit({ id: '', nome: '', tipo: 'despesa', ativo: true, contaContabilId: null })}>+ {t('catfin.nova')}</button>}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="toolbar">
@@ -77,13 +78,17 @@ function ModalCat({ c, onFechar, onSalvo }: { c: Cat; onFechar: () => void; onSa
   const novo = !c.id;
   const [nome, setNome] = useState(c.nome);
   const [tipo, setTipo] = useState<TipoCat>(c.tipo);
+  const [contaContabilId, setContaContabilId] = useState<string>(c.contaContabilId ?? '');
+  const [contas, setContas] = useState<ContaContabil[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [salv, setSalv] = useState(false);
+  useEffect(() => { api.get<ContaContabil[]>('/contas-contabeis', token!).then((l) => setContas(l.filter((x) => x.ativo))).catch(() => {}); /* eslint-disable-next-line */ }, []);
   async function salvar() {
     setErro(null); setSalv(true);
+    const corpo = { nome, tipo, contaContabilId: contaContabilId || null };
     try {
-      if (novo) await api.post('/categorias-financeiras', { nome, tipo }, token!);
-      else await api.put('/categorias-financeiras/' + c.id, { nome, tipo }, token!);
+      if (novo) await api.post('/categorias-financeiras', corpo, token!);
+      else await api.put('/categorias-financeiras/' + c.id, corpo, token!);
       onSalvo();
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
@@ -96,6 +101,12 @@ function ModalCat({ c, onFechar, onSalvo }: { c: Cat; onFechar: () => void; onSa
           <select value={tipo} onChange={(e) => setTipo(e.target.value as TipoCat)}>
             <option value="despesa">{t('catfin.despesa')}</option>
             <option value="receita">{t('catfin.receita')}</option>
+          </select>
+        </label>
+        <label className="campo">{t('catfin.conta_contabil')}
+          <select value={contaContabilId} onChange={(e) => setContaContabilId(e.target.value)}>
+            <option value="">{t('catfin.sem_conta')}</option>
+            {contas.map((cc) => <option key={cc.id} value={cc.id}>{cc.codigo} · {cc.descricao}</option>)}
           </select>
         </label>
         {erro && <div className="alerta-erro">{t(erro)}</div>}

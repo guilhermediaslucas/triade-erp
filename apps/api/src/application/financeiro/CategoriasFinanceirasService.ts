@@ -10,17 +10,18 @@ function validarTipo(tipo: any): TipoCatFin {
   if (!TIPOS_CATFIN.includes(tipo)) throw new ErroAplicacao('catfin.tipo_invalido', 400);
   return tipo;
 }
+const conta = (e: any): string | null => (e?.contaContabilId && String(e.contaContabilId).trim() !== '' ? String(e.contaContabilId) : null);
 
 export class CategoriasFinanceirasService {
   constructor(private readonly repo: CategoriaFinanceiraRepository) {}
   listar(schema: string): Promise<CategoriaFinanceira[]> { return this.repo.listar(schema); }
   criar(schema: string, e: any): Promise<string> {
-    return this.repo.criar(schema, validarNome(e?.nome), validarTipo(e?.tipo));
+    return this.repo.criar(schema, validarNome(e?.nome), validarTipo(e?.tipo), conta(e));
   }
   async editar(schema: string, id: string, e: any): Promise<void> {
     const nome = validarNome(e?.nome); const tipo = validarTipo(e?.tipo);
     if (!(await this.repo.buscarPorId(schema, id))) throw new ErroAplicacao('cadastro.nao_encontrado', 404);
-    await this.repo.atualizar(schema, id, nome, tipo);
+    await this.repo.atualizar(schema, id, nome, tipo, conta(e));
   }
   async alternarAtivo(schema: string, id: string, ativo: boolean): Promise<void> {
     if (!(await this.repo.buscarPorId(schema, id))) throw new ErroAplicacao('cadastro.nao_encontrado', 404);

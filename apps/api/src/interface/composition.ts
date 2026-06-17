@@ -63,6 +63,8 @@ import { SqlTituloRepository } from '../infra/repositories/SqlTituloRepository.j
 import { FinanceiroService } from '../application/financeiro/FinanceiroService.js';
 import { SqlCategoriaFinanceiraRepository } from '../infra/repositories/SqlCategoriaFinanceiraRepository.js';
 import { CategoriasFinanceirasService } from '../application/financeiro/CategoriasFinanceirasService.js';
+import { SqlContaContabilRepository } from '../infra/repositories/SqlContaContabilRepository.js';
+import { ContasContabeisService } from '../application/financeiro/ContasContabeisService.js';
 import { SqlRecebimentoRepository } from '../infra/repositories/SqlRecebimentoRepository.js';
 import { ComprasService } from '../application/financeiro/ComprasService.js';
 import { SqlComissaoRepository } from '../infra/repositories/SqlComissaoRepository.js';
@@ -158,6 +160,7 @@ export function montarDependencias() {
     condicoesService: new CondicoesService(condicaoRepo),
     financeiroService: new FinanceiroService(tituloRepo, pedidoRepo),
     categoriasFinanceirasService: new CategoriasFinanceirasService(catFinRepo),
+    contasContabeisService: new ContasContabeisService(new SqlContaContabilRepository(AppDataSource)),
     comprasService: new ComprasService(produtosRepo, tituloRepo, recebimentoRepo, estoqueRepo, etiquetaRepo),
     comissoesService: new ComissoesService(new SqlComissaoRepository(AppDataSource), tituloRepo),
     contasService: new ContasService(new SqlContaCorrenteRepository(AppDataSource)),

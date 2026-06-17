@@ -3,7 +3,7 @@ import type { DataSource } from 'typeorm';
 import type { CategoriaFinanceira, CategoriaFinanceiraRepository, TipoCatFin } from '../../domain/financeiro/CategoriaFinanceira.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
-const map = (r: any): CategoriaFinanceira => ({ id: r.id, nome: r.nome, tipo: r.tipo, ativo: r.ativo });
+const map = (r: any): CategoriaFinanceira => ({ id: r.id, nome: r.nome, tipo: r.tipo, ativo: r.ativo, contaContabilId: r.conta_contabil_id ?? null });
 
 export class SqlCategoriaFinanceiraRepository implements CategoriaFinanceiraRepository {
   constructor(private readonly ds: DataSource) {}
@@ -16,14 +16,14 @@ export class SqlCategoriaFinanceiraRepository implements CategoriaFinanceiraRepo
     const r = (await this.ds.query(`SELECT * FROM "${s}".categoria_financeira WHERE id = $1`, [id]))[0];
     return r ? map(r) : null;
   }
-  async criar(schema: string, nome: string, tipo: TipoCatFin): Promise<string> {
+  async criar(schema: string, nome: string, tipo: TipoCatFin, contaContabilId: string | null): Promise<string> {
     const s = validarSchema(schema); const id = randomUUID();
-    await this.ds.query(`INSERT INTO "${s}".categoria_financeira (id, nome, tipo) VALUES ($1,$2,$3)`, [id, nome, tipo]);
+    await this.ds.query(`INSERT INTO "${s}".categoria_financeira (id, nome, tipo, conta_contabil_id) VALUES ($1,$2,$3,$4)`, [id, nome, tipo, contaContabilId]);
     return id;
   }
-  async atualizar(schema: string, id: string, nome: string, tipo: TipoCatFin): Promise<void> {
+  async atualizar(schema: string, id: string, nome: string, tipo: TipoCatFin, contaContabilId: string | null): Promise<void> {
     const s = validarSchema(schema);
-    await this.ds.query(`UPDATE "${s}".categoria_financeira SET nome = $2, tipo = $3 WHERE id = $1`, [id, nome, tipo]);
+    await this.ds.query(`UPDATE "${s}".categoria_financeira SET nome = $2, tipo = $3, conta_contabil_id = $4 WHERE id = $1`, [id, nome, tipo, contaContabilId]);
   }
   async definirAtivo(schema: string, id: string, ativo: boolean): Promise<void> {
     const s = validarSchema(schema);

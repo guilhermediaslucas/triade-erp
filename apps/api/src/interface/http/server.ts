@@ -28,6 +28,7 @@ import { rotasPedidos } from './rotas/pedidos.js';
 import { rotasEstoque } from './rotas/estoque.js';
 import { rotasFinanceiro } from './rotas/financeiro.js';
 import { rotasCategoriasFinanceiras } from './rotas/categoriasFinanceiras.js';
+import { rotasContasContabeis } from './rotas/contasContabeis.js';
 import { rotasDashboard } from './rotas/dashboard.js';
 import { rotasRelatorios } from './rotas/relatorios.js';
 import { rotasCondicoes } from './rotas/condicoes.js';
@@ -112,6 +113,7 @@ export function criarServidor(): Express {
   app.use(rotasEstoque(deps));
   app.use(rotasFinanceiro(deps));
   app.use(rotasCategoriasFinanceiras(deps));
+  app.use(rotasContasContabeis(deps));
   app.use(rotasDashboard(deps));
   app.use(rotasRelatorios(deps));
   app.use(rotasCondicoes(deps));
