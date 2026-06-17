@@ -188,6 +188,20 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-16** — **Fase 7B — ajustes pós-teste de emissão: card prefixa a resposta da Focus + adapter corrige grupo de ICMS (modBC/vBC).**
+  **(1) Card:** mensagem de erro da nota agora vem prefixada por **"A Focus NFe respondeu:"** (`nf.resposta_provedor`
+  pt/en/es) p/ deixar claro que o texto é do provedor/SEFAZ, não do suporte do TRIADE. **(2) Erro de schema
+  `vBC não esperado, esperado modBC`:** no `FocusNFeEmissor`, o grupo de base de cálculo do ICMS só era enviado quando
+  `aliquota > 0`. Para **CST de ICMS tributado (Regime Normal: 00/10/20/70/90)** com alíquota 0, o XML saía com `vBC`
+  (Focus assume 0) sem `modBC` → SEFAZ rejeita. **Correção:** o adapter passou a distinguir **CSOSN (3 dígitos, Simples)**
+  de **CST (2 dígitos, Normal)** e, para CST tributado, **sempre** envia `icms_modalidade_base_calculo` + `icms_base_calculo`
+  + `icms_aliquota` + `icms_valor` (mesmo com alíquota 0). **Diagnóstico p/ o Gui:** o erro indica que a **iSKINS está
+  configurada como Regime Normal / CST 00**. Se a iSKINS for **Simples Nacional** (provável p/ distribuidora estética), o
+  certo é trocar o **regime para Simples** em Dados da empresa › Fiscal — aí usa **CSOSN 102** e o erro some sem depender do
+  fix. Se for Normal mesmo, definir a **alíquota de ICMS** (CST 00 = tributada integralmente exige alíquota > 0; o fix evita
+  o XML inválido, mas a SEFAZ ainda espera alíquota real). **Sem migration/cap/dep.** Backend roda via tsx no Render
+  (redeploy pega). **Pendente Gui:** `npm run build -w @triade/web` → commit+push → `scripts\app-apk.bat`. Parse limpo (só
+  o falso "}"/JSX do fim por truncagem do mount; arquivos íntegros).
 - **2026-06-16** — **Fix: frete do motoboy não recalculava ao EDITAR orçamento (mantendo o endereço atual).** No `NovoPedido.tsx`
   o efeito de recálculo tinha `if (usandoAtual) return` **antes** do ramo do motoboy → ao editar um orçamento com "Manter
   endereço atual", trocar/escolher Motoboy não recalculava e o frete ficava no valor salvo (0,00). Além disso o CEP não era

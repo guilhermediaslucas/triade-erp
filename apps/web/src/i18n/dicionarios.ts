@@ -3016,3 +3016,7 @@ Object.assign(es, {
   'anexo.salve_primeiro': 'Guarda el cliente primero para adjuntar documentos.',
   'anexo.cliente_invalido': 'Cliente inválido para adjuntar el documento.',
 });
+
+Object.assign(pt, { 'nf.resposta_provedor': 'A Focus NFe respondeu:' });
+Object.assign(en, { 'nf.resposta_provedor': 'Focus NFe replied:' });
+Object.assign(es, { 'nf.resposta_provedor': 'Focus NFe respondió:' });

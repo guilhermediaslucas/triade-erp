@@ -103,7 +103,7 @@ export function NotaFiscalCard({ pedidoId, pedidoStatus, podeEmitir }: { pedidoI
             <span className="pill st-vermelho">{t(nota.status === 'cancelado' ? 'nf.status_cancelado' : 'nf.status_erro')}</span>
             {podeEmitir && nota.status === 'erro' && emitivel && <button className="btn-primary" disabled={emitindo} onClick={emitir}><Ic name="i-receipt" className="sm" /> {t('nf.reemitir')}</button>}
           </div>
-          {nota.mensagemSefaz && <div className="alerta-erro" style={{ marginBottom: 0 }}>{nota.mensagemSefaz}</div>}
+          {nota.mensagemSefaz && <div className="alerta-erro" style={{ marginBottom: 0 }}><b>{t('nf.resposta_provedor')}</b> {nota.mensagemSefaz}</div>}
         </div>
       )}
     </div>

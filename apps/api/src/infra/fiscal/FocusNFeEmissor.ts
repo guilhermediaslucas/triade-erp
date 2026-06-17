@@ -77,9 +77,13 @@ export class FocusNFeEmissor implements EmissorFiscal {
           pis_situacao_tributaria: it.pisCst,
           cofins_situacao_tributaria: it.cofinsCst,
         };
-        // ICMS tributado (Regime Normal): manda base/alíquota/valor.
-        if (it.icmsAliquota > 0) {
-          item.icms_modalidade_base_calculo = 3; // valor da operação
+        // CSOSN (Simples) tem 3 dígitos → sem grupo de base. CST de ICMS (Regime Normal) tem 2.
+        // CST tributado (00/10/20/70/90) EXIGE o grupo de base (modBC antes de vBC), mesmo com
+        // alíquota 0 — senão o XML sai com vBC sem modBC e a SEFAZ rejeita.
+        const cst = String(it.icmsCst);
+        const cstTributado = ['00', '10', '20', '70', '90'];
+        if (cst.length === 2 && cstTributado.includes(cst)) {
+          item.icms_modalidade_base_calculo = 3; // 3 = valor da operação
           item.icms_base_calculo = round2(it.valorBruto);
           item.icms_aliquota = it.icmsAliquota;
           item.icms_valor = round2(it.valorBruto * it.icmsAliquota / 100);
