@@ -1,3 +1,4 @@
+// build: 2026-06-18b (força rebuild do Cloudflare — checkbox "Detalhar lançamentos")
 import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
