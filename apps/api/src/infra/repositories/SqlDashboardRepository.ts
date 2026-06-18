@@ -72,10 +72,14 @@ export class SqlDashboardRepository implements DashboardRepository {
          FROM "${s}".titulo WHERE status='pago' AND date_trunc('month', pago_em) = date_trunc('month', now())`))[0];
 
     // Usa o nome ATUAL do produto (cadastro); snapshot só como reserva (produto excluído).
+    // Só pedidos válidos (não orçamento/cancelado) e dos últimos 30 dias — mesma base do
+    // card "Vendas por produto" (vendasProd), para os dois baterem.
     const top = await this.ds.query(
       `SELECT COALESCE(pr.nome, pi.produto_nome, '—') nome, SUM(pi.quantidade)::numeric q, COALESCE(SUM(pi.subtotal),0) valor
          FROM "${s}".pedido_item pi
+         JOIN "${s}".pedido p ON p.id = pi.pedido_id AND p.${NAO}
          LEFT JOIN "${s}".produto pr ON pr.id = pi.produto_id
+        WHERE p.criado_em >= now() - interval '30 days'
         GROUP BY COALESCE(pr.nome, pi.produto_nome, '—') ORDER BY q DESC LIMIT 5`);
 
     const topCliVal = await this.ds.query(
@@ -118,7 +122,7 @@ export class SqlDashboardRepository implements DashboardRepository {
          FROM "${s}".pedido_item pi
          JOIN "${s}".pedido p ON p.id = pi.pedido_id AND p.${NAO}
          LEFT JOIN "${s}".produto pr ON pr.id = pi.produto_id
-        WHERE p.criado_em >= date_trunc('month', now()) - interval '5 months'
+        WHERE p.criado_em >= now() - interval '30 days'
         GROUP BY 1 ORDER BY total DESC LIMIT 6`);
 
     const saldos = await this.ds.query(

@@ -188,6 +188,14 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-18** — **Fix: divergência entre os cards "Vendas por produto" e "Produtos mais vendidos" do Dashboard.**
+  Causa: no `SqlDashboardRepository.resumo` as duas queries tinham bases diferentes. O `top` (Produtos mais vendidos)
+  **não filtrava status nem período** — somava `pedido_item` de TODOS os pedidos (incluindo orçamento/cancelado) e de
+  todo o histórico; já o `vendasProd` (Vendas por produto) filtrava `p.${NAO}` + janela de 6 meses. Por isso Dysport 300
+  aparecia R$ 23k num e R$ 19k no outro (os ~R$ 4k extras vinham de orçamentos/cancelados). **Correção:** alinhei as duas
+  à **mesma base** — `JOIN pedido p ... AND status NOT IN (orcamento,cancelado)` + `WHERE p.criado_em >= now() - interval '30 days'`
+  (decisão do Gui: janela de **30 dias** nos dois). Só backend, **sem migration, sem cap nova, sem mudança de tela**
+  (roda via tsx no Render). **Pendente Gui:** commit+push (Render redeploia) — não precisa rebuild web nem APK.
 - **2026-06-18** — **DRE gerencial por competência: grupos (Receita / Custo de mercadoria / Custos operacionais / Despesas) + drill por lançamento + categorias base.**
   Decisão do Gui: NÃO seguir com contabilidade formal (escrituração/SPED) — só a parte **gerencial**. **Migration tenant 062**
   `categoria_financeira += grupo` (receita | custo_mercadoria | custo_operacional | despesa; default 'despesa', backfill receita p/ tipo=receita).
