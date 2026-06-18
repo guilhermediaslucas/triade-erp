@@ -114,6 +114,9 @@ export function rotasFinanceiro(deps: Dependencias): Router {
   r.get('/financeiro/dre-competencia', autF, azF('financeiro.fluxo.ver'), async (req, res) => {
     try { res.json(await deps.financeiroService.dreCompetencia(req.usuario!.schema, req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
   });
+  r.get('/financeiro/dre-competencia/titulos', autF, azF('financeiro.fluxo.ver'), async (req, res) => {
+    try { res.json(await deps.financeiroService.dreCompetenciaTitulos(req.usuario!.schema, req.query.de, req.query.ate, req.query.grupo, req.query.categoria)); } catch (e) { tratarErro(res, e); }
+  });
   r.get('/financeiro/dre/detalhe', autF, azF('financeiro.fluxo.ver'), async (req, res) => {
     try { res.json(await deps.financeiroService.dreDetalhe(req.usuario!.schema, req.query.de, req.query.ate, req.query.por, req.query.tipo, req.query.chave)); } catch (e) { tratarErro(res, e); }
   });

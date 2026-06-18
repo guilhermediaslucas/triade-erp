@@ -20,9 +20,18 @@ export interface RelatorioDre {
   totalReceitas: number; totalDespesas: number; resultado: number;
   anterior: DreResumo | null;   // mesmo período imediatamente anterior (comparação); null se sem datas
 }
-// DRE por competência (emissão) — linha por categoria financeira, com a conta contábil.
+// DRE por competência (emissão) — gerencial, agrupada por grupo > categoria (com a conta contábil).
+export type GrupoDre = 'receita' | 'custo_mercadoria' | 'custo_operacional' | 'despesa';
+export const GRUPOS_DRE: GrupoDre[] = ['receita', 'custo_mercadoria', 'custo_operacional', 'despesa'];
 export interface DreCompLinha { categoria: string; contaCodigo: string | null; contaDescricao: string | null; total: number; }
-export interface DreCompetencia { receitas: DreCompLinha[]; despesas: DreCompLinha[]; totalReceitas: number; totalDespesas: number; resultado: number; }
+export interface DreCompGrupo { grupo: GrupoDre; total: number; linhas: DreCompLinha[]; }
+// Cascata: receita → (− custo de mercadoria) = lucro bruto → (− custos operacionais − despesas) = resultado.
+export interface DreCompetencia {
+  grupos: DreCompGrupo[];
+  totalReceita: number; custoMercadoria: number; lucroBruto: number;
+  custoOperacional: number; despesa: number; resultado: number;
+}
+export interface DreCompTituloDetalhe { numero: string; descricao: string; pessoaNome: string | null; data: string | null; valor: number; }
 
 export interface RelatorioConciliacao {
   linhas: LinhaConciliacao[];
@@ -180,25 +189,42 @@ export class FinanceiroService {
   // contábil) + os buckets fixos da baixa (juros/multa/desconto/taxa de cartão).
   async dreCompetencia(schema: string, de: any, ate: any): Promise<DreCompetencia> {
     const { categorias, ajustes } = await this.repo.dreCompetencia(schema, lim(de), lim(ate));
-    const receitas: DreCompLinha[] = [];
-    const despesas: DreCompLinha[] = [];
+    // Acumula as linhas por grupo da DRE. Grupo desconhecido cai em 'despesa'.
+    const porGrupo: Record<GrupoDre, DreCompLinha[]> = { receita: [], custo_mercadoria: [], custo_operacional: [], despesa: [] };
+    const grupoOk = (g: string): GrupoDre => (GRUPOS_DRE.includes(g as GrupoDre) ? (g as GrupoDre) : 'despesa');
     for (const c of categorias) {
-      const l: DreCompLinha = { categoria: c.categoria, contaCodigo: c.contaCodigo, contaDescricao: c.contaDescricao, total: r2(c.total) };
-      (c.tipo === 'receber' ? receitas : despesas).push(l);
+      porGrupo[grupoOk(c.grupo)].push({ categoria: c.categoria, contaCodigo: c.contaCodigo, contaDescricao: c.contaDescricao, total: r2(c.total) });
     }
-    const bk = (categoria: string, total: number): DreCompLinha => ({ categoria, contaCodigo: null, contaDescricao: null, total: r2(total) });
-    if (ajustes.jurosReceber > 0) receitas.push(bk('Juros recebidos', ajustes.jurosReceber));
-    if (ajustes.multaReceber > 0) receitas.push(bk('Multa recebida', ajustes.multaReceber));
-    if (ajustes.descontoPagar > 0) receitas.push(bk('Desconto obtido', ajustes.descontoPagar));
-    if (ajustes.taxaCartao > 0) despesas.push(bk('Taxa de cartão', ajustes.taxaCartao));
-    if (ajustes.descontoReceber > 0) despesas.push(bk('Desconto concedido', ajustes.descontoReceber));
-    if (ajustes.jurosPagar > 0) despesas.push(bk('Juros pagos', ajustes.jurosPagar));
-    if (ajustes.multaPagar > 0) despesas.push(bk('Multa paga', ajustes.multaPagar));
-    receitas.sort((a, b) => b.total - a.total);
-    despesas.sort((a, b) => b.total - a.total);
-    const totalReceitas = r2(receitas.reduce((a, l) => a + l.total, 0));
-    const totalDespesas = r2(despesas.reduce((a, l) => a + l.total, 0));
-    return { receitas, despesas, totalReceitas, totalDespesas, resultado: r2(totalReceitas - totalDespesas) };
+    // Buckets fixos (composição da baixa): receita / custo operacional (taxa de cartão) / despesa.
+    const bk = (g: GrupoDre, categoria: string, total: number) => { if (total > 0) porGrupo[g].push({ categoria, contaCodigo: null, contaDescricao: null, total: r2(total) }); };
+    bk('receita', 'Juros recebidos', ajustes.jurosReceber);
+    bk('receita', 'Multa recebida', ajustes.multaReceber);
+    bk('receita', 'Desconto obtido', ajustes.descontoPagar);
+    bk('custo_operacional', 'Taxa de cartão', ajustes.taxaCartao);
+    bk('despesa', 'Desconto concedido', ajustes.descontoReceber);
+    bk('despesa', 'Juros pagos', ajustes.jurosPagar);
+    bk('despesa', 'Multa paga', ajustes.multaPagar);
+
+    const grupos: DreCompGrupo[] = GRUPOS_DRE.map((g) => {
+      const linhas = porGrupo[g].sort((a, b) => b.total - a.total);
+      return { grupo: g, total: r2(linhas.reduce((a, l) => a + l.total, 0)), linhas };
+    });
+    const tot = (g: GrupoDre) => grupos.find((x) => x.grupo === g)!.total;
+    const totalReceita = tot('receita'), custoMercadoria = tot('custo_mercadoria');
+    const custoOperacional = tot('custo_operacional'), despesa = tot('despesa');
+    const lucroBruto = r2(totalReceita - custoMercadoria);
+    return {
+      grupos, totalReceita, custoMercadoria, lucroBruto, custoOperacional, despesa,
+      resultado: r2(lucroBruto - custoOperacional - despesa),
+    };
+  }
+
+  // Drill da DRE por competência: títulos (por emissão) que compõem uma linha (grupo + categoria).
+  async dreCompetenciaTitulos(schema: string, de: any, ate: any, grupo: any, categoria: any): Promise<DreCompTituloDetalhe[]> {
+    const g = String(grupo ?? '');
+    const cat = String(categoria ?? '');
+    if (!g || !cat) return [];
+    return this.repo.dreCompetenciaTitulos(schema, lim(de), lim(ate), g, cat);
   }
 
   // DRE de caixa (resultado do período): títulos pagos no período, agrupados por origem ou categoria.

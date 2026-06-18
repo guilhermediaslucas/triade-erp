@@ -45,13 +45,15 @@ export interface MovimentoFluxo {
 }
 // Soma dos títulos pagos por tipo + chave de agrupamento (origem ou categoria) — para a DRE de caixa.
 export interface PagoAgrupado { tipo: TipoTitulo; chave: string; total: number; }
-// DRE por competência (emissão): linha por categoria financeira, com a conta contábil.
-export interface DreCatLinha { tipo: TipoTitulo; categoria: string; contaCodigo: string | null; contaDescricao: string | null; total: number; }
+// DRE por competência (emissão): linha por categoria financeira, com o grupo da DRE e a conta contábil.
+export interface DreCatLinha { grupo: string; categoria: string; contaCodigo: string | null; contaDescricao: string | null; total: number; }
 // Buckets fixos (composição da baixa) no período de competência.
 export interface DreAjustes {
   jurosReceber: number; multaReceber: number; descontoReceber: number;
   jurosPagar: number; multaPagar: number; descontoPagar: number; taxaCartao: number;
 }
+// Drill da DRE por competência: um título que compõe uma linha (grupo + categoria).
+export interface DreCompTitulo { numero: string; descricao: string; pessoaNome: string | null; data: string | null; valor: number; }
 // Lançamento (título pago) numa conta corrente, para conciliação bancária.
 export interface LinhaConciliacao { id: string; tipo: TipoTitulo; descricao: string; pessoaNome: string | null; valor: number; pagoEm: string; conciliado: boolean; }
 
@@ -59,8 +61,10 @@ export interface TituloRepository {
   listarPagos(schema: string): Promise<MovimentoFluxo[]>;
   pagosPorOrigem(schema: string, de: string | null, ate: string | null): Promise<PagoAgrupado[]>;
   pagosPorCategoria(schema: string, de: string | null, ate: string | null): Promise<PagoAgrupado[]>;
-  // DRE por competência (emissão): categorias com conta contábil + buckets de ajustes.
+  // DRE por competência (emissão): categorias com grupo + conta contábil + buckets de ajustes.
   dreCompetencia(schema: string, de: string | null, ate: string | null): Promise<{ categorias: DreCatLinha[]; ajustes: DreAjustes }>;
+  // Drill: títulos (por emissão) que compõem uma linha da DRE por competência (grupo + categoria).
+  dreCompetenciaTitulos(schema: string, de: string | null, ate: string | null, grupo: string, categoria: string): Promise<DreCompTitulo[]>;
   listar(schema: string, tipo: TipoTitulo): Promise<Titulo[]>;
   listarPorPedido(schema: string, pedidoId: string): Promise<Titulo[]>;
   buscarPorId(schema: string, id: string): Promise<Titulo | null>;

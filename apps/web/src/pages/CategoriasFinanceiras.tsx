@@ -5,9 +5,12 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { useToast } from '../components/Toast.js';
 import { Ic } from '../components/Icones.js';
 
-type TipoCat = 'receita' | 'despesa';
-interface Cat { id: string; nome: string; tipo: TipoCat; ativo: boolean; contaContabilId: string | null; }
+type GrupoCat = 'receita' | 'custo_mercadoria' | 'custo_operacional' | 'despesa';
+const GRUPOS: GrupoCat[] = ['receita', 'custo_mercadoria', 'custo_operacional', 'despesa'];
+interface Cat { id: string; nome: string; grupo: GrupoCat; ativo: boolean; contaContabilId: string | null; }
 interface ContaContabil { id: string; codigo: string; descricao: string; tipo: string; ativo: boolean; }
+
+const pillGrupo = (g: GrupoCat) => (g === 'receita' ? 'st-verde' : g === 'despesa' ? 'st-roxo' : 'st-laranja');
 
 export function CategoriasFinanceiras() {
   const { token, temCapability } = useAuth();
@@ -32,7 +35,7 @@ export function CategoriasFinanceiras() {
   const filtrados = itens.filter((x: any) => {
     if (statusF === 'ativos' && !x.ativo) return false;
     if (statusF === 'inativos' && x.ativo) return false;
-    if (busca) { const q = busca.toLowerCase(); const txt = [x.nome, x.email, x.perfilNome].filter(Boolean).join(' ').toLowerCase(); if (!txt.includes(q)) return false; }
+    if (busca) { const q = busca.toLowerCase(); if (!String(x.nome).toLowerCase().includes(q)) return false; }
     return true;
   });
 
@@ -41,7 +44,7 @@ export function CategoriasFinanceiras() {
       <div className="crumb">{t('catfin.crumb')}</div>
       <div className="page-head">
         <div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('catfin.titulo')}</h1><div className="muted page-sub">{t('catfin.sub')}</div></div>
-        {pode && <button className="btn-primary" onClick={() => setEdit({ id: '', nome: '', tipo: 'despesa', ativo: true, contaContabilId: null })}>+ {t('catfin.nova')}</button>}
+        {pode && <button className="btn-primary" onClick={() => setEdit({ id: '', nome: '', grupo: 'despesa', ativo: true, contaContabilId: null })}>+ {t('catfin.nova')}</button>}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="toolbar">
@@ -50,13 +53,13 @@ export function CategoriasFinanceiras() {
       </div>
       <div className="card pad0">
         <table className="tabela tabela-cards">
-          <thead><tr><th>{t('catfin.nome')}</th><th>{t('catfin.tipo')}</th><th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
+          <thead><tr><th>{t('catfin.nome')}</th><th>{t('catfin.grupo')}</th><th>{t('usuarios.situacao')}</th><th>{t('usuarios.acoes')}</th></tr></thead>
           <tbody>
             {filtrados.length === 0 && <tr><td colSpan={4} className="vazio">{t('common.nenhum')}</td></tr>}
             {filtrados.map((c) => (
               <tr key={c.id} className={c.ativo ? '' : 'linha-inativa'}>
                 <td data-label={t('catfin.nome')}>{c.nome}</td>
-                <td data-label={t('catfin.tipo')}><span className={'pill ' + (c.tipo === 'receita' ? 'st-verde' : 'st-laranja')}>{t('catfin.' + c.tipo)}</span></td>
+                <td data-label={t('catfin.grupo')}><span className={'pill ' + pillGrupo(c.grupo)}>{t('dre.g_' + c.grupo)}</span></td>
                 <td data-label={t('usuarios.situacao')}><span className={c.ativo ? 'pill-ok' : 'pill-off'}>{c.ativo ? t('usuarios.ativo') : t('usuarios.inativo')}</span></td>
                 <td style={{ textAlign: 'right' }}><span className="acoes-ic">{pode && <>
                   <button className="acao-ic" title={t('common.editar')} onClick={() => setEdit({ ...c })}><Ic name="i-edit" className="sm" /></button>
@@ -77,7 +80,7 @@ function ModalCat({ c, onFechar, onSalvo }: { c: Cat; onFechar: () => void; onSa
   const { t } = useI18n();
   const novo = !c.id;
   const [nome, setNome] = useState(c.nome);
-  const [tipo, setTipo] = useState<TipoCat>(c.tipo);
+  const [grupo, setGrupo] = useState<GrupoCat>(c.grupo);
   const [contaContabilId, setContaContabilId] = useState<string>(c.contaContabilId ?? '');
   const [contas, setContas] = useState<ContaContabil[]>([]);
   const [erro, setErro] = useState<string | null>(null);
@@ -85,7 +88,7 @@ function ModalCat({ c, onFechar, onSalvo }: { c: Cat; onFechar: () => void; onSa
   useEffect(() => { api.get<ContaContabil[]>('/contas-contabeis', token!).then((l) => setContas(l.filter((x) => x.ativo))).catch(() => {}); /* eslint-disable-next-line */ }, []);
   async function salvar() {
     setErro(null); setSalv(true);
-    const corpo = { nome, tipo, contaContabilId: contaContabilId || null };
+    const corpo = { nome, grupo, contaContabilId: contaContabilId || null };
     try {
       if (novo) await api.post('/categorias-financeiras', corpo, token!);
       else await api.put('/categorias-financeiras/' + c.id, corpo, token!);
@@ -97,10 +100,9 @@ function ModalCat({ c, onFechar, onSalvo }: { c: Cat; onFechar: () => void; onSa
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>{novo ? t('catfin.nova') : t('common.editar')}</h2>
         <label className="campo">{t('catfin.nome')}<input value={nome} onChange={(e) => setNome(e.target.value)} autoFocus /></label>
-        <label className="campo">{t('catfin.tipo')}
-          <select value={tipo} onChange={(e) => setTipo(e.target.value as TipoCat)}>
-            <option value="despesa">{t('catfin.despesa')}</option>
-            <option value="receita">{t('catfin.receita')}</option>
+        <label className="campo">{t('catfin.grupo')}
+          <select value={grupo} onChange={(e) => setGrupo(e.target.value as GrupoCat)}>
+            {GRUPOS.map((g) => <option key={g} value={g}>{t('dre.g_' + g)}</option>)}
           </select>
         </label>
         <label className="campo">{t('catfin.conta_contabil')}

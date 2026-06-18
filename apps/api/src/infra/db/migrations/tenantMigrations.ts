@@ -866,4 +866,13 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".titulo ADD COLUMN IF NOT EXISTS taxa_cartao numeric(14,2) NOT NULL DEFAULT 0;
     `,
   },
+  {
+    // Grupo da DRE gerencial na categoria financeira: receita | custo_mercadoria |
+    // custo_operacional | despesa. Backfill: receita p/ tipo=receita, senão despesa.
+    nome: '062_categoria_grupo',
+    sql: (s) => `
+      ALTER TABLE "${s}".categoria_financeira ADD COLUMN IF NOT EXISTS grupo text NOT NULL DEFAULT 'despesa';
+      UPDATE "${s}".categoria_financeira SET grupo = 'receita' WHERE tipo = 'receita' AND grupo = 'despesa';
+    `,
+  },
 ];

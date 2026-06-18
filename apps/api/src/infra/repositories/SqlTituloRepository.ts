@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { DataSource } from 'typeorm';
-import type { AjustesBaixa, DreAjustes, DreCatLinha, LinhaConciliacao, MovimentoFluxo, NovoTitulo, PagoAgrupado, Titulo, TipoTitulo, TituloRepository } from '../../domain/financeiro/Titulo.js';
+import type { AjustesBaixa, DreAjustes, DreCatLinha, DreCompTitulo, LinhaConciliacao, MovimentoFluxo, NovoTitulo, PagoAgrupado, Titulo, TipoTitulo, TituloRepository } from '../../domain/financeiro/Titulo.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 const iso = (d: any) => (d ? new Date(d).toISOString() : null);
@@ -89,13 +89,15 @@ export class SqlTituloRepository implements TituloRepository {
     const s = validarSchema(schema);
     const comp = `COALESCE(t.emissao, t.criado_em::date)`;
     const where = `t.previsto = false AND ($1::date IS NULL OR ${comp} >= $1) AND ($2::date IS NULL OR ${comp} <= $2)`;
+    // Grupo da DRE: o da categoria; sem categoria, deriva do tipo (receber→receita, pagar→despesa).
+    const grupoExpr = `COALESCE(cf.grupo, CASE WHEN t.tipo='receber' THEN 'receita' ELSE 'despesa' END)`;
     const cats = await this.ds.query(
-      `SELECT t.tipo, COALESCE(cf.nome, '—') categoria, cc.codigo conta_codigo, cc.descricao conta_descricao, SUM(t.valor)::numeric total
+      `SELECT ${grupoExpr} grupo, COALESCE(cf.nome, '—') categoria, cc.codigo conta_codigo, cc.descricao conta_descricao, SUM(t.valor)::numeric total
          FROM "${s}".titulo t
          LEFT JOIN "${s}".categoria_financeira cf ON cf.id = t.categoria_financeira_id
          LEFT JOIN "${s}".conta_contabil cc ON cc.id = cf.conta_contabil_id
         WHERE ${where}
-        GROUP BY t.tipo, COALESCE(cf.nome, '—'), cc.codigo, cc.descricao
+        GROUP BY ${grupoExpr}, COALESCE(cf.nome, '—'), cc.codigo, cc.descricao
         ORDER BY total DESC`, [de, ate]);
     const a = (await this.ds.query(
       `SELECT
@@ -109,7 +111,7 @@ export class SqlTituloRepository implements TituloRepository {
        FROM "${s}".titulo t WHERE ${where}`, [de, ate]))[0];
     return {
       categorias: cats.map((r: any): DreCatLinha => ({
-        tipo: r.tipo, categoria: r.categoria, contaCodigo: r.conta_codigo ?? null,
+        grupo: r.grupo, categoria: r.categoria, contaCodigo: r.conta_codigo ?? null,
         contaDescricao: r.conta_descricao ?? null, total: Number(r.total),
       })),
       ajustes: {
@@ -118,6 +120,25 @@ export class SqlTituloRepository implements TituloRepository {
         taxaCartao: Number(a.taxa_cartao),
       },
     };
+  }
+
+  async dreCompetenciaTitulos(schema: string, de: string | null, ate: string | null, grupo: string, categoria: string): Promise<DreCompTitulo[]> {
+    const s = validarSchema(schema);
+    const comp = `COALESCE(t.emissao, t.criado_em::date)`;
+    const grupoExpr = `COALESCE(cf.grupo, CASE WHEN t.tipo='receber' THEN 'receita' ELSE 'despesa' END)`;
+    const rows = await this.ds.query(
+      `SELECT t.tipo, t.numero, t.descricao, t.pessoa_nome, ${comp} AS data, t.valor
+         FROM "${s}".titulo t
+         LEFT JOIN "${s}".categoria_financeira cf ON cf.id = t.categoria_financeira_id
+        WHERE t.previsto = false
+          AND ($1::date IS NULL OR ${comp} >= $1) AND ($2::date IS NULL OR ${comp} <= $2)
+          AND ${grupoExpr} = $3 AND COALESCE(cf.nome, '—') = $4
+        ORDER BY ${comp}, t.numero`, [de, ate, grupo, categoria]);
+    return rows.map((r: any): DreCompTitulo => ({
+      numero: numeroFmt(r.tipo, r.numero),
+      descricao: r.descricao, pessoaNome: r.pessoa_nome ?? null,
+      data: r.data ? String(r.data).slice(0, 10) : null, valor: Number(r.valor),
+    }));
   }
 
   async listar(schema: string, tipo: TipoTitulo): Promise<Titulo[]> {

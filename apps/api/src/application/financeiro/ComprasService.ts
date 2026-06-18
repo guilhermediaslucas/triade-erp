@@ -3,6 +3,8 @@ import type { TituloRepository } from '../../domain/financeiro/Titulo.js';
 import type { Recebimento, RecebimentoRepository } from '../../domain/financeiro/Recebimento.js';
 import type { EstoqueRepository } from '../../domain/estoque/Estoque.js';
 import type { EtiquetaRepository } from '../../domain/estoque/Etiqueta.js';
+import type { CategoriaFinanceiraRepository } from '../../domain/financeiro/CategoriaFinanceira.js';
+import { CATEGORIA_COMPRA_MERCADORIA } from '../../domain/financeiro/CategoriaFinanceira.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
 function venc30(): string { return new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10); }
@@ -16,6 +18,7 @@ export class ComprasService {
     private readonly recebimentos: RecebimentoRepository,
     private readonly estoque: EstoqueRepository,
     private readonly etiquetas: EtiquetaRepository,
+    private readonly categorias: CategoriaFinanceiraRepository,
   ) {}
 
   // Lança a nota com 1+ produtos: cria UM título a pagar (valor total) + UMA pendência
@@ -44,8 +47,12 @@ export class ComprasService {
     const total = r2(itens.reduce((a, i) => a + i.total, 0));
 
     const descricao = 'Compra' + (fornecedorNome ? ' - ' + fornecedorNome : '') + (nf ? ' (NF ' + nf + ')' : '');
+    // Enquadra o título de compra na categoria "Compra de mercadorias para revenda"
+    // (grupo Custo de aquisição de mercadoria na DRE). Best-effort: se a categoria não
+    // existir no tenant, segue sem categoria (não bloqueia o lançamento da nota).
+    const catCompra = await this.categorias.buscarPorNome(schema, CATEGORIA_COMPRA_MERCADORIA).catch(() => null);
     const tituloId = await this.titulos.criar(schema,
-      { tipo: 'pagar', descricao, pessoaNome: fornecedorNome, valor: total, vencimento, emissao, numeroDocumento }, 'compra', null);
+      { tipo: 'pagar', descricao, pessoaNome: fornecedorNome, valor: total, vencimento, emissao, numeroDocumento, categoriaFinanceiraId: catCompra?.id ?? null }, 'compra', null);
 
     const recebimentoIds: string[] = [];
     for (const it of itens) {

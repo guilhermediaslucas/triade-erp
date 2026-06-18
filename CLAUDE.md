@@ -188,6 +188,26 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-18** — **DRE gerencial por competência: grupos (Receita / Custo de mercadoria / Custos operacionais / Despesas) + drill por lançamento + categorias base.**
+  Decisão do Gui: NÃO seguir com contabilidade formal (escrituração/SPED) — só a parte **gerencial**. **Migration tenant 062**
+  `categoria_financeira += grupo` (receita | custo_mercadoria | custo_operacional | despesa; default 'despesa', backfill receita p/ tipo=receita).
+  **Domínio:** `CategoriaFinanceira` += `grupo` (`GrupoCatFin`/`GRUPOS_CATFIN`/`tipoDoGrupo` — o `tipo` receber/pagar é **derivado** do grupo)
+  + const `CATEGORIA_COMPRA_MERCADORIA`; repo += `buscarPorNome`; `criar/atualizar` passam a receber **grupo** (derivam tipo). `SqlCategoriaFinanceiraRepository`
+  grava/lê grupo + `buscarPorNome`. `CategoriasFinanceirasService` valida grupo (`catfin.grupo_invalido`; aceita tipo legado por compat).
+  **Seed base p/ todas as empresas:** `infra/db/categoriasPadraoSeed.ts` (`CATEGORIAS_PADRAO` 22 categorias + `garantirCategoriasPadrao`,
+  idempotente por nome) chamado no `prepararBanco` (boot, junto dos perfis padrão). **Nota de entrada:** `ComprasService` recebe o
+  `CategoriaFinanceiraRepository` e grava a categoria **"Compra de mercadorias para revenda"** no título a pagar de compra (best-effort — sem a
+  categoria, segue sem). **DRE por competência (reescrita):** `SqlTituloRepository.dreCompetencia` agrupa por **grupo** (`COALESCE(cf.grupo, tipo→receita/despesa)`)
+  + categoria + conta contábil; novo `dreCompetenciaTitulos(grupo, categoria)` = **drill** (títulos por emissão que compõem a linha).
+  `FinanceiroService.dreCompetencia` monta os 4 grupos na ordem da DRE com **cascata** (Receita − Custo de mercadoria = Lucro bruto; − Custos
+  operacionais − Despesas = Resultado) + buckets mapeados (juros/multa/desconto recebidos→receita; taxa de cartão→custo operacional; juros/multa
+  pagos + desconto concedido→despesa). Rota `GET /financeiro/dre-competencia/titulos?de=&ate=&grupo=&categoria=` (cap `financeiro.fluxo.ver`).
+  **Frontend:** `RelDRECompetencia.tsx` reescrita — demonstração em cascata, grupos expansíveis, **clique na conta abre os lançamentos** (drill);
+  KPIs Receita/Lucro bruto/Resultado/Margem; CSV. `CategoriasFinanceiras.tsx` troca o select de tipo por **Grupo (DRE)** (4 opções). CSS
+  `.dre-demonstrativo/.dre-grupo/.dre-conta/.dre-drill/.dre-subtotal` (theme-safe). i18n `dre.g_*`/`dre.lucro_bruto`/`dre.lancamentos`/`catfin.grupo`
+  pt/en/es. **Sem cap nova** (reusa `financeiro.fluxo.ver` + `cadastros.catfin.*`) → **não precisa relogar**. **Sem dep nova.** Backend roda via tsx
+  no Render (boot aplica a **062** + semeia as categorias base). **Pendente Gui:** `npm run build -w @triade/web` → commit+push (Render aplica 062 +
+  seed no boot) → `scripts\app-apk.bat` (telas DRE + Categorias mudaram). Validação por hand-review (tsc local = fonte de verdade, como sempre).
 - **2026-06-16** — **Painel de referência da tabela de ICMS em Dados da empresa › Fiscal (só frontend).** `lib/icms.ts` (espelha o
   `domain/fiscal/icms.ts`) + botão **"Ver tabela de ICMS interestadual"** no `ConfigFiscalCard` (recebe `ufEmpresa` de DadosEmpresa):
   a partir da UF da empresa, mostra um chip por UF de destino com a alíquota (roxo=interna, verde=12%, laranja=7%), usando os pills

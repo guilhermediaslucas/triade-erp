@@ -3210,6 +3210,32 @@ Object.assign(es, {
   'dre.total': 'Total', 'dre.grupo': 'Grupo', 'dre.receita': 'Ingreso', 'dre.despesa': 'Gasto',
 });
 
+// ===== DRE gerencial: grupos + drill / grupo na categoria financeira =====
+Object.assign(pt, {
+  'dre.g_receita': 'Receita', 'dre.g_custo_mercadoria': 'Custo de aquisição de mercadoria',
+  'dre.g_custo_operacional': 'Custos operacionais', 'dre.g_despesa': 'Despesas',
+  'dre.lucro_bruto': 'Lucro bruto', 'dre.resultado_periodo': 'Resultado do período',
+  'dre.lancamentos': 'Lançamentos que compõem', 'dre.sem_lancamentos': 'Sem lançamentos no período.',
+  'dre.conta': 'Conta', 'dre.documento': 'Documento', 'dre.data': 'Data',
+  'catfin.grupo': 'Grupo (DRE)', 'catfin.grupo_invalido': 'Grupo de categoria inválido.',
+});
+Object.assign(en, {
+  'dre.g_receita': 'Revenue', 'dre.g_custo_mercadoria': 'Cost of goods purchased',
+  'dre.g_custo_operacional': 'Operating costs', 'dre.g_despesa': 'Expenses',
+  'dre.lucro_bruto': 'Gross profit', 'dre.resultado_periodo': 'Period result',
+  'dre.lancamentos': 'Entries in this line', 'dre.sem_lancamentos': 'No entries in the period.',
+  'dre.conta': 'Account', 'dre.documento': 'Document', 'dre.data': 'Date',
+  'catfin.grupo': 'Group (P&L)', 'catfin.grupo_invalido': 'Invalid category group.',
+});
+Object.assign(es, {
+  'dre.g_receita': 'Ingreso', 'dre.g_custo_mercadoria': 'Costo de adquisición de mercadería',
+  'dre.g_custo_operacional': 'Costos operativos', 'dre.g_despesa': 'Gastos',
+  'dre.lucro_bruto': 'Beneficio bruto', 'dre.resultado_periodo': 'Resultado del período',
+  'dre.lancamentos': 'Asientos de esta línea', 'dre.sem_lancamentos': 'Sin asientos en el período.',
+  'dre.conta': 'Cuenta', 'dre.documento': 'Documento', 'dre.data': 'Fecha',
+  'catfin.grupo': 'Grupo (ER)', 'catfin.grupo_invalido': 'Grupo de categoría inválido.',
+});
+
 // ===== Tabela de ICMS interestadual (referência em Dados da empresa › Fiscal) =====
 Object.assign(pt, {
   'fiscal.tabela_ver': 'Ver tabela de ICMS interestadual',

@@ -161,7 +161,7 @@ export function montarDependencias() {
     financeiroService: new FinanceiroService(tituloRepo, pedidoRepo),
     categoriasFinanceirasService: new CategoriasFinanceirasService(catFinRepo),
     contasContabeisService: new ContasContabeisService(new SqlContaContabilRepository(AppDataSource)),
-    comprasService: new ComprasService(produtosRepo, tituloRepo, recebimentoRepo, estoqueRepo, etiquetaRepo),
+    comprasService: new ComprasService(produtosRepo, tituloRepo, recebimentoRepo, estoqueRepo, etiquetaRepo, catFinRepo),
     comissoesService: new ComissoesService(new SqlComissaoRepository(AppDataSource), tituloRepo),
     contasService: new ContasService(new SqlContaCorrenteRepository(AppDataSource)),
     dashboardService: new DashboardService(new SqlDashboardRepository(AppDataSource), new SqlMetaRepository(AppDataSource)),
