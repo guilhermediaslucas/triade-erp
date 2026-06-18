@@ -3217,6 +3217,7 @@ Object.assign(pt, {
   'dre.lucro_bruto': 'Lucro bruto', 'dre.resultado_periodo': 'Resultado do período',
   'dre.lancamentos': 'Lançamentos que compõem', 'dre.sem_lancamentos': 'Sem lançamentos no período.',
   'dre.conta': 'Conta', 'dre.documento': 'Documento', 'dre.data': 'Data',
+  'dre.detalhar': 'Detalhar lançamentos', 'dre.detalhar_hint': 'Exporta uma linha por lançamento de todas as contas.',
   'catfin.grupo': 'Grupo (DRE)', 'catfin.grupo_invalido': 'Grupo de categoria inválido.',
 });
 Object.assign(en, {
@@ -3225,6 +3226,7 @@ Object.assign(en, {
   'dre.lucro_bruto': 'Gross profit', 'dre.resultado_periodo': 'Period result',
   'dre.lancamentos': 'Entries in this line', 'dre.sem_lancamentos': 'No entries in the period.',
   'dre.conta': 'Account', 'dre.documento': 'Document', 'dre.data': 'Date',
+  'dre.detalhar': 'Detail entries', 'dre.detalhar_hint': 'Exports one row per entry across all accounts.',
   'catfin.grupo': 'Group (P&L)', 'catfin.grupo_invalido': 'Invalid category group.',
 });
 Object.assign(es, {
@@ -3233,6 +3235,7 @@ Object.assign(es, {
   'dre.lucro_bruto': 'Beneficio bruto', 'dre.resultado_periodo': 'Resultado del período',
   'dre.lancamentos': 'Asientos de esta línea', 'dre.sem_lancamentos': 'Sin asientos en el período.',
   'dre.conta': 'Cuenta', 'dre.documento': 'Documento', 'dre.data': 'Fecha',
+  'dre.detalhar': 'Detallar asientos', 'dre.detalhar_hint': 'Exporta una fila por asiento de todas las cuentas.',
   'catfin.grupo': 'Grupo (ER)', 'catfin.grupo_invalido': 'Grupo de categoría inválido.',
 });
 

@@ -137,7 +137,7 @@ function montarImagens(ncols: number): Img[] {
   const emp = logoEmpresa();
   if (emp) { const c = caixaLogo(emp.bytes, emp.ext, 1400000, 360000); imgs.push({ ...emp, col: 0, colOff: 45720, cx: c.cx, cy: c.cy }); }
   const tri = logoTriade();
-  if (tri) imgs.push({ ...tri, col: Math.max(1, ncols - 2), colOff: 0, cx: 1350000, cy: 342000 });
+  if (tri) imgs.push({ ...tri, col: Math.max(1, ncols - 1), colOff: 0, cx: 1200000, cy: 304000 });
   return imgs;
 }
 
@@ -194,7 +194,7 @@ function colsXml(cabecalho: string[], linhas: (string | number)[][], valCol: boo
         : String(v ?? '');
       if (s.length > max) max = s.length;
     }
-    return Math.min(60, Math.max(10, max + 2));
+    return Math.min(80, Math.max(16, max + 6));
   });
   return '<cols>' + larg.map((w, i) => `<col min="${i + 1}" max="${i + 1}" width="${w}" customWidth="1"/>`).join('') + '</cols>';
 }

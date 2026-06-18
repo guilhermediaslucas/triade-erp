@@ -188,6 +188,15 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-18** — **Excel da DRE: logo TRÍADE à direita, colunas mais largas (global) + opção "Detalhar lançamentos".**
+  **(1+2) `lib/excel.ts` (afeta o Excel de TODOS os relatórios):** logo TRÍADE movida da penúltima p/ a **última coluna**
+  (`montarImagens`: `col: ncols-1`, cx 1200000/cy 304000) — some a sobreposição com o título centralizado. `colsXml`: largura passou
+  de `min(60, max(10, len+2))` p/ `min(80, max(16, len+6))` (colunas mais largas). **(3) `RelDRECompetencia.tsx`:** checkbox
+  **"Detalhar lançamentos"** ao lado de CSV/Excel; quando marcado, `exportar()` chama `exportarDetalhado()` que varre cada
+  grupo×categoria (reusa cache `titulos`, senão busca `/financeiro/dre-competencia/titulos`) e gera uma planilha **uma linha por
+  lançamento** — cab `Grupo · Conta · Data · Documento · Descrição · Valor` (i18n `dre.conta/dre.data/dre.documento/fin.descricao`),
+  nome `dre-competencia-detalhada`. i18n novas `dre.detalhar`/`dre.detalhar_hint` pt/en/es. Só frontend, **sem backend/migration/cap**.
+  **Pendente Gui:** `npm run build -w @triade/web` → commit+push → `scripts\app-apk.bat`.
 - **2026-06-18** — **Botão "Exportar Excel" na DRE por competência.** `RelDRECompetencia.tsx`: `exportar()` virou
   `exportar(fmt: 'csv'|'xlsx')` (mesma montagem de linhas grupo/categoria/conta/valor); no cabeçalho, ao lado do CSV, entrou o
   `BotaoExcel` (verde, padrão das outras telas) chamando `baixarExcel('dre-competencia', cab, linhas, { periodo: rotuloPeriodo(de, ate) })`.

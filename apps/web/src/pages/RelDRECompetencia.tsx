@@ -28,6 +28,7 @@ export function RelDRECompetencia() {
   const [gruposAbertos, setGruposAbertos] = useState<Set<GrupoDre>>(new Set(['receita', 'custo_mercadoria', 'custo_operacional', 'despesa']));
   const [drill, setDrill] = useState<string | null>(null);          // `${grupo}|${categoria}`
   const [titulos, setTitulos] = useState<Record<string, TituloDet[]>>({});
+  const [detalhar, setDetalhar] = useState(false);
 
   async function carregar() {
     setErro(null); setDrill(null); setTitulos({});
@@ -62,11 +63,38 @@ export function RelDRECompetencia() {
 
   function exportar(fmt: 'csv' | 'xlsx') {
     if (!dre) return;
+    if (detalhar) { void exportarDetalhado(fmt); return; }
     const linhas: (string | number)[][] = [];
     for (const gr of dre.grupos) for (const l of gr.linhas) linhas.push([rotuloGrupo(gr.grupo), l.categoria, conta(l), l.total]);
     const cab = [t('dre.grupo'), t('catfin.nome'), t('catfin.conta_contabil'), t('pedidos.valor')];
     if (fmt === 'xlsx') baixarExcel('dre-competencia', cab, linhas, { periodo: rotuloPeriodo(de, ate) });
     else baixarCsv('dre-competencia', cab, linhas);
+  }
+
+  // Exporta com TODAS as contas abertas: uma linha por lançamento (busca o drill de cada
+  // grupo×categoria; reusa o cache de `titulos` quando já carregado).
+  async function exportarDetalhado(fmt: 'csv' | 'xlsx') {
+    if (!dre) return;
+    const linhas: (string | number)[][] = [];
+    for (const gr of dre.grupos) for (const l of gr.linhas) {
+      const chave = gr.grupo + '|' + l.categoria;
+      let ls = titulos[chave];
+      if (!ls) {
+        const qs = new URLSearchParams();
+        if (de) qs.set('de', de); if (ate) qs.set('ate', ate);
+        qs.set('grupo', gr.grupo); qs.set('categoria', l.categoria);
+        try { ls = await api.get<TituloDet[]>('/financeiro/dre-competencia/titulos?' + qs.toString(), token!); }
+        catch { ls = []; }
+      }
+      const contaTxt = l.categoria + (l.contaCodigo ? ' · ' + conta(l) : '');
+      for (const tt of ls) {
+        const desc = tt.descricao + (tt.pessoaNome ? ' · ' + tt.pessoaNome : '');
+        linhas.push([rotuloGrupo(gr.grupo), contaTxt, tt.data ?? '', tt.numero, desc, tt.valor]);
+      }
+    }
+    const cab = [t('dre.grupo'), t('dre.conta'), t('dre.data'), t('dre.documento'), t('fin.descricao'), t('pedidos.valor')];
+    if (fmt === 'xlsx') baixarExcel('dre-competencia-detalhada', cab, linhas, { periodo: rotuloPeriodo(de, ate) });
+    else baixarCsv('dre-competencia-detalhada', cab, linhas);
   }
 
   const grupoDe = (g: GrupoDre) => dre?.grupos.find((x) => x.grupo === g);
@@ -118,7 +146,10 @@ export function RelDRECompetencia() {
       <div className="crumb">{t('menu.financeiro')} / {t('menu.dre')}</div>
       <div className="page-head">
         <div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('dre.titulo')}</h1><div className="muted page-sub">{t('dre.sub')}</div></div>
-        {dre && <span style={{ display: 'flex', gap: 8 }}>
+        {dre && <span style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13 }} title={t('dre.detalhar_hint')}>
+            <input type="checkbox" checked={detalhar} onChange={(e) => setDetalhar(e.target.checked)} /> {t('dre.detalhar')}
+          </label>
           <button className="btn-ghost" onClick={() => exportar('csv')}><Ic name="i-download" className="sm" /> CSV</button>
           <BotaoExcel onClick={() => exportar('xlsx')} />
         </span>}
