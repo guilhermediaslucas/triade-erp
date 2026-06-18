@@ -91,7 +91,6 @@ const GRUPOS: Grupo[] = [
         sublabel: 'menu.sub.estoque',
         itens: [
           { rotulo: 'menu.produtos', to: '/cadastros/produtos', cap: 'cadastros.produto.listar' },
-          { rotulo: 'menu.categorias', to: '/cadastros/categorias', cap: 'cadastros.categoria.listar' },
           { rotulo: 'menu.formas_entrega', to: '/cadastros/formas-entrega', cap: 'cadastros.forma_entrega.listar' },
         ],
       },

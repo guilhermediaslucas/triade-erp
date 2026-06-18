@@ -9,7 +9,7 @@ export class SqlPrecoBaseRepository implements PrecoBaseRepository {
   async listar(schema: string): Promise<PrecoProduto[]> {
     const s = validarSchema(schema);
     const linhas = await this.ds.query(
-      `SELECT p.id, p.nome, p.unidade, p.ativo, c.nome AS categoria_nome,
+      `SELECT p.id, p.nome, p.unidade, p.ativo,
               COALESCE(pb.preco, 0) AS preco,
               (SELECT count(*) FROM "${s}".preco_campanha pc WHERE pc.produto_id = p.id) AS campanhas_count,
               (SELECT pc.preco FROM "${s}".preco_campanha pc
@@ -19,11 +19,10 @@ export class SqlPrecoBaseRepository implements PrecoBaseRepository {
                  WHERE pc.produto_id = p.id AND CURRENT_DATE BETWEEN pc.de AND pc.ate
                  ORDER BY pc.de DESC LIMIT 1) AS preco_vigente_motivo
          FROM "${s}".produto p
-         LEFT JOIN "${s}".categoria c ON c.id = p.categoria_id
          LEFT JOIN "${s}".preco_base pb ON pb.produto_id = p.id
         ORDER BY p.nome`);
     return linhas.map((r: any) => ({
-      produtoId: r.id, produtoNome: r.nome, categoriaNome: r.categoria_nome ?? null,
+      produtoId: r.id, produtoNome: r.nome,
       unidade: r.unidade, ativo: r.ativo, preco: Number(r.preco),
       campanhasCount: Number(r.campanhas_count ?? 0),
       precoVigente: r.preco_vigente != null ? Number(r.preco_vigente) : null,

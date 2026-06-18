@@ -28,7 +28,6 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'menu.rel_vendas', to: '/relatorios/vendas', cap: 'relatorios.vendas.ver' },
       { rotulo: 'menu.rel_pedidos', to: '/relatorios/pedidos', cap: 'relatorios.pedidos.ver' },
       { rotulo: 'menu.rel_produtos', to: '/relatorios/produtos', cap: 'relatorios.produtos.ver' },
-      { rotulo: 'menu.rel_categorias', to: '/relatorios/vendas-categoria', cap: 'relatorios.categorias.ver' },
       { rotulo: 'menu.rel_abc', to: '/relatorios/curva-abc', cap: 'relatorios.abc.ver' },
     ],
   },

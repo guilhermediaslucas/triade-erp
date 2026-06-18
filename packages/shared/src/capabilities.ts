@@ -7,8 +7,6 @@ export const CAPABILITIES: Capability[] = [
   { id: 'acesso.perfil.listar',     moduloChave: 'cap.modulo.acesso',     labelChave: 'cap.acesso.perfil.listar' },
   { id: 'acesso.perfil.gerenciar',  moduloChave: 'cap.modulo.acesso',     labelChave: 'cap.acesso.perfil.gerenciar' },
   { id: 'acesso.empresa.editar',    moduloChave: 'cap.modulo.acesso',     labelChave: 'cap.acesso.empresa.editar' },
-  { id: 'cadastros.categoria.listar',    moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.categoria.listar' },
-  { id: 'cadastros.categoria.gerenciar', moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.categoria.gerenciar' },
   { id: 'cadastros.produto.listar',      moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.produto.listar' },
   { id: 'cadastros.produto.gerenciar',   moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.produto.gerenciar' },
   { id: 'cadastros.condicao.listar',     moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.condicao.listar' },
@@ -68,7 +66,6 @@ export const CAPABILITIES: Capability[] = [
   { id: 'relatorios.vendas.ver',           moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.vendas' },
   { id: 'relatorios.pedidos.ver',          moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.pedidos' },
   { id: 'relatorios.produtos.ver',         moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.produtos' },
-  { id: 'relatorios.categorias.ver',       moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.categorias' },
   { id: 'relatorios.abc.ver',              moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.abc' },
   { id: 'relatorios.validade.ver',         moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.validade' },
   { id: 'relatorios.parado.ver',           moduloChave: 'cap.modulo.relatorios', labelChave: 'cap.relatorios.parado' },
@@ -92,7 +89,7 @@ export const CAPS_PAINEL_TV: string[] = ['painel.tv_comercial', 'painel.tv_exped
 export const CAPABILITY_IDS_GERAIS: string[] = CAPABILITY_IDS.filter((id) => !CAPS_PAINEL_TV.includes(id));
 
 // ===== Perfis padrão (criados em toda empresa, atuais e novas) =====
-const REL_COMERCIAL = ['relatorios.ver', 'relatorios.vendas.ver', 'relatorios.pedidos.ver', 'relatorios.produtos.ver', 'relatorios.categorias.ver', 'relatorios.abc.ver'];
+const REL_COMERCIAL = ['relatorios.ver', 'relatorios.vendas.ver', 'relatorios.pedidos.ver', 'relatorios.produtos.ver', 'relatorios.abc.ver'];
 
 export interface PerfilPadrao {
   nome: string;

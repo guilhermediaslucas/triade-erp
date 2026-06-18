@@ -7,10 +7,10 @@ import { Ic } from '../components/Icones.js';
 import { MoedaInput } from '../components/MoedaInput.js';
 import { ModalNovaPessoa } from '../components/SeletorPessoa.js';
 
-interface PrecoProduto { produtoId: string; produtoNome: string; categoriaNome: string | null; unidade: string; ativo: boolean; preco: number; campanhasCount: number; precoVigente: number | null; precoVigenteMotivo: string | null; }
+interface PrecoProduto { produtoId: string; produtoNome: string; unidade: string; ativo: boolean; preco: number; campanhasCount: number; precoVigente: number | null; precoVigenteMotivo: string | null; }
 interface Cliente { id: string; nome: string; }
 type TipoCli = 'fixo' | 'periodo';
-interface LinhaCli { produtoId: string; produtoNome: string; categoriaNome: string | null; precoBase: number; precoCliente: number | null; tipo: TipoCli; de: string | null; ate: string | null; }
+interface LinhaCli { produtoId: string; produtoNome: string; precoBase: number; precoCliente: number | null; tipo: TipoCli; de: string | null; ate: string | null; }
 interface MetaCli { tipo: TipoCli; de: string; ate: string; }
 
 export function TabelaPreco() {
@@ -118,12 +118,12 @@ export function TabelaPreco() {
 
         {modo === 'base' ? (
           <table className="tabela">
-            <thead><tr><th>{t('precos.produto')}</th><th>{t('produtos.categoria')}</th><th style={{ width: 180 }}>{t('precos.preco_fixo')}</th><th>{t('precos.camp_vigente')}</th><th style={{ textAlign: 'right' }}>{t('camp.titulo')}</th></tr></thead>
+            <thead><tr><th>{t('precos.produto')}</th><th style={{ width: 180 }}>{t('precos.preco_fixo')}</th><th>{t('precos.camp_vigente')}</th><th style={{ textAlign: 'right' }}>{t('camp.titulo')}</th></tr></thead>
             <tbody>
-              {base.length === 0 && <tr><td colSpan={5} className="vazio">{t('precos.sem_produtos')}</td></tr>}
+              {base.length === 0 && <tr><td colSpan={4} className="vazio">{t('precos.sem_produtos')}</td></tr>}
               {base.map((p) => (
                 <tr key={p.produtoId} className={p.ativo ? '' : 'linha-inativa'}>
-                  <td>{p.produtoNome}</td><td>{p.categoriaNome ?? '—'}</td>
+                  <td>{p.produtoNome}</td>
                   <td>{pode ? <MoedaInput className="preco-inp" value={valores[p.produtoId] ?? ''} onChange={(n) => setValores({ ...valores, [p.produtoId]: String(n) })} /> : moeda(p.preco)}</td>
                   <td>{p.precoVigente != null ? <span className="pill st-verde">{p.precoVigenteMotivo ? p.precoVigenteMotivo + ' · ' : ''}{moeda(p.precoVigente)}</span> : <span className="muted">{t('precos.usa_fixo')}</span>}</td>
                   <td style={{ textAlign: 'right' }}><button className="camp-btn" onClick={() => setCampProduto(p)}><Ic name="i-clock" className="sm" />{t('camp.titulo')} ({p.campanhasCount})</button></td>
@@ -134,15 +134,15 @@ export function TabelaPreco() {
         ) : (
           !clienteId ? <div className="vazio" style={{ padding: 24 }}>{t('precos.escolha_cliente')}</div> :
           <table className="tabela">
-            <thead><tr><th>{t('precos.produto')}</th><th>{t('produtos.categoria')}</th><th>{t('precos.preco_base')}</th><th style={{ width: 160 }}>{t('precos.preco_cliente')}</th><th style={{ width: 300 }}>{t('precos.vigencia')}</th></tr></thead>
+            <thead><tr><th>{t('precos.produto')}</th><th>{t('precos.preco_base')}</th><th style={{ width: 160 }}>{t('precos.preco_cliente')}</th><th style={{ width: 300 }}>{t('precos.vigencia')}</th></tr></thead>
             <tbody>
-              {cli.length === 0 && <tr><td colSpan={5} className="vazio">{t('precos.sem_produtos')}</td></tr>}
+              {cli.length === 0 && <tr><td colSpan={4} className="vazio">{t('precos.sem_produtos')}</td></tr>}
               {cli.map((p) => {
                 const meta = cliMeta[p.produtoId] ?? { tipo: 'fixo' as TipoCli, de: '', ate: '' };
                 const periodo = meta.tipo === 'periodo';
                 return (
                   <tr key={p.produtoId}>
-                    <td>{p.produtoNome}</td><td>{p.categoriaNome ?? '—'}</td><td className="muted">{moeda(p.precoBase)}</td>
+                    <td>{p.produtoNome}</td><td className="muted">{moeda(p.precoBase)}</td>
                     <td>{pode ? <MoedaInput className="preco-inp" placeholder={t('precos.usa_base')} value={valores[p.produtoId] ?? ''} onChange={(n) => setValores({ ...valores, [p.produtoId]: String(n) })} /> : (p.precoCliente != null ? moeda(p.precoCliente) : '—')}</td>
                     <td>
                       {pode ? (

@@ -11,15 +11,14 @@ export class SqlPrecoClienteRepository implements PrecoClienteRepository {
   async listarPorCliente(schema: string, clienteId: string): Promise<PrecoClienteLinha[]> {
     const s = validarSchema(schema);
     const linhas = await this.ds.query(
-      `SELECT p.id produto_id, p.nome, cat.nome AS categoria_nome,
+      `SELECT p.id produto_id, p.nome,
               COALESCE(pb.preco, 0) base, pc.preco cliente, pc.tipo, pc.de, pc.ate
          FROM "${s}".produto p
-         LEFT JOIN "${s}".categoria cat ON cat.id = p.categoria_id
          LEFT JOIN "${s}".preco_base pb ON pb.produto_id = p.id
          LEFT JOIN "${s}".preco_cliente pc ON pc.produto_id = p.id AND pc.cliente_id = $1
         WHERE p.ativo = true ORDER BY p.nome`, [clienteId]);
     return linhas.map((r: any) => ({
-      produtoId: r.produto_id, produtoNome: r.nome, categoriaNome: r.categoria_nome ?? null,
+      produtoId: r.produto_id, produtoNome: r.nome,
       precoBase: Number(r.base), precoCliente: r.cliente != null ? Number(r.cliente) : null,
       tipo: r.tipo === 'periodo' ? 'periodo' : 'fixo', de: iso(r.de), ate: iso(r.ate),
     }));

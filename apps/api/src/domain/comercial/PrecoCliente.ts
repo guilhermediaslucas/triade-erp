@@ -3,7 +3,6 @@ export type TipoPrecoCliente = 'fixo' | 'periodo';
 export interface PrecoClienteLinha {
   produtoId: string;
   produtoNome: string;
-  categoriaNome: string | null;
   precoBase: number;
   precoCliente: number | null;
   tipo: TipoPrecoCliente;

@@ -19,9 +19,7 @@ import { ConfigFiscalService } from '../application/fiscal/ConfigFiscalService.j
 import { SqlNotaFiscalRepository } from '../infra/repositories/SqlNotaFiscalRepository.js';
 import { FocusNFeEmissor } from '../infra/fiscal/FocusNFeEmissor.js';
 import { NotasFiscaisService } from '../application/fiscal/NotasFiscaisService.js';
-import { SqlCategoriaRepository } from '../infra/repositories/SqlCategoriaRepository.js';
 import { SqlProdutoRepository } from '../infra/repositories/SqlProdutoRepository.js';
-import { CategoriasService } from '../application/cadastro/CategoriasService.js';
 import { ProdutosService } from '../application/cadastro/ProdutosService.js';
 import { SqlFormaEntregaRepository } from '../infra/repositories/SqlFormaEntregaRepository.js';
 import { FormasEntregaService } from '../application/cadastro/FormasEntregaService.js';
@@ -95,7 +93,6 @@ export function montarDependencias() {
   const hash = new BcryptHashSenha();
   const tokens = new JwtGeradorToken(env.jwtSecret);
   const migrador = new TypeOrmMigrador(AppDataSource);
-  const categoriasRepo = new SqlCategoriaRepository(AppDataSource);
   const produtosRepo = new SqlProdutoRepository(AppDataSource);
   const favorecidosRepo = new SqlFavorecidoRepository(AppDataSource);
   const clientesRepo = new SqlClienteRepository(AppDataSource);
@@ -142,12 +139,11 @@ export function montarDependencias() {
       new SqlNotaFiscalRepository(AppDataSource), pedidoRepo, produtosRepo, clientesRepo,
       empresasRepo, configFiscalRepo, new FocusNFeEmissor(),
     ),
-    categoriasService: new CategoriasService(categoriasRepo),
     formasEntregaService: new FormasEntregaService(new SqlFormaEntregaRepository(AppDataSource)),
     tiposDocumentoService: new TiposDocumentoService(new SqlTipoDocumentoRepository(AppDataSource)),
     bancosService: new BancosService(new SqlBancoRepository(AppDataSource)),
     favorecidosService: new FavorecidosService(favorecidosRepo),
-    produtosService: new ProdutosService(produtosRepo, categoriasRepo),
+    produtosService: new ProdutosService(produtosRepo),
     clientesService: new ClientesService(clientesRepo),
     fornecedoresService: new FornecedoresService(fornecedoresRepo),
     vendedoresService: new VendedoresService(vendedoresRepo),

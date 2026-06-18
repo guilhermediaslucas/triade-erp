@@ -4,6 +4,8 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { Ic } from '../components/Icones.js';
 import { baixarCsv } from '../lib/csv.js';
+import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
+import { BotaoExcel } from '../components/BotaoExcel.js';
 
 type GrupoDre = 'receita' | 'custo_mercadoria' | 'custo_operacional' | 'despesa';
 interface Linha { categoria: string; contaCodigo: string | null; contaDescricao: string | null; total: number; }
@@ -58,11 +60,13 @@ export function RelDRECompetencia() {
     }
   }
 
-  function exportar() {
+  function exportar(fmt: 'csv' | 'xlsx') {
     if (!dre) return;
     const linhas: (string | number)[][] = [];
     for (const gr of dre.grupos) for (const l of gr.linhas) linhas.push([rotuloGrupo(gr.grupo), l.categoria, conta(l), l.total]);
-    baixarCsv('dre-competencia', [t('dre.grupo'), t('catfin.nome'), t('catfin.conta_contabil'), t('pedidos.valor')], linhas);
+    const cab = [t('dre.grupo'), t('catfin.nome'), t('catfin.conta_contabil'), t('pedidos.valor')];
+    if (fmt === 'xlsx') baixarExcel('dre-competencia', cab, linhas, { periodo: rotuloPeriodo(de, ate) });
+    else baixarCsv('dre-competencia', cab, linhas);
   }
 
   const grupoDe = (g: GrupoDre) => dre?.grupos.find((x) => x.grupo === g);
@@ -114,7 +118,10 @@ export function RelDRECompetencia() {
       <div className="crumb">{t('menu.financeiro')} / {t('menu.dre')}</div>
       <div className="page-head">
         <div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('dre.titulo')}</h1><div className="muted page-sub">{t('dre.sub')}</div></div>
-        {dre && <button className="btn-ghost" onClick={exportar}><Ic name="i-download" className="sm" /> CSV</button>}
+        {dre && <span style={{ display: 'flex', gap: 8 }}>
+          <button className="btn-ghost" onClick={() => exportar('csv')}><Ic name="i-download" className="sm" /> CSV</button>
+          <BotaoExcel onClick={() => exportar('xlsx')} />
+        </span>}
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
 

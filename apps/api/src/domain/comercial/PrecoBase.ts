@@ -1,7 +1,6 @@
 export interface PrecoProduto {
   produtoId: string;
   produtoNome: string;
-  categoriaNome: string | null;
   unidade: string;
   ativo: boolean;
   preco: number; // 0 quando ainda não definido

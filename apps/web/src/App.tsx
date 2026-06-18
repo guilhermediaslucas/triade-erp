@@ -22,7 +22,6 @@ import { RelVendasContabil } from './pages/RelVendasContabil.js';
 import { RelContasPagarContabil } from './pages/RelContasPagarContabil.js';
 import { RelContasReceberContabil } from './pages/RelContasReceberContabil.js';
 import { Auditoria } from './pages/Auditoria.js';
-import { Categorias } from './pages/Categorias.js';
 import { FormasEntrega } from './pages/FormasEntrega.js';
 import { Produtos } from './pages/Produtos.js';
 import { Clientes } from './pages/Clientes.js';
@@ -55,7 +54,6 @@ import { NotasFiscais } from './pages/NotasFiscais.js';
 import { Recebimento } from './pages/Recebimento.js';
 import { RelVendas } from './pages/RelVendas.js';
 import { RelProdutos } from './pages/RelProdutos.js';
-import { RelCategorias } from './pages/RelCategorias.js';
 import { RelAbc } from './pages/RelAbc.js';
 import { RelValidade } from './pages/RelValidade.js';
 import { RelEstoqueParado } from './pages/RelEstoqueParado.js';
@@ -137,7 +135,6 @@ export function App() {
                 <Route path="/relatorios/pedidos" element={<Protegida cap="relatorios.pedidos.ver"><RelPedidos /></Protegida>} />
                 <Route path="/relatorios/reembolsos" element={<Protegida cap="financeiro.pagar.listar"><RelFavorecidos /></Protegida>} />
                 <Route path="/relatorios/produtos" element={<Protegida cap="relatorios.produtos.ver"><RelProdutos /></Protegida>} />
-                <Route path="/relatorios/vendas-categoria" element={<Protegida cap="relatorios.categorias.ver"><RelCategorias /></Protegida>} />
                 <Route path="/relatorios/curva-abc" element={<Protegida cap="relatorios.abc.ver"><RelAbc /></Protegida>} />
                 <Route path="/relatorios/validade" element={<Protegida cap="relatorios.validade.ver"><RelValidade /></Protegida>} />
                 <Route path="/relatorios/estoque-parado" element={<Protegida cap="relatorios.parado.ver"><RelEstoqueParado /></Protegida>} />
@@ -155,7 +152,6 @@ export function App() {
                 <Route path="/cadastros/vendedores" element={<Protegida cap="cadastros.vendedor.listar"><Vendedores /></Protegida>} />
                 <Route path="/cadastros/favorecidos" element={<Protegida cap="cadastros.favorecido.listar"><Favorecidos /></Protegida>} />
                 <Route path="/cadastros/motoboys" element={<Protegida cap="cadastros.motoboy.listar"><Motoboys /></Protegida>} />
-                <Route path="/cadastros/categorias" element={<Protegida cap="cadastros.categoria.listar"><Categorias /></Protegida>} />
                 <Route path="/cadastros/formas-entrega" element={<Protegida cap="cadastros.forma_entrega.listar"><FormasEntrega /></Protegida>} />
                 <Route path="/cadastros/produtos" element={<Protegida cap="cadastros.produto.listar"><Produtos /></Protegida>} />
                 <Route path="/superadmin/empresas" element={<Protegida soSuper><Empresas /></Protegida>} />

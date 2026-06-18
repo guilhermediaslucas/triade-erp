@@ -5,7 +5,7 @@ import { validarSchema } from '../tenant/validarSchema.js';
 
 function mapProduto(r: any): Produto {
   return {
-    id: r.id, nome: r.nome, categoriaId: r.categoria_id ?? null, unidade: r.unidade,
+    id: r.id, nome: r.nome, unidade: r.unidade,
     estoqueMinimo: r.estoque_minimo, localizacao: r.localizacao ?? null, registroAnvisa: r.registro_anvisa ?? null,
     ncm: r.ncm ?? null, cfop: r.cfop ?? null, cstFiscal: r.cst_fiscal ?? null, origemFiscal: r.origem_fiscal ?? null,
     ativo: r.ativo, criadoEm: new Date(r.criado_em),
@@ -16,10 +16,8 @@ export class SqlProdutoRepository implements ProdutoRepository {
   constructor(private readonly ds: DataSource) {}
   async listar(schema: string): Promise<ProdutoResumo[]> {
     const s = validarSchema(schema);
-    const linhas = await this.ds.query(
-      `SELECT p.*, c.nome AS categoria_nome FROM "${s}".produto p
-         LEFT JOIN "${s}".categoria c ON c.id = p.categoria_id ORDER BY p.nome`);
-    return linhas.map((r: any) => ({ ...mapProduto(r), categoriaNome: r.categoria_nome ?? null }));
+    const linhas = await this.ds.query(`SELECT p.* FROM "${s}".produto p ORDER BY p.nome`);
+    return linhas.map((r: any) => mapProduto(r));
   }
   async buscarPorId(schema: string, id: string): Promise<Produto | null> {
     const s = validarSchema(schema);
@@ -29,17 +27,17 @@ export class SqlProdutoRepository implements ProdutoRepository {
   async criar(schema: string, d: NovoProduto): Promise<string> {
     const s = validarSchema(schema); const id = randomUUID();
     await this.ds.query(
-      `INSERT INTO "${s}".produto (id, nome, categoria_id, unidade, estoque_minimo, localizacao, registro_anvisa, ncm, cfop, cst_fiscal, origem_fiscal)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
-      [id, d.nome, d.categoriaId, d.unidade, d.estoqueMinimo, d.localizacao, d.registroAnvisa, d.ncm, d.cfop, d.cstFiscal, d.origemFiscal]);
+      `INSERT INTO "${s}".produto (id, nome, unidade, estoque_minimo, localizacao, registro_anvisa, ncm, cfop, cst_fiscal, origem_fiscal)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+      [id, d.nome, d.unidade, d.estoqueMinimo, d.localizacao, d.registroAnvisa, d.ncm, d.cfop, d.cstFiscal, d.origemFiscal]);
     return id;
   }
   async atualizar(schema: string, id: string, d: NovoProduto): Promise<void> {
     const s = validarSchema(schema);
     await this.ds.query(
-      `UPDATE "${s}".produto SET nome=$2, categoria_id=$3, unidade=$4, estoque_minimo=$5, localizacao=$6, registro_anvisa=$7,
-         ncm=$8, cfop=$9, cst_fiscal=$10, origem_fiscal=$11 WHERE id=$1`,
-      [id, d.nome, d.categoriaId, d.unidade, d.estoqueMinimo, d.localizacao, d.registroAnvisa, d.ncm, d.cfop, d.cstFiscal, d.origemFiscal]);
+      `UPDATE "${s}".produto SET nome=$2, unidade=$3, estoque_minimo=$4, localizacao=$5, registro_anvisa=$6,
+         ncm=$7, cfop=$8, cst_fiscal=$9, origem_fiscal=$10 WHERE id=$1`,
+      [id, d.nome, d.unidade, d.estoqueMinimo, d.localizacao, d.registroAnvisa, d.ncm, d.cfop, d.cstFiscal, d.origemFiscal]);
   }
   async definirAtivo(schema: string, id: string, ativo: boolean): Promise<void> {
     const s = validarSchema(schema);

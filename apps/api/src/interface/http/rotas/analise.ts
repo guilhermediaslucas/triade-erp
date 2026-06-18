@@ -4,7 +4,7 @@ import { criarAutenticar } from '../middlewares/autenticar.js';
 import { criarAutorizar } from '../middlewares/autorizar.js';
 import { tratarErro } from '../responder.js';
 
-// Análise de vendas (Comercial): ranking por dimensão (produtos, categorias, clientes).
+// Análise de vendas (Comercial): ranking por dimensão (produtos, clientes).
 // Reusa os relatórios existentes, mas com cap própria (comercial.analise.ver).
 export function rotasAnalise(deps: Dependencias): Router {
   const r = Router();
@@ -17,9 +17,7 @@ export function rotasAnalise(deps: Dependencias): Router {
       const dim = String(req.query.dim ?? 'produtos');
       const de = req.query.de, ate = req.query.ate;
       let linhas: { nome: string; quantidade: number; total: number }[];
-      if (dim === 'categorias') {
-        linhas = (await deps.relatoriosService.vendasPorCategoria(sch(req), de, ate)).map((l) => ({ nome: l.categoria, quantidade: l.quantidade, total: l.total }));
-      } else if (dim === 'clientes') {
+      if (dim === 'clientes') {
         linhas = (await deps.relatoriosService.curvaAbc(sch(req), de, ate, 'clientes')).linhas.map((l) => ({ nome: l.nome, quantidade: l.quantidade, total: l.total }));
       } else {
         linhas = await deps.relatoriosService.produtosVendidos(sch(req), de, ate);

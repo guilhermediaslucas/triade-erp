@@ -26,7 +26,6 @@ const ROTAS: Array<{ cap: string; to: string }> = [
   { cap: 'cadastros.vendedor.listar', to: '/cadastros/vendedores' },
   { cap: 'cadastros.fornecedor.listar', to: '/cadastros/fornecedores' },
   { cap: 'cadastros.produto.listar', to: '/cadastros/produtos' },
-  { cap: 'cadastros.categoria.listar', to: '/cadastros/categorias' },
   { cap: 'cadastros.conta.listar', to: '/cadastros/contas-correntes' },
   { cap: 'cadastros.catfin.listar', to: '/cadastros/categorias-financeiras' },
   { cap: 'acesso.usuario.listar', to: '/acesso/usuarios' },

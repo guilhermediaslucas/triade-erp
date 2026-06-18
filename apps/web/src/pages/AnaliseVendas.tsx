@@ -9,8 +9,7 @@ import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
 import { BotaoExcel } from '../components/BotaoExcel.js';
 
 interface Linha { nome: string; quantidade: number; total: number; }
-type Chip = 'produtos' | 'categorias' | 'clientes_valor' | 'clientes_pedidos';
-const CORES = ['#7b61ff', '#3b82f6', '#16a34a', '#ea9213', '#e1483b', '#6366f1', '#0891b2', '#d4537e'];
+type Chip = 'produtos' | 'clientes_valor' | 'clientes_pedidos';
 const primeiroDia = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10); };
 const hoje = () => new Date().toISOString().slice(0, 10);
 
@@ -36,9 +35,6 @@ export function AnaliseVendas() {
   const metrica = metricaDoChip(chip);
   const ordenadas = useMemo(() => [...linhas].sort((a, b) => b[metrica] - a[metrica]), [linhas, metrica]);
   const totalMetrica = useMemo(() => ordenadas.reduce((a, l) => a + l[metrica], 0), [ordenadas, metrica]);
-  const totalValor = useMemo(() => ordenadas.reduce((a, l) => a + l.total, 0), [ordenadas]);
-  const ehPizza = chip === 'categorias';
-  const fmtMetrica = (v: number) => (metrica === 'quantidade' ? Math.round(v).toLocaleString('pt-BR') : moeda(v));
 
   function exportar(fmt: 'csv' | 'xlsx') {
     const cab = [t('analise.item'), t('rel.qtd'), t('fin.valor')];
@@ -49,12 +45,9 @@ export function AnaliseVendas() {
   }
 
   const CHIPS: { c: Chip; k: string }[] = [
-    { c: 'produtos', k: 'analise.produtos' }, { c: 'categorias', k: 'analise.categorias' },
+    { c: 'produtos', k: 'analise.produtos' },
     { c: 'clientes_valor', k: 'analise.clientes_valor' }, { c: 'clientes_pedidos', k: 'analise.clientes_pedidos' },
   ];
-
-  // Donut (categorias) — fatias proporcionais ao valor.
-  const r = 52, circ = 2 * Math.PI * r; let off = 0;
 
   return (
     <div>
@@ -77,31 +70,18 @@ export function AnaliseVendas() {
 
       {carregando ? <div className="muted">{t('common.carregando')}</div> : (
         <div className="card" style={{ maxWidth: 'none', marginTop: 12 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: ehPizza ? '220px 1fr' : '1fr', gap: 16, alignItems: 'start' }}>
-            {ehPizza && (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-                <svg viewBox="0 0 150 150" style={{ width: 150, height: 150 }}>
-                  <circle cx="75" cy="75" r={r} fill="none" stroke="var(--borda)" strokeWidth="18" />
-                  {totalValor > 0 && ordenadas.slice(0, 8).map((l, i) => {
-                    const dash = (l.total / totalValor) * circ;
-                    const el = <circle key={i} cx="75" cy="75" r={r} fill="none" stroke={CORES[i % CORES.length]} strokeWidth="18" strokeDasharray={`${dash} ${circ - dash}`} strokeDashoffset={-off} transform="rotate(-90 75 75)" />;
-                    off += dash; return el;
-                  })}
-                </svg>
-                <div className="muted" style={{ fontSize: 12 }}>{t('rel.total')}: <b style={{ color: 'var(--ink)' }}>{moeda(totalValor)}</b></div>
-              </div>
-            )}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 16, alignItems: 'start' }}>
             <table className="tabela">
-              <thead><tr><th style={{ width: 36 }}>#</th><th>{t('analise.item')}</th>{!ehPizza && <th style={{ width: '40%' }} />}<th style={{ textAlign: 'right' }}>{t('rel.qtd')}</th><th style={{ textAlign: 'right' }}>{t('fin.valor')}</th><th style={{ textAlign: 'right' }}>%</th></tr></thead>
+              <thead><tr><th style={{ width: 36 }}>#</th><th>{t('analise.item')}</th><th style={{ width: '40%' }} /><th style={{ textAlign: 'right' }}>{t('rel.qtd')}</th><th style={{ textAlign: 'right' }}>{t('fin.valor')}</th><th style={{ textAlign: 'right' }}>%</th></tr></thead>
               <tbody>
-                {ordenadas.length === 0 && <tr><td colSpan={ehPizza ? 5 : 6} className="vazio">{t('rel.vazio')}</td></tr>}
+                {ordenadas.length === 0 && <tr><td colSpan={6} className="vazio">{t('rel.vazio')}</td></tr>}
                 {ordenadas.map((l, i) => {
                   const p = totalMetrica > 0 ? Math.round((l[metrica] / totalMetrica) * 100) : 0;
                   return (
                     <tr key={l.nome + i}>
                       <td className="muted">{i + 1}</td>
-                      <td>{ehPizza && <span style={{ display: 'inline-block', width: 9, height: 9, borderRadius: 2, background: CORES[i % CORES.length], marginRight: 6 }} />}{l.nome}</td>
-                      {!ehPizza && <td><span style={{ display: 'block', height: 8, background: '#f0f0f4', borderRadius: 6, overflow: 'hidden' }}><span style={{ display: 'block', height: '100%', width: p + '%', background: '#7b61ff' }} /></span></td>}
+                      <td>{l.nome}</td>
+                      <td><span style={{ display: 'block', height: 8, background: '#f0f0f4', borderRadius: 6, overflow: 'hidden' }}><span style={{ display: 'block', height: '100%', width: p + '%', background: '#7b61ff' }} /></span></td>
                       <td style={{ textAlign: 'right' }}>{Math.round(l.quantidade).toLocaleString('pt-BR')}</td>
                       <td style={{ textAlign: 'right', fontWeight: 500 }}>{moeda(l.total)}</td>
                       <td style={{ textAlign: 'right', color: 'var(--muted)' }}>{p}%</td>

@@ -188,6 +188,29 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-18** — **Botão "Exportar Excel" na DRE por competência.** `RelDRECompetencia.tsx`: `exportar()` virou
+  `exportar(fmt: 'csv'|'xlsx')` (mesma montagem de linhas grupo/categoria/conta/valor); no cabeçalho, ao lado do CSV, entrou o
+  `BotaoExcel` (verde, padrão das outras telas) chamando `baixarExcel('dre-competencia', cab, linhas, { periodo: rotuloPeriodo(de, ate) })`.
+  Só frontend, **sem backend/migration/cap**. **Pendente Gui:** `npm run build -w @triade/web` → commit+push → `scripts\app-apk.bat`.
+- **2026-06-18** — **Remoção completa da "Categoria de produto" do sistema (igual fizemos com "Marcas").**
+  Decisão do Gui: remover por completo (menu + rota + tela + backend + relatórios por categoria + coluna na tabela de preço).
+  **NÃO confundir com `categoria_financeira`/`catfin` (Financeiro) — essa fica intacta.** **Capabilities (`packages/shared`):**
+  removidas `cadastros.categoria.listar/gerenciar` e `relatorios.categorias.ver` (+ tirada de `REL_COMERCIAL`). **Frontend:**
+  `Layout` (item Cadastros › Estoque › Categorias), `App.tsx` (rotas `/cadastros/categorias` e `/relatorios/vendas-categoria` +
+  imports), `BuscaGlobal` (2 destinos), `Relatorios` (hub), `primeiraRota`. `Produtos.tsx` reescrita sem o seletor/filtro/coluna
+  de categoria. `TabelaPreco.tsx` perdeu a coluna Categoria (base e por cliente; colSpan 5→4). `AnaliseVendas.tsx` perdeu o chip
+  "Categorias" + o donut (era a única dimensão em pizza). **Backend:** `server.ts`/`composition.ts` desregistram rotas+wiring de
+  categoria; `ProdutosService` não recebe mais `CategoriaRepository` e `validar` não checa categoria; `SqlProdutoRepository` parou de
+  ler/gravar `categoria_id` (sem JOIN); domínio `Produto`/`ProdutoResumo`/`NovoProduto` sem `categoriaId/categoriaNome`. Relatórios:
+  removidos `vendasPorCategoria` (domínio/repo/serviço/rota `/relatorios/vendas-categoria`) e a dimensão `categorias` da `/comercial/analise`.
+  Preço: `PrecoProduto`/`PrecoClienteLinha` sem `categoriaNome`; `SqlPrecoBaseRepository`/`SqlPrecoClienteRepository` sem JOIN `categoria`.
+  **Banco:** a tabela `categoria` e a coluna `produto.categoria_id` ficam **inertes** (sem migration destrutiva). **Sem cap nova, sem
+  migration.** **Arquivos órfãos p/ o Gui `git rm`** (sandbox não apaga): `apps/web/src/pages/Categorias.tsx`,
+  `apps/web/src/pages/RelCategorias.tsx`, `apps/api/src/domain/cadastro/Categoria.ts`,
+  `apps/api/src/infra/repositories/SqlCategoriaRepository.ts`, `apps/api/src/application/cadastro/CategoriasService.ts`. O
+  `rotas/categorias.ts` virou stub (`export {}`). Chaves i18n de categoria deixadas no dicionário (inertes, não quebram). **Pendente Gui:**
+  `npm install` (relink @triade/shared) → `git rm` dos órfãos → `npm run build -w @triade/web` → commit+push → `scripts\app-apk.bat`
+  (telas mudaram) → relogar (recarrega caps).
 - **2026-06-18** — **Fix: divergência entre os cards "Vendas por produto" e "Produtos mais vendidos" do Dashboard.**
   Causa: no `SqlDashboardRepository.resumo` as duas queries tinham bases diferentes. O `top` (Produtos mais vendidos)
   **não filtrava status nem período** — somava `pedido_item` de TODOS os pedidos (incluindo orçamento/cancelado) e de

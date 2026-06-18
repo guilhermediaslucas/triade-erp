@@ -18,9 +18,6 @@ export function rotasRelatorios(deps: Dependencias): Router {
   r.get('/relatorios/produtos-vendidos', aut, az('relatorios.produtos.ver'), async (req, res: Response) => {
     try { res.json(await deps.relatoriosService.produtosVendidos(sch(req), req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
   });
-  r.get('/relatorios/vendas-categoria', aut, az('relatorios.categorias.ver'), async (req, res: Response) => {
-    try { res.json(await deps.relatoriosService.vendasPorCategoria(sch(req), req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
-  });
   r.get('/relatorios/curva-abc', aut, az('relatorios.abc.ver'), async (req, res: Response) => {
     try { res.json(await deps.relatoriosService.curvaAbc(sch(req), req.query.de, req.query.ate, req.query.por)); } catch (e) { tratarErro(res, e); }
   });
