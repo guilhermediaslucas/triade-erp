@@ -5,7 +5,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { Ic } from '../components/Icones.js';
 import { baixarCsv } from '../lib/csv.js';
-import { baixarExcel, rotuloPeriodo } from '../lib/excel.js';
+import { baixarExcelDRE, rotuloPeriodo, type LinhaDRE } from '../lib/excel.js';
 import { BotaoExcel } from '../components/BotaoExcel.js';
 
 type GrupoDre = 'receita' | 'custo_mercadoria' | 'custo_operacional' | 'despesa';
@@ -62,40 +62,62 @@ export function RelDRECompetencia() {
     }
   }
 
-  function exportar(fmt: 'csv' | 'xlsx') {
-    if (!dre) return;
-    if (detalhar) { void exportarDetalhado(fmt); return; }
-    const linhas: (string | number)[][] = [];
-    for (const gr of dre.grupos) for (const l of gr.linhas) linhas.push([rotuloGrupo(gr.grupo), l.categoria, conta(l), l.total]);
-    const cab = [t('dre.grupo'), t('catfin.nome'), t('catfin.conta_contabil'), t('pedidos.valor')];
-    if (fmt === 'xlsx') baixarExcel('dre-competencia', cab, linhas, { periodo: rotuloPeriodo(de, ate) });
-    else baixarCsv('dre-competencia', cab, linhas);
+  // Busca (e cacheia) os lançamentos de um grupo×conta para o drill/export.
+  async function carregarTitulos(g: GrupoDre, categoria: string): Promise<TituloDet[]> {
+    const chave = g + '|' + categoria;
+    if (titulos[chave]) return titulos[chave]!;
+    const qs = new URLSearchParams();
+    if (de) qs.set('de', de); if (ate) qs.set('ate', ate);
+    qs.set('grupo', g); qs.set('categoria', categoria);
+    try { return await api.get<TituloDet[]>('/financeiro/dre-competencia/titulos?' + qs.toString(), token!); }
+    catch { return []; }
   }
 
-  // Exporta com TODAS as contas abertas: uma linha por lançamento (busca o drill de cada
-  // grupo×categoria; reusa o cache de `titulos` quando já carregado).
-  async function exportarDetalhado(fmt: 'csv' | 'xlsx') {
+  function exportar(fmt: 'csv' | 'xlsx') {
+    if (!dre) return;
+    if (fmt === 'xlsx') { void exportarExcelDre(); return; }   // Excel = DRE em cascata
+    if (detalhar) { void exportarCsvDetalhado(); return; }     // CSV mantém formato plano (dados crus)
+    const linhas: (string | number)[][] = [];
+    for (const gr of dre.grupos) for (const l of gr.linhas) linhas.push([rotuloGrupo(gr.grupo), l.categoria, conta(l), l.total]);
+    baixarCsv('dre-competencia', [t('dre.grupo'), t('catfin.nome'), t('catfin.conta_contabil'), t('pedidos.valor')], linhas);
+  }
+
+  // CSV detalhado: uma linha por lançamento (tabela plana, p/ importar em outras ferramentas).
+  async function exportarCsvDetalhado() {
     if (!dre) return;
     const linhas: (string | number)[][] = [];
     for (const gr of dre.grupos) for (const l of gr.linhas) {
-      const chave = gr.grupo + '|' + l.categoria;
-      let ls = titulos[chave];
-      if (!ls) {
-        const qs = new URLSearchParams();
-        if (de) qs.set('de', de); if (ate) qs.set('ate', ate);
-        qs.set('grupo', gr.grupo); qs.set('categoria', l.categoria);
-        try { ls = await api.get<TituloDet[]>('/financeiro/dre-competencia/titulos?' + qs.toString(), token!); }
-        catch { ls = []; }
-      }
+      const ls = await carregarTitulos(gr.grupo, l.categoria);
       const contaTxt = l.categoria + (l.contaCodigo ? ' · ' + conta(l) : '');
-      for (const tt of ls) {
-        const desc = tt.descricao + (tt.pessoaNome ? ' · ' + tt.pessoaNome : '');
-        linhas.push([rotuloGrupo(gr.grupo), contaTxt, tt.data ?? '', tt.numero, desc, tt.valor]);
-      }
+      for (const tt of ls) linhas.push([rotuloGrupo(gr.grupo), contaTxt, tt.data ?? '', tt.numero, tt.descricao + (tt.pessoaNome ? ' · ' + tt.pessoaNome : ''), tt.valor]);
     }
-    const cab = [t('dre.grupo'), t('dre.conta'), t('dre.data'), t('dre.documento'), t('fin.descricao'), t('pedidos.valor')];
-    if (fmt === 'xlsx') baixarExcel('dre-competencia-detalhada', cab, linhas, { periodo: rotuloPeriodo(de, ate) });
-    else baixarCsv('dre-competencia-detalhada', cab, linhas);
+    baixarCsv('dre-competencia-detalhada', [t('dre.grupo'), t('dre.conta'), t('dre.data'), t('dre.documento'), t('fin.descricao'), t('pedidos.valor')], linhas);
+  }
+
+  // Excel = demonstração em cascata: grupos + contas (subtotais) + lançamentos (se detalhar).
+  async function exportarExcelDre() {
+    if (!dre) return;
+    const linhas: LinhaDRE[] = [];
+    const addGrupo = async (g: GrupoDre, neg: boolean) => {
+      const gr = dre.grupos.find((x) => x.grupo === g);
+      if (!gr) return;
+      linhas.push({ texto: (neg ? '(−) ' : '') + rotuloGrupo(g), valor: gr.total, estilo: neg ? 'grupo_neg' : 'grupo' });
+      for (const l of gr.linhas) {
+        linhas.push({ texto: l.categoria + (l.contaCodigo ? ' · ' + conta(l) : ''), valor: l.total, estilo: 'conta' });
+        if (detalhar) {
+          const ls = await carregarTitulos(g, l.categoria);
+          for (const tt of ls) linhas.push({ texto: (tt.data ?? '—') + ' · ' + tt.numero + ' · ' + tt.descricao + (tt.pessoaNome ? ' · ' + tt.pessoaNome : ''), valor: tt.valor, estilo: 'lancamento' });
+        }
+      }
+    };
+    await addGrupo('receita', false);
+    await addGrupo('custo_mercadoria', true);
+    linhas.push({ texto: '= ' + t('dre.lucro_bruto'), valor: dre.lucroBruto, estilo: 'subtotal' });
+    await addGrupo('custo_operacional', true);
+    await addGrupo('despesa', true);
+    linhas.push({ texto: '= ' + t('dre.resultado_periodo'), valor: dre.resultado, estilo: 'resultado' });
+    linhas.push({ texto: t('dre.margem'), valorStr: margem.toFixed(1).replace('.', ',') + '%', estilo: 'nota' });
+    baixarExcelDRE('dre-competencia', t('dre.excel_titulo'), linhas, { periodo: rotuloPeriodo(de, ate) });
   }
 
   const grupoDe = (g: GrupoDre) => dre?.grupos.find((x) => x.grupo === g);

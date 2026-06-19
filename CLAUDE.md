@@ -188,6 +188,18 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-19** — **Excel da DRE virou demonstração em cascata (cara de DRE), agrupada por grupo › conta › lançamento.**
+  Novo gerador dedicado em `lib/excel.ts`: `baixarExcelDRE(nome, titulo, linhas: LinhaDRE[], opcoes)` + `gerarXlsxDRE` +
+  `stylesDRE` + `planilhaXmlDRE`. Layout 2 colunas (Descrição · Valor) com estilos hierárquicos
+  (`EstiloDRE` = grupo | grupo_neg | conta | lancamento | subtotal | resultado | nota): grupos em destaque (fill roxo claro,
+  deduções em vermelho), contas indentadas (indent 1), lançamentos indentados cinza (indent 2), subtotais (= Lucro bruto) com
+  fill cinza + borda fina, **= Resultado do período** com fill verde + borda média (vermelho se negativo), e linha "Margem" (nota).
+  numFmt 164 (R$) nos valores; reusa logos/`montarImagens`/zip/drawing do gerador genérico. **`RelDRECompetencia.tsx`:** `exportar('xlsx')`
+  agora chama `exportarExcelDre()` (monta a cascata Receita → Custo merc. = Lucro bruto → Custos op. → Despesas = Resultado;
+  inclui lançamentos sob cada conta **quando "Detalhar lançamentos" marcado**, via `carregarTitulos(grupo,categoria)`). **CSV mantido
+  plano** (resumo, ou detalhado por lançamento quando marcado) p/ importação. Título do Excel: nova i18n `dre.excel_titulo`
+  ("Demonstração do resultado (competência)") pt/en/es. Import `baixarExcel` removido do arquivo (não usado lá). Só frontend,
+  **sem backend/migration/cap**. **Pendente Gui:** `npm run build -w @triade/web` → commit+push → `scripts\app-apk.bat`.
 - **2026-06-18** — **Excel da DRE: logo TRÍADE à direita, colunas mais largas (global) + opção "Detalhar lançamentos".**
   **(1+2) `lib/excel.ts` (afeta o Excel de TODOS os relatórios):** logo TRÍADE movida da penúltima p/ a **última coluna**
   (`montarImagens`: `col: ncols-1`, cx 1200000/cy 304000) — some a sobreposição com o título centralizado. `colsXml`: largura passou

@@ -331,3 +331,126 @@ export function baixarExcel(nome: string, cabecalho: string[], linhas: (string |
   const blob = new Blob([bytes.buffer as ArrayBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   void baixarArquivo(nome + '.xlsx', blob);
 }
+
+// ===== DRE em cascata (demonstração do resultado) =====
+// Layout próprio (2 colunas: Descrição · Valor) com grupos, contas e lançamentos
+// indentados + subtotais (Lucro bruto, Resultado). Diferente do Excel genérico.
+export type EstiloDRE = 'grupo' | 'grupo_neg' | 'conta' | 'lancamento' | 'subtotal' | 'resultado' | 'nota';
+export interface LinhaDRE { texto: string; valor?: number | null; valorStr?: string; estilo: EstiloDRE; }
+
+function stylesDRE(accent: string): string {
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<numFmts count="1"><numFmt numFmtId="164" formatCode="&quot;R$&quot;\\ #,##0.00"/></numFmts>
+<fonts count="8">
+<font><sz val="11"/><name val="Calibri"/></font>
+<font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font>
+<font><b/><sz val="15"/><color rgb="FF${accent}"/><name val="Calibri"/></font>
+<font><sz val="9"/><color rgb="FF6B7280"/><name val="Calibri"/></font>
+<font><b/><sz val="11"/><color rgb="FF1F2430"/><name val="Calibri"/></font>
+<font><sz val="10"/><color rgb="FF6B7280"/><name val="Calibri"/></font>
+<font><b/><sz val="11"/><color rgb="FFB23B2E"/><name val="Calibri"/></font>
+<font><b/><sz val="11"/><color rgb="FF0F6E56"/><name val="Calibri"/></font>
+</fonts>
+<fills count="6">
+<fill><patternFill patternType="none"/></fill>
+<fill><patternFill patternType="gray125"/></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FF${accent}"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFECEAFB"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFF3F4F6"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFE1F5EE"/></patternFill></fill>
+</fills>
+<borders count="3">
+<border/>
+<border><top style="thin"><color rgb="FF${accent}"/></top></border>
+<border><top style="medium"><color rgb="FF${accent}"/></top></border>
+</borders>
+<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+<cellXfs count="19">
+<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
+<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="left" vertical="center"/></xf>
+<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>
+<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>
+<xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"/>
+<xf numFmtId="0" fontId="4" fillId="3" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="left"/></xf>
+<xf numFmtId="164" fontId="4" fillId="3" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="right"/></xf>
+<xf numFmtId="164" fontId="6" fillId="3" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="right"/></xf>
+<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment horizontal="left" indent="1"/></xf>
+<xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyAlignment="1"><alignment horizontal="right"/></xf>
+<xf numFmtId="0" fontId="5" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="left" indent="2"/></xf>
+<xf numFmtId="164" fontId="5" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1" applyAlignment="1"><alignment horizontal="right"/></xf>
+<xf numFmtId="0" fontId="4" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="left"/></xf>
+<xf numFmtId="164" fontId="4" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right"/></xf>
+<xf numFmtId="0" fontId="4" fillId="5" borderId="2" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="left"/></xf>
+<xf numFmtId="164" fontId="7" fillId="5" borderId="2" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right"/></xf>
+<xf numFmtId="164" fontId="6" fillId="5" borderId="2" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right"/></xf>
+<xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="left" indent="1"/></xf>
+<xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="right"/></xf>
+</cellXfs>
+<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
+</styleSheet>`;
+}
+
+function planilhaXmlDRE(titulo: string, linhas: LinhaDRE[], imgs: Img[], periodo?: string): string {
+  const emp = empresaNome();
+  const dt = new Date().toLocaleString('pt-BR');
+  const sub = (periodo ? 'Período: ' + periodo + ' · ' : '') + (emp ? emp + ' · ' : '') + 'Gerado em ' + dt;
+  const cTexto = (ref: string, v: string | number, s: number) => `<c r="${ref}" s="${s}" t="inlineStr"><is><t xml:space="preserve">${esc(v)}</t></is></c>`;
+  const cNum = (ref: string, v: number, s: number) => `<c r="${ref}" s="${s}"><v>${v}</v></c>`;
+  // text xf / value xf por estilo
+  const X: Record<EstiloDRE, [number, number]> = {
+    grupo: [5, 6], grupo_neg: [5, 7], conta: [8, 9], lancamento: [10, 11],
+    subtotal: [12, 13], resultado: [14, 15], nota: [17, 18],
+  };
+
+  const rows: string[] = [];
+  rows.push(`<row r="1" ht="${imgs.length ? 30 : 20}" customHeight="1">${cTexto('A1', titulo, 3)}</row>`);
+  rows.push(`<row r="2">${cTexto('A2', sub, 4)}</row>`);
+  rows.push(`<row r="3">${cTexto('A3', 'Descrição', 1)}${cTexto('B3', 'Valor', 2)}</row>`);
+  linhas.forEach((l, i) => {
+    const r = i + 4;
+    const [tx, vx] = X[l.estilo];
+    let vc: string;
+    if (l.valorStr != null) vc = cTexto('B' + r, l.valorStr, 18);
+    else if (l.valor != null && Number.isFinite(l.valor)) {
+      // resultado negativo em vermelho
+      const sv = l.estilo === 'resultado' && l.valor < 0 ? 16 : vx;
+      vc = cNum('B' + r, l.valor, sv);
+    } else vc = `<c r="B${r}" s="${vx}"/>`;
+    rows.push(`<row r="${r}">${cTexto('A' + r, l.texto, tx)}${vc}</row>`);
+  });
+
+  const merges = '<mergeCells count="2"><mergeCell ref="A1:B1"/><mergeCell ref="A2:B2"/></mergeCells>';
+  const drawing = imgs.length ? '<drawing r:id="rId1"/>' : '';
+  const cols = '<cols><col min="1" max="1" width="72" customWidth="1"/><col min="2" max="2" width="20" customWidth="1"/></cols>';
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheetViews><sheetView showGridLines="0" workbookViewId="0"/></sheetViews>${cols}<sheetData>${rows.join('')}</sheetData>${merges}${drawing}</worksheet>`;
+}
+
+export function gerarXlsxDRE(titulo: string, linhas: LinhaDRE[], opcoes?: OpcoesExcel): Uint8Array {
+  const txt = (s: string) => ENC.encode(s);
+  const imgs = montarImagens(2);
+  const partes: { nome: string; dados: Uint8Array }[] = [
+    { nome: '[Content_Types].xml', dados: txt(contentTypes(imgs)) },
+    { nome: '_rels/.rels', dados: txt(RELS) },
+    { nome: 'xl/workbook.xml', dados: txt(WORKBOOK) },
+    { nome: 'xl/_rels/workbook.xml.rels', dados: txt(WB_RELS) },
+    { nome: 'xl/styles.xml', dados: txt(stylesDRE(accentHex())) },
+    { nome: 'xl/worksheets/sheet1.xml', dados: txt(planilhaXmlDRE(titulo, linhas, imgs, opcoes?.periodo)) },
+  ];
+  if (imgs.length) {
+    partes.push(
+      { nome: 'xl/worksheets/_rels/sheet1.xml.rels', dados: txt(SHEET_RELS) },
+      { nome: 'xl/drawings/drawing1.xml', dados: txt(drawingXml(imgs)) },
+      { nome: 'xl/drawings/_rels/drawing1.xml.rels', dados: txt(drawingRels(imgs)) },
+    );
+    imgs.forEach((im, i) => partes.push({ nome: 'xl/media/image' + (i + 1) + '.' + im.ext, dados: im.bytes }));
+  }
+  return zip(partes);
+}
+
+export function baixarExcelDRE(nome: string, titulo: string, linhas: LinhaDRE[], opcoes?: OpcoesExcel): void {
+  const bytes = gerarXlsxDRE(titulo, linhas, opcoes);
+  const blob = new Blob([bytes.buffer as ArrayBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  void baixarArquivo(nome + '.xlsx', blob);
+}
