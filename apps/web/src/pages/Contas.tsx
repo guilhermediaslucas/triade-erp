@@ -14,7 +14,7 @@ import { FORMAS_BAIXA } from '../lib/pagamento.js';
 import { notificarLiberadoSeparacao } from '../lib/notificarSeparacao.js';
 
 type Tipo = 'receber' | 'pagar';
-interface Titulo { id: string; numero: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; pedidoFormaPagamento: string | null; pedidoFrete: number | null; pedidoFreteTipo: string | null; anexosCount: number; origem: string; categoriaFinanceiraNome: string | null; contaCorrenteNome: string | null; vendedorNome: string | null; favorecidoId: string | null; favorecidoNome: string | null; favorecidoForma: string | null; favorecidoPagoEm: string | null; previsto: boolean; tipoDocumento: string | null; numeroDocumento: string | null; emissao: string | null; criadoEm: string; pagoEm: string | null; desconto: number; multa: number; juros: number; taxaCartao: number; }
+interface Titulo { id: string; numero: string; descricao: string; pessoaNome: string | null; valor: number; vencimento: string; status: 'aberto' | 'pago'; formaPagamento: string | null; pedidoFormaPagamento: string | null; pedidoFrete: number | null; pedidoFreteTipo: string | null; anexosCount: number; origem: string; categoriaFinanceiraId: string | null; categoriaFinanceiraNome: string | null; contaCorrenteNome: string | null; vendedorNome: string | null; favorecidoId: string | null; favorecidoNome: string | null; favorecidoForma: string | null; favorecidoPagoEm: string | null; previsto: boolean; tipoDocumento: string | null; numeroDocumento: string | null; emissao: string | null; criadoEm: string; pagoEm: string | null; desconto: number; multa: number; juros: number; taxaCartao: number; }
 interface TipoDoc { id: string; nome: string; ativo: boolean; }
 interface CatFin { id: string; nome: string; tipo: 'receita' | 'despesa'; ativo: boolean; }
 
@@ -33,6 +33,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   const [itens, setItens] = useState<Titulo[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [novo, setNovo] = useState(false);
+  const [editar, setEditar] = useState<Titulo | null>(null);
   const [parcelarT, setParcelarT] = useState<Titulo | null>(null);
   const [parcelarModo, setParcelarModo] = useState<'dividir' | 'replicar'>('dividir');
   const [multiplicarT, setMultiplicarT] = useState<Titulo | null>(null);
@@ -337,6 +338,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
               </td>
               <td data-label={t('usuarios.acoes')}><span className="acoes-ic"><button className={'acao-ic' + (tt.anexosCount > 0 ? ' ok' : '')} title={t('anexo.titulo')} aria-label={t('anexo.titulo')} onClick={() => setAnexoT(tt)}><Ic name="i-clip" className="sm" />{tt.anexosCount > 0 ? ' ' + tt.anexosCount : ''}</button>{pode && (tt.status === 'aberto'
                 ? <>
+                    {tt.origem === 'manual' && <button className="acao-ic" title={t('common.editar')} aria-label={t('common.editar')} onClick={() => setEditar(tt)}><Ic name="i-edit" className="sm" /></button>}
                     {!tt.previsto && <button className="acao-ic ok" title={t('fin.baixar')} aria-label={t('fin.baixar')} onClick={() => setBaixar(tt)}><Ic name="i-check" className="sm" /></button>}
                     <button className="acao-ic" title={t('parcelar.acao')} aria-label={t('parcelar.acao')} onClick={() => abrirParcelar(tt, 'dividir')}><Ic name="i-clock" className="sm" /></button>
                     {tipo === 'pagar' && <button className={'acao-ic' + (tt.favorecidoId ? ' ok' : '')} title={t('fin.reembolso')} aria-label={t('fin.reembolso')} onClick={() => setReembolsoT(tt)}><Ic name="i-user" className="sm" /></button>}
@@ -348,6 +350,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
       </table></div>
       {reembolsoT && <ModalReembolso titulo={reembolsoT} onFechar={() => setReembolsoT(null)} onSalvo={() => { setReembolsoT(null); carregar(); toast(t('fin.toast_reembolso')); }} />}
       {novo && <ModalNovo tipo={tipo} onFechar={() => setNovo(false)} onSalvo={() => { setNovo(false); carregar(); toast(t('fin.toast_criado')); }} />}
+      {editar && <ModalNovo tipo={tipo} editar={editar} onFechar={() => setEditar(null)} onSalvo={() => { setEditar(null); carregar(); toast(t('fin.toast_editado')); }} />}
       {parcelarT && <ModalParcelar tipo={tipo} titulo={parcelarT} modoInicial={parcelarModo} onFechar={() => setParcelarT(null)} onSalvo={(n) => { setParcelarT(null); carregar(); toast(t('parcelar.toast').replace('{n}', String(n))); }} />}
       {multiplicarT && <ModalMultiplicar tipo={tipo} titulo={multiplicarT} onFechar={() => setMultiplicarT(null)} onSalvo={(n) => { setMultiplicarT(null); carregar(); toast(t('parcelar.toast').replace('{n}', String(n))); }} />}
       {cancelarT && (
@@ -403,18 +406,19 @@ function ModalVerTitulo({ tipo, titulo, onFechar }: { tipo: Tipo; titulo: Titulo
   );
 }
 
-function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => void; onSalvo: () => void; }) {
+function ModalNovo({ tipo, editar, onFechar, onSalvo }: { tipo: Tipo; editar?: Titulo; onFechar: () => void; onSalvo: () => void; }) {
   const { token, temCapability } = useAuth(); const { t } = useI18n();
-  const [descricao, setDescricao] = useState(''); const [pessoaNome, setPessoa] = useState('');
-  const [valor, setValor] = useState(''); const [vencimento, setVenc] = useState('');
-  const [emissao, setEmissao] = useState(hojeISO());
-  const [numeroDoc, setNumeroDoc] = useState('');
-  const [categoriaFinanceiraId, setCatId] = useState('');
+  const ed = editar ?? null;
+  const [descricao, setDescricao] = useState(ed?.descricao ?? ''); const [pessoaNome, setPessoa] = useState(ed?.pessoaNome ?? '');
+  const [valor, setValor] = useState(ed ? String(ed.valor) : ''); const [vencimento, setVenc] = useState(ed?.vencimento ?? '');
+  const [emissao, setEmissao] = useState(ed?.emissao ?? hojeISO());
+  const [numeroDoc, setNumeroDoc] = useState(ed?.numeroDocumento ?? '');
+  const [categoriaFinanceiraId, setCatId] = useState(ed?.categoriaFinanceiraId ?? '');
   const [cats, setCats] = useState<CatFin[]>([]);
   const [cadNomes, setCadNomes] = useState<string[]>([]);
   const [novaPessoa, setNovaPessoa] = useState(false);
-  const [previsto, setPrevisto] = useState(false);
-  const [tipoDoc, setTipoDoc] = useState('');
+  const [previsto, setPrevisto] = useState(ed?.previsto ?? false);
+  const [tipoDoc, setTipoDoc] = useState(ed?.tipoDocumento ?? '');
   const [tiposDoc, setTiposDoc] = useState<TipoDoc[]>([]);
   // Reembolso a terceiro (só a pagar): o título foi pago por um favorecido e a empresa o reembolsa.
   const [reembolso, setReembolso] = useState(false);
@@ -438,62 +442,78 @@ function ModalNovo({ tipo, onFechar, onSalvo }: { tipo: Tipo; onFechar: () => vo
     carregarCad();
     /* eslint-disable-next-line */
   }, []);
+  // Lançamento manual só é finalizado com todos os campos preenchidos.
+  function faltando(): string | null {
+    if (descricao.trim().length < 2) return 'financeiro.descricao_invalida';
+    if (!tipoDoc) return 'financeiro.tipodoc_obrigatorio';
+    if (!numeroDoc.trim()) return 'financeiro.numdoc_obrigatorio';
+    if (!categoriaFinanceiraId) return 'financeiro.categoria_obrigatoria';
+    if (!Number(valor) || Number(valor) <= 0) return 'financeiro.valor_invalido';
+    if (!pessoaNome.trim()) return 'financeiro.pessoa_obrigatoria';
+    if (!emissao) return 'financeiro.emissao_obrigatoria';
+    if (!vencimento) return 'financeiro.vencimento_obrigatorio';
+    return null;
+  }
   async function salvar() {
+    const f = faltando();
+    if (f) { setErro(f); return; }
     setErro(null); setSalv(true);
+    const corpo = {
+      descricao, pessoaNome, valor: Number(valor), vencimento, emissao: emissao || null,
+      categoriaFinanceiraId: categoriaFinanceiraId || null,
+      favorecidoId: (pagar && reembolso) ? (favorecidoId || null) : null,
+      favorecidoForma: (pagar && reembolso) ? favorecidoForma : null,
+      favorecidoPagoEm: (pagar && reembolso) ? (favorecidoPagoEm || null) : null,
+      previsto, tipoDocumento: tipoDoc || null, numeroDocumento: numeroDoc || null,
+    };
     try {
-      await api.post('/financeiro/' + tipo, {
-        descricao, pessoaNome, valor: Number(valor), vencimento, emissao: emissao || null,
-        categoriaFinanceiraId: categoriaFinanceiraId || null,
-        favorecidoId: (pagar && reembolso) ? (favorecidoId || null) : null,
-        favorecidoForma: (pagar && reembolso) ? favorecidoForma : null,
-        favorecidoPagoEm: (pagar && reembolso) ? (favorecidoPagoEm || null) : null,
-        previsto, tipoDocumento: tipoDoc || null, numeroDocumento: numeroDoc || null,
-      }, token!);
+      if (ed) await api.put('/financeiro/' + tipo + '/' + ed.id, corpo, token!);
+      else await api.post('/financeiro/' + tipo, corpo, token!);
       onSalvo();
     }
     catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
   return (
     <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()}>
-      <h2>{t('fin.novo_lancamento')}</h2>
-      <label className="campo">{t('fin.descricao')}<input value={descricao} onChange={(e) => setDescricao(e.target.value)} placeholder={t('fin.descricao_ph')} autoFocus /></label>
+      <h2>{ed ? t('fin.editar_lancamento') : t('fin.novo_lancamento')}</h2>
+      <label className="campo">{t('fin.descricao')}<b className="obrig"> *</b><input value={descricao} onChange={(e) => setDescricao(e.target.value)} placeholder={t('fin.descricao_ph')} autoFocus /></label>
       <div className="cores-grid">
-        <label className="campo">{t('tipodoc.titulo_s')}
+        <label className="campo">{t('tipodoc.titulo_s')}<b className="obrig"> *</b>
           <select value={tipoDoc} onChange={(e) => setTipoDoc(e.target.value)}>
             <option value="">{t('tipodoc.sem')}</option>{tiposDoc.map((d) => <option key={d.id} value={d.nome}>{d.nome}</option>)}
           </select>
         </label>
-        <label className="campo">{t('fin.num_documento')}<input value={numeroDoc} onChange={(e) => setNumeroDoc(e.target.value)} placeholder={t('fin.num_documento_ph')} /></label>
+        <label className="campo">{t('fin.num_documento')}<b className="obrig"> *</b><input value={numeroDoc} onChange={(e) => setNumeroDoc(e.target.value)} placeholder={t('fin.num_documento_ph')} /></label>
       </div>
       <div className="cores-grid">
-        <label className="campo">{t('catfin.titulo_s')}
+        <label className="campo">{t('catfin.titulo_s')}<b className="obrig"> *</b>
           <select value={categoriaFinanceiraId} onChange={(e) => setCatId(e.target.value)}>
             <option value="">{t('catfin.sem')}</option>{cats.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
           </select>
         </label>
-        <label className="campo">{t('fin.valor')}<MoedaInput value={valor} onChange={(n) => setValor(n ? String(n) : '')} placeholder="0,00" /></label>
+        <label className="campo">{t('fin.valor')}<b className="obrig"> *</b><MoedaInput value={valor} onChange={(n) => setValor(n ? String(n) : '')} placeholder="0,00" /></label>
       </div>
       <label className="campo">
         <span style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          {pagar ? t('fin.fornecedor') : t('fin.cliente')}
+          <span>{pagar ? t('fin.fornecedor') : t('fin.cliente')}<b className="obrig"> *</b></span>
           <button type="button" className="btn-link" style={{ fontSize: 12 }} onClick={() => setNovaPessoa(true)}>+ {t('fin.cadastrar_novo')}</button>
         </span>
         <input list="dlCadLanc" value={pessoaNome} onChange={(e) => setPessoa(e.target.value)} placeholder={t('fin.pessoa_ph')} />
         <datalist id="dlCadLanc">{cadNomes.map((n) => <option key={n} value={n} />)}</datalist>
       </label>
       <div className="cores-grid">
-        <label className="campo">{t('fin.emissao')}<input type="date" value={emissao} onChange={(e) => setEmissao(e.target.value)} /></label>
-        <label className="campo">{pagar && reembolso ? t('fin.data_reembolso') : t('fin.vencimento')}<input type="date" value={vencimento} onChange={(e) => setVenc(e.target.value)} /></label>
+        <label className="campo">{t('fin.emissao')}<b className="obrig"> *</b><input type="date" value={emissao} onChange={(e) => setEmissao(e.target.value)} /></label>
+        <label className="campo">{(pagar && reembolso ? t('fin.data_reembolso') : t('fin.vencimento'))}<b className="obrig"> *</b><input type="date" value={vencimento} onChange={(e) => setVenc(e.target.value)} /></label>
       </div>
       <label className="login-lembrar" style={{ marginTop: 4 }}>
         <input type="checkbox" checked={previsto} onChange={(e) => setPrevisto(e.target.checked)} /> {t('fin.previsto_label')}
       </label>
-      {pagar && (
+      {pagar && !ed && (
         <label className="login-lembrar" style={{ marginTop: 8, background: 'var(--accent-soft)', borderRadius: 8, padding: '8px 10px' }}>
           <input type="checkbox" checked={reembolso} onChange={(e) => setReembolso(e.target.checked)} /> <b>{t('fin.reembolso')}</b> <span className="muted">{t('fin.reembolso_hint')}</span>
         </label>
       )}
-      {pagar && reembolso && (
+      {pagar && !ed && reembolso && (
         <div style={{ border: '1px dashed var(--accent)', borderRadius: 10, padding: 12, marginTop: 8 }}>
           <label className="campo">{t('fin.favorecido_reembolsar')}
             <select value={favorecidoId} onChange={(e) => setFavorecidoId(e.target.value)}>

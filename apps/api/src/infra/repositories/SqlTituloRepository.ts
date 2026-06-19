@@ -207,6 +207,14 @@ export class SqlTituloRepository implements TituloRepository {
       `UPDATE "${s}".titulo SET descricao=$2, pessoa_nome=$3, valor=$4, vencimento=$5, numero_documento=$6 WHERE id=$1`,
       [id, d.descricao, d.pessoaNome, d.valor, d.vencimento, d.numeroDocumento]);
   }
+  // Edição de lançamento manual (campos do formulário; não toca origem/baixa/favorecido).
+  async atualizar(schema: string, id: string, t: NovoTitulo): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(
+      `UPDATE "${s}".titulo SET descricao=$2, pessoa_nome=$3, valor=$4, vencimento=$5,
+         categoria_financeira_id=$6, previsto=$7, tipo_documento=$8, numero_documento=$9, emissao=$10 WHERE id=$1`,
+      [id, t.descricao, t.pessoaNome, t.valor, t.vencimento, t.categoriaFinanceiraId ?? null, t.previsto === true, t.tipoDocumento ?? null, t.numeroDocumento ?? null, t.emissao ?? null]);
+  }
   async criarParcelasDePedido(schema: string, descricao: string, pessoaNome: string | null, valorTotal: number, pedidoId: string, parcelas: number, intervaloDias: number): Promise<void> {
     const s = validarSchema(schema);
     const n = Math.max(1, parcelas);

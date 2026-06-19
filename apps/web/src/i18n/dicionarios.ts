@@ -756,7 +756,7 @@ Object.assign(pt, {
   'cap.financeiro.receber.listar': 'Ver contas a receber', 'cap.financeiro.receber.gerenciar': 'Gerenciar contas a receber',
   'cap.financeiro.pagar.listar': 'Ver contas a pagar', 'cap.financeiro.pagar.gerenciar': 'Gerenciar contas a pagar',
   'fin.receber': 'Contas a receber', 'fin.pagar': 'Contas a pagar', 'fin.novo': 'Novo título',
-  'fin.novo_lancamento': 'Novo lançamento financeiro', 'fin.salvar_lancamento': 'Salvar lançamento',
+  'fin.novo_lancamento': 'Novo lançamento financeiro', 'fin.editar_lancamento': 'Editar lançamento financeiro', 'fin.salvar_lancamento': 'Salvar lançamento',
   'fin.descricao_ph': 'Descrição do título', 'fin.num_documento': 'Nº do documento', 'fin.num_documento_ph': 'Ex: 12345',
   'fin.fornecedor_favorecido': 'Fornecedor / Favorecido', 'fin.cadastrar_novo': 'cadastrar novo', 'fin.pessoa_ph': 'Digite para buscar...',
   'fin.nota_conta': 'Fornecedor não cadastrado? Use + cadastrar novo. A conta bancária é definida na baixa do título, não no lançamento.',
@@ -775,6 +775,10 @@ Object.assign(pt, {
   'fin.aberto_receber': 'A receber (em aberto)', 'fin.aberto_pagar': 'A pagar (em aberto)', 'fin.vencidos': 'Vencidos',
   'fin.titulos': 'título(s)', 'fin.do_pedido': 'do pedido',
   'financeiro.descricao_invalida': 'Informe uma descrição.', 'financeiro.valor_invalido': 'Valor inválido.',
+  'financeiro.tipodoc_obrigatorio': 'Selecione o tipo de documento.', 'financeiro.numdoc_obrigatorio': 'Informe o número do documento.',
+  'financeiro.categoria_obrigatoria': 'Selecione a categoria financeira.', 'financeiro.pessoa_obrigatoria': 'Informe o fornecedor/cliente.',
+  'financeiro.emissao_obrigatoria': 'Informe a data de emissão.', 'financeiro.vencimento_obrigatorio': 'Informe o vencimento.',
+  'financeiro.nao_editavel': 'Só lançamentos manuais em aberto podem ser editados.',
   'financeiro.vencimento_invalido': 'Vencimento inválido.', 'financeiro.nao_encontrado': 'Título não encontrado.',
   'financeiro.ja_pago': 'Título já está pago.',
 });
@@ -785,7 +789,7 @@ Object.assign(en, {
   'cap.financeiro.receber.listar': 'View receivables', 'cap.financeiro.receber.gerenciar': 'Manage receivables',
   'cap.financeiro.pagar.listar': 'View payables', 'cap.financeiro.pagar.gerenciar': 'Manage payables',
   'fin.receber': 'Receivables', 'fin.pagar': 'Payables', 'fin.novo': 'New entry',
-  'fin.novo_lancamento': 'New financial entry', 'fin.salvar_lancamento': 'Save entry',
+  'fin.novo_lancamento': 'New financial entry', 'fin.editar_lancamento': 'Edit financial entry', 'fin.salvar_lancamento': 'Save entry',
   'fin.descricao_ph': 'Entry description', 'fin.num_documento': 'Document #', 'fin.num_documento_ph': 'Ex: 12345',
   'fin.fornecedor_favorecido': 'Supplier / Payee', 'fin.cadastrar_novo': 'add new', 'fin.pessoa_ph': 'Type to search...',
   'fin.nota_conta': 'Supplier not registered? Use + add new. The bank account is set when settling the entry, not when creating it.',
@@ -804,6 +808,10 @@ Object.assign(en, {
   'fin.aberto_receber': 'Receivable (open)', 'fin.aberto_pagar': 'Payable (open)', 'fin.vencidos': 'Overdue',
   'fin.titulos': 'entry(ies)', 'fin.do_pedido': 'from order',
   'financeiro.descricao_invalida': 'Provide a description.', 'financeiro.valor_invalido': 'Invalid amount.',
+  'financeiro.tipodoc_obrigatorio': 'Select the document type.', 'financeiro.numdoc_obrigatorio': 'Enter the document number.',
+  'financeiro.categoria_obrigatoria': 'Select the financial category.', 'financeiro.pessoa_obrigatoria': 'Enter the supplier/customer.',
+  'financeiro.emissao_obrigatoria': 'Enter the issue date.', 'financeiro.vencimento_obrigatorio': 'Enter the due date.',
+  'financeiro.nao_editavel': 'Only open manual entries can be edited.',
   'financeiro.vencimento_invalido': 'Invalid due date.', 'financeiro.nao_encontrado': 'Entry not found.',
   'financeiro.ja_pago': 'Entry already paid.',
 });
@@ -814,7 +822,7 @@ Object.assign(es, {
   'cap.financeiro.receber.listar': 'Ver cuentas a cobrar', 'cap.financeiro.receber.gerenciar': 'Gestionar cuentas a cobrar',
   'cap.financeiro.pagar.listar': 'Ver cuentas a pagar', 'cap.financeiro.pagar.gerenciar': 'Gestionar cuentas a pagar',
   'fin.receber': 'Cuentas a cobrar', 'fin.pagar': 'Cuentas a pagar', 'fin.novo': 'Nuevo título',
-  'fin.novo_lancamento': 'Nuevo asiento financiero', 'fin.salvar_lancamento': 'Guardar asiento',
+  'fin.novo_lancamento': 'Nuevo asiento financiero', 'fin.editar_lancamento': 'Editar asiento financiero', 'fin.salvar_lancamento': 'Guardar asiento',
   'fin.descricao_ph': 'Descripción del título', 'fin.num_documento': 'Nº del documento', 'fin.num_documento_ph': 'Ej: 12345',
   'fin.fornecedor_favorecido': 'Proveedor / Beneficiario', 'fin.cadastrar_novo': 'registrar nuevo', 'fin.pessoa_ph': 'Escribe para buscar...',
   'fin.nota_conta': '¿Proveedor no registrado? Usa + registrar nuevo. La cuenta bancaria se define en la baja del título, no en el asiento.',
@@ -833,6 +841,10 @@ Object.assign(es, {
   'fin.aberto_receber': 'A cobrar (abierto)', 'fin.aberto_pagar': 'A pagar (abierto)', 'fin.vencidos': 'Vencidos',
   'fin.titulos': 'título(s)', 'fin.do_pedido': 'del pedido',
   'financeiro.descricao_invalida': 'Indica una descripción.', 'financeiro.valor_invalido': 'Valor inválido.',
+  'financeiro.tipodoc_obrigatorio': 'Selecciona el tipo de documento.', 'financeiro.numdoc_obrigatorio': 'Indica el número del documento.',
+  'financeiro.categoria_obrigatoria': 'Selecciona la categoría financiera.', 'financeiro.pessoa_obrigatoria': 'Indica el proveedor/cliente.',
+  'financeiro.emissao_obrigatoria': 'Indica la fecha de emisión.', 'financeiro.vencimento_obrigatorio': 'Indica el vencimiento.',
+  'financeiro.nao_editavel': 'Solo se pueden editar asientos manuales abiertos.',
   'financeiro.vencimento_invalido': 'Vencimiento inválido.', 'financeiro.nao_encontrado': 'Título no encontrado.',
   'financeiro.ja_pago': 'El título ya está pagado.',
 });
@@ -1431,15 +1443,15 @@ Object.assign(es, { 'busca.abrir': 'Buscar', 'busca.placeholder': 'Buscar pantal
 
 // --- Refinamento: Toasts de confirmação ---
 Object.assign(pt, {
-  'fin.toast_criado': 'Título lançado.', 'fin.toast_baixado': 'Título baixado.', 'fin.toast_cancelado': 'Baixa cancelada.',
+  'fin.toast_criado': 'Título lançado.', 'fin.toast_editado': 'Lançamento atualizado.', 'fin.toast_baixado': 'Título baixado.', 'fin.toast_cancelado': 'Baixa cancelada.',
   'pedido.toast_status': 'Pedido movido para', 'pedido.toast_pix_pendente': 'Pedido aguardando baixa no Financeiro (Pix). O setor financeiro foi notificado.', 'sep.toast_ok': 'Separação concluída e estoque baixado.',
 });
 Object.assign(en, {
-  'fin.toast_criado': 'Title created.', 'fin.toast_baixado': 'Title settled.', 'fin.toast_cancelado': 'Settlement reverted.',
+  'fin.toast_criado': 'Title created.', 'fin.toast_editado': 'Entry updated.', 'fin.toast_baixado': 'Title settled.', 'fin.toast_cancelado': 'Settlement reverted.',
   'pedido.toast_status': 'Order moved to', 'pedido.toast_pix_pendente': 'Order awaiting receipt in Finance (Pix). Finance has been notified.', 'sep.toast_ok': 'Picking done and stock deducted.',
 });
 Object.assign(es, {
-  'fin.toast_criado': 'Título creado.', 'fin.toast_baixado': 'Título pagado.', 'fin.toast_cancelado': 'Pago cancelado.',
+  'fin.toast_criado': 'Título creado.', 'fin.toast_editado': 'Asiento actualizado.', 'fin.toast_baixado': 'Título pagado.', 'fin.toast_cancelado': 'Pago cancelado.',
   'pedido.toast_status': 'Pedido movido a', 'pedido.toast_pix_pendente': 'Pedido esperando cobro en Finanzas (Pix). Finanzas fue notificada.', 'sep.toast_ok': 'Preparación hecha y stock descontado.',
 });
 

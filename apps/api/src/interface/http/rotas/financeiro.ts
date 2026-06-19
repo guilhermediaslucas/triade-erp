@@ -28,6 +28,16 @@ function registrar(r: Router, deps: Dependencias, tipo: TipoTitulo, capBase: str
       res.status(201).json({ id });
     } catch (e) { tratarErro(res, e); }
   });
+  r.put(`${base}/:id`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
+    try {
+      const b = req.body ?? {};
+      await deps.financeiroService.atualizar(sch(req), tipo, req.params.id!, b);
+      const t = await deps.tituloRepo.buscarPorId(sch(req), req.params.id!).catch(() => null);
+      auditar(req, { modulo: 'Financeiro', entidade: 'Titulo', referencia: t?.numero ?? null,
+        descricao: `Editou o título ${rotuloTipo} ${t?.numero ?? ''}: ${b.descricao ?? '—'} (${brl(Number(b.valor))})` });
+      res.json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
+  });
   r.patch(`${base}/:id/baixar`, aut, az(`${capBase}.gerenciar`), async (req, res: Response) => {
     try {
       const b = req.body ?? {};

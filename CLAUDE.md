@@ -188,6 +188,23 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-19** — **Lançamento manual: campos obrigatórios + botão de editar (Contas a receber/pagar).**
+  Decisão do Gui: ao salvar um lançamento **manual** exigir TODOS os campos; e poder **editar** lançamentos manuais em aberto.
+  **Backend:** `TituloRepository.atualizar` + `SqlTituloRepository.atualizar` (UPDATE descricao/pessoa/valor/vencimento/categoria/
+  previsto/tipo_doc/num_doc/emissao — não toca origem/baixa/favorecido). `FinanceiroService`: novo `validarManual(tipo,e)` (exige
+  descrição, **tipo de documento, nº do documento, categoria financeira, fornecedor/cliente, emissão e vencimento** + valor>0) reusado
+  por `criar` e pelo novo `atualizar(schema,tipo,id,e)` (404 se não existe; **`financeiro.nao_editavel`** [400] se origem≠manual ou
+  status≠aberto). Rota **`PUT /financeiro/:tipo/:id`** (cap `financeiro.{tipo}.gerenciar`, auditada). **Escopo (decisão do Gui): só
+  lançamentos manuais** — os automáticos (pedido/compra/comissão/frete) são criados direto pelo repo e seguem como hoje (senão
+  quebraria confirmação de pedido/nota). **Frontend (`Contas.tsx`):** `Titulo` += `categoriaFinanceiraId` (já vinha do domínio/SQL,
+  faltava no front). `ModalNovo` aceita `editar?: Titulo` (pré-preenche; título "Editar lançamento"; POST cria / **PUT edita**),
+  `faltando()` valida os obrigatórios antes de enviar (mensagem específica por campo), labels marcados com `*` (`.obrig` no CSS).
+  **Botão lápis** (`i-edit`) nas ações da linha **só p/ origem manual + em aberto** → abre o ModalNovo em edição. Seção de reembolso
+  escondida no modo edição (tem ação própria). i18n `financeiro.{tipodoc,numdoc,categoria,pessoa,emissao,vencimento}_obrigatori*` +
+  `financeiro.nao_editavel` + `fin.editar_lancamento` + `fin.toast_editado` pt/en/es. **Sem migration, sem cap nova** (reusa
+  `financeiro.*.gerenciar` → não precisa relogar). **Pré-requisito p/ o usuário:** ter **categorias financeiras** e **tipos de
+  documento** cadastrados (senão não finaliza o lançamento — é o bloqueio pedido). **Pendente Gui:** `npm run build -w @triade/web` →
+  commit+push (Render pega o backend via tsx) → `scripts\app-apk.bat`.
 - **2026-06-19** — **Excel da DRE virou demonstração em cascata (cara de DRE), agrupada por grupo › conta › lançamento.**
   Novo gerador dedicado em `lib/excel.ts`: `baixarExcelDRE(nome, titulo, linhas: LinhaDRE[], opcoes)` + `gerarXlsxDRE` +
   `stylesDRE` + `planilhaXmlDRE`. Layout 2 colunas (Descrição · Valor) com estilos hierárquicos

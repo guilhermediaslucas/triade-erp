@@ -1,4 +1,4 @@
-import type { LinhaConciliacao, MovimentoFluxo, PagoAgrupado, Titulo, TipoTitulo, TituloRepository } from '../../domain/financeiro/Titulo.js';
+import type { LinhaConciliacao, MovimentoFluxo, NovoTitulo, PagoAgrupado, Titulo, TipoTitulo, TituloRepository } from '../../domain/financeiro/Titulo.js';
 import type { PedidoRepository } from '../../domain/comercial/Pedido.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
@@ -283,25 +283,46 @@ export class FinanceiroService {
     await this.repo.definirConferido(schema, id, !!conferido);
   }
 
-  async criar(schema: string, tipo: TipoTitulo, e: any): Promise<string> {
-    if (!e?.descricao || String(e.descricao).trim().length < 2) throw new ErroAplicacao('financeiro.descricao_invalida', 400);
+  // Lançamento manual exige TODOS os campos (descrição, tipo/nº do documento, categoria,
+  // valor, fornecedor/cliente, emissão e vencimento). Não vale para títulos automáticos
+  // (pedido/compra/comissão/frete), que são criados direto pelo repositório.
+  private validarManual(tipo: TipoTitulo, e: any): NovoTitulo {
+    const descricao = (e?.descricao && String(e.descricao).trim()) || '';
+    if (descricao.length < 2) throw new ErroAplicacao('financeiro.descricao_invalida', 400);
+    const tipoDocumento = (e?.tipoDocumento && String(e.tipoDocumento).trim()) || '';
+    if (!tipoDocumento) throw new ErroAplicacao('financeiro.tipodoc_obrigatorio', 400);
+    const numeroDocumento = (e?.numeroDocumento && String(e.numeroDocumento).trim()) || '';
+    if (!numeroDocumento) throw new ErroAplicacao('financeiro.numdoc_obrigatorio', 400);
+    const categoriaFinanceiraId = (e?.categoriaFinanceiraId && String(e.categoriaFinanceiraId).trim()) || '';
+    if (!categoriaFinanceiraId) throw new ErroAplicacao('financeiro.categoria_obrigatoria', 400);
     const valor = Number(e?.valor);
     if (!Number.isFinite(valor) || valor <= 0) throw new ErroAplicacao('financeiro.valor_invalido', 400);
+    const pessoaNome = (e?.pessoaNome && String(e.pessoaNome).trim()) || '';
+    if (!pessoaNome) throw new ErroAplicacao('financeiro.pessoa_obrigatoria', 400);
+    const emissao = (e?.emissao && String(e.emissao).trim()) || '';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(emissao)) throw new ErroAplicacao('financeiro.emissao_obrigatoria', 400);
     const vencimento = (e?.vencimento && String(e.vencimento).trim()) || '';
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(vencimento)) throw new ErroAplicacao('financeiro.vencimento_invalido', 400);
-    const emissao = (e?.emissao && String(e.emissao).trim()) || null;
-    if (emissao && !/^\d{4}-\d{2}-\d{2}$/.test(emissao)) throw new ErroAplicacao('financeiro.vencimento_invalido', 400);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(vencimento)) throw new ErroAplicacao('financeiro.vencimento_obrigatorio', 400);
+    return { tipo, descricao, pessoaNome, valor, vencimento, categoriaFinanceiraId, previsto: e?.previsto === true, tipoDocumento, numeroDocumento, emissao };
+  }
+
+  async criar(schema: string, tipo: TipoTitulo, e: any): Promise<string> {
+    const base = this.validarManual(tipo, e);
     return this.repo.criar(schema, {
-      tipo, descricao: String(e.descricao).trim(), pessoaNome: (e?.pessoaNome && String(e.pessoaNome).trim()) || null,
-      valor, vencimento, categoriaFinanceiraId: (e?.categoriaFinanceiraId && String(e.categoriaFinanceiraId).trim()) || null,
+      ...base,
       favorecidoId: (e?.favorecidoId && String(e.favorecidoId).trim()) || null,
       favorecidoForma: (e?.favorecidoForma && String(e.favorecidoForma).trim()) || null,
       favorecidoPagoEm: lim(e?.favorecidoPagoEm),
-      previsto: e?.previsto === true,
-      tipoDocumento: (e?.tipoDocumento && String(e.tipoDocumento).trim()) || null,
-      numeroDocumento: (e?.numeroDocumento && String(e.numeroDocumento).trim()) || null,
-      emissao,
     }, 'manual', null);
+  }
+
+  // Edita um lançamento manual em aberto (não toca origem/baixa/favorecido).
+  async atualizar(schema: string, tipo: TipoTitulo, id: string, e: any): Promise<void> {
+    const t = await this.repo.buscarPorId(schema, id);
+    if (!t) throw new ErroAplicacao('financeiro.nao_encontrado', 404);
+    if (t.origem !== 'manual') throw new ErroAplicacao('financeiro.nao_editavel', 400);
+    if (t.status !== 'aberto') throw new ErroAplicacao('financeiro.nao_editavel', 400);
+    await this.repo.atualizar(schema, id, this.validarManual(tipo, e));
   }
 
   // Marca/desmarca o título como "reembolso a terceiro" (a qualquer momento).
