@@ -198,6 +198,9 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   sem web build, sem APK** (só backend). **Nota:** novos títulos automáticos (pedido/comissão/frete) nascem sem categoria e só são
   classificados no próximo boot/deploy — se incomodar, dá p/ setar a categoria na criação depois. **Pendente Gui:** commit+push
   (Render redeploia e roda o backfill no boot).
+  **Addendum (mesma rotina):** regra fixa por fornecedor — **Cemig → "Energia elétrica"** (`pessoa_nome ILIKE '%cemig%'`, tipo pagar),
+  passo 3 do `classificarTitulosSemCategoria`. Sobrescreve mesmo já classificados/pagos (`IS DISTINCT FROM`), re-aplica a cada boot
+  (Cemig sempre = energia, decisão do Gui). Só backend, sem migration/web/APK. **Pendente Gui:** commit+push.
 - **2026-06-19** — **Lançamento manual: campos obrigatórios + botão de editar (Contas a receber/pagar).**
   Decisão do Gui: ao salvar um lançamento **manual** exigir TODOS os campos; e poder **editar** lançamentos manuais em aberto.
   **Backend:** `TituloRepository.atualizar` + `SqlTituloRepository.atualizar` (UPDATE descricao/pessoa/valor/vencimento/categoria/

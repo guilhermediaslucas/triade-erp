@@ -56,6 +56,15 @@ export async function classificarTitulosSemCategoria(ds: DataSource, schemaRaw: 
   // 2) Resto (manuais e origens não previstas): genérico por tipo
   await set(`tipo = 'receber'`, await idCategoria(ds, s, 'Outras receitas'));
   await set(`tipo = 'pagar'`, await idCategoria(ds, s, 'Outras despesas'));
+  // 3) Regra fixa por fornecedor: Cemig (distribuidora de energia) → Energia elétrica.
+  // Sobrescreve mesmo já classificados/pagos (re-aplica a cada boot). Decisão do Gui.
+  const energia = await idCategoria(ds, s, 'Energia elétrica');
+  if (energia) {
+    await ds.query(
+      `UPDATE "${s}".titulo SET categoria_financeira_id = $1
+        WHERE tipo = 'pagar' AND pessoa_nome ILIKE '%cemig%' AND categoria_financeira_id IS DISTINCT FROM $1`,
+      [energia]);
+  }
 }
 
 // Garante as categorias base em um tenant. Idempotente: cria por nome só quando
