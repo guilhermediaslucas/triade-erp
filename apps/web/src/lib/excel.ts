@@ -402,29 +402,68 @@ function planilhaXmlDRE(titulo: string, linhas: LinhaDRE[], imgs: Img[], periodo
     grupo: [5, 6], grupo_neg: [5, 7], conta: [8, 9], lancamento: [10, 11],
     subtotal: [12, 13], resultado: [14, 15], nota: [17, 18],
   };
+  // Nível de agrupamento (outline) do Excel: grupo 0 · conta 1 · lançamento 2.
+  const nivel: Record<EstiloDRE, number> = {
+    grupo: 0, grupo_neg: 0, conta: 1, lancamento: 2, subtotal: 0, resultado: 0, nota: 0,
+  };
+  const baseRow = 4;
+  const rowOf = (i: number) => i + baseRow;
+
+  // conta = soma dos lançamentos-filhos (contíguos); null se não houver (vira valor fixo).
+  const formulaConta = (i: number): string | null => {
+    const f: number[] = [];
+    for (let j = i + 1; j < linhas.length && linhas[j]!.estilo === 'lancamento'; j++) f.push(rowOf(j));
+    return f.length ? `SUM(B${f[0]}:B${f[f.length - 1]})` : null;
+  };
+  // grupo = soma das contas-filhas (até o próximo grupo/subtotal/resultado).
+  const formulaGrupo = (i: number): string | null => {
+    const c: number[] = [];
+    for (let j = i + 1; j < linhas.length; j++) {
+      const e = linhas[j]!.estilo;
+      if (e === 'grupo' || e === 'grupo_neg' || e === 'subtotal' || e === 'resultado') break;
+      if (e === 'conta') c.push(rowOf(j));
+    }
+    return c.length ? `SUM(${c.map((r) => 'B' + r).join(',')})` : null;
+  };
+  // subtotal/resultado = (base) ± grupos acumulados desde o último subtotal.
+  const exprSinalizado = (base: number | null, gs: { row: number; sign: number }[]): string | null => {
+    if (!gs.length) return base ? `B${base}` : null;
+    let e = base ? `B${base}` : '';
+    for (const g of gs) e += (g.sign < 0 ? '-' : '+') + 'B' + g.row;
+    return e.replace(/^\+/, '');
+  };
 
   const rows: string[] = [];
   rows.push(`<row r="1" ht="${imgs.length ? 30 : 20}" customHeight="1">${cTexto('A1', titulo, 3)}</row>`);
   rows.push(`<row r="2">${cTexto('A2', sub, 4)}</row>`);
   rows.push(`<row r="3">${cTexto('A3', 'Descrição', 1)}${cTexto('B3', 'Valor', 2)}</row>`);
+
+  let lastSubtotalRow = 0;
+  let gruposPend: { row: number; sign: number }[] = [];
   linhas.forEach((l, i) => {
-    const r = i + 4;
+    const r = rowOf(i);
     const [tx, vx] = X[l.estilo];
+    const ref = 'B' + r;
     let vc: string;
-    if (l.valorStr != null) vc = cTexto('B' + r, l.valorStr, 18);
-    else if (l.valor != null && Number.isFinite(l.valor)) {
-      // resultado negativo em vermelho
+    if (l.valorStr != null) {
+      vc = cTexto(ref, l.valorStr, 18);
+    } else if (l.valor != null && Number.isFinite(l.valor)) {
+      let formula: string | null = null;
+      if (l.estilo === 'conta') formula = formulaConta(i);
+      else if (l.estilo === 'grupo' || l.estilo === 'grupo_neg') { formula = formulaGrupo(i); gruposPend.push({ row: r, sign: l.estilo === 'grupo_neg' ? -1 : 1 }); }
+      else if (l.estilo === 'subtotal') { formula = exprSinalizado(null, gruposPend); lastSubtotalRow = r; gruposPend = []; }
+      else if (l.estilo === 'resultado') { formula = exprSinalizado(lastSubtotalRow || null, gruposPend); gruposPend = []; }
       const sv = l.estilo === 'resultado' && l.valor < 0 ? 16 : vx;
-      vc = cNum('B' + r, l.valor, sv);
-    } else vc = `<c r="B${r}" s="${vx}"/>`;
-    rows.push(`<row r="${r}">${cTexto('A' + r, l.texto, tx)}${vc}</row>`);
+      vc = formula ? `<c r="${ref}" s="${sv}"><f>${formula}</f><v>${l.valor}</v></c>` : cNum(ref, l.valor, sv);
+    } else vc = `<c r="${ref}" s="${vx}"/>`;
+    rows.push(`<row r="${r}" outlineLevel="${nivel[l.estilo]}">${cTexto('A' + r, l.texto, tx)}${vc}</row>`);
   });
 
   const merges = '<mergeCells count="2"><mergeCell ref="A1:B1"/><mergeCell ref="A2:B2"/></mergeCells>';
   const drawing = imgs.length ? '<drawing r:id="rId1"/>' : '';
   const cols = '<cols><col min="1" max="1" width="72" customWidth="1"/><col min="2" max="2" width="20" customWidth="1"/></cols>';
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheetViews><sheetView showGridLines="0" workbookViewId="0"/></sheetViews>${cols}<sheetData>${rows.join('')}</sheetData>${merges}${drawing}</worksheet>`;
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheetPr><outlinePr summaryBelow="0"/></sheetPr><sheetViews><sheetView showGridLines="0" workbookViewId="0"/></sheetViews><sheetFormatPr defaultRowHeight="15" outlineLevelRow="2"/>${cols}<sheetData>${rows.join('')}</sheetData>${merges}${drawing}</worksheet>`;
 }
 
 export function gerarXlsxDRE(titulo: string, linhas: LinhaDRE[], opcoes?: OpcoesExcel): Uint8Array {
