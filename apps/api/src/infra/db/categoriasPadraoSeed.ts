@@ -33,7 +33,30 @@ export const CATEGORIAS_PADRAO: { nome: string; grupo: GrupoCatFin }[] = [
   { nome: 'Material de escritório', grupo: 'despesa' },
   { nome: 'Tarifas bancárias', grupo: 'despesa' },
   { nome: 'Impostos e taxas (DAS/Simples)', grupo: 'despesa' },
+  { nome: 'Outras despesas', grupo: 'despesa' },
 ];
+
+// Classifica os títulos SEM categoria financeira (idempotente: só mexe em quem está null).
+// Automáticos pela origem; manuais e quaisquer outros caem no genérico por tipo.
+async function idCategoria(ds: DataSource, s: string, nome: string): Promise<string | null> {
+  const r = (await ds.query(`SELECT id FROM "${s}".categoria_financeira WHERE lower(nome) = lower($1) LIMIT 1`, [nome]))[0];
+  return r?.id ?? null;
+}
+export async function classificarTitulosSemCategoria(ds: DataSource, schemaRaw: string): Promise<void> {
+  const s = validarSchema(schemaRaw);
+  const set = async (cond: string, catId: string | null) => {
+    if (!catId) return;
+    await ds.query(`UPDATE "${s}".titulo SET categoria_financeira_id = $1 WHERE categoria_financeira_id IS NULL AND ${cond}`, [catId]);
+  };
+  // 1) Automáticos pela origem
+  await set(`origem = 'pedido'`, await idCategoria(ds, s, 'Receita com vendas'));
+  await set(`origem = 'compra'`, await idCategoria(ds, s, CATEGORIA_COMPRA_MERCADORIA));
+  await set(`origem = 'comissao'`, await idCategoria(ds, s, 'Comissões de vendedores'));
+  await set(`origem = 'frete'`, await idCategoria(ds, s, 'Frete de entrega'));
+  // 2) Resto (manuais e origens não previstas): genérico por tipo
+  await set(`tipo = 'receber'`, await idCategoria(ds, s, 'Outras receitas'));
+  await set(`tipo = 'pagar'`, await idCategoria(ds, s, 'Outras despesas'));
+}
 
 // Garante as categorias base em um tenant. Idempotente: cria por nome só quando
 // ainda não existe; nunca toca nas categorias que a empresa já criou/editou.

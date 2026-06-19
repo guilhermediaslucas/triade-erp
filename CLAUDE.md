@@ -188,6 +188,16 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-19** — **Backfill: classifica todos os títulos sem categoria financeira (roda no boot, idempotente).**
+  Decisão do Gui: corrigir os lançamentos existentes sem categoria. `categoriasPadraoSeed.ts`: nova
+  `classificarTitulosSemCategoria(ds, schema)` — UPDATE só onde `categoria_financeira_id IS NULL`: **automáticos pela origem**
+  (pedido→"Receita com vendas", compra→"Compra de mercadorias para revenda", comissao→"Comissões de vendedores",
+  frete→"Frete de entrega") e **resto por tipo** (receber→"Outras receitas", pagar→"Outras despesas"). Adicionada
+  **"Outras despesas"** ao `CATEGORIAS_PADRAO`. Chamada no `prepararBanco` após `garantirCategoriasPadrao` (por tenant, best-effort).
+  Como não há acesso direto ao banco daqui, roda no deploy (Render via tsx). **Idempotente** (só mexe em null). **Sem migration,
+  sem web build, sem APK** (só backend). **Nota:** novos títulos automáticos (pedido/comissão/frete) nascem sem categoria e só são
+  classificados no próximo boot/deploy — se incomodar, dá p/ setar a categoria na criação depois. **Pendente Gui:** commit+push
+  (Render redeploia e roda o backfill no boot).
 - **2026-06-19** — **Lançamento manual: campos obrigatórios + botão de editar (Contas a receber/pagar).**
   Decisão do Gui: ao salvar um lançamento **manual** exigir TODOS os campos; e poder **editar** lançamentos manuais em aberto.
   **Backend:** `TituloRepository.atualizar` + `SqlTituloRepository.atualizar` (UPDATE descricao/pessoa/valor/vencimento/categoria/

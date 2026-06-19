@@ -3,7 +3,7 @@ import { CAPABILITY_IDS_GERAIS, CAPS_PAINEL_TV } from '@triade/shared';
 import { migrarTudo } from './migrate.js';
 import { garantirSuperAdmin } from './superAdminSeed.js';
 import { garantirPerfisPadrao } from './perfisPadraoSeed.js';
-import { garantirCategoriasPadrao } from './categoriasPadraoSeed.js';
+import { garantirCategoriasPadrao, classificarTitulosSemCategoria } from './categoriasPadraoSeed.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 // Roda no boot da API (produção): aplica as migrations pendentes em public +
@@ -40,6 +40,8 @@ export async function prepararBanco(ds: DataSource): Promise<void> {
     try { await garantirPerfisPadrao(ds, e.schema_name, e.codigo); } catch (err) { console.warn('[db] perfis padrão falhou em', e.schema_name, err); }
     // Categorias financeiras base (implantação) — idempotente.
     try { await garantirCategoriasPadrao(ds, e.schema_name); } catch (err) { console.warn('[db] categorias padrão falhou em', e.schema_name, err); }
+    // Backfill: classifica títulos sem categoria (automáticos pela origem; resto por tipo) — idempotente.
+    try { await classificarTitulosSemCategoria(ds, e.schema_name); } catch (err) { console.warn('[db] classificação de títulos falhou em', e.schema_name, err); }
     tenants++;
   }
   console.log(`[db] capabilities + perfis padrão sincronizados em ${tenants} tenant(s).`);
