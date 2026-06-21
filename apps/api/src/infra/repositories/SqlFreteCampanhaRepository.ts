@@ -27,7 +27,7 @@ export class SqlFreteCampanhaRepository implements FreteCampanhaRepository {
     return linhas.map(mapear);
   }
 
-  async criar(schema: string, d: { clienteId: string; tipo: TipoFreteCampanha; valor: number; motivo: string | null; de: string; ate: string }): Promise<void> {
+  async criar(schema: string, d: { clienteId: string | null; tipo: TipoFreteCampanha; valor: number; motivo: string | null; de: string; ate: string }): Promise<void> {
     const s = validarSchema(schema);
     await this.ds.query(
       `INSERT INTO "${s}".frete_campanha (id, cliente_id, tipo, valor, motivo, de, ate)
@@ -40,16 +40,18 @@ export class SqlFreteCampanhaRepository implements FreteCampanhaRepository {
     await this.ds.query(`DELETE FROM "${s}".frete_campanha WHERE id = $1`, [id]);
   }
 
-  async freteCobrado(schema: string, clienteId: string, custo: number): Promise<number> {
+  async freteCobrado(schema: string, clienteId: string, custo: number, subtotal: number): Promise<number> {
     const s = validarSchema(schema);
+    // Vigentes do cliente OU gerais (cliente_id IS NULL). A específica do cliente vence a geral.
     const r = (await this.ds.query(
       `SELECT tipo, valor FROM "${s}".frete_campanha
-        WHERE cliente_id = $1 AND CURRENT_DATE BETWEEN de AND ate
-        ORDER BY de DESC LIMIT 1`, [clienteId]))[0];
+        WHERE (cliente_id = $1 OR cliente_id IS NULL) AND CURRENT_DATE BETWEEN de AND ate
+        ORDER BY (cliente_id IS NOT NULL) DESC, de DESC LIMIT 1`, [clienteId]))[0];
     if (!r) return custo;
     if (r.tipo === 'gratis') return 0;
     if (r.tipo === 'fixo') return Math.max(0, Number(r.valor));
     if (r.tipo === 'percentual') return Math.max(0, Math.round(custo * (1 - Number(r.valor) / 100) * 100) / 100);
+    if (r.tipo === 'gratis_acima') return subtotal >= Number(r.valor) ? 0 : custo;
     return custo;
   }
 }

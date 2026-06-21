@@ -232,11 +232,11 @@ export function NovoPedido() {
   useEffect(() => {
     let vivo = true;
     if (!clienteId || freteCusto <= 0) { setFreteCobrado(null); return; }
-    api.get<{ cobrado: number }>(`/frete/cobrado?clienteId=${clienteId}&custo=${freteCusto}`, token!)
+    api.get<{ cobrado: number }>(`/frete/cobrado?clienteId=${clienteId}&custo=${freteCusto}&subtotal=${subtotal}`, token!)
       .then((r) => { if (vivo) setFreteCobrado(r.cobrado); }).catch(() => { if (vivo) setFreteCobrado(null); });
     return () => { vivo = false; };
     /* eslint-disable-next-line */
-  }, [clienteId, freteCusto]);
+  }, [clienteId, freteCusto, subtotal]);
 
   function setItem(i: number, campo: keyof ItemForm, val: string) { setItens(itens.map((it, idx) => idx === i ? { ...it, [campo]: val } : it)); }
   function addItem() { setItens([...itens, { produtoId: '', quantidade: '1' }]); }

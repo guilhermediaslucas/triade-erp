@@ -144,7 +144,7 @@ export class PedidosService {
     // vigente do cliente determina o que ele PAGA (cobrado); a diferença a empresa absorve.
     const freteInformado = Number(e?.frete ?? 0) || 0;
     const freteCusto = formaEntrega === 'retirada' ? 0 : (freteInformado >= 0 ? freteInformado : 0);
-    const frete = freteCusto > 0 ? await this.freteCampanhas.freteCobrado(schema, cliente.id, freteCusto) : 0;
+    const frete = freteCusto > 0 ? await this.freteCampanhas.freteCobrado(schema, cliente.id, freteCusto, subtotal) : 0;
     const total = Math.round((subtotal + frete) * 100) / 100;
 
     let endereco: string | null = (e?.enderecoEntrega && String(e.enderecoEntrega).trim()) || null;

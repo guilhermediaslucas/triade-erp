@@ -3293,3 +3293,26 @@ Object.assign(es, {
   'fiscal.tabela_sem_uf': 'Completa la UF de la empresa (en Identificación) para ver la tabla.',
   'fiscal.tabela_nota': 'Morado = interna · Verde = 12% · Naranja = 7%. Calculado por la región del destino (vale en el Régimen Normal).',
 });
+
+// ===== Campanha de frete geral (sem cliente) + tipo "grátis acima de X" =====
+Object.assign(pt, {
+  'fretecamp.tipo_gratis_acima': 'Grátis acima de (R$)',
+  'fretecamp.valor_limiar': 'Frete grátis a partir de (R$)',
+  'fretecamp.geral': 'Todos os clientes (campanha geral)',
+  'fretecamp.todos': 'Todos (geral)',
+  'fretecamp.sub': 'Frete grátis, fixo, desconto ou grátis acima de um valor — por cliente ou geral, com período',
+});
+Object.assign(en, {
+  'fretecamp.tipo_gratis_acima': 'Free above (R$)',
+  'fretecamp.valor_limiar': 'Free shipping from (R$)',
+  'fretecamp.geral': 'All clients (general campaign)',
+  'fretecamp.todos': 'All (general)',
+  'fretecamp.sub': 'Free, fixed, discounted or free above an amount — per client or general, with a period',
+});
+Object.assign(es, {
+  'fretecamp.tipo_gratis_acima': 'Gratis por encima de (R$)',
+  'fretecamp.valor_limiar': 'Envío gratis a partir de (R$)',
+  'fretecamp.geral': 'Todos los clientes (campaña general)',
+  'fretecamp.todos': 'Todos (general)',
+  'fretecamp.sub': 'Envío gratis, fijo, descuento o gratis por encima de un valor — por cliente o general, con período',
+});

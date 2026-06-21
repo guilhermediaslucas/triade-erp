@@ -188,6 +188,28 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-21** — **Campanha de frete GERAL (sem cliente) + tipo "grátis acima de X" + fix do campo de busca no tema escuro.**
+  Decisões do Gui: (a) permitir campanha de frete **geral** (sem escolher cliente); (b) novo tipo **"grátis acima de X"** = se o
+  **valor do pedido (subtotal dos produtos, sem o frete) ≥ X → frete grátis**, senão cobra o custo; (c) precedência **campanha do
+  próprio cliente vence a geral** (igual comissões). **Migration tenant 064** `frete_campanha`: `cliente_id` passa a aceitar **NULL**
+  (NULL = geral); o tipo `gratis_acima` reusa `valor` como limiar (text livre, sem coluna nova). **Backend:** `FreteCampanha` domínio
+  += tipo `gratis_acima`, `clienteId: string|null`, e `freteCobrado(schema, clienteId, custo, **subtotal**)`. `SqlFreteCampanhaRepository.freteCobrado`
+  reescrito: `WHERE (cliente_id = $1 OR cliente_id IS NULL) AND CURRENT_DATE BETWEEN de AND ate ORDER BY (cliente_id IS NOT NULL) DESC, de DESC LIMIT 1`
+  (específica antes da geral); aplica gratis→0 · fixo→valor · percentual→custo×(1-%) · **gratis_acima→ subtotal≥valor ? 0 : custo**.
+  `FreteCampanhasService.criar` torna o cliente **opcional** (vazio→null), valida `gratis_acima` (valor>0); `cobrado(...)` ganha `subtotal`.
+  `PedidosService` passa o `subtotal` ao resolver. Rota **`GET /frete/cobrado`** lê `&subtotal=`; auditoria do POST trata cliente null
+  ("para todos os clientes") e o texto de gratis_acima. **Frontend (`CampanhasFrete.tsx`):** seletor de cliente com opção **"Todos os
+  clientes (campanha geral)"**; tipo ganha **"Grátis acima de (R$)"** (campo vira "Frete grátis a partir de (R$)"); Salvar deixa de
+  exigir cliente; lista mostra **"Todos (geral)"** quando sem cliente; `rotuloTipo` mostra "Grátis ≥ R$X". `NovoPedido` passa `&subtotal`
+  ao `/frete/cobrado` (recalcula o total ao mudar os itens). i18n `fretecamp.tipo_gratis_acima`/`valor_limiar`/`geral`/`todos` + sub
+  atualizado pt/en/es. **Sem capability nova** (reusa `logistica.frete.*`) → não precisa relogar. **Fix tema escuro:** `.busca-num`
+  (busca de Pedidos) tinha `background:#fff` fixo e a regra global `body.theme-dark input{background:#1b1f27}` pintava o input interno
+  de escuro → pílula branca com input escuro. Corrigido: `.busca-num` usa `var(--card)` + input transparente; regra
+  `body.theme-dark .busca-num input, body.theme-dark .busca-box-tb input { background: transparent; border: 0; }`. **Validação:**
+  hand-review (file-tool lê o arquivo real íntegro); o tsc do sandbox acusa só os falsos TS1005/TS1002 da **truncagem do mount** nos
+  arquivos recém-editados + a cascata do `@triade/shared` sem symlink — tsc local é a fonte de verdade. **Pendente Gui:** `npm install`
+  → `npm run build -w @triade/web` → commit+push (Render aplica a **064** no boot via AUTO_MIGRATE; backend roda via tsx) →
+  `scripts\app-apk.bat` (telas Campanhas de frete e Pedidos mudaram).
 - **2026-06-21** — **Reordenar colunas por arraste no Contas (a receber/pagar), salvo NA CONTA do usuário (backend) + fix de alinhamento na Gestão de fretes.**
   Decisões do Gui: (a) reordenar só no **Contas** (onde já havia esconder/mostrar + redimensionar); (b) mover **tudo** (ordem +
   ocultas + larguras) do localStorage para a **conta do usuário** (backend, segue em qualquer dispositivo). **Camada nova de

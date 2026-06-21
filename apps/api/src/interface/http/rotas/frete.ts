@@ -32,9 +32,10 @@ export function rotasFrete(deps: Dependencias): Router {
       const s = sch(req); const b = req.body ?? {};
       await deps.freteCampanhasService.criar(s, b);
       const cli = b.clienteId ? await deps.clientesRepo.buscarPorId(s, b.clienteId).catch(() => null) : null;
-      const tipoTxt = b.tipo === 'gratis' ? 'frete grátis' : b.tipo === 'percentual' ? `desconto de ${Number(b.valor)}%` : `frete fixo ${brl(Number(b.valor))}`;
-      auditar(req, { modulo: 'Logística', entidade: 'CampanhaFrete', referencia: cli?.nome ?? null,
-        descricao: `Criou campanha de ${tipoTxt} para ${cli?.nome ?? 'cliente'} (${dataBR(b.de)} – ${dataBR(b.ate)})` });
+      const tipoTxt = b.tipo === 'gratis' ? 'frete grátis' : b.tipo === 'percentual' ? `desconto de ${Number(b.valor)}%` : b.tipo === 'gratis_acima' ? `frete grátis acima de ${brl(Number(b.valor))}` : `frete fixo ${brl(Number(b.valor))}`;
+      const alvo = cli?.nome ?? 'todos os clientes';
+      auditar(req, { modulo: 'Logística', entidade: 'CampanhaFrete', referencia: cli?.nome ?? 'geral',
+        descricao: `Criou campanha de ${tipoTxt} para ${alvo} (${dataBR(b.de)} – ${dataBR(b.ate)})` });
       res.status(201).json({ ok: true });
     } catch (e) { tratarErro(res, e); }
   });
@@ -43,7 +44,7 @@ export function rotasFrete(deps: Dependencias): Router {
   });
   // Frete cobrado do cliente (campanha vigente aplicada ao custo) — p/ o Novo pedido exibir o total certo.
   r.get('/frete/cobrado', aut, az('comercial.pedido.criar'), async (req, res: Response) => {
-    try { res.json({ cobrado: await deps.freteCampanhasService.cobrado(sch(req), String(req.query.clienteId ?? ''), Number(req.query.custo ?? 0)) }); } catch (e) { tratarErro(res, e); }
+    try { res.json({ cobrado: await deps.freteCampanhasService.cobrado(sch(req), String(req.query.clienteId ?? ''), Number(req.query.custo ?? 0), Number(req.query.subtotal ?? 0)) }); } catch (e) { tratarErro(res, e); }
   });
   return r;
 }

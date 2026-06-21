@@ -890,4 +890,13 @@ export const tenantMigrations: MigracaoTenant[] = [
       );
     `,
   },
+  {
+    // Campanha de frete GERAL (sem cliente): cliente_id passa a aceitar NULL.
+    // NULL = vale para todos os clientes (a campanha específica do cliente tem prioridade).
+    // O tipo 'gratis_acima' usa `valor` como limiar do subtotal do pedido (texto livre, sem coluna nova).
+    nome: '064_frete_campanha_geral',
+    sql: (s) => `
+      ALTER TABLE "${s}".frete_campanha ALTER COLUMN cliente_id DROP NOT NULL;
+    `,
+  },
 ];

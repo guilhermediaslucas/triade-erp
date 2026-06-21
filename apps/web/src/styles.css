@@ -139,8 +139,8 @@ a { text-decoration: none; color: inherit; }
 .pe-pv { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 8px; background: var(--bg); color: var(--muted); border: 1px solid var(--borda); }
 .pe-badge { cursor: pointer; font-family: inherit; }
 .pe-badge:disabled { cursor: default; opacity: .85; }
-.busca-num { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--borda); border-radius: 10px; padding: 6px 12px; }
-.busca-num input { border: 0; outline: none; font-size: 14px; width: 200px; font-family: inherit; }
+.busca-num { display: flex; align-items: center; gap: 8px; background: var(--card); border: 1px solid var(--borda); border-radius: 10px; padding: 6px 12px; }
+.busca-num input { border: 0; outline: none; font-size: 14px; width: 200px; font-family: inherit; background: transparent; color: var(--ink); }
 .cal-wd { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; font-size: 11px; color: var(--muted); text-transform: capitalize; margin-bottom: 4px; }
 .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
 .cal-cel { border-radius: 8px; padding: 6px 7px; min-height: 44px; }
@@ -588,6 +588,8 @@ body.theme-dark .modal { background: var(--card); color: var(--ink); }
 body.theme-dark .kpi-card { background: var(--card); }
 body.theme-dark .kpi-card.kpi-vermelho { background: #261a1d; border-color: #5b2733; }
 body.theme-dark .campo input, body.theme-dark .campo select, body.theme-dark input, body.theme-dark select, body.theme-dark textarea { background: #1b1f27; color: var(--ink); border-color: var(--borda); }
+/* Campos de busca (pílula): o input acompanha o fundo da pílula, não o cinza global. */
+body.theme-dark .busca-num input, body.theme-dark .busca-box-tb input { background: transparent; border: 0; }
 body.theme-dark .tabela th { background: #1b1f27; color: var(--muted); }
 body.theme-dark .tabela tr:hover td { background: #1e2330; }
 body.theme-dark input::placeholder, body.theme-dark textarea::placeholder { color: #71778a; }

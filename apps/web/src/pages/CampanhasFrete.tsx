@@ -6,7 +6,8 @@ import { useToast } from '../components/Toast.js';
 import { Ic } from '../components/Icones.js';
 import { moeda } from '../lib/pedido.js';
 
-interface Campanha { id: string; clienteId: string; clienteNome: string | null; tipo: 'gratis' | 'fixo' | 'percentual'; valor: number; motivo: string | null; de: string; ate: string; vigente: boolean; }
+type TipoCamp = 'gratis' | 'fixo' | 'percentual' | 'gratis_acima';
+interface Campanha { id: string; clienteId: string | null; clienteNome: string | null; tipo: TipoCamp; valor: number; motivo: string | null; de: string; ate: string; vigente: boolean; }
 interface Cliente { id: string; nome: string; ativo: boolean; }
 const hoje = () => new Date().toISOString().slice(0, 10);
 const fmtData = (s: string) => new Date(s.slice(0, 10) + 'T00:00:00').toLocaleDateString('pt-BR');
@@ -35,6 +36,7 @@ export function CampanhasFrete() {
   function rotuloTipo(c: Campanha): string {
     if (c.tipo === 'gratis') return t('fretecamp.tipo_gratis');
     if (c.tipo === 'percentual') return t('fretecamp.tipo_percentual') + ' ' + c.valor + '%';
+    if (c.tipo === 'gratis_acima') return t('fretecamp.tipo_gratis') + ' ≥ ' + moeda(c.valor);
     return t('fretecamp.tipo_fixo') + ' ' + moeda(c.valor);
   }
 
@@ -55,7 +57,7 @@ export function CampanhasFrete() {
             {itens.length === 0 && <tr><td colSpan={6} className="vazio">{t('common.nenhum')}</td></tr>}
             {itens.map((c) => (
               <tr key={c.id}>
-                <td data-label={t('fretecamp.cliente')}>{c.clienteNome ?? '—'}</td>
+                <td data-label={t('fretecamp.cliente')}>{c.clienteNome ?? t('fretecamp.todos')}</td>
                 <td data-label={t('fretecamp.tipo')}>{rotuloTipo(c)}</td>
                 <td data-label={t('fretecamp.vigencia')}>{fmtData(c.de)} – {fmtData(c.ate)}</td>
                 <td data-label={t('fretecamp.motivo')}>{c.motivo ?? '—'}</td>
@@ -75,7 +77,7 @@ export function CampanhasFrete() {
 function ModalNova({ clientes, onFechar, onSalvo }: { clientes: Cliente[]; onFechar: () => void; onSalvo: () => void; }) {
   const { token } = useAuth(); const { t } = useI18n();
   const [clienteId, setClienteId] = useState('');
-  const [tipo, setTipo] = useState<'gratis' | 'fixo' | 'percentual'>('gratis');
+  const [tipo, setTipo] = useState<TipoCamp>('gratis');
   const [valor, setValor] = useState('');
   const [motivo, setMotivo] = useState('');
   const [de, setDe] = useState(hoje()); const [ate, setAte] = useState(hoje());
@@ -94,19 +96,20 @@ function ModalNova({ clientes, onFechar, onSalvo }: { clientes: Cliente[]; onFec
       <h2>{t('fretecamp.nova')}</h2>
       <label className="campo">{t('fretecamp.cliente')}
         <select value={clienteId} onChange={(e) => setClienteId(e.target.value)} autoFocus>
-          <option value="">—</option>{clientes.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
+          <option value="">{t('fretecamp.geral')}</option>{clientes.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
         </select>
       </label>
       <label className="campo">{t('fretecamp.tipo')}
-        <select value={tipo} onChange={(e) => setTipo(e.target.value as any)}>
+        <select value={tipo} onChange={(e) => setTipo(e.target.value as TipoCamp)}>
           <option value="gratis">{t('fretecamp.tipo_gratis')}</option>
+          <option value="gratis_acima">{t('fretecamp.tipo_gratis_acima')}</option>
           <option value="fixo">{t('fretecamp.tipo_fixo')}</option>
           <option value="percentual">{t('fretecamp.tipo_percentual')}</option>
         </select>
       </label>
       {tipo !== 'gratis' && (
-        <label className="campo">{tipo === 'percentual' ? t('fretecamp.valor_pct') : t('fretecamp.valor_fixo')}
-          <input value={valor} onChange={(e) => setValor(e.target.value)} placeholder={tipo === 'percentual' ? '10' : '0,00'} />
+        <label className="campo">{tipo === 'percentual' ? t('fretecamp.valor_pct') : tipo === 'gratis_acima' ? t('fretecamp.valor_limiar') : t('fretecamp.valor_fixo')}
+          <input value={valor} onChange={(e) => setValor(e.target.value)} placeholder={tipo === 'percentual' ? '10' : tipo === 'gratis_acima' ? '500,00' : '0,00'} />
         </label>
       )}
       <div className="cores-grid">
@@ -115,7 +118,7 @@ function ModalNova({ clientes, onFechar, onSalvo }: { clientes: Cliente[]; onFec
       </div>
       <label className="campo">{t('fretecamp.motivo')}<input value={motivo} onChange={(e) => setMotivo(e.target.value)} placeholder={t('fretecamp.motivo_ph')} /></label>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
-      <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv || !clienteId} onClick={salvar}>{t('common.salvar')}</button></div>
+      <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv} onClick={salvar}>{t('common.salvar')}</button></div>
     </div></div>
   );
 }
