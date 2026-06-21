@@ -1769,6 +1769,23 @@ Object.assign(pt, { 'fin.colunas': 'Colunas' });
 Object.assign(en, { 'fin.colunas': 'Columns' });
 Object.assign(es, { 'fin.colunas': 'Columnas' });
 
+// --- Reordenar colunas por arraste (salvo na conta do usuário) ---
+Object.assign(pt, {
+  'fin.col_arraste': 'Arraste para reordenar a coluna',
+  'preferencia.chave_invalida': 'Preferência inválida.',
+  'preferencia.valor_invalido': 'Valor de preferência inválido.',
+});
+Object.assign(en, {
+  'fin.col_arraste': 'Drag to reorder the column',
+  'preferencia.chave_invalida': 'Invalid preference.',
+  'preferencia.valor_invalido': 'Invalid preference value.',
+});
+Object.assign(es, {
+  'fin.col_arraste': 'Arrastre para reordenar la columna',
+  'preferencia.chave_invalida': 'Preferencia inválida.',
+  'preferencia.valor_invalido': 'Valor de preferencia inválido.',
+});
+
 // --- Login no padrão do mockup (hero + e-mail/senha + recuperar) ---
 Object.assign(pt, {
   'login.acesse': 'Acesse sua conta', 'login.ver_senha': 'Mostrar/ocultar senha',

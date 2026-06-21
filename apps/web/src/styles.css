@@ -734,6 +734,11 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
 .col-resize::after { content: ''; width: 2px; height: 55%; background: var(--borda); border-radius: 2px; transition: background .12s; }
 .col-resize:hover { background: var(--accent-soft); }
 .col-resize:hover::after { background: var(--accent); width: 3px; }
+
+/* Reordenar colunas por arraste (cabeçalho) */
+.th-mov { user-select: none; }
+.th-mov.arrastando { opacity: .45; }
+.th-mov.alvo { box-shadow: inset 3px 0 0 var(--accent); }
 .tabela-1linha th, .tabela-1linha td { white-space: nowrap; }
 .dash-row.d2 { grid-template-columns: 1.55fr 1fr 1fr; }
 .dash-row.d3 { grid-template-columns: 1.7fr 1fr; }

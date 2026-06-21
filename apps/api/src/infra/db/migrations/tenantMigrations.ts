@@ -875,4 +875,19 @@ export const tenantMigrations: MigracaoTenant[] = [
       UPDATE "${s}".categoria_financeira SET grupo = 'receita' WHERE tipo = 'receita' AND grupo = 'despesa';
     `,
   },
+  {
+    // Preferências de UI por usuário (ex.: ordem/visibilidade/largura de colunas das listas).
+    // Chave livre (string) + valor em JSON. SEM FK em usuario: o super-admin opera dentro de
+    // um schema de tenant mas seu id (token.sub) não é uma linha de usuario desse tenant.
+    nome: '063_usuario_preferencia',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".usuario_preferencia (
+        usuario_id    text NOT NULL,
+        chave         text NOT NULL,
+        valor         jsonb NOT NULL,
+        atualizado_em timestamptz NOT NULL DEFAULT now(),
+        PRIMARY KEY (usuario_id, chave)
+      );
+    `,
+  },
 ];

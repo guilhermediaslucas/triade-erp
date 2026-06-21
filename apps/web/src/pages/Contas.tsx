@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
@@ -107,37 +107,128 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   const toggleKpi = (k: 'aberto' | 'vence7' | 'vencido' | 'boletos') => setFKpi((cur) => (cur === k ? '' : k));
 
   const HIDEABLE = ['pessoa', 'cat', 'doc', 'emissao', 'venc', 'baixa', 'valor', 'vendedor', 'sit'] as const;
-  const [colsAberto, setColsAberto] = useState(false);
-  const [colsOcultas, setColsOcultas] = useState<Set<string>>(() => {
-    try { return new Set(JSON.parse(localStorage.getItem('contas-cols-' + tipo) || '[]')); } catch { return new Set(); }
-  });
-  const oc = (k: string) => colsOcultas.has(k);
-  function toggleCol(k: string) {
-    setColsOcultas((cur) => { const n = new Set(cur); n.has(k) ? n.delete(k) : n.add(k); try { localStorage.setItem('contas-cols-' + tipo, JSON.stringify([...n])); } catch { /* ignora */ } return n; });
-  }
+  // Ordem padrão das colunas reordenáveis (forma/frete só existem em "receber").
+  const ORDEM_PADRAO = ['numero', 'descricao', 'cat', 'pessoa', 'forma', 'frete', 'doc', 'emissao', 'venc', 'baixa', 'valor', 'vendedor', 'sit'];
   const colLabel = (k: string) => k === 'pessoa' ? (tipo === 'receber' ? 'fin.cliente' : 'fin.fornecedor') : k === 'cat' ? 'catfin.titulo_s' : k === 'doc' ? 'fin.documento' : k === 'emissao' ? 'fin.emissao' : k === 'venc' ? 'fin.vencimento' : k === 'baixa' ? 'fin.baixa' : k === 'valor' ? 'fin.valor' : k === 'vendedor' ? 'fin.vendedor' : 'fin.situacao';
 
-  // Redimensionar colunas por arraste (largura persistida por tipo em localStorage).
-  const [larguras, setLarguras] = useState<Record<string, number>>(() => {
-    try { return JSON.parse(localStorage.getItem('contas-larg-' + tipo) || '{}'); } catch { return {}; }
-  });
+  // Layout das colunas (ordem + ocultas + larguras) salvo NA CONTA do usuário (backend),
+  // por tipo (contas-receber / contas-pagar). Migrado do localStorage para /preferencias.
+  const PREF_CHAVE = 'contas-' + tipo;
+  const [colsAberto, setColsAberto] = useState(false);
+  const [ordem, setOrdem] = useState<string[]>(ORDEM_PADRAO);
+  const [colsOcultas, setColsOcultas] = useState<Set<string>>(new Set());
+  const [larguras, setLarguras] = useState<Record<string, number>>({});
+  const [arrastando, setArrastando] = useState<string | null>(null);
+  const [alvoCol, setAlvoCol] = useState<string | null>(null);
+  const carregadoRef = useRef(false);   // só persiste depois do carregamento inicial
+  const redimRef = useRef(false);       // guard síncrono: não inicia drag ao redimensionar
+  const oc = (k: string) => colsOcultas.has(k);
+
+  // Garante que toda coluna conhecida apareça (novas vão ao fim) e descarta chaves obsoletas.
+  function normalizarOrdem(ord: string[]): string[] {
+    const out = ord.filter((k) => ORDEM_PADRAO.includes(k));
+    for (const k of ORDEM_PADRAO) if (!out.includes(k)) out.push(k);
+    return out;
+  }
+
+  useEffect(() => {
+    carregadoRef.current = false;
+    setOrdem(ORDEM_PADRAO); setColsOcultas(new Set()); setLarguras({});
+    api.get<{ valor: { ordem?: string[]; ocultas?: string[]; larguras?: Record<string, number> } | null }>('/preferencias/' + PREF_CHAVE, token!)
+      .then((r) => {
+        const v = r?.valor;
+        if (v && typeof v === 'object') {
+          if (Array.isArray(v.ordem)) setOrdem(normalizarOrdem(v.ordem));
+          if (Array.isArray(v.ocultas)) setColsOcultas(new Set(v.ocultas));
+          if (v.larguras && typeof v.larguras === 'object') setLarguras(v.larguras);
+        }
+      })
+      .catch(() => { /* sem preferência salva — usa o padrão */ })
+      .finally(() => { carregadoRef.current = true; });
+    /* eslint-disable-next-line */
+  }, [tipo]);
+
+  // Persiste o layout completo (best-effort). Não grava antes do carregamento inicial.
+  function persistirLayout(ord: string[], ocultas: Set<string>, larg: Record<string, number>) {
+    if (!carregadoRef.current) return;
+    api.put('/preferencias/' + PREF_CHAVE, { valor: { ordem: ord, ocultas: [...ocultas], larguras: larg } }, token!).catch(() => {});
+  }
+
+  function toggleCol(k: string) {
+    setColsOcultas((cur) => { const n = new Set(cur); n.has(k) ? n.delete(k) : n.add(k); persistirLayout(ordem, n, larguras); return n; });
+  }
+
+  function moverColuna(origem: string, alvo: string) {
+    if (!origem || origem === alvo) return;
+    setOrdem((cur) => {
+      const arr = cur.filter((k) => k !== origem);
+      const idx = arr.indexOf(alvo);
+      arr.splice(idx < 0 ? arr.length : idx, 0, origem);
+      persistirLayout(arr, colsOcultas, larguras);
+      return arr;
+    });
+  }
+
+  // Redimensionar coluna por arraste da alça. O guard redimRef impede que o navegador
+  // inicie o drag de reordenação do <th> durante o redimensionamento.
   function iniciarResize(col: string, startX: number, handle: HTMLElement) {
+    redimRef.current = true;
     const th = handle.parentElement as HTMLElement;
     const startW = th.getBoundingClientRect().width;
     function mover(e: MouseEvent) { setLarguras((cur) => ({ ...cur, [col]: Math.max(60, Math.round(startW + (e.clientX - startX))) })); }
     function soltar() {
       document.removeEventListener('mousemove', mover);
       document.removeEventListener('mouseup', soltar);
-      setLarguras((cur) => { try { localStorage.setItem('contas-larg-' + tipo, JSON.stringify(cur)); } catch { /* ignora */ } return cur; });
+      redimRef.current = false;
+      setLarguras((cur) => { persistirLayout(ordem, colsOcultas, cur); return cur; });
     }
     document.addEventListener('mousemove', mover);
     document.addEventListener('mouseup', soltar);
   }
-  function thR(col: string, conteudo: ReactNode) {
+
+  // Formatação de datas das células (— quando vazio) e da exportação (vazio quando vazio).
+  const fmtData = (iso: string | null | undefined) => iso ? new Date(iso.length > 10 ? iso : iso + 'T00:00:00').toLocaleDateString('pt-BR') : '—';
+  const fmtDataExp = (iso: string | null | undefined) => iso ? new Date(iso.length > 10 ? iso : iso + 'T00:00:00').toLocaleDateString('pt-BR') : '';
+
+  // Descritores das colunas reordenáveis (rótulo, célula e valor de exportação).
+  interface ColDef { chave: string; label: string; hideable: boolean; soReceber?: boolean; cell: (x: Titulo) => ReactNode; exp: (x: Titulo) => string | number; }
+  const COLS: ColDef[] = [
+    { chave: 'numero', label: t('fin.numero'), hideable: false, cell: (x) => <span style={{ fontWeight: 700 }}>{x.numero}</span>, exp: (x) => x.numero },
+    { chave: 'descricao', label: t('fin.descricao'), hideable: false, cell: (x) => x.descricao, exp: (x) => x.descricao },
+    { chave: 'cat', label: t('catfin.titulo_s'), hideable: true, cell: (x) => x.categoriaFinanceiraNome ?? '—', exp: (x) => x.categoriaFinanceiraNome ?? '' },
+    { chave: 'pessoa', label: tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor'), hideable: true, cell: (x) => x.pessoaNome ?? '—', exp: (x) => x.pessoaNome ?? '' },
+    { chave: 'forma', label: t('fin.forma'), hideable: false, soReceber: true, cell: (x) => x.pedidoFormaPagamento ?? '—', exp: (x) => x.pedidoFormaPagamento ?? '' },
+    { chave: 'frete', label: t('relvc.frete_cobrado'), hideable: false, soReceber: true, cell: (x) => x.pedidoFrete != null && x.pedidoFrete > 0 ? moeda(x.pedidoFrete) : '—', exp: (x) => x.pedidoFrete != null ? x.pedidoFrete : '' },
+    { chave: 'doc', label: t('fin.documento'), hideable: true, cell: (x) => x.tipoDocumento ?? '—', exp: (x) => x.tipoDocumento ?? '' },
+    { chave: 'emissao', label: t('fin.emissao'), hideable: true, cell: (x) => fmtData(x.emissao || x.criadoEm), exp: (x) => fmtDataExp(x.emissao || x.criadoEm) },
+    { chave: 'venc', label: t('fin.vencimento'), hideable: true, cell: (x) => fmtData(x.vencimento), exp: (x) => fmtDataExp(x.vencimento) },
+    { chave: 'baixa', label: t('fin.baixa'), hideable: true, cell: (x) => fmtData(x.pagoEm), exp: (x) => fmtDataExp(x.pagoEm) },
+    { chave: 'valor', label: t('fin.valor'), hideable: true, cell: (x) => moeda(x.valor), exp: (x) => x.valor },
+    { chave: 'vendedor', label: t('fin.vendedor'), hideable: true, cell: (x) => x.vendedorNome ?? '—', exp: (x) => x.vendedorNome ?? '' },
+    { chave: 'sit', label: t('fin.situacao'), hideable: true, cell: (x) => { const s = situacao(x); return <span className={'pill ' + (s === 'pago' ? 'st-verde' : s === 'vencido' ? 'st-vermelho' : 'st-laranja')}>{t('fin.' + s)}</span>; }, exp: (x) => t('fin.' + situacao(x)) },
+  ];
+  const colByKey: Record<string, ColDef> = {};
+  for (const c of COLS) colByKey[c.chave] = c;
+  // Colunas efetivamente visíveis, na ordem do usuário, sem as ocultas e sem forma/frete fora de "receber".
+  const colsVisiveis = ordem.map((k) => colByKey[k]).filter((c): c is ColDef => !!c && (!c.soReceber || tipo === 'receber') && !(c.hideable && oc(c.chave)));
+
+  // Cabeçalho de coluna reordenável: arrasta para mudar de lugar + alça para redimensionar.
+  function thCol(c: ColDef) {
     return (
-      <th style={larguras[col] ? { position: 'relative', width: larguras[col] } : { position: 'relative' }}>
-        {conteudo}
-        <span className="col-resize" onMouseDown={(e) => { e.preventDefault(); iniciarResize(col, e.clientX, e.currentTarget as HTMLElement); }} />
+      <th
+        key={c.chave}
+        draggable
+        onDragStart={(e) => { if (redimRef.current) { e.preventDefault(); return; } setArrastando(c.chave); e.dataTransfer.effectAllowed = 'move'; }}
+        onDragEnd={() => { setArrastando(null); setAlvoCol(null); }}
+        onDragOver={(e) => { e.preventDefault(); if (arrastando && arrastando !== c.chave && alvoCol !== c.chave) setAlvoCol(c.chave); }}
+        onDragLeave={() => { if (alvoCol === c.chave) setAlvoCol(null); }}
+        onDrop={(e) => { e.preventDefault(); if (arrastando) moverColuna(arrastando, c.chave); setArrastando(null); setAlvoCol(null); }}
+        className={'th-mov' + (arrastando === c.chave ? ' arrastando' : '') + (alvoCol === c.chave ? ' alvo' : '')}
+        style={{ position: 'relative', cursor: 'grab', ...(larguras[c.chave] ? { width: larguras[c.chave] } : {}) }}
+        title={t('fin.col_arraste')}
+      >
+        {c.label}
+        <span className="col-resize" onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); iniciarResize(c.chave, e.clientX, e.currentTarget as HTMLElement); }} />
       </th>
     );
   }
@@ -155,27 +246,9 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   }, [kpiBase, ate7ISO]);
 
   function exportar(fmt: 'csv' | 'xlsx') {
-    // Exporta exatamente as colunas visíveis (respeita o seletor de colunas), sem a coluna de ações.
-    const cols = ['numero', 'descricao', ...HIDEABLE.filter((k) => !oc(k))];
-    const cab = cols.map((k) => k === 'numero' ? t('fin.numero') : k === 'descricao' ? t('fin.descricao') : t(colLabel(k)));
-    const fdata = (iso: string | null | undefined) => iso ? new Date(iso.length > 10 ? iso : iso + 'T00:00:00').toLocaleDateString('pt-BR') : '';
-    const valOf = (x: Titulo, k: string): string | number => {
-      switch (k) {
-        case 'numero': return x.numero;
-        case 'descricao': return x.descricao;
-        case 'pessoa': return x.pessoaNome ?? '';
-        case 'cat': return x.categoriaFinanceiraNome ?? '';
-        case 'doc': return x.tipoDocumento ?? '';
-        case 'emissao': return fdata(x.emissao || x.criadoEm);
-        case 'venc': return fdata(x.vencimento);
-        case 'baixa': return fdata(x.pagoEm);
-        case 'valor': return x.valor;
-        case 'vendedor': return x.vendedorNome ?? '';
-        case 'sit': return t('fin.' + situacao(x));
-        default: return '';
-      }
-    };
-    const linhas = filtrados.map((x) => cols.map((k) => valOf(x, k)));
+    // Exporta exatamente as colunas visíveis, na ordem escolhida pelo usuário (sem a coluna de ações).
+    const cab = colsVisiveis.map((c) => c.label);
+    const linhas = filtrados.map((x) => colsVisiveis.map((c) => c.exp(x)));
     const nome = tipo === 'receber' ? 'contas_receber' : 'contas_pagar';
     if (fmt === 'xlsx') baixarExcel(nome, cab, linhas, { periodo: rotuloPeriodo(fVde, fVate) });
     else baixarCsv(nome, cab, linhas);
@@ -311,26 +384,14 @@ export function Contas({ tipo }: { tipo: Tipo }) {
       <div className="card pad0"><table className="tabela tabela-1linha">
         <thead><tr>
           {pode && <th style={{ width: 34 }}><input type="checkbox" checked={filtrados.length > 0 && sel.size === filtrados.length} onChange={toggleTodos} /></th>}
-          {thR('numero', t('fin.numero'))}{thR('descricao', t('fin.descricao'))}{!oc('cat') && thR('cat', t('catfin.titulo_s'))}{!oc('pessoa') && thR('pessoa', tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor'))}{tipo === 'receber' && thR('forma', t('fin.forma'))}{tipo === 'receber' && <th>{t('relvc.frete_cobrado')}</th>}{!oc('doc') && thR('doc', t('fin.documento'))}{!oc('emissao') && thR('emissao', t('fin.emissao'))}{!oc('venc') && thR('venc', t('fin.vencimento'))}{!oc('baixa') && thR('baixa', t('fin.baixa'))}{!oc('valor') && thR('valor', t('fin.valor'))}{!oc('vendedor') && thR('vendedor', t('fin.vendedor'))}{!oc('sit') && thR('sit', t('fin.situacao'))}<th style={{ textAlign: 'center' }}>{t('fin.previsto')}</th><th>{t('usuarios.acoes')}</th>
+          {colsVisiveis.map((c) => thCol(c))}<th style={{ textAlign: 'center' }}>{t('fin.previsto')}</th><th>{t('usuarios.acoes')}</th>
         </tr></thead>
         <tbody>
-          {filtrados.length === 0 && <tr><td colSpan={(pode ? 1 : 0) + 4 + (tipo === 'receber' ? 2 : 0) + HIDEABLE.filter((k) => !oc(k)).length} className="vazio">{t('common.nenhum')}</td></tr>}
-          {filtrados.map((tt) => { const sit = situacao(tt); return (
+          {filtrados.length === 0 && <tr><td colSpan={(pode ? 1 : 0) + colsVisiveis.length + 2} className="vazio">{t('common.nenhum')}</td></tr>}
+          {filtrados.map((tt) => { return (
             <tr key={tt.id} className={(sel.has(tt.id) ? 'linha-sel ' : '') + (tt.previsto ? 'linha-previsto' : '')} style={{ cursor: 'pointer' }} onDoubleClick={() => setVerT(tt)} title={t('fin.ver_detalhe')}>
               {pode && <td><input type="checkbox" checked={sel.has(tt.id)} onChange={() => toggle(tt.id)} /></td>}
-              <td data-label={t('fin.numero')} style={{ fontWeight: 700 }}>{tt.numero}</td>
-              <td data-label={t('fin.descricao')}>{tt.descricao}</td>
-              {!oc('cat') && <td data-label={t('catfin.titulo_s')}>{tt.categoriaFinanceiraNome ?? '—'}</td>}
-              {!oc('pessoa') && <td data-label={tipo === 'receber' ? t('fin.cliente') : t('fin.fornecedor')}>{tt.pessoaNome ?? '—'}</td>}
-              {tipo === 'receber' && <td data-label={t('fin.forma')}>{tt.pedidoFormaPagamento ?? '—'}</td>}
-              {tipo === 'receber' && <td data-label={t('relvc.frete_cobrado')}>{tt.pedidoFrete != null && tt.pedidoFrete > 0 ? moeda(tt.pedidoFrete) : '—'}</td>}
-              {!oc('doc') && <td data-label={t('fin.documento')}>{tt.tipoDocumento ?? '—'}</td>}
-              {!oc('emissao') && <td data-label={t('fin.emissao')}>{(tt.emissao || tt.criadoEm) ? new Date((tt.emissao ? tt.emissao + 'T00:00:00' : tt.criadoEm)).toLocaleDateString('pt-BR') : '—'}</td>}
-              {!oc('venc') && <td data-label={t('fin.vencimento')}>{new Date(tt.vencimento + 'T00:00:00').toLocaleDateString('pt-BR')}</td>}
-              {!oc('baixa') && <td data-label={t('fin.baixa')}>{tt.pagoEm ? new Date(tt.pagoEm).toLocaleDateString('pt-BR') : '—'}</td>}
-              {!oc('valor') && <td data-label={t('fin.valor')}>{moeda(tt.valor)}</td>}
-              {!oc('vendedor') && <td data-label={t('fin.vendedor')}>{tt.vendedorNome ?? '—'}</td>}
-              {!oc('sit') && <td data-label={t('fin.situacao')}><span className={'pill ' + (sit === 'pago' ? 'st-verde' : sit === 'vencido' ? 'st-vermelho' : 'st-laranja')}>{t('fin.' + sit)}</span></td>}
+              {colsVisiveis.map((c) => <td key={c.chave} data-label={c.label}>{c.cell(tt)}</td>)}
               <td data-label={t('fin.previsto')} style={{ textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
                 {tt.status === 'aberto'
                   ? <button className={'pe-badge ' + (tt.previsto ? 'pe-pv' : 'pe-ef')} disabled={!pode} onClick={() => alternarPrevisto(tt)} title={t('fin.previsto_hint')}>{tt.previsto ? t('fluxo.previsto') : t('fluxo.efetivo')}</button>

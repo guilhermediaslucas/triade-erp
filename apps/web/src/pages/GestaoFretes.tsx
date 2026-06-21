@@ -75,13 +75,13 @@ export function GestaoFretes() {
         </div>
       </div>
 
-      <div className="contas-toolbar" style={{ alignItems: 'center' }}>
+      <div className="contas-toolbar" style={{ alignItems: 'flex-end' }}>
         <FiltrosModal count={qtdFiltros} onLimpar={limparFiltros} onAplicar={() => gerar()} titulo={t('gfrete.titulo')}>
           <label className="campo">{t('pedidos.data_de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
           <label className="campo">{t('pedidos.data_ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
         </FiltrosModal>
         <label className="campo" style={{ margin: 0 }}>{t('gfrete.venc1')}<input type="date" value={venc} onChange={(e) => setVenc(e.target.value)} style={{ maxWidth: 170 }} /></label>
-        <span style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
+        <span style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'flex-end' }}>
           {linhas.length > 0 && <button className="btn-acao verde" onClick={exportar}><Ic name="i-download" className="sm" /> {t('rel.exportar_xlsx')}</button>}
           {podeFechar && <button className="btn-primary" disabled={!venc || total <= 0} onClick={fechar}>$ {t('gfrete.gerar_titulos_motoboy')}</button>}
         </span>

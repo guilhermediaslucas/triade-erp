@@ -188,6 +188,31 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-21** — **Reordenar colunas por arraste no Contas (a receber/pagar), salvo NA CONTA do usuário (backend) + fix de alinhamento na Gestão de fretes.**
+  Decisões do Gui: (a) reordenar só no **Contas** (onde já havia esconder/mostrar + redimensionar); (b) mover **tudo** (ordem +
+  ocultas + larguras) do localStorage para a **conta do usuário** (backend, segue em qualquer dispositivo). **Camada nova de
+  preferências (genérica, reusável):** migration tenant **063** `usuario_preferencia` (`usuario_id text`, `chave text`, `valor jsonb`,
+  `atualizado_em`, PK `(usuario_id, chave)`; **sem FK em usuario** — o super-admin opera dentro de um tenant mas seu `token.sub` não é
+  linha de `usuario` daquele schema). Domínio `domain/preferencia/PreferenciaUsuario.ts` (porta `obter`/`salvar`), infra
+  `SqlPreferenciaUsuarioRepository` (upsert `ON CONFLICT (usuario_id, chave)`, `$3::jsonb`), aplicação `PreferenciasService`
+  (valida chave `^[a-zA-Z0-9_.-]+$` ≤64; erro `preferencia.chave_invalida`/`valor_invalido`). Rotas **`GET/PUT /preferencias/:chave`**
+  (só autenticação, **sem capability** — cada usuário só acessa as próprias, chaveado por `req.usuario.sub`). Wire composition + server.
+  Auditoria **ignora** `/preferencias` (não polui o log a cada arraste). **Frontend (`Contas.tsx`):** as colunas, antes hardcoded no
+  JSX, viraram **dirigidas por uma lista de descritores** (`ColDef` {chave,label,hideable,soReceber?,cell,exp}); estado `ordem[]`
+  carregado de `/preferencias/contas-<tipo>` no mount (fallback p/ ordem padrão; `normalizarOrdem` adiciona colunas novas ao fim e
+  descarta obsoletas). **Drag-and-drop nos cabeçalhos** (`draggable` + dragstart/over/leave/drop) reordena e dá **PUT** ao soltar;
+  realce visual (`.th-mov.arrastando`/`.alvo` no styles.css). Âncoras fixas: checkbox no início, **Previsto** e **Ações** no fim. As
+  colunas reordenáveis são numero/descricao/cat/pessoa/forma/frete/doc/emissao/venc/baixa/valor/vendedor/sit (forma/frete só em
+  receber). **Ocultas e larguras** migradas p/ o mesmo backend (mesma chave, objeto `{ordem,ocultas,larguras}`); resize agora guarda
+  por `redimRef` síncrono p/ não disparar o drag do `<th>`. **Export CSV/Excel respeita a ordem visível.** i18n `fin.col_arraste` +
+  `preferencia.*` pt/en/es. **Fix Gestão de fretes:** `GestaoFretes.tsx` toolbar passou de `alignItems:'center'` p/ **`flex-end`** (e o
+  `<span>` dos botões idem) — Filtros, campo "1º vencimento", Exportar Excel e Gerar títulos agora alinham na mesma base (o label do
+  campo deixava a coluna mais alta e centralizava os botões fora de linha). **Sem capability nova** (não precisa relogar). **Validação:**
+  tsc do sandbox confirma **0 erros nos arquivos novos/editados** (Contas/GestaoFretes/preferências/composition); os demais erros são a
+  cascata conhecida do `@triade/shared` sem symlink no sandbox + o aviso pré-existente do MetasService — tsc local é a fonte de verdade.
+  **Pendente Gui:** `npm install` (relink `@triade/shared`) → `npm run build -w @triade/web` → commit+push (Render aplica a **063** no
+  boot via AUTO_MIGRATE) → `scripts\app-apk.bat` (a tela Contas mudou). **Migração transparente:** quem tinha colunas escondidas/larguras
+  no localStorage começa do padrão (não migra o localStorage antigo) — basta reconfigurar uma vez e fica salvo na conta.
 - **2026-06-19** — **Backfill: classifica todos os títulos sem categoria financeira (roda no boot, idempotente).**
   Decisão do Gui: corrigir os lançamentos existentes sem categoria. `categoriasPadraoSeed.ts`: nova
   `classificarTitulosSemCategoria(ds, schema)` — UPDATE só onde `categoria_financeira_id IS NULL`: **automáticos pela origem**
