@@ -74,6 +74,7 @@ export function NovoPedido() {
   const [freteMemo, setFreteMemo] = useState<string | null>(null);
   const [frete, setFrete] = useState('0');                 // CUSTO real do frete (motoboy/correios)
   const [freteCobrado, setFreteCobrado] = useState<number | null>(null);  // o que o cliente paga (campanha)
+  const [desconto, setDesconto] = useState(0);                            // desconto por total do pedido (campanha vigente)
   const [obs, setObs] = useState('');
   const [itens, setItens] = useState<ItemForm[]>([{ produtoId: '', quantidade: '1' }]);
   const [sel, setSel] = useState<Set<number>>(new Set());
@@ -224,7 +225,7 @@ export function NovoPedido() {
   const freteCusto = Number(frete) || 0;
   const freteCobradoNum = freteCobrado != null ? freteCobrado : freteCusto;   // campanha aplicada (ou = custo)
   const freteAbsorvido = Math.max(0, Math.round((freteCusto - freteCobradoNum) * 100) / 100);
-  const total = subtotal + freteCobradoNum;
+  const total = Math.round((subtotal - desconto + freteCobradoNum) * 100) / 100;
   const freteAuto = formaEntrega === 'retirada' || formaEntrega === 'motoboy';
 
   // Resolve o frete COBRADO do cliente (campanha vigente) p/ exibir o total certo.
@@ -237,6 +238,17 @@ export function NovoPedido() {
     return () => { vivo = false; };
     /* eslint-disable-next-line */
   }, [clienteId, freteCusto, subtotal]);
+
+  // Resolve o desconto por total do pedido (campanha vigente) p/ exibir já na digitação.
+  // O backend reaplica de forma autoritativa ao salvar.
+  useEffect(() => {
+    let vivo = true;
+    if (!clienteId || subtotal <= 0) { setDesconto(0); return; }
+    api.get<{ desconto: number }>(`/comercial/descontos/resolver?clienteId=${clienteId}&subtotal=${subtotal}`, token!)
+      .then((r) => { if (vivo) setDesconto(Number(r.desconto) || 0); }).catch(() => { if (vivo) setDesconto(0); });
+    return () => { vivo = false; };
+    /* eslint-disable-next-line */
+  }, [clienteId, subtotal]);
 
   function setItem(i: number, campo: keyof ItemForm, val: string) { setItens(itens.map((it, idx) => idx === i ? { ...it, [campo]: val } : it)); }
   function addItem() { setItens([...itens, { produtoId: '', quantidade: '1' }]); }
@@ -440,6 +452,7 @@ export function NovoPedido() {
       <div className="card" style={{ maxWidth: 'none' }}>
         <div className="totais-mock">
           <div className="tl-row"><span className="muted">{t('pedidos.subtotal')}</span><b>{moeda(subtotal)}</b></div>
+          {desconto > 0 && <div className="tl-row"><span className="muted" style={{ color: '#166534' }}>{t('descped.desconto')}</span><b style={{ color: '#166534' }}>− {moeda(desconto)}</b></div>}
           <div className="tl-row">
             <span className="muted">{t('entrega.forma')}</span>
             <select value={formaEntrega} onChange={(e) => setFormaEntrega(e.target.value as Forma)} style={{ maxWidth: 180 }}>

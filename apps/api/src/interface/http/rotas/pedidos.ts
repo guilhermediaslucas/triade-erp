@@ -43,7 +43,7 @@ export function rotasPedidos(deps: Dependencias): Router {
   r.patch('/pedidos/:id/status', aut, async (req, res: Response) => {
     const b = req.body ?? {};
     // Autorização por destino: cancelar e expedir/entregar têm cap própria (ou gerenciar).
-    const querer = b.status === 'cancelado' ? ['comercial.pedido.cancelar', GERENCIAR]
+    const querer = (b.status === 'cancelado' || b.status === 'orcamento') ? ['comercial.pedido.cancelar', GERENCIAR]
       : (b.status === 'expedido' || b.status === 'entregue') ? ['comercial.pedido.expedir', GERENCIAR]
       : [GERENCIAR];
     if (!(await tem(req, querer))) { res.status(403).json({ erro: 'auth.sem_permissao' }); return; }

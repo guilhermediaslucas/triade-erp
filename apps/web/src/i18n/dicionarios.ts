@@ -1875,6 +1875,7 @@ Object.assign(pt, {
   'crm.inativos': 'Clientes inativos', 'crm.sem_comprar': 'Sem comprar há mais de', 'crm.dias_sem': 'Dias sem comprar', 'crm.acao': 'Ação', 'crm.inativos_vazio': 'Nenhum cliente inativo nesse período.', 'crm.registrar_contato': 'Registrar contato',
   'crm.nota_inativos': 'Clientes que já compraram mas pararam. Use "Registrar interação" para retomar o contato.',
   'crm.confirmar_perder': 'Marcar esta oportunidade como perdida? Ela sai do funil.', 'crm.precisa_cadastro': 'Cadastre o cliente antes de gerar o orçamento.',
+  'crm.excluir_confirma': 'Excluir esta oportunidade? As interações dela também são removidas.', 'crm.excluir_leads': 'Excluir todos os leads', 'crm.excluir_leads_confirma': 'Excluir TODOS os {n} leads do funil? Esta ação não pode ser desfeita.',
   'crm.cliente_prospect': 'Cliente ou prospect', 'crm.cliente_ph': 'Digite ou selecione...', 'crm.titulo_oport': 'Título da oportunidade', 'crm.titulo_ph': 'Ex.: Reposição trimestral de injetáveis',
   'crm.valor': 'Valor', 'crm.estagio': 'Estágio', 'crm.previsao': 'Previsão', 'crm.salvar_oport': 'Salvar oportunidade',
   'crm.tipo': 'Tipo', 'crm.data': 'Data', 'crm.anotacao': 'Anotação', 'crm.anotacao_ph': 'Resumo do contato, próximos passos...', 'crm.salvar_interacao': 'Salvar interação',
@@ -1904,6 +1905,7 @@ Object.assign(en, {
   'crm.inativos': 'Inactive customers', 'crm.sem_comprar': 'Not buying for over', 'crm.dias_sem': 'Days without buying', 'crm.acao': 'Action', 'crm.inativos_vazio': 'No inactive customers in this range.', 'crm.registrar_contato': 'Log contact',
   'crm.nota_inativos': 'Customers who bought but stopped. Use "Log interaction" to resume contact.',
   'crm.confirmar_perder': 'Mark this opportunity as lost? It leaves the funnel.', 'crm.precisa_cadastro': 'Register the customer before generating the quote.',
+  'crm.excluir_confirma': 'Delete this opportunity? Its interactions are also removed.', 'crm.excluir_leads': 'Delete all leads', 'crm.excluir_leads_confirma': 'Delete ALL {n} leads from the funnel? This cannot be undone.',
   'crm.cliente_prospect': 'Customer or prospect', 'crm.cliente_ph': 'Type or select...', 'crm.titulo_oport': 'Opportunity title', 'crm.titulo_ph': 'e.g. Quarterly injectables restock',
   'crm.valor': 'Value', 'crm.estagio': 'Stage', 'crm.previsao': 'Forecast', 'crm.salvar_oport': 'Save opportunity',
   'crm.tipo': 'Type', 'crm.data': 'Date', 'crm.anotacao': 'Note', 'crm.anotacao_ph': 'Contact summary, next steps...', 'crm.salvar_interacao': 'Save interaction',
@@ -1933,6 +1935,7 @@ Object.assign(es, {
   'crm.inativos': 'Clientes inactivos', 'crm.sem_comprar': 'Sin comprar hace más de', 'crm.dias_sem': 'Días sin comprar', 'crm.acao': 'Acción', 'crm.inativos_vazio': 'Ningún cliente inactivo en ese período.', 'crm.registrar_contato': 'Registrar contacto',
   'crm.nota_inativos': 'Clientes que compraron pero pararon. Usa "Registrar interacción" para retomar el contacto.',
   'crm.confirmar_perder': '¿Marcar esta oportunidad como perdida? Sale del embudo.', 'crm.precisa_cadastro': 'Registra el cliente antes de generar el presupuesto.',
+  'crm.excluir_confirma': '¿Eliminar esta oportunidad? Sus interacciones también se eliminan.', 'crm.excluir_leads': 'Eliminar todos los leads', 'crm.excluir_leads_confirma': '¿Eliminar TODOS los {n} leads del embudo? Esta acción no se puede deshacer.',
   'crm.cliente_prospect': 'Cliente o prospecto', 'crm.cliente_ph': 'Escribe o selecciona...', 'crm.titulo_oport': 'Título de la oportunidad', 'crm.titulo_ph': 'Ej.: Reposición trimestral de inyectables',
   'crm.valor': 'Valor', 'crm.estagio': 'Etapa', 'crm.previsao': 'Previsión', 'crm.salvar_oport': 'Guardar oportunidad',
   'crm.tipo': 'Tipo', 'crm.data': 'Fecha', 'crm.anotacao': 'Anotación', 'crm.anotacao_ph': 'Resumen del contacto, próximos pasos...', 'crm.salvar_interacao': 'Guardar interacción',
@@ -2617,7 +2620,7 @@ Object.assign(es, {
 // ===== Lote: confirmar baixa, voltar p/ orçamento, busca por nº, competência, metas por dia =====
 Object.assign(pt, {
   'pedido.voltar_orcamento': 'Voltar para orçamento',
-  'pedido.voltar_orcamento_confirma': 'Voltar este pedido para orçamento? O título a receber gerado será removido.',
+  'pedido.voltar_orcamento_confirma': 'Voltar este pedido para orçamento? O estoque e as etiquetas voltam, e os títulos do pedido são removidos. Se algum título já foi baixado, cancele a baixa antes.',
   'pedido.voltar_baixa_antes': 'Não dá para voltar: o pagamento já foi baixado. Cancele a baixa no Financeiro antes.',
   'pedido.financeiro': 'Financeiro', 'pedido.vence': 'vence', 'pedido.baixado_em': 'baixado em',
   'pedido.baixado': 'Baixado', 'pedido.em_aberto': 'Em aberto', 'pedido.recebido_por': 'Recebido por', 'pedido.abrir_titulo': 'Abrir título',
@@ -2634,7 +2637,7 @@ Object.assign(pt, {
 });
 Object.assign(en, {
   'pedido.voltar_orcamento': 'Back to quote',
-  'pedido.voltar_orcamento_confirma': 'Move this order back to quote? The generated receivable will be removed.',
+  'pedido.voltar_orcamento_confirma': 'Move this order back to quote? Stock and labels are returned, and the order entries are removed. If any entry was already settled, cancel the settlement first.',
   'pedido.voltar_baixa_antes': "Can't go back: the payment was already settled. Cancel the settlement in Finance first.",
   'pedido.financeiro': 'Finance', 'pedido.vence': 'due', 'pedido.baixado_em': 'settled on',
   'pedido.baixado': 'Settled', 'pedido.em_aberto': 'Open', 'pedido.recebido_por': 'Received by', 'pedido.abrir_titulo': 'Open entry',
@@ -2651,7 +2654,7 @@ Object.assign(en, {
 });
 Object.assign(es, {
   'pedido.voltar_orcamento': 'Volver a presupuesto',
-  'pedido.voltar_orcamento_confirma': '¿Volver este pedido a presupuesto? El título a cobrar generado será eliminado.',
+  'pedido.voltar_orcamento_confirma': '¿Volver este pedido a presupuesto? El stock y las etiquetas vuelven, y los títulos del pedido se eliminan. Si algún título ya fue pagado, cancela la baja antes.',
   'pedido.voltar_baixa_antes': 'No se puede volver: el pago ya fue conciliado. Cancela la baja en Finanzas primero.',
   'pedido.financeiro': 'Finanzas', 'pedido.vence': 'vence', 'pedido.baixado_em': 'pagado el',
   'pedido.baixado': 'Pagado', 'pedido.em_aberto': 'Abierto', 'pedido.recebido_por': 'Recibido por', 'pedido.abrir_titulo': 'Abrir título',
@@ -2693,7 +2696,7 @@ Object.assign(es, {
 // ===== Lote: conferência cartão/dinheiro, análise de vendas, nota multi-produto, link =====
 Object.assign(pt, {
   'menu.analise': 'Análise de vendas', 'menu.conferencia': 'Conferência de cartão/dinheiro',
-  'cap.comercial.analise.ver': 'Análise de vendas',
+  'cap.comercial.analise.ver': 'Análise de vendas', 'cap.comercial.disponibilidade.ver': 'Disponibilidade de produtos',
   'cap.comercial.pedido.vendedor_qualquer': 'Escolher qualquer vendedor no pedido',
   'dash.por_produto': 'Vendas por produto', 'dash.top_cli_valor': 'Top 10 clientes', 'dash.top_cli_qtd': 'Top 10 clientes',
   'fin.forma': 'Forma',
@@ -2714,7 +2717,7 @@ Object.assign(pt, {
 });
 Object.assign(en, {
   'menu.analise': 'Sales analysis', 'menu.conferencia': 'Card/cash reconciliation',
-  'cap.comercial.analise.ver': 'Sales analysis',
+  'cap.comercial.analise.ver': 'Sales analysis', 'cap.comercial.disponibilidade.ver': 'Product availability',
   'cap.comercial.pedido.vendedor_qualquer': 'Choose any sales rep on the order',
   'dash.por_produto': 'Sales by product', 'dash.top_cli_valor': 'Top 10 customers', 'dash.top_cli_qtd': 'Top 10 customers',
   'fin.forma': 'Method',
@@ -2735,7 +2738,7 @@ Object.assign(en, {
 });
 Object.assign(es, {
   'menu.analise': 'Análisis de ventas', 'menu.conferencia': 'Conciliación de tarjeta/efectivo',
-  'cap.comercial.analise.ver': 'Análisis de ventas',
+  'cap.comercial.analise.ver': 'Análisis de ventas', 'cap.comercial.disponibilidade.ver': 'Disponibilidad de productos',
   'cap.comercial.pedido.vendedor_qualquer': 'Elegir cualquier vendedor en el pedido',
   'dash.por_produto': 'Ventas por producto', 'dash.top_cli_valor': 'Top 10 clientes', 'dash.top_cli_qtd': 'Top 10 clientes',
   'fin.forma': 'Forma',

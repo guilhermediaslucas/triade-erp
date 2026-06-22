@@ -188,6 +188,27 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-22 (follow-up)** — **4 ajustes do Gui (sem migration nova; 1 cap nova → relogar).**
+  (1) **Desconto por total no Novo pedido:** endpoint `GET /comercial/descontos/resolver?clienteId=&subtotal=`
+  (`DescontosPedidoService.resolver`) + efeito no `NovoPedido` (keyed em clienteId/subtotal) → mostra a linha de desconto e
+  abate no total **já na digitação** (backend reaplica autoritativo ao salvar). Linha de desconto também no detalhe do pedido.
+  (2) **Voltar pedido para orçamento como o cancelar:** `TRANSICOES` (back `PedidosService` + front `lib/pedido.PROXIMOS`)
+  passou a permitir `orcamento` a partir de aprovado/separacao/expedido/entregue; o ramo `novo==='orcamento'` agora **devolve
+  estoque + etiquetas** (`devolverPorRef`/`reverterPorPedido`) além de remover títulos (bloqueia se algum pago), igual ao
+  cancelar. Botão "Voltar para orçamento" no detalhe agora aparece como o cancelar (`podeCancelar && !modoExpedicao && status
+  ∉ {orcamento,cancelado}`); rota gateia `orcamento` com a mesma cap do cancelar (`comercial.pedido.cancelar`|gerenciar). i18n
+  do confirma atualizado (avisa que estoque/etiquetas voltam). (3) **CRM excluir leads:** `CrmRepository.removerOportunidades(ids)`
+  (interações em cascata) + `removerLeads()` (todos estágio 'lead', retorna qtd); `CrmService.excluirOportunidades/excluirLeads`;
+  rotas `POST /crm/oportunidades/excluir {ids}` e `DELETE /crm/leads` (cap `comercial.crm.gerenciar`). Front `Crm.tsx`: **lixeira
+  por card** (exclui a oportunidade) + botão **"Excluir todos os leads (N)"** no topo do funil → é o jeito de limpar os leads da
+  empresa **Teste** pelo próprio app (dispensa o `scripts/limpar-leads-teste.sql`). (4) **Disponibilidade flagável no Comercial:**
+  cap nova **`comercial.disponibilidade.ver`** (módulo Comercial) — menu/rota da Disponibilidade gateados por ela; `GET /estoque`
+  aceita **any-of** [`estoque.saldo.ver`,`comercial.disponibilidade.ver`]; adicionada aos perfis padrão **Comercial** e **Estoque**.
+  Agora aparece p/ marcar no editor do perfil Comercial. **Sem migration nova.** **Pendente Gui:** `npm install` (relink shared p/
+  a cap nova) → `npm run build -w @triade/web` (validar antes do commit!) → commit+push → **relogar** (carrega `comercial.disponibilidade.ver`)
+  → `scripts\app-apk.bat`. Existing perfis Comercial/Estoque: marcar "Disponibilidade de produtos" no perfil (o `garantirPerfisPadrao`
+  não injeta cap nova em perfil já existente; só o Administrador sincroniza no boot).
+
 - **2026-06-22** — **Lote grande (14 demandas do Gui). Migrations tenant 065–069. Caps novas (relogar).**
   Entregue num lote só (decisão do Gui). **Frontend (sem migration):** (1) Kanban "Em separação" → **"Pedido Pronto"**
   (i18n `status.separacao`, 3 idiomas). (2) **Disponibilidade** movida p/ grupo **Comercial**; **Marca** removida da

@@ -116,7 +116,7 @@ export function App() {
                 <Route path="/estoque/expedicao" element={<Protegida cap="comercial.pedido.gerenciar"><KanbanExpedicao /></Protegida>} />
                 <Route path="/estoque/baixa" element={<Protegida cap="estoque.baixa.criar"><BaixaPerda /></Protegida>} />
                 <Route path="/estoque/posicao" element={<Protegida cap="estoque.saldo.ver"><PosicaoEstoque /></Protegida>} />
-                <Route path="/estoque/disponibilidade" element={<Protegida cap="estoque.saldo.ver"><DisponibilidadeProdutos /></Protegida>} />
+                <Route path="/estoque/disponibilidade" element={<Protegida cap="comercial.disponibilidade.ver"><DisponibilidadeProdutos /></Protegida>} />
                 <Route path="/estoque/entrada" element={<Protegida cap="estoque.entrada.criar"><EntradaEstoque /></Protegida>} />
                 <Route path="/estoque/etiqueta" element={<Protegida cap="estoque.saldo.ver"><ConsultarEtiqueta /></Protegida>} />
                 <Route path="/estoque/inventario" element={<Protegida cap="estoque.inventario.ver"><Inventario /></Protegida>} />

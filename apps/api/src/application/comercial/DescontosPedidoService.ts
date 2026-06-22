@@ -7,6 +7,14 @@ export class DescontosPedidoService {
 
   listar(schema: string): Promise<DescontoPedido[]> { return this.repo.listar(schema); }
 
+  // Resolve o desconto vigente para um cliente + subtotal (usado no Novo pedido p/ exibir o total certo).
+  resolver(schema: string, clienteId: string, subtotal: number): Promise<number> {
+    const cid = String(clienteId ?? '').trim();
+    const sub = Number.isFinite(subtotal) && subtotal > 0 ? subtotal : 0;
+    if (!cid || sub <= 0) return Promise.resolve(0);
+    return this.repo.descontoVigente(schema, cid, sub);
+  }
+
   private validar(e: any): DadosDescontoPedido {
     const clienteId = String(e?.clienteId ?? '').trim() || null;
     const tipo = String(e?.tipo ?? '').trim() as TipoDescontoPedido;

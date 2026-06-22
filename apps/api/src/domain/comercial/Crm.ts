@@ -98,6 +98,8 @@ export interface CrmRepository {
   criarOportunidade(schema: string, o: NovaOportunidade): Promise<string>;
   mudarEstagio(schema: string, id: string, estagio: EstagioOportunidade): Promise<void>;
   marcarPerdido(schema: string, id: string): Promise<void>;
+  removerOportunidades(schema: string, ids: string[]): Promise<void>;
+  removerLeads(schema: string): Promise<number>;
   vincularPedido(schema: string, id: string, pedidoId: string): Promise<void>;
   vincularCliente(schema: string, id: string, clienteId: string): Promise<void>;
   // interações

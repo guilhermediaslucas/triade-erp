@@ -137,7 +137,7 @@ export function PedidoDetalhe() {
             <button className="btn-primary" onClick={() => nav('/comercial/pedidos/' + p.id + '/editar')}><Ic name="i-edit" className="sm" /> {t('pedido.editar')}</button>
           )}
           <button className="btn-ghost" onClick={() => nav('/comercial/pedidos/' + p.id + '/romaneio')}><Ic name="i-print" className="sm" /> {t('romaneio.titulo')}</button>
-          {podeGerenciar && !modoExpedicao && p.status === 'aguardando_pagamento' && (
+          {podeCancelar && !modoExpedicao && !['orcamento', 'cancelado'].includes(p.status) && (
             <button className="btn-ghost" onClick={() => mudar('orcamento')}><Ic name="i-edit" className="sm" /> {t('pedido.voltar_orcamento')}</button>
           )}
           {podeCancelar && !modoExpedicao && p.status !== 'cancelado' && (

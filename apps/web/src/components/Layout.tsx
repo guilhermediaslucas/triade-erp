@@ -32,7 +32,7 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'menu.precos', to: '/comercial/precos', cap: 'comercial.preco.listar' },
       { rotulo: 'menu.descontos', to: '/comercial/descontos', cap: 'comercial.preco.listar' },
       { rotulo: 'menu.analise', to: '/comercial/analise', cap: 'comercial.analise.ver' },
-      { rotulo: 'menu.disponibilidade', to: '/estoque/disponibilidade', cap: 'estoque.saldo.ver' },
+      { rotulo: 'menu.disponibilidade', to: '/estoque/disponibilidade', cap: 'comercial.disponibilidade.ver' },
     ] }],
   },
   {

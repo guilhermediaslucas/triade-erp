@@ -10,7 +10,7 @@ export function rotasEstoque(deps: Dependencias): Router {
   const aut = criarAutenticar(deps.tokens);
   const az = criarAutorizar(deps.usuariosRepo);
   const sch = (req: Request) => req.usuario!.schema;
-  r.get('/estoque', aut, az('estoque.saldo.ver'), async (req, res: Response) => {
+  r.get('/estoque', aut, az(['estoque.saldo.ver', 'comercial.disponibilidade.ver']), async (req, res: Response) => {
     try { res.json(await deps.estoqueService.posicao(sch(req))); } catch (e) { tratarErro(res, e); }
   });
   r.post('/estoque/entrada', aut, az('estoque.entrada.criar'), async (req, res: Response) => {

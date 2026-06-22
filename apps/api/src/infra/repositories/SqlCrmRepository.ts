@@ -66,6 +66,18 @@ export class SqlCrmRepository implements CrmRepository {
     const s = validarSchema(schema);
     await this.ds.query(`UPDATE "${s}".oportunidade SET perdido = true, estagio = 'perdido' WHERE id = $1`, [id]);
   }
+  // As interações ligadas saem em cascata (FK oportunidade_id ON DELETE CASCADE).
+  async removerOportunidades(schema: string, ids: string[]): Promise<void> {
+    const s = validarSchema(schema);
+    if (!ids.length) return;
+    await this.ds.query(`DELETE FROM "${s}".oportunidade WHERE id = ANY($1)`, [ids]);
+  }
+  async removerLeads(schema: string): Promise<number> {
+    const s = validarSchema(schema);
+    const n = (await this.ds.query(`SELECT count(*)::int AS n FROM "${s}".oportunidade WHERE estagio = 'lead'`))[0]?.n ?? 0;
+    await this.ds.query(`DELETE FROM "${s}".oportunidade WHERE estagio = 'lead'`);
+    return Number(n);
+  }
   async vincularPedido(schema: string, id: string, pedidoId: string): Promise<void> {
     const s = validarSchema(schema);
     await this.ds.query(`UPDATE "${s}".oportunidade SET pedido_id = $2 WHERE id = $1`, [id, pedidoId]);

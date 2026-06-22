@@ -27,10 +27,10 @@ const CAP_VENDEDOR_QUALQUER = 'comercial.pedido.vendedor_qualquer';
 const TRANSICOES: Record<StatusPedido, StatusPedido[]> = {
   orcamento: ['aguardando_pagamento', 'cancelado'],
   aguardando_pagamento: ['orcamento', 'cancelado'],
-  aprovado: ['separacao', 'cancelado'],
-  separacao: ['expedido', 'cancelado'],
-  expedido: ['entregue', 'cancelado'],
-  entregue: ['cancelado'],
+  aprovado: ['separacao', 'orcamento', 'cancelado'],
+  separacao: ['expedido', 'orcamento', 'cancelado'],
+  expedido: ['entregue', 'orcamento', 'cancelado'],
+  entregue: ['orcamento', 'cancelado'],
   cancelado: [],
 };
 
@@ -250,11 +250,15 @@ export class PedidosService {
       for (const t of tits) await this.titulos.excluir(schema, t.id);
     }
 
-    // Voltar para orçamento (aguardando_pagamento → orçamento): remove os títulos
-    // gerados na confirmação. Se algum já foi baixado, bloqueia (cancele a baixa antes).
+    // Voltar para orçamento (de qualquer etapa): segue a mesma lógica do cancelar —
+    // devolve estoque + etiquetas e remove os títulos do pedido (mas o pedido volta a
+    // ser orçamento, não cancelado). Se algum título já foi baixado, bloqueia.
     if (novo === 'orcamento') {
+      const ref = 'Pedido PE-' + String(pedido.numero).padStart(6, '0');
       const tits = await this.titulos.listarPorPedido(schema, pedido.id);
       if (tits.some((t) => t.status === 'pago')) throw new ErroAplicacao('pedido.voltar_baixa_antes', 409);
+      await this.estoque.devolverPorRef(schema, ref);
+      await this.etiquetas.reverterPorPedido(schema, ref);
       for (const t of tits) await this.titulos.excluir(schema, t.id);
     }
 

@@ -50,6 +50,14 @@ export function rotasCrm(deps: Dependencias): Router {
   r.patch('/crm/oportunidades/:id/perder', aut, az('comercial.crm.gerenciar'), async (req, res: Response) => {
     try { await crm.marcarPerdido(sch(req), req.params.id!); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });
+  // Excluir várias oportunidades (ex.: leads selecionados).
+  r.post('/crm/oportunidades/excluir', aut, az('comercial.crm.gerenciar'), async (req, res: Response) => {
+    try { await crm.excluirOportunidades(sch(req), (req.body ?? {}).ids); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
+  // Excluir TODOS os leads (estágio 'lead').
+  r.delete('/crm/leads', aut, az('comercial.crm.gerenciar'), async (req, res: Response) => {
+    try { res.json({ removidos: await crm.excluirLeads(sch(req)) }); } catch (e) { tratarErro(res, e); }
+  });
   r.patch('/crm/oportunidades/:id/orcamento', aut, az('comercial.crm.gerenciar'), async (req, res: Response) => {
     try { await crm.vincularPedido(sch(req), req.params.id!, String((req.body ?? {}).pedidoId ?? '')); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });

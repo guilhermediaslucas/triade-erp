@@ -116,6 +116,15 @@ export function Crm() {
     if (!confirm(t('crm.confirmar_perder'))) return;
     api.patch('/crm/oportunidades/' + id + '/perder', {}, token!).then(carregarOports).catch((e) => setErro((e as ErroApi).chaveI18n));
   }
+  async function excluirOport(o: Oportunidade) {
+    if (!confirm(t('crm.excluir_confirma'))) return;
+    try { await api.post('/crm/oportunidades/excluir', { ids: [o.id] }, token!); carregarOports(); carregarResumo(); } catch (e) { setErro((e as ErroApi).chaveI18n); }
+  }
+  const totalLeads = useMemo(() => visiveis.filter((o) => (o.estagio || 'lead') === 'lead').length, [visiveis]);
+  async function excluirTodosLeads() {
+    if (!confirm(t('crm.excluir_leads_confirma').replace('{n}', String(totalLeads)))) return;
+    try { await api.del('/crm/leads', token!); carregarOports(); carregarResumo(); } catch (e) { setErro((e as ErroApi).chaveI18n); }
+  }
   // Gera orçamento a partir da oportunidade. Se for um lead (sem cliente cadastrado),
   // converte em cliente primeiro e segue para o Novo pedido já vinculado.
   async function gerarOrcamento(o: Oportunidade) {
@@ -161,6 +170,7 @@ export function Crm() {
           <h3 style={{ marginRight: 'auto' }}>{t('crm.funil')}</h3>
           <span className="muted" style={{ fontSize: 12, alignSelf: 'center' }}>{t('crm.arraste')}</span>
           {pode && <button className="btn-ghost btn-mini" onClick={() => setImportLeads(true)}><Ic name="i-upload" className="sm" /> {t('crm.importar_leads')}</button>}
+          {pode && totalLeads > 0 && <button className="btn-ghost btn-mini" style={{ color: '#e1483b' }} onClick={excluirTodosLeads}><Ic name="i-trash" className="sm" /> {t('crm.excluir_leads')} ({totalLeads})</button>}
           {pode && <button className="btn-primary btn-mini" onClick={() => setModalOport(true)}><Ic name="i-plus" className="sm" /> {t('crm.nova_oport')}</button>}
         </div>
         <div className="pk-board" style={{ padding: '0 16px 8px' }}>
@@ -184,6 +194,7 @@ export function Crm() {
                         {!o.clienteId && <button className="btn-ghost btn-mini" disabled={convertendo === o.id} onClick={() => converter(o)}><Ic name="i-users" className="sm" /> {t('crm.converter')}</button>}
                         <button className="btn-link" style={{ fontSize: 11 }} onClick={() => setIntLead(o)}>{t('crm.registrar_interacao')}</button>
                         <button className="btn-link" style={{ fontSize: 11, color: '#e1483b' }} onClick={() => perder(o.id)}>{t('crm.marcar_perdido')}</button>
+                        <button className="btn-link" style={{ fontSize: 11, color: '#e1483b' }} onClick={() => excluirOport(o)} title={t('common.excluir')}><Ic name="i-trash" className="sm" /></button>
                       </div>}
                     </div>
                   ))}

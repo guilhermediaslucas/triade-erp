@@ -37,6 +37,13 @@ export class CrmService {
 
   // ---- Oportunidades ----
   listarOportunidades(schema: string): Promise<Oportunidade[]> { return this.repo.listarOportunidades(schema); }
+  // Exclui várias oportunidades (ex.: leads selecionados). As interações saem em cascata.
+  excluirOportunidades(schema: string, ids: any): Promise<void> {
+    const lista = Array.isArray(ids) ? ids.map((x: any) => String(x)).filter(Boolean) : [];
+    return this.repo.removerOportunidades(schema, lista);
+  }
+  // Exclui TODOS os leads (estágio 'lead'). Retorna quantos foram removidos.
+  excluirLeads(schema: string): Promise<number> { return this.repo.removerLeads(schema); }
   async criarOportunidade(schema: string, e: any): Promise<{ id: string }> {
     const clienteNome = (e?.clienteNome && String(e.clienteNome).trim()) || '';
     if (clienteNome.length < 2) throw new ErroAplicacao('crm.cliente_obrigatorio', 400);

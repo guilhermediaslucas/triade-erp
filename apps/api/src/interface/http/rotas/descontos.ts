@@ -13,6 +13,10 @@ export function rotasDescontos(deps: Dependencias): Router {
   r.get('/comercial/descontos', aut, az('comercial.preco.listar'), async (req, res: Response) => {
     try { res.json(await deps.descontosPedidoService.listar(sch(req))); } catch (e) { tratarErro(res, e); }
   });
+  // Resolve o desconto vigente p/ o Novo pedido (qualquer quem pode criar pedido).
+  r.get('/comercial/descontos/resolver', aut, az('comercial.pedido.criar'), async (req, res: Response) => {
+    try { res.json({ desconto: await deps.descontosPedidoService.resolver(sch(req), String(req.query.clienteId ?? ''), Number(req.query.subtotal ?? 0)) }); } catch (e) { tratarErro(res, e); }
+  });
   r.post('/comercial/descontos', aut, az('comercial.preco.gerenciar'), async (req, res: Response) => {
     try { await deps.descontosPedidoService.criar(sch(req), req.body ?? {}); res.status(201).json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });
