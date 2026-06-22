@@ -40,6 +40,7 @@ export interface Pedido {
   expedidoEm: string | null;          // log: data/hora ISO da expedição
   recebidoPor: string | null;         // quem recebeu na entrega (opcional)
   subtotal: number;
+  desconto: number;       // desconto no pedido por campanha de total (abate do total)
   frete: number;          // frete COBRADO do cliente (entra no total)
   freteCusto: number;     // custo real do frete para a empresa (absorvido = custo - cobrado)
   total: number;
@@ -52,6 +53,8 @@ export interface Pedido {
 
 // Resumo do(s) título(s) a receber do pedido — bloco Financeiro do detalhe.
 export interface PedidoTituloResumo {
+  id: string;
+  tipo: 'receber' | 'pagar';
   numero: string;
   valor: number;
   vencimento: string;
@@ -76,12 +79,17 @@ export interface NovoPedido {
   distanciaKm: number | null;
   frete: number;          // cobrado do cliente
   freteCusto: number;     // custo real para a empresa
+  freteMotoboy: number;   // quanto a empresa paga ao motoboy (conforme 'absorve' da campanha)
+  desconto: number;       // desconto no pedido por campanha de total
   itens: PedidoItem[];
   subtotal: number;
   total: number;
   condicaoParcelas: number;
   condicaoIntervalo: number;
 }
+
+// Histórico de troca de forma de entrega na expedição (quem mudou, de→para, motivo).
+export interface HistFormaEntrega { de: string; para: string; justificativa: string; usuarioNome: string | null; criadoEm: string; }
 
 export interface PedidoRepository {
   proximoNumero(schema: string): Promise<number>;
@@ -93,6 +101,8 @@ export interface PedidoRepository {
   mudarStatus(schema: string, id: string, status: StatusPedido): Promise<void>;
   definirExpedicao(schema: string, id: string, formaEnvio: string, detalhe: string | null): Promise<void>;
   definirMotoboy(schema: string, id: string, motoboyId: string): Promise<void>;
+  alterarFormaEntrega(schema: string, id: string, forma: string, motoboyId: string | null, hist: HistFormaEntrega): Promise<void>;
+  historicoFormaEntrega(schema: string, id: string): Promise<HistFormaEntrega[]>;
   definirEntrega(schema: string, id: string, entregueEm: string, recebidoPor: string | null): Promise<void>;
   logSeparacao(schema: string, id: string, ator: string | null): Promise<void>;
   logExpedicao(schema: string, id: string, ator: string | null): Promise<void>;

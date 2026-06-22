@@ -1,5 +1,5 @@
-import type { FreteCampanha, FreteCampanhaRepository, TipoFreteCampanha } from '../../domain/comercial/FreteCampanha.js';
-import { TIPOS_FRETE_CAMPANHA } from '../../domain/comercial/FreteCampanha.js';
+import type { AbsorveFrete, DadosFreteCampanha, FreteCampanha, FreteCampanhaRepository, TipoFreteCampanha } from '../../domain/comercial/FreteCampanha.js';
+import { ABSORVE_FRETE, TIPOS_FRETE_CAMPANHA } from '../../domain/comercial/FreteCampanha.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
 export class FreteCampanhasService {
@@ -7,8 +7,8 @@ export class FreteCampanhasService {
 
   listar(schema: string): Promise<FreteCampanha[]> { return this.repo.listar(schema); }
 
-  async criar(schema: string, e: any): Promise<void> {
-    // clienteId vazio = campanha GERAL (vale para todos).
+  // Valida e normaliza o corpo numa estrutura de campanha.
+  private validar(e: any): DadosFreteCampanha {
     const clienteId = String(e?.clienteId ?? '').trim() || null;
     const tipo = String(e?.tipo ?? '').trim() as TipoFreteCampanha;
     if (!TIPOS_FRETE_CAMPANHA.includes(tipo)) throw new ErroAplicacao('frete.campanha_tipo_invalido', 400);
@@ -17,10 +17,19 @@ export class FreteCampanhasService {
     if (tipo === 'gratis') valor = 0;
     if (tipo === 'percentual' && valor > 100) throw new ErroAplicacao('frete.campanha_valor_invalido', 400);
     if (tipo === 'gratis_acima' && valor <= 0) throw new ErroAplicacao('frete.campanha_valor_invalido', 400);
+    const absorve = (ABSORVE_FRETE.includes(String(e?.absorve) as AbsorveFrete) ? String(e?.absorve) : 'cheio') as AbsorveFrete;
     const de = String(e?.de ?? ''); const ate = String(e?.ate ?? '');
     if (!/^\d{4}-\d{2}-\d{2}$/.test(de) || !/^\d{4}-\d{2}-\d{2}$/.test(ate)) throw new ErroAplicacao('financeiro.vencimento_invalido', 400);
     if (ate < de) throw new ErroAplicacao('campanha.periodo_invalido', 400);
-    await this.repo.criar(schema, { clienteId, tipo, valor, motivo: (e?.motivo && String(e.motivo).trim()) || null, de, ate });
+    return { clienteId, tipo, valor, absorve, motivo: (e?.motivo && String(e.motivo).trim()) || null, de, ate };
+  }
+
+  async criar(schema: string, e: any): Promise<void> {
+    await this.repo.criar(schema, this.validar(e));
+  }
+
+  async editar(schema: string, id: string, e: any): Promise<void> {
+    await this.repo.atualizar(schema, id, this.validar(e));
   }
 
   remover(schema: string, id: string): Promise<void> { return this.repo.remover(schema, id); }

@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { DataSource } from 'typeorm';
-import type { NovoPedido, Pedido, PedidoRepository, PedidoResumo, StatusPedido } from '../../domain/comercial/Pedido.js';
+import type { HistFormaEntrega, NovoPedido, Pedido, PedidoRepository, PedidoResumo, StatusPedido } from '../../domain/comercial/Pedido.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 // status que "consomem" limite de crédito (pedido em aberto, fora orçamento/cancelado/entregue)
@@ -20,10 +20,10 @@ export class SqlPedidoRepository implements PedidoRepository {
     const id = randomUUID();
     await this.ds.query(
       `INSERT INTO "${s}".pedido (id, numero, cliente_id, vendedor_id, status, forma_pagamento, observacao, endereco_entrega,
-                                  forma_entrega, motoboy_id, distancia_km, subtotal, frete, total, condicao_parcelas, condicao_intervalo, frete_custo)
-       VALUES ($1,$2,$3,$4,'orcamento',$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
+                                  forma_entrega, motoboy_id, distancia_km, subtotal, frete, total, condicao_parcelas, condicao_intervalo, frete_custo, frete_motoboy, desconto)
+       VALUES ($1,$2,$3,$4,'orcamento',$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)`,
       [id, numero, p.clienteId, p.vendedorId, p.formaPagamento, p.observacao, p.enderecoEntrega,
-       p.formaEntrega, p.motoboyId, p.distanciaKm, p.subtotal, p.frete, p.total, p.condicaoParcelas, p.condicaoIntervalo, p.freteCusto]);
+       p.formaEntrega, p.motoboyId, p.distanciaKm, p.subtotal, p.frete, p.total, p.condicaoParcelas, p.condicaoIntervalo, p.freteCusto, p.freteMotoboy, p.desconto]);
     for (const it of p.itens) {
       await this.ds.query(
         `INSERT INTO "${s}".pedido_item (id, pedido_id, produto_id, produto_nome, quantidade, preco_unitario, subtotal)
@@ -41,10 +41,10 @@ export class SqlPedidoRepository implements PedidoRepository {
       `UPDATE "${s}".pedido
           SET cliente_id = $2, vendedor_id = $3, forma_pagamento = $4, observacao = $5, endereco_entrega = $6,
               forma_entrega = $7, motoboy_id = $8, distancia_km = $9, subtotal = $10, frete = $11, total = $12,
-              condicao_parcelas = $13, condicao_intervalo = $14, frete_custo = $15
+              condicao_parcelas = $13, condicao_intervalo = $14, frete_custo = $15, frete_motoboy = $16, desconto = $17
         WHERE id = $1`,
       [id, p.clienteId, p.vendedorId, p.formaPagamento, p.observacao, p.enderecoEntrega,
-       p.formaEntrega, p.motoboyId, p.distanciaKm, p.subtotal, p.frete, p.total, p.condicaoParcelas, p.condicaoIntervalo, p.freteCusto]);
+       p.formaEntrega, p.motoboyId, p.distanciaKm, p.subtotal, p.frete, p.total, p.condicaoParcelas, p.condicaoIntervalo, p.freteCusto, p.freteMotoboy, p.desconto]);
     await this.ds.query(`DELETE FROM "${s}".pedido_item WHERE pedido_id = $1`, [id]);
     for (const it of p.itens) {
       await this.ds.query(
@@ -128,7 +128,7 @@ export class SqlPedidoRepository implements PedidoRepository {
       separadoPor: r.separado_por ?? null, separadoEm: r.separado_em ? new Date(r.separado_em).toISOString() : null,
       expedidoPor: r.expedido_por ?? null, expedidoEm: r.expedido_em ? new Date(r.expedido_em).toISOString() : null,
       recebidoPor: r.recebido_por ?? null,
-      subtotal: Number(r.subtotal), frete: Number(r.frete), freteCusto: Number(r.frete_custo ?? r.frete ?? 0), total: Number(r.total),
+      subtotal: Number(r.subtotal), desconto: Number(r.desconto ?? 0), frete: Number(r.frete), freteCusto: Number(r.frete_custo ?? r.frete ?? 0), total: Number(r.total),
       condicaoParcelas: r.condicao_parcelas ?? 1, condicaoIntervalo: r.condicao_intervalo ?? 30, criadoEm: new Date(r.criado_em),
       itens: itens.map((i: any) => ({
         id: i.id, produtoId: i.produto_id ?? null, produtoNome: i.produto_nome,
@@ -149,6 +149,20 @@ export class SqlPedidoRepository implements PedidoRepository {
   async definirMotoboy(schema: string, id: string, motoboyId: string): Promise<void> {
     const s = validarSchema(schema);
     await this.ds.query(`UPDATE "${s}".pedido SET motoboy_id = $2 WHERE id = $1`, [id, motoboyId]);
+  }
+  async alterarFormaEntrega(schema: string, id: string, forma: string, motoboyId: string | null, hist: HistFormaEntrega): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(`UPDATE "${s}".pedido SET forma_entrega = $2, motoboy_id = $3 WHERE id = $1`, [id, forma, motoboyId]);
+    await this.ds.query(
+      `INSERT INTO "${s}".forma_entrega_historico (id, pedido_id, de, para, justificativa, usuario_nome)
+       VALUES ($1,$2,$3,$4,$5,$6)`,
+      [randomUUID(), id, hist.de, hist.para, hist.justificativa, hist.usuarioNome]);
+  }
+  async historicoFormaEntrega(schema: string, id: string): Promise<HistFormaEntrega[]> {
+    const s = validarSchema(schema);
+    const rs = await this.ds.query(
+      `SELECT de, para, justificativa, usuario_nome, criado_em FROM "${s}".forma_entrega_historico WHERE pedido_id = $1 ORDER BY criado_em DESC`, [id]);
+    return rs.map((r: any) => ({ de: r.de, para: r.para, justificativa: r.justificativa, usuarioNome: r.usuario_nome ?? null, criadoEm: new Date(r.criado_em).toISOString() }));
   }
   async definirEntrega(schema: string, id: string, entregueEm: string, recebidoPor: string | null): Promise<void> {
     const s = validarSchema(schema);

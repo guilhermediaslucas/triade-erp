@@ -21,7 +21,9 @@ function fmtValidade(v: string | null): string {
   const d = new Date(v + 'T00:00:00');
   return isNaN(d.getTime()) ? '—' : d.toLocaleDateString('pt-BR', { month: '2-digit', year: 'numeric' });
 }
-interface TituloResumo { numero: string; valor: number; vencimento: string; status: 'aberto' | 'pago'; pagoEm: string | null; formaPagamento: string | null; }
+interface TituloResumo { id: string; tipo: 'receber' | 'pagar'; numero: string; valor: number; vencimento: string; status: 'aberto' | 'pago'; pagoEm: string | null; formaPagamento: string | null; }
+interface HistForma { de: string; para: string; justificativa: string; usuarioNome: string | null; criadoEm: string; }
+const FORMAS_ENTREGA_UI = ['retirada', 'motoboy', 'correios', 'transportadora', 'propria'];
 interface Pedido {
   id: string; numero: number; clienteNome: string | null; vendedorNome: string | null; status: StatusPedido;
   formaPagamento: string | null; observacao: string | null; enderecoEntrega: string | null;
@@ -29,7 +31,7 @@ interface Pedido {
   formaEnvio: string | null; formaEnvioDetalhe: string | null; entregueEm: string | null;
   separadoPor: string | null; separadoEm: string | null; expedidoPor: string | null; expedidoEm: string | null;
   recebidoPor: string | null;
-  subtotal: number; frete: number; total: number; criadoEm: string; itens: Item[];
+  subtotal: number; desconto?: number; frete: number; total: number; criadoEm: string; itens: Item[];
   titulos?: TituloResumo[];
 }
 
@@ -50,6 +52,16 @@ export function PedidoDetalhe() {
   const podeCriar = temCapability('comercial.pedido.criar');
   const [motoboys, setMotoboys] = useState<{ id: string; nome: string; ativo: boolean }[]>([]);
   const [modal, setModal] = useState<'envio' | 'entrega' | null>(null);
+  const podeExpedir = podeGerenciar || temCapability('comercial.pedido.expedir');
+  const [alterarForma, setAlterarForma] = useState(false);
+  const [histForma, setHistForma] = useState<HistForma[]>([]);
+  async function carregarHist() { try { setHistForma(await api.get('/pedidos/' + id + '/forma-entrega/historico', token!)); } catch { /* sem permissão/histórico */ } }
+  async function salvarForma(forma: string, motoboyId: string | null, justificativa: string) {
+    try {
+      await api.patch('/pedidos/' + id + '/forma-entrega', { formaEntrega: forma, motoboyId, justificativa }, token!);
+      setAlterarForma(false); carregar(); carregarHist(); toast(t('pedido.forma_alterada'));
+    } catch (e) { const k = (e as ErroApi).chaveI18n; toast(t(k), 'erro'); }
+  }
 
   // Separação por bipagem
   const [sepOpen, setSepOpen] = useState(false);
@@ -60,7 +72,7 @@ export function PedidoDetalhe() {
 
   async function carregar() { try { setP(await api.get('/pedidos/' + id, token!)); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
   useEffect(() => {
-    carregar();
+    carregar(); carregarHist();
     if (temCapability('cadastros.motoboy.listar')) api.get<{ id: string; nome: string; ativo: boolean }[]>('/motoboys', token!).then((l) => setMotoboys(l.filter((m) => m.ativo))).catch(() => {});
     /* eslint-disable-next-line */
   }, [id]);
@@ -159,7 +171,11 @@ export function PedidoDetalhe() {
           <div><span className="det-l">{t('pedidos.vendedor')}</span><div>{p.vendedorNome ?? '—'}</div></div>
           <div><span className="det-l">{t('pedidos.forma_pgto')}</span><div>{p.formaPagamento ?? '—'}</div></div>
           <div><span className="det-l">{t('pedidos.data')}</span><div>{new Date(p.criadoEm).toLocaleString('pt-BR')}</div></div>
-          <div><span className="det-l">{t('entrega.forma')}</span><div>{entregaTexto}</div></div>
+          <div><span className="det-l">{t('entrega.forma')}</span><div>{entregaTexto}
+            {modoExpedicao && podeExpedir && !['orcamento', 'cancelado', 'entregue'].includes(p.status) && (
+              <button className="btn-link" style={{ marginLeft: 8, fontSize: 12 }} onClick={() => setAlterarForma(true)}>{t('pedido.alterar_forma')}</button>
+            )}
+          </div></div>
           {p.formaEnvio && <div><span className="det-l">{t('pedido.forma_envio')}</span><div>{(['retirada', 'motoboy', 'correios', 'transportadora'].includes(p.formaEnvio) ? t('entrega.' + p.formaEnvio) : p.formaEnvio)}{p.formaEnvioDetalhe ? ' · ' + p.formaEnvioDetalhe : ''}</div></div>}
           {p.entregueEm && <div><span className="det-l">{t('pedido.entregue_em')}</span><div>{new Date(p.entregueEm + 'T00:00:00').toLocaleDateString('pt-BR')}</div></div>}
           {p.separadoPor && <div><span className="det-l">{t('pedido.separado_por')}</span><div>{p.separadoPor}{p.separadoEm ? ' · ' + new Date(p.separadoEm).toLocaleString('pt-BR') : ''}</div></div>}
@@ -170,6 +186,18 @@ export function PedidoDetalhe() {
         </div>
       </div>
 
+      {histForma.length > 0 && (
+        <div className="card" style={{ maxWidth: 820, marginBottom: 16 }}>
+          <div className="card-head"><h3>{t('pedido.hist_forma')}</h3></div>
+          {histForma.map((h, i) => (
+            <div key={i} className="fin-linha-det">
+              <span>{t('entrega.' + h.de)} → <b>{t('entrega.' + h.para)}</b> · {h.justificativa}</span>
+              <span className="muted" style={{ fontSize: 12 }}>{h.usuarioNome ?? '—'} · {new Date(h.criadoEm).toLocaleString('pt-BR')}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
       {p.titulos && p.titulos.length > 0 && (
         <div className="card" style={{ maxWidth: 820, marginBottom: 16 }}>
           <div className="card-head"><h3>{t('pedido.financeiro')}</h3></div>
@@ -179,6 +207,7 @@ export function PedidoDetalhe() {
               <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <b>{moeda(tt.valor)}</b>
                 <span className={'pill ' + (tt.status === 'pago' ? 'st-verde' : 'st-vermelho')}>{t(tt.status === 'pago' ? 'pedido.baixado' : 'pedido.em_aberto')}</span>
+                <button className="btn-ghost btn-mini" onClick={() => nav('/financeiro/' + tt.tipo + '?titulo=' + tt.id + (tt.status === 'aberto' ? '&baixar=1' : ''))}>{t('pedido.abrir_titulo')}</button>
               </span>
             </div>
           ))}
@@ -209,6 +238,7 @@ export function PedidoDetalhe() {
       <div className="card" style={{ maxWidth: 820 }}>
         <div className="totais">
           <div><span>{t('pedidos.subtotal')}</span><b>{moeda(p.subtotal)}</b></div>
+          {!!p.desconto && p.desconto > 0 && <div><span>{t('descped.desconto')}</span><b style={{ color: 'var(--dash-green, #16a34a)' }}>− {moeda(p.desconto)}</b></div>}
           <div><span>{t('pedidos.frete')}</span><b>{moeda(p.frete)}</b></div>
           <div className="total-grande"><span>{t('pedidos.total')}</span><b>{moeda(p.total)}</b></div>
         </div>
@@ -261,6 +291,45 @@ export function PedidoDetalhe() {
         onFechar={() => setModal(null)} onConfirmar={(forma, det, motoboyId) => { setModal(null); patchStatus('expedido', { formaEnvio: forma, formaEnvioDetalhe: det, ...(motoboyId ? { motoboyId } : {}) }); }} />}
       {modal === 'entrega' && <ModalDataEntrega numero={p.numero} inicial={p.entregueEm}
         onFechar={() => setModal(null)} onConfirmar={(data, recebido) => { setModal(null); patchStatus('entregue', { entregueEm: data, ...(recebido ? { recebidoPor: recebido } : {}) }); }} />}
+      {alterarForma && <ModalAlterarForma atual={p.formaEntrega} motoboys={motoboys} onFechar={() => setAlterarForma(false)} onConfirmar={salvarForma} />}
     </div>
+  );
+}
+
+// Expedição: troca a forma de entrega com justificativa obrigatória.
+function ModalAlterarForma({ atual, motoboys, onFechar, onConfirmar }: {
+  atual: string; motoboys: { id: string; nome: string }[];
+  onFechar: () => void; onConfirmar: (forma: string, motoboyId: string | null, justificativa: string) => void;
+}) {
+  const { t } = useI18n();
+  const [forma, setForma] = useState(atual);
+  const [motoboyId, setMotoboyId] = useState('');
+  const [justificativa, setJustificativa] = useState('');
+  const ehMotoboy = forma === 'motoboy';
+  const ok = justificativa.trim().length >= 3 && (!ehMotoboy || !!motoboyId);
+  return (
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 440 }}>
+      <h2>{t('pedido.alterar_forma')}</h2>
+      <label className="campo">{t('entrega.forma')}
+        <select value={forma} onChange={(e) => setForma(e.target.value)} autoFocus>
+          {FORMAS_ENTREGA_UI.map((f) => <option key={f} value={f}>{t('entrega.' + f)}</option>)}
+        </select>
+      </label>
+      {ehMotoboy && (
+        <label className="campo">{t('entrega.motoboy')}
+          <select value={motoboyId} onChange={(e) => setMotoboyId(e.target.value)}>
+            <option value="">{t('fenv.selecione_motoboy')}</option>
+            {motoboys.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
+          </select>
+        </label>
+      )}
+      <label className="campo">{t('pedido.justificativa')}<b className="obrig"> *</b>
+        <textarea value={justificativa} onChange={(e) => setJustificativa(e.target.value)} rows={3} placeholder={t('pedido.justificativa_ph')} />
+      </label>
+      <div className="modal-acoes">
+        <button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button>
+        <button className="btn-primary" disabled={!ok} onClick={() => onConfirmar(forma, ehMotoboy ? motoboyId : null, justificativa.trim())}>{t('common.salvar')}</button>
+      </div>
+    </div></div>
   );
 }

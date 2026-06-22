@@ -135,6 +135,13 @@ export function Dashboard() {
   const totalContas = d.saldosBancarios.reduce((a, b) => a + b.saldo, 0);
   const fmtData = (s: string) => new Date(s).toLocaleDateString('pt-BR');
 
+  // Widgets do painel selecionáveis por perfil. Compatibilidade: se o perfil não tem
+  // NENHUMA cap de widget, mostra tudo (comportamento antigo). Assim que o admin marca
+  // ao menos um widget no perfil, o painel passa a respeitar a seleção.
+  const WIDGETS_DASH = ['dashboard.kpis', 'dashboard.faturamento', 'dashboard.por_produto', 'dashboard.top_produtos', 'dashboard.clientes', 'dashboard.avisos', 'dashboard.pedidos', 'dashboard.fluxo', 'dashboard.saldos'];
+  const temAlgumWidget = WIDGETS_DASH.some((c) => temCapability(c));
+  const verW = (c: string) => !temAlgumWidget || temCapability(c);
+
   const kpis: { tipo: string; ic: string; tint: string; lbl: string; raw: number; moeda: boolean; pct?: number | null; suf?: string; sub?: string }[] = [
     { tipo: 'dia', ic: 'i-cart', tint: 'tint-pp', lbl: t('dash.vendas_dia'), raw: d.vendasDia, moeda: true, pct: d.vendasDiaDeltaPct, suf: t('dash.vs_ontem') },
     { tipo: 'semana', ic: 'i-clock', tint: 'tint-bl', lbl: t('dash.vendas_semana'), raw: d.vendasSemana, moeda: true, pct: d.vendasSemanaDeltaPct, suf: t('dash.vs_semana') },
@@ -162,7 +169,7 @@ export function Dashboard() {
         <div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('dashboard.titulo')}</h1><div className="muted page-sub">{t('dash.subtitulo')}</div></div>
       </div>
 
-      <div className="dash-row c5">
+      {verW('dashboard.kpis') && (<div className="dash-row c5">
         {kpis.map((k) => (
           <div className="card clicavel" key={k.lbl} role="button" tabIndex={0} title={t('dash.kpi_drill')}
             onClick={() => navigate('/dashboard/serie/' + k.tipo)}
@@ -173,10 +180,10 @@ export function Dashboard() {
             </div>
           </div>
         ))}
-      </div>
+      </div>)}
 
       <div className="dash-row d2">
-        <div className="card">
+        {verW('dashboard.faturamento') && (<div className="card">
           <div className="card-head"><h3>{t('dash.faturamento')}</h3>
             <div className="legendmini">
               <span><i style={{ background: '#378ADD' }} />{t('dash.realizado')}</span>
@@ -185,12 +192,12 @@ export function Dashboard() {
           </div>
           <GraficoBarras pontos={d.faturamentoMensal} metas={d.metaMensal ?? []} onPick={setDrillMes} />
           <div className="muted" style={{ fontSize: 11, marginTop: 4, textAlign: 'right' }}>{t('dash.clique_ponto')}</div>
-        </div>
-        <div className="card">
+        </div>)}
+        {verW('dashboard.por_produto') && (<div className="card">
           <div className="card-head"><h3>{t('dash.por_produto')}</h3></div>
           <Donut dados={d.vendasProduto.map((x) => ({ nome: x.produto, total: x.total }))} />
-        </div>
-        <div className="card">
+        </div>)}
+        {verW('dashboard.top_produtos') && (<div className="card">
           <div className="card-head"><h3>{t('dash.top_produtos')}</h3></div>
           <div className="lst">
             {d.topProdutos.length === 0 && <div className="it" style={{ color: 'var(--muted)' }}>{t('dash.sem_vendas')}</div>}
@@ -202,10 +209,10 @@ export function Dashboard() {
               </div>
             ))}
           </div>
-        </div>
+        </div>)}
       </div>
 
-      <div className="dash-row c2">
+      {verW('dashboard.clientes') && (<div className="dash-row c2">
         <div className="card">
           <div className="card-head"><h3>{t('dash.top_cli_valor')}</h3><span className="muted" style={{ fontSize: 12 }}>{t('dash.total_comprado')}</span></div>
           <div className="lst">
@@ -224,9 +231,9 @@ export function Dashboard() {
             ))}
           </div>
         </div>
-      </div>
+      </div>)}
 
-      <div className="dash-row d3">
+      {verW('dashboard.avisos') && (<div className="dash-row d3">
         <div className="card">
           <div className="card-head"><h3>{t('dash.avisos')}</h3></div>
           <div className="alerts">
@@ -246,10 +253,10 @@ export function Dashboard() {
             ))}
           </div>
         </div>
-      </div>
+      </div>)}
 
       <div className="dash-row d3">
-        <div className="card pad0">
+        {verW('dashboard.pedidos') && (<div className="card pad0">
           <div className="card-head" style={{ padding: '18px 18px 0' }}><h3>{t('dash.pedidos_recentes')}</h3><Link className="lnk" to="/comercial/pedidos" style={{ color: 'var(--accent)', fontSize: 12, fontWeight: 600 }}>{t('dash.ver_todos')}</Link></div>
           <table className="tabela" style={{ marginTop: 12 }}>
             <thead><tr><th>{t('dash.col_pedido')}</th><th>{t('dash.col_cliente')}</th><th>{t('dash.col_vendedor')}</th><th>{t('dash.col_valor')}</th><th>{t('usuarios.situacao')}</th><th>{t('dash.col_data')}</th></tr></thead>
@@ -264,16 +271,16 @@ export function Dashboard() {
               ))}
             </tbody>
           </table>
-        </div>
-        <div className="card">
+        </div>)}
+        {verW('dashboard.fluxo') && (<div className="card">
           <div className="card-head"><h3>{t('dash.fluxo_mes')}</h3><Link to="/financeiro/fluxo" style={{ color: 'var(--accent)', fontSize: 12, fontWeight: 600 }}>{t('dash.ver_detalhes')}</Link></div>
           <div className="fstat"><div className="l">{t('dash.entradas')}</div><div className="v" style={{ color: 'var(--dash-green)' }}>{abrevMoeda(d.fluxoEntradasMes)}</div></div>
           <div className="fstat"><div className="l">{t('dash.saidas')}</div><div className="v" style={{ color: 'var(--dash-red)' }}>{abrevMoeda(d.fluxoSaidasMes)}</div></div>
           <div className="fstat sel"><div className="l">{t('dash.saldo')}</div><div className="v" style={{ color: 'var(--accent2)' }}>{abrevMoeda(d.fluxoSaldoMes)}</div></div>
-        </div>
+        </div>)}
       </div>
 
-      <div className="dash-row d3">
+      {verW('dashboard.saldos') && (<div className="dash-row d3">
         <div className="card">
           <div className="card-head"><h3>{t('dash.saldos')}</h3></div>
           {d.saldosBancarios.length === 0 && <div className="muted">{t('dash.sem_contas')}</div>}
@@ -294,7 +301,7 @@ export function Dashboard() {
             ))}
           <div className="fstat sel"><div className="l">{t('dash.saldo_total')}</div><div className="v" style={{ color: 'var(--accent2)' }}>{abrevMoeda(totalContas)}</div></div>
         </div>
-      </div>
+      </div>)}
 
       <div className="dash-footer">{t('dash.footer')}</div>
       {drillMes && <DrillModal mes={drillMes} onFechar={() => setDrillMes(null)} />}

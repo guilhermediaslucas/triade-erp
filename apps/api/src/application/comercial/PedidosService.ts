@@ -10,6 +10,7 @@ import type { TituloRepository } from '../../domain/financeiro/Titulo.js';
 import type { CondicaoRepository } from '../../domain/comercial/Condicao.js';
 import type { UsuarioRepository } from '../../domain/usuario/UsuarioRepository.js';
 import type { FreteCampanhaRepository } from '../../domain/comercial/FreteCampanha.js';
+import type { DescontoPedidoRepository } from '../../domain/comercial/DescontoPedido.js';
 import { FORMAS_ENTREGA } from '../../domain/comercial/FreteConfig.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
@@ -61,6 +62,7 @@ export class PedidosService {
     private readonly motoboys: MotoboyRepository,
     private readonly usuarios: UsuarioRepository,
     private readonly freteCampanhas: FreteCampanhaRepository,
+    private readonly descontos: DescontoPedidoRepository,
   ) {}
 
   // Resolve o vendedor efetivo do pedido aplicando a trava:
@@ -96,6 +98,7 @@ export class PedidosService {
   private async comTitulos(schema: string, p: Pedido): Promise<Pedido> {
     const tits = await this.titulos.listarPorPedido(schema, p.id);
     p.titulos = tits.map((t) => ({
+      id: t.id, tipo: t.tipo,
       numero: t.numero, valor: t.valor, vencimento: t.vencimento,
       status: t.status, pagoEm: t.pagoEm, formaPagamento: t.formaPagamento,
     }));
@@ -144,8 +147,13 @@ export class PedidosService {
     // vigente do cliente determina o que ele PAGA (cobrado); a diferença a empresa absorve.
     const freteInformado = Number(e?.frete ?? 0) || 0;
     const freteCusto = formaEntrega === 'retirada' ? 0 : (freteInformado >= 0 ? freteInformado : 0);
-    const frete = freteCusto > 0 ? await this.freteCampanhas.freteCobrado(schema, cliente.id, freteCusto, subtotal) : 0;
-    const total = Math.round((subtotal + frete) * 100) / 100;
+    // cobrado = o que o cliente paga (campanha); motoboy = quanto a empresa paga ao motoboy (conforme 'absorve').
+    const resolv = freteCusto > 0 ? await this.freteCampanhas.resolverFrete(schema, cliente.id, freteCusto, subtotal) : { cobrado: 0, motoboy: 0 };
+    const frete = resolv.cobrado;
+    const freteMotoboy = resolv.motoboy;
+    // Desconto no pedido por total (campanha vigente: subtotal ≥ mínimo).
+    const desconto = subtotal > 0 ? await this.descontos.descontoVigente(schema, cliente.id, subtotal) : 0;
+    const total = Math.round((subtotal - desconto + frete) * 100) / 100;
 
     let endereco: string | null = (e?.enderecoEntrega && String(e.enderecoEntrega).trim()) || null;
     if (!endereco) {
@@ -159,7 +167,7 @@ export class PedidosService {
       formaPagamento: (e?.formaPagamento && String(e.formaPagamento).trim()) || null,
       observacao: (e?.observacao && String(e.observacao).trim()) || null,
       enderecoEntrega: endereco, formaEntrega, motoboyId, distanciaKm,
-      frete, freteCusto, itens, subtotal, total, condicaoParcelas: condParcelas, condicaoIntervalo: condIntervalo,
+      frete, freteCusto, freteMotoboy, desconto, itens, subtotal, total, condicaoParcelas: condParcelas, condicaoIntervalo: condIntervalo,
     };
   }
 
@@ -194,6 +202,7 @@ export class PedidosService {
     const recebidoPor = (dados?.recebidoPor && String(dados.recebidoPor).trim()) || null;
     if (novo === 'expedido' && !formaEnvio) throw new ErroAplicacao('pedido.forma_envio_obrigatoria', 400);
     if (novo === 'entregue' && !entregueEm) throw new ErroAplicacao('pedido.data_entrega_obrigatoria', 400);
+    if (novo === 'entregue' && !recebidoPor) throw new ErroAplicacao('pedido.recebido_obrigatorio', 400);
 
     // Entrega por MOTOBOY: o motoboy é escolhido AGORA (na expedição), de um cadastro
     // existente. O frete do pedido passa a ser atribuído a ele (Gestão de fretes).
@@ -264,6 +273,26 @@ export class PedidosService {
       await this.pedidos.mudarStatus(schema, id, 'aprovado');
     }
   }
+
+  // Expedição pode trocar a forma de entrega mediante justificativa (registra quem fez no histórico).
+  async alterarFormaEntrega(schema: string, id: string, dados: any, ator?: string | null): Promise<void> {
+    const pedido = await this.pedidos.buscarPorId(schema, id);
+    if (!pedido) throw new ErroAplicacao('pedido.nao_encontrado', 404);
+    const forma = String(dados?.formaEntrega ?? '').trim();
+    if (!FORMAS_ENTREGA.includes(forma as any)) throw new ErroAplicacao('frete.forma_invalida', 400);
+    const justificativa = String(dados?.justificativa ?? '').trim();
+    if (justificativa.length < 3) throw new ErroAplicacao('pedido.justificativa_obrigatoria', 400);
+    let motoboyId: string | null = null;
+    if (forma === 'motoboy') {
+      motoboyId = String(dados?.motoboyId ?? '').trim() || null;
+      if (!motoboyId) throw new ErroAplicacao('pedido.motoboy_obrigatorio', 400);
+      if (!(await this.motoboys.buscarPorId(schema, motoboyId))) throw new ErroAplicacao('pedido.motoboy_invalido', 400);
+    }
+    await this.pedidos.alterarFormaEntrega(schema, id, forma, motoboyId, {
+      de: pedido.formaEntrega, para: forma, justificativa, usuarioNome: ator ?? null, criadoEm: new Date().toISOString(),
+    });
+  }
+  historicoFormaEntrega(schema: string, id: string) { return this.pedidos.historicoFormaEntrega(schema, id); }
 
   // Separacao por BIPAGEM: le a etiqueta de cada item; o codigo traz produto/lote/validade.
   // Casa com o pedido pelo produto, da baixa do lote especifico da etiqueta e consome a etiqueta.

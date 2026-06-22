@@ -14,10 +14,10 @@ export function rotasLogistica(deps: Dependencias): Router {
     try { res.json(await deps.gestaoFretesService.apurar(sch(req), req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
   });
   r.get('/logistica/fretes/pedidos', aut, az('logistica.frete.ver'), async (req, res: Response) => {
-    try { res.json(await deps.gestaoFretesService.listarPedidos(sch(req), req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
+    try { res.json(await deps.gestaoFretesService.listarPedidos(sch(req), req.query.de, req.query.ate, req.query.gerado)); } catch (e) { tratarErro(res, e); }
   });
-  r.post('/logistica/fretes/fechar', aut, az('logistica.frete.gerenciar'), async (req, res: Response) => {
-    try { res.status(201).json(await deps.gestaoFretesService.fechar(sch(req), req.body ?? {})); } catch (e) { tratarErro(res, e); }
+  r.post('/logistica/fretes/gerar', aut, az('logistica.frete.gerenciar'), async (req, res: Response) => {
+    try { res.status(201).json(await deps.gestaoFretesService.gerar(sch(req), req.body ?? {})); } catch (e) { tratarErro(res, e); }
   });
   return r;
 }

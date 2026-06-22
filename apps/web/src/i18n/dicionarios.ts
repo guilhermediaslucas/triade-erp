@@ -68,6 +68,7 @@ const pt: Dict = {
   'perfis.editar_titulo': 'Editar perfil', 'perfis.novo_titulo': 'Novo perfil', 'perfis.salvo': 'Perfil salvo.',
   'cap.modulo.dashboard': 'Painel', 'cap.modulo.acesso': 'Acesso',
   'cap.dashboard.ver': 'Ver o dashboard',
+  'cap.dashboard.kpis': 'Painel · KPIs de vendas', 'cap.dashboard.faturamento': 'Painel · Faturamento', 'cap.dashboard.por_produto': 'Painel · Vendas por produto', 'cap.dashboard.top_produtos': 'Painel · Produtos mais vendidos', 'cap.dashboard.clientes': 'Painel · Top clientes', 'cap.dashboard.avisos': 'Painel · Avisos e ações', 'cap.dashboard.pedidos': 'Painel · Pedidos recentes', 'cap.dashboard.fluxo': 'Painel · Fluxo de caixa do mês', 'cap.dashboard.saldos': 'Painel · Saldos bancários',
   'cap.acesso.usuario.listar': 'Listar usuários', 'cap.acesso.usuario.gerenciar': 'Criar e editar usuários',
   'cap.acesso.perfil.listar': 'Listar perfis', 'cap.acesso.perfil.gerenciar': 'Criar e editar perfis',
   'cap.acesso.empresa.editar': 'Editar dados da empresa',
@@ -154,6 +155,7 @@ const en: Dict = {
   'perfis.editar_titulo': 'Edit role', 'perfis.novo_titulo': 'New role', 'perfis.salvo': 'Role saved.',
   'cap.modulo.dashboard': 'Dashboard', 'cap.modulo.acesso': 'Access',
   'cap.dashboard.ver': 'View dashboard',
+  'cap.dashboard.kpis': 'Dashboard · Sales KPIs', 'cap.dashboard.faturamento': 'Dashboard · Revenue', 'cap.dashboard.por_produto': 'Dashboard · Sales by product', 'cap.dashboard.top_produtos': 'Dashboard · Top products', 'cap.dashboard.clientes': 'Dashboard · Top customers', 'cap.dashboard.avisos': 'Dashboard · Alerts and actions', 'cap.dashboard.pedidos': 'Dashboard · Recent orders', 'cap.dashboard.fluxo': 'Dashboard · Monthly cash flow', 'cap.dashboard.saldos': 'Dashboard · Bank balances',
   'cap.acesso.usuario.listar': 'List users', 'cap.acesso.usuario.gerenciar': 'Create and edit users',
   'cap.acesso.perfil.listar': 'List roles', 'cap.acesso.perfil.gerenciar': 'Create and edit roles',
   'cap.acesso.empresa.editar': 'Edit company data',
@@ -240,6 +242,7 @@ const es: Dict = {
   'perfis.editar_titulo': 'Editar perfil', 'perfis.novo_titulo': 'Nuevo perfil', 'perfis.salvo': 'Perfil guardado.',
   'cap.modulo.dashboard': 'Panel', 'cap.modulo.acesso': 'Acceso',
   'cap.dashboard.ver': 'Ver el panel',
+  'cap.dashboard.kpis': 'Panel · KPIs de ventas', 'cap.dashboard.faturamento': 'Panel · Facturación', 'cap.dashboard.por_produto': 'Panel · Ventas por producto', 'cap.dashboard.top_produtos': 'Panel · Productos más vendidos', 'cap.dashboard.clientes': 'Panel · Top clientes', 'cap.dashboard.avisos': 'Panel · Avisos y acciones', 'cap.dashboard.pedidos': 'Panel · Pedidos recientes', 'cap.dashboard.fluxo': 'Panel · Flujo de caja del mes', 'cap.dashboard.saldos': 'Panel · Saldos bancarios',
   'cap.acesso.usuario.listar': 'Listar usuarios', 'cap.acesso.usuario.gerenciar': 'Crear y editar usuarios',
   'cap.acesso.perfil.listar': 'Listar perfiles', 'cap.acesso.perfil.gerenciar': 'Crear y editar perfiles',
   'cap.acesso.empresa.editar': 'Editar datos de la empresa',
@@ -552,7 +555,7 @@ Object.assign(pt, {
   'pedidos.subtotal': 'Subtotal', 'pedidos.frete': 'Frete', 'pedidos.obs': 'Observação', 'pedidos.salvar': 'Criar pedido',
   'pedidos.voltar': 'Voltar', 'pedidos.qtd': 'Qtd', 'pedidos.preco_unit': 'Preço unit.',
   'status.orcamento': 'Orçamento', 'status.aguardando_pagamento': 'Aguardando pagamento', 'status.aprovado': 'Aguardando separação',
-  'status.separacao': 'Em separação', 'status.expedido': 'Expedido', 'status.entregue': 'Entregue', 'status.cancelado': 'Cancelado',
+  'status.separacao': 'Pedido Pronto', 'status.expedido': 'Expedido', 'status.entregue': 'Entregue', 'status.cancelado': 'Cancelado',
   'pedidos.acao.aguardando_pagamento': 'Confirmar pedido', 'pedidos.acao.aprovado': 'Aprovar pagamento',
   'pedidos.acao.separacao': 'Enviar p/ separação', 'pedidos.acao.expedido': 'Marcar expedido', 'pedidos.acao.entregue': 'Marcar entregue',
   'pedidos.acao.cancelado': 'Cancelar pedido',
@@ -587,7 +590,7 @@ Object.assign(en, {
   'pedidos.subtotal': 'Subtotal', 'pedidos.frete': 'Shipping', 'pedidos.obs': 'Notes', 'pedidos.salvar': 'Create order',
   'pedidos.voltar': 'Back', 'pedidos.qtd': 'Qty', 'pedidos.preco_unit': 'Unit price',
   'status.orcamento': 'Quote', 'status.aguardando_pagamento': 'Awaiting payment', 'status.aprovado': 'Awaiting picking',
-  'status.separacao': 'Picking', 'status.expedido': 'Shipped', 'status.entregue': 'Delivered', 'status.cancelado': 'Canceled',
+  'status.separacao': 'Order ready', 'status.expedido': 'Shipped', 'status.entregue': 'Delivered', 'status.cancelado': 'Canceled',
   'pedidos.acao.aguardando_pagamento': 'Confirm order', 'pedidos.acao.aprovado': 'Approve payment',
   'pedidos.acao.separacao': 'Send to picking', 'pedidos.acao.expedido': 'Mark shipped', 'pedidos.acao.entregue': 'Mark delivered',
   'pedidos.acao.cancelado': 'Cancel order',
@@ -622,7 +625,7 @@ Object.assign(es, {
   'pedidos.subtotal': 'Subtotal', 'pedidos.frete': 'Flete', 'pedidos.obs': 'Observación', 'pedidos.salvar': 'Crear pedido',
   'pedidos.voltar': 'Volver', 'pedidos.qtd': 'Cant.', 'pedidos.preco_unit': 'Precio unit.',
   'status.orcamento': 'Presupuesto', 'status.aguardando_pagamento': 'Esperando pago', 'status.aprovado': 'Esperando preparación',
-  'status.separacao': 'En preparación', 'status.expedido': 'Expedido', 'status.entregue': 'Entregado', 'status.cancelado': 'Cancelado',
+  'status.separacao': 'Pedido listo', 'status.expedido': 'Expedido', 'status.entregue': 'Entregado', 'status.cancelado': 'Cancelado',
   'pedidos.acao.aguardando_pagamento': 'Confirmar pedido', 'pedidos.acao.aprovado': 'Aprobar pago',
   'pedidos.acao.separacao': 'Enviar a preparación', 'pedidos.acao.expedido': 'Marcar expedido', 'pedidos.acao.entregue': 'Marcar entregado',
   'pedidos.acao.cancelado': 'Cancelar pedido',
@@ -1253,6 +1256,7 @@ Object.assign(pt, {
   'frete.forma_invalida': 'Forma de entrega inválida.', 'frete.km_rate_invalido': 'Valor por km inválido.',
   'frete.min_invalido': 'Frete mínimo inválido.', 'frete.manual_invalido': 'Informe um valor de frete válido.',
   'pedido.motoboy_obrigatorio': 'Selecione o motoboy.', 'pedido.motoboy_invalido': 'Motoboy inválido.',
+  'pedido.alterar_forma': 'Alterar forma de entrega', 'pedido.hist_forma': 'Histórico de forma de entrega', 'pedido.forma_alterada': 'Forma de entrega alterada.', 'pedido.justificativa': 'Justificativa', 'pedido.justificativa_ph': 'Por que a forma de entrega mudou?', 'pedido.justificativa_obrigatoria': 'Informe a justificativa (mín. 3 caracteres).',
 });
 Object.assign(en, {
   'menu.motoboys': 'Couriers',
@@ -1266,6 +1270,7 @@ Object.assign(en, {
   'frete.forma_invalida': 'Invalid delivery method.', 'frete.km_rate_invalido': 'Invalid per-km rate.',
   'frete.min_invalido': 'Invalid minimum freight.', 'frete.manual_invalido': 'Enter a valid freight value.',
   'pedido.motoboy_obrigatorio': 'Select the courier.', 'pedido.motoboy_invalido': 'Invalid courier.',
+  'pedido.alterar_forma': 'Change delivery method', 'pedido.hist_forma': 'Delivery method history', 'pedido.forma_alterada': 'Delivery method changed.', 'pedido.justificativa': 'Reason', 'pedido.justificativa_ph': 'Why did the delivery method change?', 'pedido.justificativa_obrigatoria': 'Enter the reason (min. 3 characters).',
 });
 Object.assign(es, {
   'menu.motoboys': 'Motoboys',
@@ -1279,6 +1284,7 @@ Object.assign(es, {
   'frete.forma_invalida': 'Forma de entrega inválida.', 'frete.km_rate_invalido': 'Valor por km inválido.',
   'frete.min_invalido': 'Flete mínimo inválido.', 'frete.manual_invalido': 'Ingresa un valor de flete válido.',
   'pedido.motoboy_obrigatorio': 'Selecciona el motoboy.', 'pedido.motoboy_invalido': 'Motoboy inválido.',
+  'pedido.alterar_forma': 'Cambiar forma de entrega', 'pedido.hist_forma': 'Historial de forma de entrega', 'pedido.forma_alterada': 'Forma de entrega cambiada.', 'pedido.justificativa': 'Justificación', 'pedido.justificativa_ph': '¿Por qué cambió la forma de entrega?', 'pedido.justificativa_obrigatoria': 'Informa la justificación (mín. 3 caracteres).',
 });
 
 // --- Refinamento: Logística › Gestão de fretes ---
@@ -1294,6 +1300,7 @@ Object.assign(pt, {
   'gfrete.vazio': 'Nenhum frete de motoboy no período.', 'gfrete.fechar': 'Fechar competência',
   'gfrete.fechar_dica': 'Gera um título a pagar por motoboy com o frete do período.',
   'gfrete.gerar_titulos': 'Gerar títulos', 'gfrete.fechado': '{n} título(s) a pagar gerado(s).',
+  'gfrete.f_nao': 'Não gerados', 'gfrete.f_sim': 'Gerados', 'gfrete.f_todos': 'Todos', 'gfrete.emissao': 'Emissão', 'gfrete.gerar_sel': 'Gerar título dos selecionados', 'gfrete.col_gerado': 'Gerado', 'gfrete.gerado_badge': 'Gerado', 'gfrete.pendente_badge': 'Pendente', 'gfrete.confirmar_titulo': 'Gerar títulos de frete', 'gfrete.confirmar_msg': '{n} frete(s) selecionado(s), total {v}. Gerar os títulos a pagar? Os fretes gerados não poderão ser gerados de novo.', 'frete.selecione_pedidos': 'Selecione ao menos um frete para gerar.',
   'frete.nada_apurar': 'Nenhum frete a apurar no período.',
 });
 Object.assign(en, {
@@ -1308,6 +1315,7 @@ Object.assign(en, {
   'gfrete.vazio': 'No courier freight in the period.', 'gfrete.fechar': 'Close period',
   'gfrete.fechar_dica': 'Generates one payable per courier with the period freight.',
   'gfrete.gerar_titulos': 'Generate payables', 'gfrete.fechado': '{n} payable(s) generated.',
+  'gfrete.f_nao': 'Not generated', 'gfrete.f_sim': 'Generated', 'gfrete.f_todos': 'All', 'gfrete.emissao': 'Issue date', 'gfrete.gerar_sel': 'Generate payable for selected', 'gfrete.col_gerado': 'Generated', 'gfrete.gerado_badge': 'Generated', 'gfrete.pendente_badge': 'Pending', 'gfrete.confirmar_titulo': 'Generate freight payables', 'gfrete.confirmar_msg': '{n} freight(s) selected, total {v}. Generate the payables? Generated freights cannot be generated again.', 'frete.selecione_pedidos': 'Select at least one freight to generate.',
   'frete.nada_apurar': 'No freight to settle in the period.',
 });
 Object.assign(es, {
@@ -1322,6 +1330,7 @@ Object.assign(es, {
   'gfrete.vazio': 'Sin fletes de motoboy en el período.', 'gfrete.fechar': 'Cerrar competencia',
   'gfrete.fechar_dica': 'Genera una cuenta a pagar por motoboy con el flete del período.',
   'gfrete.gerar_titulos': 'Generar cuentas', 'gfrete.fechado': '{n} cuenta(s) a pagar generada(s).',
+  'gfrete.f_nao': 'No generados', 'gfrete.f_sim': 'Generados', 'gfrete.f_todos': 'Todos', 'gfrete.emissao': 'Emisión', 'gfrete.gerar_sel': 'Generar cuenta de los seleccionados', 'gfrete.col_gerado': 'Generado', 'gfrete.gerado_badge': 'Generado', 'gfrete.pendente_badge': 'Pendiente', 'gfrete.confirmar_titulo': 'Generar cuentas de flete', 'gfrete.confirmar_msg': '{n} flete(s) seleccionado(s), total {v}. ¿Generar las cuentas a pagar? Los fletes generados no podrán generarse de nuevo.', 'frete.selecione_pedidos': 'Selecciona al menos un flete para generar.',
   'frete.nada_apurar': 'Sin flete a liquidar en el período.',
 });
 
@@ -1456,9 +1465,9 @@ Object.assign(es, {
 });
 
 // --- Refinamento: Sino de notificações ---
-Object.assign(pt, { 'sino.titulo': 'Notificações', 'sino.vazio': 'Nada pendente. Tudo em dia!', 'sino.titulos_vencidos': 'Títulos a receber vencidos', 'sino.lotes_vencendo': 'Lotes vencendo (30 d)', 'sino.estoque_baixo': 'Produtos com estoque baixo', 'sino.pendencia_baixa': 'Pedidos aguardando baixa (Pix/Boleto)', 'sino.aguardando_separacao': 'Pedidos aguardando separação', 'sino.toast_nova_separacao': 'Novo pedido aguardando separação', 'sino.ver_todas': 'Ver todas', 'notif.crumb': 'Notificações', 'notif.titulo': 'Notificações', 'notif.sub': 'Avisos e pendências da operação', 'notif.vazio': 'Nada pendente. Tudo em dia!' });
-Object.assign(en, { 'sino.titulo': 'Notifications', 'sino.vazio': 'Nothing pending. All caught up!', 'sino.titulos_vencidos': 'Overdue receivables', 'sino.lotes_vencendo': 'Lots expiring (30 d)', 'sino.estoque_baixo': 'Low-stock products', 'sino.pendencia_baixa': 'Orders awaiting receipt (Pix/Boleto)', 'sino.aguardando_separacao': 'Orders awaiting picking', 'sino.toast_nova_separacao': 'New order awaiting picking', 'sino.ver_todas': 'See all', 'notif.crumb': 'Notifications', 'notif.titulo': 'Notifications', 'notif.sub': 'Operation alerts and pending items', 'notif.vazio': 'Nothing pending. All caught up!' });
-Object.assign(es, { 'sino.titulo': 'Notificaciones', 'sino.vazio': 'Nada pendiente. ¡Todo al día!', 'sino.titulos_vencidos': 'Cobranzas vencidas', 'sino.lotes_vencendo': 'Lotes por vencer (30 d)', 'sino.estoque_baixo': 'Productos con stock bajo', 'sino.pendencia_baixa': 'Pedidos esperando cobro (Pix/Boleto)', 'sino.aguardando_separacao': 'Pedidos esperando preparación', 'sino.toast_nova_separacao': 'Nuevo pedido esperando preparación', 'sino.ver_todas': 'Ver todas', 'notif.crumb': 'Notificaciones', 'notif.titulo': 'Notificaciones', 'notif.sub': 'Avisos y pendientes de la operación', 'notif.vazio': '¡Nada pendiente. Todo al día!' });
+Object.assign(pt, { 'sino.titulo': 'Notificações', 'sino.vazio': 'Nada pendente. Tudo em dia!', 'sino.titulos_vencidos': 'Títulos a receber vencidos', 'sino.lotes_vencendo': 'Lotes vencendo (30 d)', 'sino.estoque_baixo': 'Produtos com estoque baixo', 'sino.pendencia_baixa': 'Pedidos aguardando baixa (Pix/Boleto)', 'sino.aguardando_separacao': 'Pedidos aguardando separação', 'sino.toast_nova_separacao': 'Novo pedido aguardando separação', 'sino.ver_todas': 'Ver todas', 'notif.crumb': 'Notificações', 'notif.titulo': 'Notificações', 'notif.sub': 'Avisos e pendências da operação', 'notif.vazio': 'Nada pendente. Tudo em dia!', 'notif.concluir': 'Concluir', 'notif.reabrir': 'Reabrir', 'notif.mostrar_concluidas': 'Mostrar concluídas', 'notif.ocultar_concluidas': 'Ocultar concluídas' });
+Object.assign(en, { 'sino.titulo': 'Notifications', 'sino.vazio': 'Nothing pending. All caught up!', 'sino.titulos_vencidos': 'Overdue receivables', 'sino.lotes_vencendo': 'Lots expiring (30 d)', 'sino.estoque_baixo': 'Low-stock products', 'sino.pendencia_baixa': 'Orders awaiting receipt (Pix/Boleto)', 'sino.aguardando_separacao': 'Orders awaiting picking', 'sino.toast_nova_separacao': 'New order awaiting picking', 'sino.ver_todas': 'See all', 'notif.crumb': 'Notifications', 'notif.titulo': 'Notifications', 'notif.sub': 'Operation alerts and pending items', 'notif.vazio': 'Nothing pending. All caught up!', 'notif.concluir': 'Done', 'notif.reabrir': 'Reopen', 'notif.mostrar_concluidas': 'Show done', 'notif.ocultar_concluidas': 'Hide done' });
+Object.assign(es, { 'sino.titulo': 'Notificaciones', 'sino.vazio': 'Nada pendiente. ¡Todo al día!', 'sino.titulos_vencidos': 'Cobranzas vencidas', 'sino.lotes_vencendo': 'Lotes por vencer (30 d)', 'sino.estoque_baixo': 'Productos con stock bajo', 'sino.pendencia_baixa': 'Pedidos esperando cobro (Pix/Boleto)', 'sino.aguardando_separacao': 'Pedidos esperando preparación', 'sino.toast_nova_separacao': 'Nuevo pedido esperando preparación', 'sino.ver_todas': 'Ver todas', 'notif.crumb': 'Notificaciones', 'notif.titulo': 'Notificaciones', 'notif.sub': 'Avisos y pendientes de la operación', 'notif.vazio': '¡Nada pendiente. Todo al día!', 'notif.concluir': 'Concluir', 'notif.reabrir': 'Reabrir', 'notif.mostrar_concluidas': 'Mostrar concluidas', 'notif.ocultar_concluidas': 'Ocultar concluidas' });
 
 // --- Refinamento: Ações em massa ---
 Object.assign(pt, {
@@ -2407,7 +2416,7 @@ Object.assign(pt, {
   'fenv.cod_rastreio': 'Código de rastreio', 'fenv.cod_rastreio_ph': 'Ex.: BR123456789BR', 'fenv.transportadora': 'Transportadora', 'fenv.transportadora_ph': 'Nome da transportadora', 'fenv.retirada_nota': 'O cliente retira o pedido. Nada a informar aqui.', 'fenv.opcional': 'opcional',
   'ent.titulo': 'Confirmar entrega', 'ent.data': 'Data de entrega', 'ent.confirmar': 'Confirmar entrega',
   'pedido.forma_envio': 'Forma de envio', 'pedido.entregue_em': 'Entregue em', 'pedido.separado_por': 'Separado por', 'pedido.expedido_por': 'Expedido por',
-  'pedido.forma_envio_obrigatoria': 'Informe a forma de envio para expedir o pedido.', 'pedido.data_entrega_obrigatoria': 'Informe a data de entrega.',
+  'pedido.forma_envio_obrigatoria': 'Informe a forma de envio para expedir o pedido.', 'pedido.data_entrega_obrigatoria': 'Informe a data de entrega.', 'pedido.recebido_obrigatorio': 'Informe quem recebeu o pedido.',
   'menu.rel_pedidos': 'Pedidos', 'relped.crumb': 'Relatórios / Pedidos', 'relped.titulo': 'Relatório de pedidos',
   'relped.sub': 'Todos os pedidos do sistema, com filtro de data e status', 'relped.todos': 'Todos os status', 'relped.qtd': 'Pedidos', 'relped.total': 'Valor total',
   'menu.suporte': 'Suporte', 'menu.suporte_sub': 'Central de ajuda', 'menu.principal': 'PRINCIPAL', 'menu.recolher': 'Recolher menu',
@@ -2421,7 +2430,7 @@ Object.assign(pt, {
   'relvc.numero': 'Pedido', 'relvc.cliente': 'Cliente', 'relvc.venda': 'Venda', 'relvc.frete_cobrado': 'Frete cobrado', 'relvc.frete_custo': 'Frete custo', 'relvc.absorvido': 'Frete absorvido', 'relvc.tipo_frete': 'Tipo de frete', 'relvc.total': 'Total',
   'relcp.crumb': 'Relatórios / Contas a pagar', 'relcp.titulo': 'Contas a pagar (contábil)', 'relcp.sub': 'Todos os títulos a pagar do período', 'relcp.categoria': 'Categoria', 'relcp.fornecedor': 'Fornecedor', 'relcp.total': 'Total a pagar', 'relcp.titulos': 'Títulos', 'relcp.anexos': 'Anexos', 'relcp.anexar': 'Anexar', 'relcp.sub_emissao': 'Todos os títulos a pagar do período (por emissão)', 'relcp.emissao_de': 'Emissão de',
   'relcr.crumb': 'Relatórios / Contas a receber', 'relcr.titulo': 'Contas a receber (contábil)', 'relcr.sub_emissao': 'Todos os títulos a receber do período (por emissão)', 'relcr.cliente': 'Cliente', 'relcr.total': 'Total a receber', 'relcr.recebido': 'Recebido',
-  'fretecamp.crumb': 'Logística / Campanhas de frete', 'fretecamp.titulo': 'Campanhas de frete', 'fretecamp.sub': 'Frete grátis, fixo ou desconto por cliente, com período', 'fretecamp.nova': 'Nova campanha de frete', 'fretecamp.cliente': 'Cliente', 'fretecamp.tipo': 'Tipo', 'fretecamp.tipo_gratis': 'Frete grátis', 'fretecamp.tipo_fixo': 'Valor fixo', 'fretecamp.tipo_percentual': 'Desconto %', 'fretecamp.valor_fixo': 'Valor cobrado (R$)', 'fretecamp.valor_pct': 'Desconto (%)', 'fretecamp.vigencia': 'Vigência', 'fretecamp.motivo': 'Motivo', 'fretecamp.motivo_ph': 'Ex.: Cliente VIP', 'fretecamp.vigente': 'Vigente', 'fretecamp.encerrada': 'Encerrada', 'fretecamp.excluir_confirma': 'Excluir esta campanha de frete?', 'fretecamp.toast_criada': 'Campanha de frete criada.',
+  'fretecamp.crumb': 'Logística / Campanhas de frete', 'fretecamp.titulo': 'Campanhas de frete', 'fretecamp.sub': 'Frete grátis, fixo ou desconto por cliente, com período', 'fretecamp.nova': 'Nova campanha de frete', 'fretecamp.cliente': 'Cliente', 'fretecamp.tipo': 'Tipo', 'fretecamp.tipo_gratis': 'Frete grátis', 'fretecamp.tipo_fixo': 'Valor fixo', 'fretecamp.tipo_percentual': 'Desconto %', 'fretecamp.valor_fixo': 'Valor cobrado (R$)', 'fretecamp.valor_pct': 'Desconto (%)', 'fretecamp.vigencia': 'Vigência', 'fretecamp.motivo': 'Motivo', 'fretecamp.motivo_ph': 'Ex.: Cliente VIP', 'fretecamp.vigente': 'Vigente', 'fretecamp.encerrada': 'Encerrada', 'fretecamp.excluir_confirma': 'Excluir esta campanha de frete?', 'fretecamp.toast_criada': 'Campanha de frete criada.', 'fretecamp.editar': 'Editar campanha de frete', 'fretecamp.absorve': 'Motoboy recebe', 'fretecamp.absorve_cheio': 'Custo real (cheio)', 'fretecamp.absorve_cobrado': 'O que o cliente pagou', 'fretecamp.absorve_hint': 'Quanto a empresa paga ao motoboy quando há desconto de frete.',
   'precohist.botao': 'Histórico', 'precohist.titulo': 'Histórico de preços do cliente', 'precohist.sub': 'Preços negociados praticados para este cliente', 'precohist.produto': 'Produto', 'precohist.preco': 'Preço', 'precohist.vigencia': 'Vigência', 'precohist.usuario': 'Usuário', 'precohist.quando': 'Data/hora', 'precohist.vazio': 'Nenhum preço registrado ainda.', 'precohist.fixo': 'Fixo',
   'audit.crumb': 'Configurações / Auditoria', 'audit.titulo': 'Auditoria', 'audit.sub': 'Registro de quem alterou o quê e quando', 'audit.usuario': 'Usuário', 'audit.modulo': 'Módulo', 'audit.acao': 'Ação', 'audit.data': 'Data/hora', 'audit.todos': 'Todos',
   'suporte.titulo': 'Fale com o suporte', 'suporte.subtitulo': 'Relate um erro, uma sugestão ou tire uma dúvida.',
@@ -2448,6 +2457,9 @@ Object.assign(pt, {
   'meuschamados.aberto_em': 'Aberto em', 'meuschamados.vazio': 'Você ainda não abriu chamados.',
   'logout.titulo': 'Sair do sistema?', 'logout.msg': 'Você precisará entrar novamente para acessar.',
   'menu.bancos': 'Bancos', 'cap.cadastros.banco.listar': 'Listar bancos', 'cap.cadastros.banco.gerenciar': 'Criar e editar bancos',
+  'menu.taxas_cartao': 'Taxas de cartão', 'cap.cadastros.taxa_cartao.listar': 'Listar taxas de cartão', 'cap.cadastros.taxa_cartao.gerenciar': 'Criar e editar taxas de cartão',
+  'taxacartao.crumb': 'Cadastros / Financeiro / Taxas de cartão', 'taxacartao.titulo': 'Taxas de cartão', 'taxacartao.sub': 'Percentual cobrado pela operadora por forma de pagamento — preenche a taxa automaticamente na baixa.',
+  'taxacartao.forma': 'Forma de pagamento / bandeira', 'taxacartao.forma_ph': 'Ex: Cartão, Cartão Visa, Cartão Débito', 'taxacartao.percentual': 'Taxa (%)', 'taxacartao.nova': 'Nova taxa', 'taxacartao.editar': 'Editar taxa', 'taxacartao.percentual_invalido': 'Informe um percentual entre 0 e 100.',
   'bancos.crumb': 'Cadastros / Financeiro / Bancos', 'bancos.titulo': 'Bancos', 'bancos.sub': 'Instituições usadas nas contas correntes e conciliação',
   'bancos.novo': 'Novo banco', 'bancos.buscar': 'Buscar banco', 'bancos.nome': 'Banco', 'bancos.nome_ph': 'Ex.: Itaú, Bradesco, Nubank',
   'menu.rel_reembolsos': 'Reembolsos', 'relfav.crumb': 'Relatórios / Reembolsos a favorecidos', 'relfav.titulo': 'Reembolsos a favorecidos',
@@ -2476,7 +2488,7 @@ Object.assign(en, {
   'fenv.cod_rastreio': 'Tracking code', 'fenv.cod_rastreio_ph': 'e.g. BR123456789BR', 'fenv.transportadora': 'Carrier', 'fenv.transportadora_ph': 'Carrier name', 'fenv.retirada_nota': 'The customer picks up the order. Nothing to enter here.', 'fenv.opcional': 'optional',
   'ent.titulo': 'Confirm delivery', 'ent.data': 'Delivery date', 'ent.confirmar': 'Confirm delivery',
   'pedido.forma_envio': 'Shipping method', 'pedido.entregue_em': 'Delivered on', 'pedido.separado_por': 'Picked by', 'pedido.expedido_por': 'Shipped by',
-  'pedido.forma_envio_obrigatoria': 'Set the shipping method to dispatch the order.', 'pedido.data_entrega_obrigatoria': 'Enter the delivery date.',
+  'pedido.forma_envio_obrigatoria': 'Set the shipping method to dispatch the order.', 'pedido.data_entrega_obrigatoria': 'Enter the delivery date.', 'pedido.recebido_obrigatorio': 'Enter who received the order.',
   'menu.rel_pedidos': 'Orders', 'relped.crumb': 'Reports / Orders', 'relped.titulo': 'Orders report',
   'relped.sub': 'All orders in the system, with date and status filters', 'relped.todos': 'All statuses', 'relped.qtd': 'Orders', 'relped.total': 'Total value',
   'menu.suporte': 'Support', 'menu.suporte_sub': 'Help center', 'menu.principal': 'MAIN', 'menu.recolher': 'Collapse menu',
@@ -2490,7 +2502,7 @@ Object.assign(en, {
   'relvc.numero': 'Order', 'relvc.cliente': 'Customer', 'relvc.venda': 'Sale', 'relvc.frete_cobrado': 'Freight charged', 'relvc.frete_custo': 'Freight cost', 'relvc.absorvido': 'Freight absorbed', 'relvc.tipo_frete': 'Freight type', 'relvc.total': 'Total',
   'relcp.crumb': 'Reports / Payables', 'relcp.titulo': 'Payables (accounting)', 'relcp.sub': 'All payable entries in the period', 'relcp.categoria': 'Category', 'relcp.fornecedor': 'Supplier', 'relcp.total': 'Total payable', 'relcp.titulos': 'Entries', 'relcp.anexos': 'Attachments', 'relcp.anexar': 'Attach', 'relcp.sub_emissao': 'All payable entries in the period (by issue date)', 'relcp.emissao_de': 'Issued from',
   'relcr.crumb': 'Reports / Receivables', 'relcr.titulo': 'Receivables (accounting)', 'relcr.sub_emissao': 'All receivable entries in the period (by issue date)', 'relcr.cliente': 'Customer', 'relcr.total': 'Total receivable', 'relcr.recebido': 'Received',
-  'fretecamp.crumb': 'Logistics / Freight campaigns', 'fretecamp.titulo': 'Freight campaigns', 'fretecamp.sub': 'Free, fixed or discounted freight per customer, with a period', 'fretecamp.nova': 'New freight campaign', 'fretecamp.cliente': 'Customer', 'fretecamp.tipo': 'Type', 'fretecamp.tipo_gratis': 'Free freight', 'fretecamp.tipo_fixo': 'Fixed value', 'fretecamp.tipo_percentual': 'Discount %', 'fretecamp.valor_fixo': 'Charged value', 'fretecamp.valor_pct': 'Discount (%)', 'fretecamp.vigencia': 'Validity', 'fretecamp.motivo': 'Reason', 'fretecamp.motivo_ph': 'e.g. VIP customer', 'fretecamp.vigente': 'Active', 'fretecamp.encerrada': 'Ended', 'fretecamp.excluir_confirma': 'Delete this freight campaign?', 'fretecamp.toast_criada': 'Freight campaign created.',
+  'fretecamp.crumb': 'Logistics / Freight campaigns', 'fretecamp.titulo': 'Freight campaigns', 'fretecamp.sub': 'Free, fixed or discounted freight per customer, with a period', 'fretecamp.nova': 'New freight campaign', 'fretecamp.cliente': 'Customer', 'fretecamp.tipo': 'Type', 'fretecamp.tipo_gratis': 'Free freight', 'fretecamp.tipo_fixo': 'Fixed value', 'fretecamp.tipo_percentual': 'Discount %', 'fretecamp.valor_fixo': 'Charged value', 'fretecamp.valor_pct': 'Discount (%)', 'fretecamp.vigencia': 'Validity', 'fretecamp.motivo': 'Reason', 'fretecamp.motivo_ph': 'e.g. VIP customer', 'fretecamp.vigente': 'Active', 'fretecamp.encerrada': 'Ended', 'fretecamp.excluir_confirma': 'Delete this freight campaign?', 'fretecamp.toast_criada': 'Freight campaign created.', 'fretecamp.editar': 'Edit freight campaign', 'fretecamp.absorve': 'Courier is paid', 'fretecamp.absorve_cheio': 'Real cost (full)', 'fretecamp.absorve_cobrado': 'What the customer paid', 'fretecamp.absorve_hint': 'How much the company pays the courier when there is a freight discount.',
   'precohist.botao': 'History', 'precohist.titulo': 'Customer price history', 'precohist.sub': 'Negotiated prices applied to this customer', 'precohist.produto': 'Product', 'precohist.preco': 'Price', 'precohist.vigencia': 'Validity', 'precohist.usuario': 'User', 'precohist.quando': 'Date/time', 'precohist.vazio': 'No prices recorded yet.', 'precohist.fixo': 'Fixed',
   'audit.crumb': 'Settings / Audit log', 'audit.titulo': 'Audit log', 'audit.sub': 'Record of who changed what and when', 'audit.usuario': 'User', 'audit.modulo': 'Module', 'audit.acao': 'Action', 'audit.data': 'Date/time', 'audit.todos': 'All',
   'suporte.titulo': 'Contact support', 'suporte.subtitulo': 'Report a bug, a suggestion or ask a question.',
@@ -2517,6 +2529,9 @@ Object.assign(en, {
   'meuschamados.aberto_em': 'Opened on', 'meuschamados.vazio': 'You have no tickets yet.',
   'logout.titulo': 'Sign out?', 'logout.msg': 'You will need to sign in again to access.',
   'menu.bancos': 'Banks', 'cap.cadastros.banco.listar': 'List banks', 'cap.cadastros.banco.gerenciar': 'Create and edit banks',
+  'menu.taxas_cartao': 'Card fees', 'cap.cadastros.taxa_cartao.listar': 'List card fees', 'cap.cadastros.taxa_cartao.gerenciar': 'Create and edit card fees',
+  'taxacartao.crumb': 'Records / Finance / Card fees', 'taxacartao.titulo': 'Card fees', 'taxacartao.sub': 'Percentage charged by the acquirer per payment method — auto-fills the fee on settlement.',
+  'taxacartao.forma': 'Payment method / brand', 'taxacartao.forma_ph': 'e.g.: Card, Card Visa, Debit', 'taxacartao.percentual': 'Fee (%)', 'taxacartao.nova': 'New fee', 'taxacartao.editar': 'Edit fee', 'taxacartao.percentual_invalido': 'Enter a percentage between 0 and 100.',
   'bancos.crumb': 'Records / Finance / Banks', 'bancos.titulo': 'Banks', 'bancos.sub': 'Institutions used in checking accounts and reconciliation',
   'bancos.novo': 'New bank', 'bancos.buscar': 'Search bank', 'bancos.nome': 'Bank', 'bancos.nome_ph': 'e.g. Itaú, Bradesco, Nubank',
   'menu.rel_reembolsos': 'Reimbursements', 'relfav.crumb': 'Reports / Reimbursements', 'relfav.titulo': 'Reimbursements to payees',
@@ -2545,7 +2560,7 @@ Object.assign(es, {
   'fenv.cod_rastreio': 'Código de seguimiento', 'fenv.cod_rastreio_ph': 'Ej.: BR123456789BR', 'fenv.transportadora': 'Transportista', 'fenv.transportadora_ph': 'Nombre del transportista', 'fenv.retirada_nota': 'El cliente retira el pedido. Nada que informar aquí.', 'fenv.opcional': 'opcional',
   'ent.titulo': 'Confirmar entrega', 'ent.data': 'Fecha de entrega', 'ent.confirmar': 'Confirmar entrega',
   'pedido.forma_envio': 'Forma de envío', 'pedido.entregue_em': 'Entregado el', 'pedido.separado_por': 'Separado por', 'pedido.expedido_por': 'Expedido por',
-  'pedido.forma_envio_obrigatoria': 'Informa la forma de envío para expedir el pedido.', 'pedido.data_entrega_obrigatoria': 'Informa la fecha de entrega.',
+  'pedido.forma_envio_obrigatoria': 'Informa la forma de envío para expedir el pedido.', 'pedido.data_entrega_obrigatoria': 'Informa la fecha de entrega.', 'pedido.recebido_obrigatorio': 'Informa quién recibió el pedido.',
   'menu.rel_pedidos': 'Pedidos', 'relped.crumb': 'Informes / Pedidos', 'relped.titulo': 'Informe de pedidos',
   'relped.sub': 'Todos los pedidos del sistema, con filtro de fecha y estado', 'relped.todos': 'Todos los estados', 'relped.qtd': 'Pedidos', 'relped.total': 'Valor total',
   'menu.suporte': 'Soporte', 'menu.suporte_sub': 'Centro de ayuda', 'menu.principal': 'PRINCIPAL', 'menu.recolher': 'Recoger menú',
@@ -2559,7 +2574,7 @@ Object.assign(es, {
   'relvc.numero': 'Pedido', 'relvc.cliente': 'Cliente', 'relvc.venda': 'Venta', 'relvc.frete_cobrado': 'Flete cobrado', 'relvc.frete_custo': 'Flete costo', 'relvc.absorvido': 'Flete absorbido', 'relvc.tipo_frete': 'Tipo de flete', 'relvc.total': 'Total',
   'relcp.crumb': 'Informes / Cuentas por pagar', 'relcp.titulo': 'Cuentas por pagar (contable)', 'relcp.sub': 'Todos los títulos a pagar del período', 'relcp.categoria': 'Categoría', 'relcp.fornecedor': 'Proveedor', 'relcp.total': 'Total a pagar', 'relcp.titulos': 'Títulos', 'relcp.anexos': 'Adjuntos', 'relcp.anexar': 'Adjuntar', 'relcp.sub_emissao': 'Todos los títulos a pagar del período (por emisión)', 'relcp.emissao_de': 'Emisión desde',
   'relcr.crumb': 'Informes / Cuentas por cobrar', 'relcr.titulo': 'Cuentas por cobrar (contable)', 'relcr.sub_emissao': 'Todos los títulos a cobrar del período (por emisión)', 'relcr.cliente': 'Cliente', 'relcr.total': 'Total a cobrar', 'relcr.recebido': 'Cobrado',
-  'fretecamp.crumb': 'Logística / Campañas de flete', 'fretecamp.titulo': 'Campañas de flete', 'fretecamp.sub': 'Flete gratis, fijo o descuento por cliente, con período', 'fretecamp.nova': 'Nueva campaña de flete', 'fretecamp.cliente': 'Cliente', 'fretecamp.tipo': 'Tipo', 'fretecamp.tipo_gratis': 'Flete gratis', 'fretecamp.tipo_fixo': 'Valor fijo', 'fretecamp.tipo_percentual': 'Descuento %', 'fretecamp.valor_fixo': 'Valor cobrado', 'fretecamp.valor_pct': 'Descuento (%)', 'fretecamp.vigencia': 'Vigencia', 'fretecamp.motivo': 'Motivo', 'fretecamp.motivo_ph': 'Ej.: Cliente VIP', 'fretecamp.vigente': 'Vigente', 'fretecamp.encerrada': 'Finalizada', 'fretecamp.excluir_confirma': '¿Eliminar esta campaña de flete?', 'fretecamp.toast_criada': 'Campaña de flete creada.',
+  'fretecamp.crumb': 'Logística / Campañas de flete', 'fretecamp.titulo': 'Campañas de flete', 'fretecamp.sub': 'Flete gratis, fijo o descuento por cliente, con período', 'fretecamp.nova': 'Nueva campaña de flete', 'fretecamp.cliente': 'Cliente', 'fretecamp.tipo': 'Tipo', 'fretecamp.tipo_gratis': 'Flete gratis', 'fretecamp.tipo_fixo': 'Valor fijo', 'fretecamp.tipo_percentual': 'Descuento %', 'fretecamp.valor_fixo': 'Valor cobrado', 'fretecamp.valor_pct': 'Descuento (%)', 'fretecamp.vigencia': 'Vigencia', 'fretecamp.motivo': 'Motivo', 'fretecamp.motivo_ph': 'Ej.: Cliente VIP', 'fretecamp.vigente': 'Vigente', 'fretecamp.encerrada': 'Finalizada', 'fretecamp.excluir_confirma': '¿Eliminar esta campaña de flete?', 'fretecamp.toast_criada': 'Campaña de flete creada.', 'fretecamp.editar': 'Editar campaña de flete', 'fretecamp.absorve': 'El motoboy recibe', 'fretecamp.absorve_cheio': 'Costo real (completo)', 'fretecamp.absorve_cobrado': 'Lo que pagó el cliente', 'fretecamp.absorve_hint': 'Cuánto paga la empresa al motoboy cuando hay descuento de flete.',
   'precohist.botao': 'Historial', 'precohist.titulo': 'Historial de precios del cliente', 'precohist.sub': 'Precios negociados aplicados a este cliente', 'precohist.produto': 'Producto', 'precohist.preco': 'Precio', 'precohist.vigencia': 'Vigencia', 'precohist.usuario': 'Usuario', 'precohist.quando': 'Fecha/hora', 'precohist.vazio': 'Aún no hay precios registrados.', 'precohist.fixo': 'Fijo',
   'audit.crumb': 'Configuración / Auditoría', 'audit.titulo': 'Auditoría', 'audit.sub': 'Registro de quién cambió qué y cuándo', 'audit.usuario': 'Usuario', 'audit.modulo': 'Módulo', 'audit.acao': 'Acción', 'audit.data': 'Fecha/hora', 'audit.todos': 'Todos',
   'suporte.titulo': 'Contactar soporte', 'suporte.subtitulo': 'Reporta un error, una sugerencia o haz una pregunta.',
@@ -2586,6 +2601,9 @@ Object.assign(es, {
   'meuschamados.aberto_em': 'Abierto el', 'meuschamados.vazio': 'Aún no abriste tickets.',
   'logout.titulo': '¿Salir del sistema?', 'logout.msg': 'Tendrás que iniciar sesión de nuevo para acceder.',
   'menu.bancos': 'Bancos', 'cap.cadastros.banco.listar': 'Listar bancos', 'cap.cadastros.banco.gerenciar': 'Crear y editar bancos',
+  'menu.taxas_cartao': 'Tasas de tarjeta', 'cap.cadastros.taxa_cartao.listar': 'Listar tasas de tarjeta', 'cap.cadastros.taxa_cartao.gerenciar': 'Crear y editar tasas de tarjeta',
+  'taxacartao.crumb': 'Registros / Financiero / Tasas de tarjeta', 'taxacartao.titulo': 'Tasas de tarjeta', 'taxacartao.sub': 'Porcentaje cobrado por la operadora por forma de pago — rellena la tasa automáticamente en la baja.',
+  'taxacartao.forma': 'Forma de pago / bandera', 'taxacartao.forma_ph': 'Ej: Tarjeta, Tarjeta Visa, Débito', 'taxacartao.percentual': 'Tasa (%)', 'taxacartao.nova': 'Nueva tasa', 'taxacartao.editar': 'Editar tasa', 'taxacartao.percentual_invalido': 'Ingrese un porcentaje entre 0 y 100.',
   'bancos.crumb': 'Registros / Finanzas / Bancos', 'bancos.titulo': 'Bancos', 'bancos.sub': 'Instituciones usadas en las cuentas corrientes y conciliación',
   'bancos.novo': 'Nuevo banco', 'bancos.buscar': 'Buscar banco', 'bancos.nome': 'Banco', 'bancos.nome_ph': 'Ej.: Itaú, Bradesco, Nubank',
   'menu.rel_reembolsos': 'Reembolsos', 'relfav.crumb': 'Informes / Reembolsos a favorecidos', 'relfav.titulo': 'Reembolsos a favorecidos',
@@ -2602,7 +2620,7 @@ Object.assign(pt, {
   'pedido.voltar_orcamento_confirma': 'Voltar este pedido para orçamento? O título a receber gerado será removido.',
   'pedido.voltar_baixa_antes': 'Não dá para voltar: o pagamento já foi baixado. Cancele a baixa no Financeiro antes.',
   'pedido.financeiro': 'Financeiro', 'pedido.vence': 'vence', 'pedido.baixado_em': 'baixado em',
-  'pedido.baixado': 'Baixado', 'pedido.em_aberto': 'Em aberto', 'pedido.recebido_por': 'Recebido por',
+  'pedido.baixado': 'Baixado', 'pedido.em_aberto': 'Em aberto', 'pedido.recebido_por': 'Recebido por', 'pedido.abrir_titulo': 'Abrir título',
   'fin.cancelar_baixa_titulo': 'Cancelar baixa?',
   'fin.cancelar_baixa_aviso': 'A baixa do título {n} de {v} será desfeita e o título volta para em aberto.',
   'ent.recebido_por': 'Recebido por', 'ent.recebido_por_ph': 'Nome de quem recebeu (opcional)',
@@ -2619,7 +2637,7 @@ Object.assign(en, {
   'pedido.voltar_orcamento_confirma': 'Move this order back to quote? The generated receivable will be removed.',
   'pedido.voltar_baixa_antes': "Can't go back: the payment was already settled. Cancel the settlement in Finance first.",
   'pedido.financeiro': 'Finance', 'pedido.vence': 'due', 'pedido.baixado_em': 'settled on',
-  'pedido.baixado': 'Settled', 'pedido.em_aberto': 'Open', 'pedido.recebido_por': 'Received by',
+  'pedido.baixado': 'Settled', 'pedido.em_aberto': 'Open', 'pedido.recebido_por': 'Received by', 'pedido.abrir_titulo': 'Open entry',
   'fin.cancelar_baixa_titulo': 'Cancel settlement?',
   'fin.cancelar_baixa_aviso': 'The settlement of title {n} for {v} will be undone and the title goes back to open.',
   'ent.recebido_por': 'Received by', 'ent.recebido_por_ph': "Receiver's name (optional)",
@@ -2636,7 +2654,7 @@ Object.assign(es, {
   'pedido.voltar_orcamento_confirma': '¿Volver este pedido a presupuesto? El título a cobrar generado será eliminado.',
   'pedido.voltar_baixa_antes': 'No se puede volver: el pago ya fue conciliado. Cancela la baja en Finanzas primero.',
   'pedido.financeiro': 'Finanzas', 'pedido.vence': 'vence', 'pedido.baixado_em': 'pagado el',
-  'pedido.baixado': 'Pagado', 'pedido.em_aberto': 'Abierto', 'pedido.recebido_por': 'Recibido por',
+  'pedido.baixado': 'Pagado', 'pedido.em_aberto': 'Abierto', 'pedido.recebido_por': 'Recibido por', 'pedido.abrir_titulo': 'Abrir título',
   'fin.cancelar_baixa_titulo': '¿Cancelar la baja?',
   'fin.cancelar_baixa_aviso': 'La baja del título {n} de {v} se deshará y el título vuelve a abierto.',
   'ent.recebido_por': 'Recibido por', 'ent.recebido_por_ph': 'Nombre de quien recibió (opcional)',
@@ -2689,6 +2707,8 @@ Object.assign(pt, {
   'conf.toast_confirmado': 'Recebimento conferido', 'conf.toast_desfeito': 'Conferência desfeita',
   'analise.crumb': 'Comercial / Análise de vendas', 'analise.titulo': 'Análise de vendas', 'analise.sub': 'Ranking de vendas por produto, categoria ou cliente',
   'analise.item': 'Item', 'analise.produtos': 'Produtos', 'analise.categorias': 'Categorias', 'analise.clientes_valor': 'Clientes · valor', 'analise.clientes_pedidos': 'Clientes · pedidos',
+  'analise.grafico': 'Gráfico', 'analise.g_barras': 'Barras', 'analise.g_pizza': 'Pizza', 'analise.g_linha': 'Linha',
+  'menu.descontos': 'Descontos por total', 'descped.crumb': 'Comercial / Descontos por total do pedido', 'descped.titulo': 'Descontos por total do pedido', 'descped.sub': 'Desconto aplicado quando o total dos produtos atinge um valor mínimo, com período', 'descped.nova': 'Novo desconto', 'descped.editar': 'Editar desconto', 'descped.desconto': 'Desconto', 'descped.minimo': 'Mínimo', 'descped.minimo_lbl': 'Subtotal mínimo do pedido (R$)', 'descped.tipo': 'Tipo', 'descped.tipo_pct': 'Percentual', 'descped.tipo_fixo': 'Valor fixo', 'descped.valor_pct': 'Desconto (%)', 'descped.valor_fixo': 'Valor (R$)', 'descped.excluir_confirma': 'Excluir este desconto?', 'descped.toast_criada': 'Desconto salvo.',
   'nota.itens': 'Produtos da nota', 'nota.add_produto': 'Adicionar produto', 'nota.subtotal': 'Subtotal',
   'toastreceb.titulo': 'Nota lançada', 'toastreceb.corpo': '{n} produto(s) de {f} · {v} pendente(s) de recebimento no Estoque',
 });
@@ -2708,6 +2728,8 @@ Object.assign(en, {
   'conf.toast_confirmado': 'Receipt reconciled', 'conf.toast_desfeito': 'Reconciliation undone',
   'analise.crumb': 'Sales / Sales analysis', 'analise.titulo': 'Sales analysis', 'analise.sub': 'Sales ranking by product, category or customer',
   'analise.item': 'Item', 'analise.produtos': 'Products', 'analise.categorias': 'Categories', 'analise.clientes_valor': 'Customers · value', 'analise.clientes_pedidos': 'Customers · orders',
+  'analise.grafico': 'Chart', 'analise.g_barras': 'Bars', 'analise.g_pizza': 'Pie', 'analise.g_linha': 'Line',
+  'menu.descontos': 'Order discounts', 'descped.crumb': 'Sales / Order total discounts', 'descped.titulo': 'Order total discounts', 'descped.sub': 'Discount applied when the products total reaches a minimum, with a period', 'descped.nova': 'New discount', 'descped.editar': 'Edit discount', 'descped.desconto': 'Discount', 'descped.minimo': 'Minimum', 'descped.minimo_lbl': 'Minimum order subtotal', 'descped.tipo': 'Type', 'descped.tipo_pct': 'Percentage', 'descped.tipo_fixo': 'Fixed value', 'descped.valor_pct': 'Discount (%)', 'descped.valor_fixo': 'Value', 'descped.excluir_confirma': 'Delete this discount?', 'descped.toast_criada': 'Discount saved.',
   'nota.itens': 'Note products', 'nota.add_produto': 'Add product', 'nota.subtotal': 'Subtotal',
   'toastreceb.titulo': 'Note created', 'toastreceb.corpo': '{n} product(s) from {f} · {v} pending receipt in Stock',
 });
@@ -2727,6 +2749,8 @@ Object.assign(es, {
   'conf.toast_confirmado': 'Cobro conciliado', 'conf.toast_desfeito': 'Conciliación deshecha',
   'analise.crumb': 'Comercial / Análisis de ventas', 'analise.titulo': 'Análisis de ventas', 'analise.sub': 'Ranking de ventas por producto, categoría o cliente',
   'analise.item': 'Ítem', 'analise.produtos': 'Productos', 'analise.categorias': 'Categorías', 'analise.clientes_valor': 'Clientes · valor', 'analise.clientes_pedidos': 'Clientes · pedidos',
+  'analise.grafico': 'Gráfico', 'analise.g_barras': 'Barras', 'analise.g_pizza': 'Tarta', 'analise.g_linha': 'Línea',
+  'menu.descontos': 'Descuentos por total', 'descped.crumb': 'Comercial / Descuentos por total del pedido', 'descped.titulo': 'Descuentos por total del pedido', 'descped.sub': 'Descuento aplicado cuando el total de productos alcanza un mínimo, con período', 'descped.nova': 'Nuevo descuento', 'descped.editar': 'Editar descuento', 'descped.desconto': 'Descuento', 'descped.minimo': 'Mínimo', 'descped.minimo_lbl': 'Subtotal mínimo del pedido', 'descped.tipo': 'Tipo', 'descped.tipo_pct': 'Porcentaje', 'descped.tipo_fixo': 'Valor fijo', 'descped.valor_pct': 'Descuento (%)', 'descped.valor_fixo': 'Valor', 'descped.excluir_confirma': '¿Eliminar este descuento?', 'descped.toast_criada': 'Descuento guardado.',
   'nota.itens': 'Productos de la nota', 'nota.add_produto': 'Agregar producto', 'nota.subtotal': 'Subtotal',
   'toastreceb.titulo': 'Nota emitida', 'toastreceb.corpo': '{n} producto(s) de {f} · {v} pendiente(s) de recepción en Stock',
 });

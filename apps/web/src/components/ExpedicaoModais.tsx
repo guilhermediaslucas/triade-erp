@@ -84,12 +84,12 @@ export function ModalDataEntrega({ numero, inicial, onFechar, onConfirmar }: {
     <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 420 }}>
       <h2>{t('ent.titulo')} · {numeroPedido(numero)}</h2>
       <label className="campo">{t('ent.data')}<input type="date" value={data} onChange={(e) => setData(e.target.value)} autoFocus /></label>
-      <label className="campo">{t('ent.recebido_por')} <span className="muted">({t('fenv.opcional')})</span>
+      <label className="campo">{t('ent.recebido_por')}<b className="obrig"> *</b>
         <input value={recebidoPor} onChange={(e) => setRecebidoPor(e.target.value)} placeholder={t('ent.recebido_por_ph')} />
       </label>
       <div className="modal-acoes">
         <button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button>
-        <button className="btn-primary" disabled={!data} onClick={() => onConfirmar(data, recebidoPor.trim())}>{t('ent.confirmar')}</button>
+        <button className="btn-primary" disabled={!data || !recebidoPor.trim()} onClick={() => onConfirmar(data, recebidoPor.trim())}>{t('ent.confirmar')}</button>
       </div>
     </div></div>
   );

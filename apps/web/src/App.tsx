@@ -71,6 +71,8 @@ import { PlanoContas } from './pages/PlanoContas.js';
 import { RelDRECompetencia } from './pages/RelDRECompetencia.js';
 import { TiposDocumento } from './pages/TiposDocumento.js';
 import { Bancos } from './pages/Bancos.js';
+import { TaxasCartao } from './pages/TaxasCartao.js';
+import { DescontosPedido } from './pages/DescontosPedido.js';
 import { Layout } from './components/Layout.js';
 import { ScrollToTop } from './components/ScrollToTop.js';
 import { ProtectedRoute } from './components/ProtectedRoute.js';
@@ -106,6 +108,7 @@ export function App() {
                 <Route path="/comercial/pedidos/:id/romaneio" element={<ProtectedRoute capability="comercial.pedido.listar"><Romaneio /></ProtectedRoute>} />
                 <Route path="/comercial/pedidos/:id" element={<Protegida cap="comercial.pedido.listar"><PedidoDetalhe /></Protegida>} />
                 <Route path="/comercial/precos" element={<Protegida cap="comercial.preco.listar"><TabelaPreco /></Protegida>} />
+                <Route path="/comercial/descontos" element={<Protegida cap="comercial.preco.listar"><DescontosPedido /></Protegida>} />
                 <Route path="/comercial/crm" element={<Protegida cap="comercial.crm.ver"><Crm /></Protegida>} />
                 <Route path="/comercial/metas" element={<Protegida cap="comercial.meta.ver"><Metas /></Protegida>} />
                 <Route path="/comercial/analise" element={<Protegida cap="comercial.analise.ver"><AnaliseVendas /></Protegida>} />
@@ -146,6 +149,7 @@ export function App() {
                 <Route path="/financeiro/dre" element={<Protegida cap="financeiro.fluxo.ver"><RelDRECompetencia /></Protegida>} />
                 <Route path="/cadastros/tipos-documento" element={<Protegida cap="cadastros.tipodoc.listar"><TiposDocumento /></Protegida>} />
                 <Route path="/cadastros/bancos" element={<Protegida cap="cadastros.banco.listar"><Bancos /></Protegida>} />
+                <Route path="/cadastros/taxas-cartao" element={<Protegida cap="cadastros.taxa_cartao.listar"><TaxasCartao /></Protegida>} />
                 <Route path="/cadastros/condicoes" element={<Protegida cap="cadastros.condicao.listar"><Condicoes /></Protegida>} />
                 <Route path="/cadastros/clientes" element={<Protegida cap="cadastros.cliente.listar"><Clientes /></Protegida>} />
                 <Route path="/cadastros/fornecedores" element={<Protegida cap="cadastros.fornecedor.listar"><Fornecedores /></Protegida>} />

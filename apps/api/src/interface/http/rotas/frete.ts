@@ -39,8 +39,22 @@ export function rotasFrete(deps: Dependencias): Router {
       res.status(201).json({ ok: true });
     } catch (e) { tratarErro(res, e); }
   });
+  r.put('/frete/campanhas/:id', aut, az('logistica.frete.gerenciar'), async (req, res: Response) => {
+    try {
+      const s = sch(req); const b = req.body ?? {};
+      await deps.freteCampanhasService.editar(s, req.params.id!, b);
+      const cli = b.clienteId ? await deps.clientesRepo.buscarPorId(s, b.clienteId).catch(() => null) : null;
+      auditar(req, { modulo: 'Logística', entidade: 'CampanhaFrete', referencia: cli?.nome ?? 'geral',
+        descricao: `Editou campanha de frete de ${cli?.nome ?? 'todos os clientes'} (${dataBR(b.de)} – ${dataBR(b.ate)})` });
+      res.json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
+  });
   r.delete('/frete/campanhas/:id', aut, az('logistica.frete.gerenciar'), async (req, res: Response) => {
-    try { await deps.freteCampanhasService.remover(sch(req), req.params.id!); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+    try {
+      await deps.freteCampanhasService.remover(sch(req), req.params.id!);
+      auditar(req, { modulo: 'Logística', entidade: 'CampanhaFrete', referencia: req.params.id!, descricao: 'Removeu uma campanha de frete' });
+      res.json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
   });
   // Frete cobrado do cliente (campanha vigente aplicada ao custo) — p/ o Novo pedido exibir o total certo.
   r.get('/frete/cobrado', aut, az('comercial.pedido.criar'), async (req, res: Response) => {

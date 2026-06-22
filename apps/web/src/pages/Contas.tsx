@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
@@ -30,6 +31,9 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   const toast = useToast();
   const capBase = tipo === 'receber' ? 'financeiro.receber' : 'financeiro.pagar';
   const pode = temCapability(capBase + '.gerenciar');
+  const [params, setParams] = useSearchParams();
+  const [sortCol, setSortCol] = useState<string>('');
+  const [sortDir, setSortDir] = useState<1 | -1>(1);
   const [itens, setItens] = useState<Titulo[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [novo, setNovo] = useState(false);
@@ -212,6 +216,46 @@ export function Contas({ tipo }: { tipo: Tipo }) {
   // Colunas efetivamente visíveis, na ordem do usuário, sem as ocultas e sem forma/frete fora de "receber".
   const colsVisiveis = ordem.map((k) => colByKey[k]).filter((c): c is ColDef => !!c && (!c.soReceber || tipo === 'receber') && !(c.hideable && oc(c.chave)));
 
+  // Ordenação ao clicar no cabeçalho da coluna (alterna asc/desc).
+  function toggleSort(c: string) {
+    if (sortCol === c) setSortDir((d) => (d === 1 ? -1 : 1));
+    else { setSortCol(c); setSortDir(1); }
+  }
+  const ordenados = useMemo(() => {
+    if (!sortCol) return filtrados;
+    const col = colByKey[sortCol];
+    if (!col) return filtrados;
+    const arr = [...filtrados];
+    arr.sort((a, b) => {
+      const va = col.exp(a), vb = col.exp(b);
+      const r = (typeof va === 'number' && typeof vb === 'number')
+        ? va - vb
+        : String(va).localeCompare(String(vb), 'pt-BR', { numeric: true });
+      return r * sortDir;
+    });
+    return arr;
+  }, [filtrados, sortCol, sortDir]);
+
+  // Abrir um título específico vindo do pedido (?titulo=<id>&baixar=1): abre direto na baixa.
+  const abriuParamRef = useRef(false);
+  useEffect(() => {
+    const tituloParam = params.get('titulo');
+    if (abriuParamRef.current || !tituloParam || itens.length === 0) return;
+    const tit = itens.find((x) => x.id === tituloParam);
+    if (!tit) return;
+    abriuParamRef.current = true;
+    if (params.get('baixar') === '1' && tit.status === 'aberto' && pode && !tit.previsto) setBaixar(tit);
+    else setVerT(tit);
+    setParams({}, { replace: true });
+    /* eslint-disable-next-line */
+  }, [itens, params]);
+
+  async function excluirUm(tt: Titulo) {
+    if (!window.confirm(t('bulk.confirma_excluir').replace('{n}', '1'))) return;
+    try { await api.del('/financeiro/' + tipo + '/' + tt.id, token!); await carregar(); toast(t('bulk.excluidos').replace('{n}', '1')); }
+    catch (e) { const k = (e as ErroApi).chaveI18n; setErro(k); toast(t(k), 'erro'); }
+  }
+
   // Cabeçalho de coluna reordenável: arrasta para mudar de lugar + alça para redimensionar.
   function thCol(c: ColDef) {
     return (
@@ -227,7 +271,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
         style={{ position: 'relative', cursor: 'grab', ...(larguras[c.chave] ? { width: larguras[c.chave] } : {}) }}
         title={t('fin.col_arraste')}
       >
-        {c.label}
+        <span onClick={(e) => { e.stopPropagation(); toggleSort(c.chave); }} style={{ cursor: 'pointer' }}>{c.label}{sortCol === c.chave ? (sortDir === 1 ? ' ▲' : ' ▼') : ''}</span>
         <span className="col-resize" onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); iniciarResize(c.chave, e.clientX, e.currentTarget as HTMLElement); }} />
       </th>
     );
@@ -388,7 +432,7 @@ export function Contas({ tipo }: { tipo: Tipo }) {
         </tr></thead>
         <tbody>
           {filtrados.length === 0 && <tr><td colSpan={(pode ? 1 : 0) + colsVisiveis.length + 2} className="vazio">{t('common.nenhum')}</td></tr>}
-          {filtrados.map((tt) => { return (
+          {ordenados.map((tt) => { return (
             <tr key={tt.id} className={(sel.has(tt.id) ? 'linha-sel ' : '') + (tt.previsto ? 'linha-previsto' : '')} style={{ cursor: 'pointer' }} onDoubleClick={() => setVerT(tt)} title={t('fin.ver_detalhe')}>
               {pode && <td><input type="checkbox" checked={sel.has(tt.id)} onChange={() => toggle(tt.id)} /></td>}
               {colsVisiveis.map((c) => <td key={c.chave} data-label={c.label}>{c.cell(tt)}</td>)}
@@ -428,14 +472,27 @@ export function Contas({ tipo }: { tipo: Tipo }) {
       )}
       {baixar && <ModalBaixa tipo={tipo} titulos={[baixar]} onFechar={() => setBaixar(null)} onSalvo={() => { setBaixar(null); carregar(); toast(t('fin.toast_baixado')); }} />}
       {baixaMassa && <ModalBaixa tipo={tipo} titulos={abertosSel} onFechar={() => setBaixaMassa(false)} onSalvo={(n) => { setBaixaMassa(false); carregar(); toast(t('bulk.baixados').replace('{n}', String(n))); }} />}
-      {verT && <ModalVerTitulo tipo={tipo} titulo={verT} onFechar={() => setVerT(null)} />}
+      {verT && <ModalVerTitulo tipo={tipo} titulo={verT} pode={pode}
+        onEditar={() => { const x = verT; setVerT(null); setEditar(x); }}
+        onBaixar={() => { const x = verT; setVerT(null); setBaixar(x); }}
+        onParcelar={() => { const x = verT; setVerT(null); abrirParcelar(x, 'dividir'); }}
+        onMultiplicar={() => { const x = verT; setVerT(null); setMultiplicarT(x); }}
+        onReembolso={() => { const x = verT; setVerT(null); setReembolsoT(x); }}
+        onExcluir={() => { const x = verT; setVerT(null); excluirUm(x); }}
+        onCancelarBaixa={() => { const x = verT; setVerT(null); setCancelarT(x); }}
+        onFechar={() => setVerT(null)} />}
       {anexoT && <AnexosTitulo tituloId={anexoT.id} numero={anexoT.numero} podeGerenciar={pode} onFechar={() => setAnexoT(null)} />}
     </div>
   );
 }
 
-// Janela de detalhe do título (duplo-clique na linha), somente leitura.
-function ModalVerTitulo({ tipo, titulo, onFechar }: { tipo: Tipo; titulo: Titulo; onFechar: () => void; }) {
+// Janela de detalhe do título (duplo-clique na linha): mostra os dados e oferece as
+// ações (editar/baixar/parcelar/multiplicar/reembolso/excluir/cancelar baixa).
+function ModalVerTitulo({ tipo, titulo, pode, onEditar, onBaixar, onParcelar, onMultiplicar, onReembolso, onExcluir, onCancelarBaixa, onFechar }: {
+  tipo: Tipo; titulo: Titulo; pode: boolean;
+  onEditar: () => void; onBaixar: () => void; onParcelar: () => void; onMultiplicar: () => void;
+  onReembolso: () => void; onExcluir: () => void; onCancelarBaixa: () => void; onFechar: () => void;
+}) {
   const { t } = useI18n();
   const sit = situacao(titulo);
   const fmtData = (d: string) => new Date(d + 'T00:00:00').toLocaleDateString('pt-BR');
@@ -462,6 +519,20 @@ function ModalVerTitulo({ tipo, titulo, onFechar }: { tipo: Tipo; titulo: Titulo
       {titulo.numeroDocumento && linha(t('fin.num_documento'), titulo.numeroDocumento)}
       {titulo.emissao && linha(t('fin.emissao'), fmtData(titulo.emissao))}
       {linha(t('fin.origem'), titulo.origem === 'pedido' ? t('fin.do_pedido') : titulo.origem)}
+      {pode && (
+        <div className="det-acoes" style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 14 }}>
+          {titulo.status === 'aberto' ? (<>
+            {titulo.origem === 'manual' && <button className="btn-ghost" onClick={onEditar}><Ic name="i-edit" className="sm" /> {t('common.editar')}</button>}
+            {!titulo.previsto && <button className="btn-primary" onClick={onBaixar}><Ic name="i-check" className="sm" /> {t('fin.baixar')}</button>}
+            <button className="btn-ghost" onClick={onParcelar}><Ic name="i-rows" className="sm" /> {t('parcelar.acao')}</button>
+            <button className="btn-ghost" onClick={onMultiplicar}><Ic name="i-plus" className="sm" /> {t('parcelar.multiplicar')}</button>
+            {tipo === 'pagar' && <button className="btn-ghost" onClick={onReembolso}><Ic name="i-user" className="sm" /> {t('fin.reembolso')}</button>}
+            <button className="btn-danger" onClick={onExcluir}><Ic name="i-trash" className="sm" /> {t('common.excluir')}</button>
+          </>) : (
+            <button className="btn-danger" onClick={onCancelarBaixa}><Ic name="i-x" className="sm" /> {t('fin.cancelar_baixa')}</button>
+          )}
+        </div>
+      )}
       <div className="modal-acoes"><button className="btn-primary" onClick={onFechar}>{t('common.fechar')}</button></div>
     </div></div>
   );
@@ -658,6 +729,7 @@ function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos:
   const [desconto, setDesconto] = useState('0'); const [multa, setMulta] = useState('0'); const [juros, setJuros] = useState('0');
   const [taxaCartao, setTaxaCartao] = useState('0');
   const [contas, setContas] = useState<{ id: string; nome: string }[]>([]);
+  const [taxas, setTaxas] = useState<{ forma: string; percentual: number; ativo: boolean }[]>([]);
   const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
   const totalSel = titulos.reduce((a, x) => a + x.valor, 0);
   const massa = titulos.length > 1;
@@ -666,11 +738,16 @@ function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos:
   const nT = Math.max(0, Number(taxaCartao) || 0);
   const totalBaixar = Math.round((totalSel - nD + nM + nJ) * 100) / 100;
   const ehCartao = forma === 'Cartão';
+  // Taxa cadastrada para a forma selecionada (auto-preenche o campo de taxa).
+  const taxaForma = taxas.find((x) => x.ativo && x.forma.toLowerCase() === forma.toLowerCase());
+  const temTaxa = !massa && (!!taxaForma || ehCartao);
   const liquidoCartao = Math.round((totalBaixar - nT) * 100) / 100; // líquido recebido após a taxa da operadora
   // Pix e Boleto entram numa conta bancária — selecionar o banco é obrigatório.
   const contaObrig = forma === 'Pix' || forma === 'Boleto';
   const contaFaltando = contaObrig && !contaId;
-  useEffect(() => { if (temCapability('cadastros.conta.listar')) api.get<{ id: string; nome: string }[]>('/contas-correntes', token!).then(setContas).catch(() => {}); /* eslint-disable-next-line */ }, []);
+  useEffect(() => { if (temCapability('cadastros.conta.listar')) api.get<{ id: string; nome: string }[]>('/contas-correntes', token!).then(setContas).catch(() => {}); api.get<{ forma: string; percentual: number; ativo: boolean }[]>('/taxas-cartao', token!).then(setTaxas).catch(() => {}); /* eslint-disable-next-line */ }, []);
+  // Ao trocar a forma de pagamento, preenche a taxa automaticamente se houver uma cadastrada.
+  useEffect(() => { if (taxaForma) setTaxaCartao(String(Math.round(totalBaixar * taxaForma.percentual) / 100)); /* eslint-disable-next-line */ }, [forma, taxas]);
   async function salvar() {
     setErro(null);
     if (contaFaltando) { setErro('fin.conta_obrigatoria'); return; }
@@ -681,7 +758,7 @@ function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos:
       // Composição só se aplica a baixa individual; em massa vai sem ajustes.
       const corpo = massa
         ? { formaPagamento: forma, contaCorrenteId: contaId || null, dataBaixa }
-        : { formaPagamento: forma, contaCorrenteId: contaId || null, dataBaixa, desconto: nD, multa: nM, juros: nJ, taxaCartao: ehCartao ? nT : 0 };
+        : { formaPagamento: forma, contaCorrenteId: contaId || null, dataBaixa, desconto: nD, multa: nM, juros: nJ, taxaCartao: temTaxa ? nT : 0 };
       try {
         const r = await api.patch<{ pedidoLiberado: number | null }>('/financeiro/' + tipo + '/' + tt.id + '/baixar', corpo, token!); ok++;
         if (r?.pedidoLiberado) liberados.push({ numero: r.pedidoLiberado, cliente: tt.pessoaNome, valor: tt.valor });
@@ -716,8 +793,8 @@ function ModalBaixa({ tipo, titulos, onFechar, onSalvo }: { tipo: Tipo; titulos:
           <span className="muted">{t('fin.total_baixar')}</span>
           <b style={{ fontSize: 20, color: totalBaixar < 0 ? '#e1483b' : 'var(--accent)' }}>{moeda(totalBaixar)}</b>
         </div>
-        {ehCartao && (<>
-          <label className="campo" style={{ marginTop: 6 }}>{t('fin.taxa_cartao')}<MoedaInput value={taxaCartao} onChange={(n) => setTaxaCartao(n ? String(n) : '')} /></label>
+        {temTaxa && (<>
+          <label className="campo" style={{ marginTop: 6 }}>{t('fin.taxa_cartao')}{taxaForma ? <span className="hint"> · {taxaForma.percentual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}%</span> : null}<MoedaInput value={taxaCartao} onChange={(n) => setTaxaCartao(n ? String(n) : '')} /></label>
           <div className="tl-row"><span className="muted">{t('fin.liquido_cartao')}</span><b style={{ color: '#16a34a' }}>{moeda(liquidoCartao)}</b></div>
         </>)}
       </>)}

@@ -26,9 +26,11 @@ import { FormasEntregaService } from '../application/cadastro/FormasEntregaServi
 import { SqlTipoDocumentoRepository } from '../infra/repositories/SqlTipoDocumentoRepository.js';
 import { TiposDocumentoService } from '../application/cadastro/TiposDocumentoService.js';
 import { SqlBancoRepository } from '../infra/repositories/SqlBancoRepository.js';
+import { SqlFormaPagamentoTaxaRepository } from '../infra/repositories/SqlFormaPagamentoTaxaRepository.js';
 import { SqlPreferenciaUsuarioRepository } from '../infra/repositories/SqlPreferenciaUsuarioRepository.js';
 import { PreferenciasService } from '../application/preferencia/PreferenciasService.js';
 import { BancosService } from '../application/cadastro/BancosService.js';
+import { TaxasCartaoService } from '../application/financeiro/TaxasCartaoService.js';
 import { SqlFavorecidoRepository } from '../infra/repositories/SqlFavorecidoRepository.js';
 import { FavorecidosService } from '../application/cadastro/FavorecidosService.js';
 import { SqlClienteRepository } from '../infra/repositories/SqlClienteRepository.js';
@@ -49,6 +51,8 @@ import { CondicoesService } from '../application/comercial/CondicoesService.js';
 import { SqlFreteConfigRepository } from '../infra/repositories/SqlFreteConfigRepository.js';
 import { FreteService } from '../application/comercial/FreteService.js';
 import { SqlFreteCampanhaRepository } from '../infra/repositories/SqlFreteCampanhaRepository.js';
+import { SqlDescontoPedidoRepository } from '../infra/repositories/SqlDescontoPedidoRepository.js';
+import { DescontosPedidoService } from '../application/comercial/DescontosPedidoService.js';
 import { FreteCampanhasService } from '../application/comercial/FreteCampanhasService.js';
 import { SqlGestaoFreteRepository } from '../infra/repositories/SqlGestaoFreteRepository.js';
 import { GestaoFretesService } from '../application/comercial/GestaoFretesService.js';
@@ -115,6 +119,7 @@ export function montarDependencias() {
   const emailSender = new ResendEmailSender(env.resendApiKey, env.emailFrom);
   const resetSenhaRepo = new SqlResetSenhaRepository(AppDataSource);
   const freteCampanhaRepo = new SqlFreteCampanhaRepository(AppDataSource);
+  const descontoPedidoRepo = new SqlDescontoPedidoRepository(AppDataSource);
   const configFiscalRepo = new SqlConfigFiscalRepository(AppDataSource);
   const r2Storage = new R2Storage(env.r2AccountId, env.r2AccessKeyId, env.r2SecretAccessKey, env.r2Bucket);
 
@@ -144,6 +149,7 @@ export function montarDependencias() {
     formasEntregaService: new FormasEntregaService(new SqlFormaEntregaRepository(AppDataSource)),
     tiposDocumentoService: new TiposDocumentoService(new SqlTipoDocumentoRepository(AppDataSource)),
     bancosService: new BancosService(new SqlBancoRepository(AppDataSource)),
+    taxasCartaoService: new TaxasCartaoService(new SqlFormaPagamentoTaxaRepository(AppDataSource)),
     preferenciasService: new PreferenciasService(new SqlPreferenciaUsuarioRepository(AppDataSource)),
     favorecidosService: new FavorecidosService(favorecidosRepo),
     produtosService: new ProdutosService(produtosRepo),
@@ -154,8 +160,9 @@ export function montarDependencias() {
     precosService: new PrecosService(precoBaseRepo, precoClienteRepo),
     freteService: new FreteService(freteConfigRepo, empresasRepo),
     gestaoFretesService: new GestaoFretesService(new SqlGestaoFreteRepository(AppDataSource), tituloRepo),
-    pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, precoClienteRepo, clientesRepo, estoqueRepo, etiquetaRepo, tituloRepo, condicaoRepo, motoboysRepo, usuariosRepo, freteCampanhaRepo),
+    pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, precoClienteRepo, clientesRepo, estoqueRepo, etiquetaRepo, tituloRepo, condicaoRepo, motoboysRepo, usuariosRepo, freteCampanhaRepo, descontoPedidoRepo),
     freteCampanhasService: new FreteCampanhasService(freteCampanhaRepo),
+    descontosPedidoService: new DescontosPedidoService(descontoPedidoRepo),
     condicoesService: new CondicoesService(condicaoRepo),
     financeiroService: new FinanceiroService(tituloRepo, pedidoRepo),
     categoriasFinanceirasService: new CategoriasFinanceirasService(catFinRepo),

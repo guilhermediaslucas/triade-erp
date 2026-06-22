@@ -30,7 +30,9 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'menu.crm', to: '/comercial/crm', cap: 'comercial.crm.ver' },
       { rotulo: 'menu.metas', to: '/comercial/metas', cap: 'comercial.meta.ver' },
       { rotulo: 'menu.precos', to: '/comercial/precos', cap: 'comercial.preco.listar' },
+      { rotulo: 'menu.descontos', to: '/comercial/descontos', cap: 'comercial.preco.listar' },
       { rotulo: 'menu.analise', to: '/comercial/analise', cap: 'comercial.analise.ver' },
+      { rotulo: 'menu.disponibilidade', to: '/estoque/disponibilidade', cap: 'estoque.saldo.ver' },
     ] }],
   },
   {
@@ -51,7 +53,6 @@ const GRUPOS: Grupo[] = [
     rotulo: 'menu.estoque_exp', icone: 'i-box',
     secoes: [{ itens: [
       { rotulo: 'menu.expedicao', to: '/estoque/expedicao', cap: 'comercial.pedido.gerenciar' },
-      { rotulo: 'menu.disponibilidade', to: '/estoque/disponibilidade', cap: 'estoque.saldo.ver' },
       { rotulo: 'menu.posicao', to: '/estoque/posicao', cap: 'estoque.saldo.ver' },
       { rotulo: 'menu.consultar_etiqueta', to: '/estoque/etiqueta', cap: 'estoque.saldo.ver' },
       { rotulo: 'menu.entrada', to: '/estoque/entrada', cap: 'estoque.entrada.criar' },
@@ -102,6 +103,7 @@ const GRUPOS: Grupo[] = [
           { rotulo: 'menu.plano_contas', to: '/cadastros/plano-contas', cap: 'cadastros.catfin.listar' },
           { rotulo: 'menu.tipodoc', to: '/cadastros/tipos-documento', cap: 'cadastros.tipodoc.listar' },
           { rotulo: 'menu.bancos', to: '/cadastros/bancos', cap: 'cadastros.banco.listar' },
+          { rotulo: 'menu.taxas_cartao', to: '/cadastros/taxas-cartao', cap: 'cadastros.taxa_cartao.listar' },
         ],
       },
     ],

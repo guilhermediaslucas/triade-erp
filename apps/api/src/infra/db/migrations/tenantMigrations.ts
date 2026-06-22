@@ -899,4 +899,75 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".frete_campanha ALTER COLUMN cliente_id DROP NOT NULL;
     `,
   },
+  {
+    // Taxa de cartão por forma de pagamento/bandeira: % cobrado pela operadora.
+    // Auto-preenche o campo "taxa do cartão" na baixa do título.
+    nome: '065_forma_pagamento_taxa',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".forma_pagamento_taxa (
+        id          uuid PRIMARY KEY,
+        forma       text NOT NULL,
+        percentual  numeric(6,3) NOT NULL DEFAULT 0,
+        ativo       boolean NOT NULL DEFAULT true,
+        criado_em   timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE UNIQUE INDEX IF NOT EXISTS uq_forma_pagamento_taxa ON "${s}".forma_pagamento_taxa (lower(forma));
+    `,
+  },
+  {
+    // Campanha de frete: quem absorve o desconto na hora de pagar o motoboy.
+    //   'cheio'   = motoboy recebe o custo real (frete_custo); empresa absorve o desconto (padrão).
+    //   'cobrado' = motoboy recebe o que o cliente pagou (frete, já com a campanha).
+    // pedido.frete_motoboy = snapshot do valor a pagar ao motoboy (resolvido na venda).
+    nome: '066_frete_absorve_motoboy',
+    sql: (s) => `
+      ALTER TABLE "${s}".frete_campanha ADD COLUMN IF NOT EXISTS absorve text NOT NULL DEFAULT 'cheio';
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS frete_motoboy numeric(14,2);
+    `,
+  },
+  {
+    // Gestão de fretes: marca o pedido cujo frete já virou título a pagar do motoboy,
+    // para destacar e impedir gerar de novo.
+    nome: '067_pedido_frete_gerado',
+    sql: (s) => `
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS frete_gerado boolean NOT NULL DEFAULT false;
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS frete_titulo_id uuid;
+    `,
+  },
+  {
+    // Histórico de troca de forma de entrega na expedição (quem, de→para, justificativa).
+    nome: '068_pedido_forma_entrega_historico',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".forma_entrega_historico (
+        id            uuid PRIMARY KEY,
+        pedido_id     uuid NOT NULL REFERENCES "${s}".pedido(id) ON DELETE CASCADE,
+        de            text NOT NULL,
+        para          text NOT NULL,
+        justificativa text NOT NULL,
+        usuario_nome  text,
+        criado_em     timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_forma_entrega_hist ON "${s}".forma_entrega_historico (pedido_id, criado_em);
+    `,
+  },
+  {
+    // Campanha de desconto no PEDIDO quando o subtotal (produtos) ≥ minimo.
+    // tipo: 'percentual' (desconto % sobre o subtotal) | 'fixo' (abate valor fixo).
+    // cliente_id NULL = vale para todos. pedido.desconto = snapshot do abatimento.
+    nome: '069_desconto_pedido',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".desconto_pedido (
+        id         uuid PRIMARY KEY,
+        cliente_id uuid REFERENCES "${s}".cliente(id) ON DELETE CASCADE,
+        tipo       text NOT NULL DEFAULT 'percentual',
+        valor      numeric(14,2) NOT NULL DEFAULT 0,
+        minimo     numeric(14,2) NOT NULL DEFAULT 0,
+        motivo     text,
+        de         date NOT NULL,
+        ate        date NOT NULL,
+        criado_em  timestamptz NOT NULL DEFAULT now()
+      );
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS desconto numeric(14,2) NOT NULL DEFAULT 0;
+    `,
+  },
 ];

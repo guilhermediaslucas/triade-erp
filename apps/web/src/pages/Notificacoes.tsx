@@ -14,6 +14,15 @@ export function Notificacoes() {
   const { t } = useI18n();
   const [grupos, setGrupos] = useState<Grupo[]>([]);
   const [carregando, setCarregando] = useState(true);
+  // Notificações concluídas (dispensadas) ficam salvas por usuário no navegador.
+  const CHAVE_LS = 'triade_notif_concluidas';
+  const [concluidas, setConcluidas] = useState<Set<string>>(() => {
+    try { return new Set(JSON.parse(localStorage.getItem(CHAVE_LS) || '[]') as string[]); } catch { return new Set(); }
+  });
+  const [mostrarConcl, setMostrarConcl] = useState(false);
+  function persistir(s: Set<string>) { try { localStorage.setItem(CHAVE_LS, JSON.stringify([...s])); } catch { /* */ } }
+  function concluir(chave: string) { setConcluidas((cur) => { const n = new Set(cur); n.add(chave); persistir(n); return n; }); }
+  function reabrir(chave: string) { setConcluidas((cur) => { const n = new Set(cur); n.delete(chave); persistir(n); return n; }); }
 
   useEffect(() => {
     (async () => {
@@ -44,25 +53,42 @@ export function Notificacoes() {
     /* eslint-disable-next-line */
   }, [token]);
 
+  const qtdConcl = grupos.filter((g) => concluidas.has(g.chave)).length;
+  const visiveis = grupos.filter((g) => mostrarConcl || !concluidas.has(g.chave));
   return (
     <div>
       <div className="crumb">{t('notif.crumb')}</div><h1 className="page-titulo">{t('notif.titulo')}</h1><p className="muted page-sub">{t('notif.sub')}</p>
       {carregando && <div className="muted">{t('common.carregando')}</div>}
-      {!carregando && grupos.length === 0 && (
+      {!carregando && qtdConcl > 0 && (
+        <div className="toolbar" style={{ marginBottom: 8 }}>
+          <button className={'chip-f' + (mostrarConcl ? ' on' : '')} onClick={() => setMostrarConcl((v) => !v)}>
+            {mostrarConcl ? t('notif.ocultar_concluidas') : t('notif.mostrar_concluidas')} ({qtdConcl})
+          </button>
+        </div>
+      )}
+      {!carregando && visiveis.length === 0 && (
         <div className="card" style={{ textAlign: 'center', padding: 40 }}><div style={{ color: '#16a34a' }}><Ic name="i-check" /></div><div className="muted" style={{ marginTop: 8 }}>{t('notif.vazio')}</div></div>
       )}
-      <div className="dash-row d3">
+      {visiveis.length > 0 && (
         <div className="card">
-          <div className="alerts">
-            {grupos.map((g) => (
-              <Link key={g.chave} to={g.to} className="alert">
-                <div className="top"><div className={'kpi-ic sm ' + g.tint}><Ic name={g.icone} className="sm" /></div><div className="big">{g.qtd}</div></div>
-                <div className="txt">{t(g.chave)}</div><span className="lnk">{t('dash.ver_todos')} →</span>
-              </Link>
-            ))}
+          <div className="notif-lista">
+            {visiveis.map((g) => {
+              const feito = concluidas.has(g.chave);
+              return (
+                <div key={g.chave} className={'notif-item' + (feito ? ' feito' : '')}>
+                  <div className={'kpi-ic sm ' + g.tint}><Ic name={g.icone} className="sm" /></div>
+                  <div className="notif-n">{g.qtd}</div>
+                  <div className="notif-txt">{t(g.chave)}</div>
+                  <Link to={g.to} className="lnk" style={{ color: 'var(--accent)', fontWeight: 600 }}>{t('dash.ver_todos')} →</Link>
+                  {feito
+                    ? <button className="btn-ghost btn-mini" onClick={() => reabrir(g.chave)}>{t('notif.reabrir')}</button>
+                    : <button className="btn-ghost btn-mini" onClick={() => concluir(g.chave)}><Ic name="i-check" className="sm" /> {t('notif.concluir')}</button>}
+                </div>
+              );
+            })}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

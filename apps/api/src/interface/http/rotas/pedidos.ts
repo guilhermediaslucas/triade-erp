@@ -59,5 +59,11 @@ export function rotasPedidos(deps: Dependencias): Router {
   r.post('/pedidos/:id/separar', aut, az(['comercial.pedido.separar', GERENCIAR]), async (req, res: Response) => {
     try { await deps.pedidosService.separarBipando(sch(req), req.params.id!, (req.body ?? {}).codigos, req.usuario?.nome ?? null); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });
+  r.patch('/pedidos/:id/forma-entrega', aut, az(['comercial.pedido.expedir', GERENCIAR]), async (req, res: Response) => {
+    try { await deps.pedidosService.alterarFormaEntrega(sch(req), req.params.id!, req.body ?? {}, req.usuario?.nome ?? null); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
+  r.get('/pedidos/:id/forma-entrega/historico', aut, az(['comercial.pedido.expedir', 'comercial.pedido.listar', GERENCIAR]), async (req, res: Response) => {
+    try { res.json(await deps.pedidosService.historicoFormaEntrega(sch(req), req.params.id!)); } catch (e) { tratarErro(res, e); }
+  });
   return r;
 }

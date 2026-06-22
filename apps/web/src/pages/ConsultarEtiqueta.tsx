@@ -9,7 +9,7 @@ interface Etq {
   codigo: string; status: 'estoque' | 'saida' | 'perda';
   produtoId: string; produtoNome: string; unidade: string | null;
   loteId: string; lote: string | null; validade: string | null;
-  marca: string | null; saldoLote: number; custoUnitario: number;
+  saldoLote: number; custoUnitario: number;
   fornecedor: string | null; nf: string | null; emissao: string | null;
 }
 
@@ -61,7 +61,6 @@ export function ConsultarEtiqueta() {
             </div>
             <table className="tabela-det" style={{ width: '100%', fontSize: 13 }}><tbody>
               {linha(t('precos.produto'), etq.produtoNome + (etq.unidade ? ' · ' + etq.unidade : ''))}
-              {linha(t('etqc.marca'), etq.marca ?? '—')}
               {linha(t('estoque.lote'), etq.lote ?? '—')}
               {linha(t('estoque.validade'), fmtData(etq.validade))}
               {linha(t('etqc.saldo_lote'), etq.saldoLote + (etq.unidade ? ' ' + etq.unidade : ''))}

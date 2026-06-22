@@ -188,6 +188,43 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-22** — **Lote grande (14 demandas do Gui). Migrations tenant 065–069. Caps novas (relogar).**
+  Entregue num lote só (decisão do Gui). **Frontend (sem migration):** (1) Kanban "Em separação" → **"Pedido Pronto"**
+  (i18n `status.separacao`, 3 idiomas). (2) **Disponibilidade** movida p/ grupo **Comercial**; **Marca** removida da
+  Consulta de etiqueta. (3) **Lançamentos (Contas):** clicar no cabeçalho **ordena** (asc/desc, ↑/↓ via `sortCol/sortDir`
+  + `ordenados`); **duplo-clique** abre `ModalVerTitulo` agora com **ações** (Editar/Baixar/Parcelar/Multiplicar/Reembolso/
+  Excluir/Cancelar baixa) — `excluirUm` novo. (4) **Abrir título do pedido na baixa:** `PedidoTituloResumo` += `id`/`tipo`;
+  botão "Abrir título" no detalhe → `/financeiro/{tipo}?titulo=<id>&baixar=1`; Contas lê os params (useSearchParams) e abre o
+  ModalBaixa. (11) **Análise de vendas:** seletor **Barras/Pizza/Linha** por usuário (SVG `GraficoAnalise`, salvo em
+  `/preferencias/analise-grafico`). (13) **Notificações:** modo lista + **marcar como concluído** (localStorage
+  `triade_notif_concluidas` + "Mostrar concluídas"). **Permissões (#2):** caps `comercial.pedido.separar/expedir` movidas do
+  módulo Comercial p/ **Estoque** (só `moduloChave`); **9 widgets do painel** viraram caps (`dashboard.kpis/faturamento/
+  por_produto/top_produtos/clientes/avisos/pedidos/fluxo/saldos`) — Dashboard gateia cada bloco com fallback
+  `temAlgumWidget` (perfil sem nenhum widget vê tudo = não quebra). **#10:** "quem recebeu" **obrigatório** ao entregar
+  (back `pedido.recebido_obrigatorio` + front ModalDataEntrega). **#5 (migration 065 `forma_pagamento_taxa`):** cadastro
+  **Taxas de cartão** (% por forma/bandeira, Cadastros › Financeiro, cap nova `cadastros.taxa_cartao.*`); na baixa do título
+  a taxa **auto-preenche** pela forma. **#7 (migration 066 `frete_campanha.absorve` + `pedido.frete_motoboy`):** campanha de
+  frete ganhou **"Motoboy recebe"** (cheio=custo real [padrão] | cobrado); `resolverFrete` resolve cobrado+motoboy na venda;
+  **corrige** a Gestão de fretes que pagava o motoboy pelo `frete` cobrado (zerava em frete grátis) → agora soma
+  `COALESCE(frete_motoboy, frete_custo, frete)`. **#6:** **editar** campanha de frete (PUT + modal); **histórico** de campanhas
+  via Auditoria (POST já auditava; add PUT/DELETE); **desconto por total do pedido ≥ X** (migration 069 `desconto_pedido` +
+  `pedido.desconto`; tela Comercial › "Descontos por total"; aplicado no `PedidosService.montar` → total = subtotal − desconto +
+  frete; **PedidosService ganhou param `descontoPedidoRepo` no construtor**). **#8 (migration 067 `pedido.frete_gerado`/
+  `frete_titulo_id`):** Gestão de fretes reformulada — seleção por pedido (checkbox), filtro **Não gerados/Gerados/Todos**
+  (padrão não gerados), **emissão**+vencimento, **confirmação**, **bloqueio de regeração** (frete já gerado destacado), Excel
+  com coluna Gerado + totalizador; rota `/logistica/fretes/gerar` (era /fechar). **#9 (migration 068 `forma_entrega_historico`):**
+  expedição **troca a forma de entrega** com **justificativa** obrigatória + **histórico** (quem/quando/de→para) no detalhe do
+  pedido (cap `comercial.pedido.expedir`). **#12:** CRM — lógica de **clientes inativos verificada (OK)** (filtra
+  `diasSemComprar > 90` sobre histórico de compras); leads de teste → **script** `scripts/limpar-leads-teste.sql` (rodar no
+  Neon; sem acesso ao banco daqui). **#14 (rastreio do motoboy):** entregue como **PROJETO** em `Info/RASTREIO-MOTOBOY.md`
+  (arquitetura + dados + endpoints + Capacitor geolocation + mapa + link público + estados + decisões) — não construído (precisa
+  sprint dedicada com teste ao vivo de GPS). **Validação:** hand-review (sandbox tsc não confiável neste projeto; **build local/
+  Cloudflare é a fonte de verdade**). **Pendente Gui:** `npm install` (relink @triade/shared p/ caps novas) → `npm run build -w
+  @triade/web` → commit+push (Render aplica 065–069 no boot via AUTO_MIGRATE + sincroniza caps no Administrador) → **relogar**
+  (carrega widgets do painel + `cadastros.taxa_cartao.*`) → `scripts\app-apk.bat` (muitas telas mudaram) → rodar
+  `scripts/limpar-leads-teste.sql` no Neon quando quiser. **Para perfis não-admin:** marcar os widgets do painel desejados e
+  `cadastros.taxa_cartao.*` nos perfis em Configurações › Perfis (senão o painel respeita a seleção a partir do 1º widget marcado).
+
 - **2026-06-21** — **Campanha de frete GERAL (sem cliente) + tipo "grátis acima de X" + fix do campo de busca no tema escuro.**
   Decisões do Gui: (a) permitir campanha de frete **geral** (sem escolher cliente); (b) novo tipo **"grátis acima de X"** = se o
   **valor do pedido (subtotal dos produtos, sem o frete) ≥ X → frete grátis**, senão cobra o custo; (c) precedência **campanha do
