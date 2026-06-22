@@ -129,7 +129,7 @@ function GraficoAnalise({ tipo, dados, fmt }: { tipo: 'barras' | 'pizza' | 'linh
     const arcos = dados.map((d, i) => {
       const frac = d.valor / total;
       const a0 = ang, a1 = ang + frac * Math.PI * 2; ang = a1;
-      const p = (a: number) => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+      const p = (a: number): [number, number] => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
       const [x0, y0] = p(a0), [x1, y1] = p(a1);
       const large = a1 - a0 > Math.PI ? 1 : 0;
       return { d: `M${cx},${cy} L${x0.toFixed(1)},${y0.toFixed(1)} A${r},${r} 0 ${large} 1 ${x1.toFixed(1)},${y1.toFixed(1)} Z`, cor: CORES_G[i % CORES_G.length], item: d };
