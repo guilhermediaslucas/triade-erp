@@ -103,6 +103,8 @@ export interface PedidoRepository {
   definirMotoboy(schema: string, id: string, motoboyId: string): Promise<void>;
   alterarFormaEntrega(schema: string, id: string, forma: string, motoboyId: string | null, hist: HistFormaEntrega): Promise<void>;
   historicoFormaEntrega(schema: string, id: string): Promise<HistFormaEntrega[]>;
+  // Re-entrega: troca o endereço e reabre a entrega (status volta a aguardando, novo link do motoboy).
+  reabrirEntrega(schema: string, id: string, endereco: string): Promise<void>;
   definirEntrega(schema: string, id: string, entregueEm: string, recebidoPor: string | null): Promise<void>;
   logSeparacao(schema: string, id: string, ator: string | null): Promise<void>;
   logExpedicao(schema: string, id: string, ator: string | null): Promise<void>;

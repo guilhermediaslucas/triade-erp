@@ -158,6 +158,10 @@ export class SqlPedidoRepository implements PedidoRepository {
        VALUES ($1,$2,$3,$4,$5,$6)`,
       [randomUUID(), id, hist.de, hist.para, hist.justificativa, hist.usuarioNome]);
   }
+  async reabrirEntrega(schema: string, id: string, endereco: string): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(`UPDATE "${s}".pedido SET endereco_entrega = $2, entrega_status = 'aguardando', motoboy_token = NULL WHERE id = $1`, [id, endereco]);
+  }
   async historicoFormaEntrega(schema: string, id: string): Promise<HistFormaEntrega[]> {
     const s = validarSchema(schema);
     const rs = await this.ds.query(

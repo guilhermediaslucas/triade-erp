@@ -77,7 +77,7 @@ export function ModalNovaPessoa({ tipo, onFechar, onCriado }: {
       const corpo = fornecedor
         ? { nome, fantasia, documento, telefone, email, cep, cidade, uf, logradouro, numero, complemento, bairro }
         : { tipoPessoa, nome, fantasia: tipoPessoa === 'PJ' ? fantasia : '', documento, telefone, email, limiteCredito: 0,
-            enderecos: (cep || cidade || uf) ? [{ cep, cidade, uf, favorito: true }] : [] };
+            enderecos: (cep || cidade || uf || logradouro || bairro) ? [{ cep, logradouro, numero, complemento, bairro, cidade, uf, favorito: true }] : [] };
       await api.post(fornecedor ? '/fornecedores' : '/clientes', corpo, token!);
       onCriado(nome.trim());
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
@@ -113,8 +113,16 @@ export function ModalNovaPessoa({ tipo, onFechar, onCriado }: {
         </label>
       </div>
       <div className="cores-grid">
-        <label className="campo">{t('clientes.cidade')}<input value={cidade} onChange={(e) => setCidade(e.target.value)} /></label>
         <label className="campo">CEP<input value={cep} onChange={(e) => setCep(mascaraCep(e.target.value))} onBlur={cepLookup} placeholder="00000-000" maxLength={9} /></label>
+        <label className="campo">{t('clientes.bairro')}<input value={bairro} onChange={(e) => setBairro(e.target.value)} /></label>
+      </div>
+      <div className="cores-grid">
+        <label className="campo">{t('clientes.logradouro')}<input value={logradouro} onChange={(e) => setLogradouro(e.target.value)} /></label>
+        <label className="campo">{t('clientes.numero')}<input value={numero} onChange={(e) => setNumero(e.target.value)} /></label>
+      </div>
+      <div className="cores-grid">
+        <label className="campo">{t('clientes.complemento')}<input value={complemento} onChange={(e) => setComplemento(e.target.value)} /></label>
+        <label className="campo">{t('clientes.cidade')}<input value={cidade} onChange={(e) => setCidade(e.target.value)} /></label>
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv || nome.trim().length < 2} onClick={salvar}>{t('fin.salvar_cliente')}</button></div>

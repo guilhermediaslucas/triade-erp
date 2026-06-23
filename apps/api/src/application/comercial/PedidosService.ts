@@ -295,6 +295,27 @@ export class PedidosService {
   }
   historicoFormaEntrega(schema: string, id: string) { return this.pedidos.historicoFormaEntrega(schema, id); }
 
+  // Re-entrega por mudança de endereço (após tentativa): troca o endereço, reabre a entrega
+  // e gera o frete da nova tentativa — pago ao motoboy sempre; cobrado do cliente se ele arcar.
+  async refazerEntrega(schema: string, id: string, dados: any): Promise<void> {
+    const pedido = await this.pedidos.buscarPorId(schema, id);
+    if (!pedido) throw new ErroAplicacao('pedido.nao_encontrado', 404);
+    if (pedido.formaEntrega !== 'motoboy') throw new ErroAplicacao('entrega.nao_motoboy', 400);
+    const enderecoNovo = String(dados?.enderecoNovo ?? '').trim();
+    if (enderecoNovo.length < 3) throw new ErroAplicacao('pedido.endereco_obrigatorio', 400);
+    const valor = Number(dados?.freteValor) || 0;
+    if (valor <= 0) throw new ErroAplicacao('frete.campanha_valor_invalido', 400);
+    const quemPaga = dados?.quemPaga === 'cliente' ? 'cliente' : 'empresa';
+    const ref = 'PE-' + String(pedido.numero).padStart(6, '0');
+    const venc = new Date().toISOString().slice(0, 10);
+    await this.pedidos.reabrirEntrega(schema, id, enderecoNovo);
+    const motoboyNome = pedido.motoboyNome ?? 'Motoboy';
+    await this.titulos.criar(schema, { tipo: 'pagar', descricao: 'Frete re-entrega ' + ref + ' - ' + motoboyNome, pessoaNome: motoboyNome, valor, vencimento: venc }, 'frete', null);
+    if (quemPaga === 'cliente') {
+      await this.titulos.criar(schema, { tipo: 'receber', descricao: 'Frete adicional ' + ref, pessoaNome: pedido.clienteNome, valor, vencimento: venc }, 'pedido', null);
+    }
+  }
+
   // Separacao por BIPAGEM: le a etiqueta de cada item; o codigo traz produto/lote/validade.
   // Casa com o pedido pelo produto, da baixa do lote especifico da etiqueta e consome a etiqueta.
   // Exige que TODOS os itens sejam bipados na quantidade certa. Move o pedido para 'separacao'.

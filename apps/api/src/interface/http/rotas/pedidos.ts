@@ -65,5 +65,8 @@ export function rotasPedidos(deps: Dependencias): Router {
   r.get('/pedidos/:id/forma-entrega/historico', aut, az(['comercial.pedido.expedir', 'comercial.pedido.listar', GERENCIAR]), async (req, res: Response) => {
     try { res.json(await deps.pedidosService.historicoFormaEntrega(sch(req), req.params.id!)); } catch (e) { tratarErro(res, e); }
   });
+  r.post('/pedidos/:id/refazer-entrega', aut, az(['comercial.pedido.expedir', GERENCIAR]), async (req, res: Response) => {
+    try { await deps.pedidosService.refazerEntrega(sch(req), req.params.id!, req.body ?? {}); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
   return r;
 }

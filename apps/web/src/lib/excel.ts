@@ -233,9 +233,14 @@ function planilhaXml(titulo: string, cabecalho: string[], linhas: (string | numb
   const temTotal = valCol.some(Boolean) && linhas.length > 0;
   if (temTotal) {
     const r = linhas.length + 4;
+    const primeira = 4, ultima = linhas.length + 3;   // faixa dos dados (linha 4 até a última)
     const cells = cabecalho.map((_, c) => {
       const ref = colLetra(c) + r;
-      if (valCol[c]) return cNum(ref, Math.round(somas[c] * 100) / 100, 9);
+      if (valCol[c]) {
+        // Total como FÓRMULA SUM (recalcula no Excel); o <v> é só o valor em cache.
+        const col = colLetra(c);
+        return `<c r="${ref}" s="9"><f>SUM(${col}${primeira}:${col}${ultima})</f><v>${Math.round(somas[c] * 100) / 100}</v></c>`;
+      }
       return c === 0 ? cTexto(ref, 'Total', 8) : `<c r="${ref}" s="8"/>`;
     }).join('');
     rows.push(`<row r="${r}">${cells}</row>`);
@@ -327,7 +332,9 @@ export function gerarXlsx(cabecalho: string[], linhas: (string | number)[][], ti
 }
 
 export function baixarExcel(nome: string, cabecalho: string[], linhas: (string | number)[][], opcoes?: OpcoesExcel): void {
-  const bytes = gerarXlsx(cabecalho, linhas, humaniza(nome), opcoes);
+  // Título limpo: tira as datas ISO do nome (o período já aparece no subtítulo); o nome cheio fica no arquivo.
+  const titulo = humaniza(nome.replace(/_?\d{4}-\d{2}-\d{2}/g, '').replace(/_+$/, ''));
+  const bytes = gerarXlsx(cabecalho, linhas, titulo, opcoes);
   const blob = new Blob([bytes.buffer as ArrayBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   void baixarArquivo(nome + '.xlsx', blob);
 }

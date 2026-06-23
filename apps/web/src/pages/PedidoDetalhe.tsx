@@ -54,6 +54,7 @@ export function PedidoDetalhe() {
   const [modal, setModal] = useState<'envio' | 'entrega' | null>(null);
   const podeExpedir = podeGerenciar || temCapability('comercial.pedido.expedir');
   const [alterarForma, setAlterarForma] = useState(false);
+  const [refazer, setRefazer] = useState(false);
   const [histForma, setHistForma] = useState<HistForma[]>([]);
   async function carregarHist() { try { setHistForma(await api.get('/pedidos/' + id + '/forma-entrega/historico', token!)); } catch { /* sem permissão/histórico */ } }
   async function linkMotoboy() {
@@ -146,6 +147,9 @@ export function PedidoDetalhe() {
           <button className="btn-ghost" onClick={() => nav('/comercial/pedidos/' + p.id + '/romaneio')}><Ic name="i-print" className="sm" /> {t('romaneio.titulo')}</button>
           {modoExpedicao && podeExpedir && p.formaEntrega === 'motoboy' && !['orcamento', 'cancelado', 'entregue'].includes(p.status) && (
             <button className="btn-ghost" onClick={linkMotoboy}><Ic name="i-truck" className="sm" /> {t('rastreio.link_motoboy_btn')}</button>
+          )}
+          {modoExpedicao && podeExpedir && p.formaEntrega === 'motoboy' && p.status === 'expedido' && (
+            <button className="btn-ghost" onClick={() => setRefazer(true)}><Ic name="i-truck" className="sm" /> {t('refazer.btn')}</button>
           )}
           {podeCancelar && !modoExpedicao && proximos.includes('orcamento') && (
             <button className="btn-ghost" onClick={() => mudar('orcamento')}><Ic name="i-edit" className="sm" /> {t('pedido.voltar_orcamento')}</button>
@@ -302,6 +306,7 @@ export function PedidoDetalhe() {
       {modal === 'entrega' && <ModalDataEntrega numero={p.numero} inicial={p.entregueEm}
         onFechar={() => setModal(null)} onConfirmar={(data, recebido) => { setModal(null); patchStatus('entregue', { entregueEm: data, ...(recebido ? { recebidoPor: recebido } : {}) }); }} />}
       {alterarForma && <ModalAlterarForma atual={p.formaEntrega} motoboys={motoboys} onFechar={() => setAlterarForma(false)} onConfirmar={salvarForma} />}
+      {refazer && <ModalRefazerEntrega pedidoId={p.id} onFechar={() => setRefazer(false)} onSalvo={() => { setRefazer(false); carregar(); toast(t('refazer.ok')); }} />}
     </div>
   );
 }
@@ -340,6 +345,37 @@ function ModalAlterarForma({ atual, motoboys, onFechar, onConfirmar }: {
         <button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button>
         <button className="btn-primary" disabled={!ok} onClick={() => onConfirmar(forma, ehMotoboy ? motoboyId : null, justificativa.trim())}>{t('common.salvar')}</button>
       </div>
+    </div></div>
+  );
+}
+
+// Re-entrega por mudança de endereço: novo endereço + valor do frete + quem paga.
+function ModalRefazerEntrega({ pedidoId, onFechar, onSalvo }: { pedidoId: string; onFechar: () => void; onSalvo: () => void; }) {
+  const { token } = useAuth(); const { t } = useI18n();
+  const [endereco, setEndereco] = useState('');
+  const [valor, setValor] = useState('');
+  const [quemPaga, setQuemPaga] = useState<'cliente' | 'empresa'>('cliente');
+  const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
+  const ok = endereco.trim().length >= 3 && (Number(valor.replace(',', '.')) || 0) > 0;
+  async function salvar() {
+    setErro(null); setSalv(true);
+    try { await api.post('/pedidos/' + pedidoId + '/refazer-entrega', { enderecoNovo: endereco.trim(), freteValor: Number(valor.replace(',', '.')) || 0, quemPaga }, token!); onSalvo(); }
+    catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
+  }
+  const opt = (v: 'cliente' | 'empresa', k: string) => (
+    <button type="button" className="btn-ghost" style={quemPaga === v ? { borderColor: 'var(--accent)', color: 'var(--accent)' } : {}} onClick={() => setQuemPaga(v)}>{t(k)}</button>
+  );
+  return (
+    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 440 }}>
+      <h2>{t('refazer.titulo')}</h2>
+      <label className="campo">{t('refazer.endereco')}<input value={endereco} onChange={(e) => setEndereco(e.target.value)} autoFocus placeholder={t('refazer.endereco_ph')} /></label>
+      <label className="campo">{t('refazer.valor')}<input value={valor} onChange={(e) => setValor(e.target.value)} placeholder="0,00" /></label>
+      <div className="campo">{t('refazer.quem_paga')}
+        <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>{opt('cliente', 'refazer.cliente')}{opt('empresa', 'refazer.empresa')}</div>
+      </div>
+      <div className="nota-info">{t('refazer.nota')}</div>
+      {erro && <div className="alerta-erro">{t(erro)}</div>}
+      <div className="modal-acoes"><button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button><button className="btn-primary" disabled={salv || !ok} onClick={salvar}>{t('refazer.gerar')}</button></div>
     </div></div>
   );
 }
