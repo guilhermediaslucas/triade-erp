@@ -5,6 +5,8 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { useToast } from '../components/Toast.js';
 import { Ic } from '../components/Icones.js';
 import { moeda, numeroPedido } from '../lib/pedido.js';
+import { Capacitor } from '@capacitor/core';
+import { Geolocation } from '@capacitor/geolocation';
 
 type StatusEntrega = 'aguardando' | 'a_caminho' | 'chegou' | 'entregue';
 interface Entrega { pedidoId: string; numero: number; clienteNome: string | null; enderecoEntrega: string | null; status: StatusEntrega; rastreioToken: string | null; total: number; criadoEm: string; }
@@ -17,7 +19,7 @@ export function MinhasEntregas() {
   const [entregas, setEntregas] = useState<Entrega[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(true);
-  const watchRef = useRef<number | null>(null);
+  const cleanupRef = useRef<(() => void) | null>(null);
 
   async function carregar() {
     try { setEntregas(await api.get<Entrega[]>('/entregas/minhas', token!)); }
@@ -31,20 +33,34 @@ export function MinhasEntregas() {
   const ativasIds = entregas.filter((e) => e.status === 'a_caminho' || e.status === 'chegou').map((e) => e.pedidoId);
   const ativasKey = ativasIds.join(',');
   useEffect(() => {
-    if (!ativasIds.length) {
-      if (watchRef.current != null && navigator.geolocation) { navigator.geolocation.clearWatch(watchRef.current); watchRef.current = null; }
-      return;
+    let cancelado = false;
+    const enviar = (lat: number, lng: number) => {
+      for (const id of ativasIds) api.post('/entregas/' + id + '/posicao', { lat, lng }, token!).catch(() => {});
+    };
+    async function iniciar() {
+      if (!ativasIds.length) return;
+      if (Capacitor.isNativePlatform()) {
+        // App nativo: usa o plugin do Capacitor (pede a permissão de localização).
+        try {
+          const perm = await Geolocation.requestPermissions();
+          if (perm.location === 'denied') { setErro('rastreio.gps_negado'); return; }
+          const wid = await Geolocation.watchPosition({ enableHighAccuracy: true }, (pos) => {
+            if (pos && !cancelado) enviar(pos.coords.latitude, pos.coords.longitude);
+          });
+          cleanupRef.current = () => { Geolocation.clearWatch({ id: wid }).catch(() => {}); };
+        } catch { setErro('rastreio.sem_gps'); }
+      } else if ('geolocation' in navigator) {
+        // Navegador (web/celular): usa a API do navegador.
+        const wid = navigator.geolocation.watchPosition(
+          (pos) => { if (!cancelado) enviar(pos.coords.latitude, pos.coords.longitude); },
+          () => { setErro('rastreio.gps_negado'); },
+          { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 },
+        );
+        cleanupRef.current = () => navigator.geolocation.clearWatch(wid);
+      } else { setErro('rastreio.sem_gps'); }
     }
-    if (!('geolocation' in navigator)) { setErro('rastreio.sem_gps'); return; }
-    watchRef.current = navigator.geolocation.watchPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        for (const id of ativasIds) api.post('/entregas/' + id + '/posicao', { lat: latitude, lng: longitude }, token!).catch(() => {});
-      },
-      () => { /* permissão negada / sem sinal — ignora silenciosamente */ },
-      { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 },
-    );
-    return () => { if (watchRef.current != null && navigator.geolocation) { navigator.geolocation.clearWatch(watchRef.current); watchRef.current = null; } };
+    iniciar();
+    return () => { cancelado = true; if (cleanupRef.current) { cleanupRef.current(); cleanupRef.current = null; } };
     /* eslint-disable-next-line */
   }, [ativasKey]);
 
