@@ -8,8 +8,6 @@ export interface Branding {
   corMenuFundo: string;
   corMenuFonte: string;
   logoAltura: number;
-  idiomaPadrao: string;
-  timezonePadrao: string;
   cnpj: string;
   inscricaoEstadual: string;
   telefone: string;
@@ -41,8 +39,3 @@ export function aplicarTema(b: { corPrimaria: string; corSecundaria?: string; co
   raiz.setProperty('--side-fg', c.corMenuFonte);
   raiz.setProperty('--logo-altura', String(c.logoAltura ?? PADRAO.logoAltura) + 'px');
 }
-
-export const TIMEZONES = [
-  'America/Sao_Paulo', 'America/Manaus', 'America/Bahia', 'America/Fortaleza',
-  'America/Recife', 'America/Cuiaba', 'America/New_York', 'Europe/Lisbon', 'Europe/Madrid', 'UTC',
-];

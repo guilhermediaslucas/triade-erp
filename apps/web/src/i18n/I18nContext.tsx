@@ -1,33 +1,19 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
-import { IDIOMA_PADRAO, IDIOMAS, type Idioma } from '@triade/shared';
-import { dicionarios } from './dicionarios.js';
+import { createContext, useContext, type ReactNode } from 'react';
+import { dicionario } from './dicionarios.js';
 
+// Sistema é só pt-BR. Mantemos a função t() para não reescrever todas as telas,
+// mas ela sempre resolve no dicionário português.
 interface I18nCtx {
-  idioma: Idioma;
-  idiomas: readonly Idioma[];
-  setIdioma: (i: Idioma) => void;
   t: (chave: string) => string;
 }
 
 const Ctx = createContext<I18nCtx | null>(null);
-const CHAVE = 'triade_idioma';
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [idioma, setIdiomaState] = useState<Idioma>(() => {
-    const salvo = localStorage.getItem(CHAVE) as Idioma | null;
-    return salvo && IDIOMAS.includes(salvo) ? salvo : IDIOMA_PADRAO;
-  });
-
-  function setIdioma(i: Idioma) {
-    localStorage.setItem(CHAVE, i);
-    setIdiomaState(i);
-  }
-
   function t(chave: string): string {
-    return dicionarios[idioma][chave] ?? dicionarios[IDIOMA_PADRAO][chave] ?? chave;
+    return dicionario[chave] ?? chave;
   }
-
-  return <Ctx.Provider value={{ idioma, idiomas: IDIOMAS, setIdioma, t }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ t }}>{children}</Ctx.Provider>;
 }
 
 export function useI18n(): I18nCtx {

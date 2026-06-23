@@ -999,4 +999,9 @@ export const tenantMigrations: MigracaoTenant[] = [
       CREATE UNIQUE INDEX IF NOT EXISTS uq_pedido_motoboy_token ON "${s}".pedido (motoboy_token) WHERE motoboy_token IS NOT NULL;
     `,
   },
+  {
+    // Ordem da parada na rota do motoboy (expedição monta a sequência; o app ordena por ela).
+    nome: '072_pedido_ordem_rota',
+    sql: (s) => `ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS ordem_rota int;`,
+  },
 ];

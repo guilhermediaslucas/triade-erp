@@ -30,7 +30,7 @@ export class SqlRastreioRepository implements RastreioRepository {
         WHERE p.motoboy_id = $1 AND p.forma_entrega = 'motoboy'
           AND p.status NOT IN ('cancelado','orcamento','aguardando_pagamento')
           AND p.entrega_status <> 'entregue'
-        ORDER BY p.criado_em DESC`, [motoboyId]);
+        ORDER BY p.ordem_rota NULLS LAST, p.criado_em DESC`, [motoboyId]);
     return rs.map((r: any): EntregaMotoboy => ({
       pedidoId: r.id, numero: Number(r.numero), clienteNome: r.cliente ?? null,
       enderecoEntrega: r.endereco_entrega ?? null, status: st(r.entrega_status), rastreioToken: r.rastreio_token ?? null,

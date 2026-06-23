@@ -64,7 +64,6 @@ export function DadosEmpresa() {
         nome: f.nome, fantasia: f.fantasia, logo: f.logo,
         corPrimaria: f.corPrimaria, corSecundaria: f.corSecundaria,
         corMenuFundo: f.corMenuFundo, corMenuFonte: f.corMenuFonte, logoAltura: f.logoAltura,
-        idiomaPadrao: f.idiomaPadrao, timezonePadrao: f.timezonePadrao,
         cnpj: f.cnpj, inscricaoEstadual: f.inscricaoEstadual, telefone: f.telefone, email: f.email,
         logradouro: f.logradouro, bairro: f.bairro, cep: f.cep, uf: f.uf, cidade: f.cidade,
       }, token!);

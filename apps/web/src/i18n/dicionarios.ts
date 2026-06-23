@@ -1,4 +1,3 @@
-import type { Idioma } from '@triade/shared';
 type Dict = Record<string, string>;
 
 const pt: Dict = {
@@ -264,7 +263,10 @@ const es: Dict = {
   'erro.interno': 'Ocurrió un error. Inténtalo de nuevo.', 'erro.rede': 'Error de conexión con el servidor.',
 };
 
-export const dicionarios: Record<Idioma, Dict> = { 'pt-BR': pt, 'en-US': en, es };
+// Sistema é só pt-BR. Os objetos en/es ainda existem abaixo (código morto, não
+// referenciado em lugar nenhum) — vão sair numa limpeza dedicada. O sistema usa só `dicionario`.
+export const dicionario: Dict = pt;
+void en; void es;
 
 // --- Fase 1B: Dados da empresa ---
 Object.assign(pt, {
@@ -3245,7 +3247,8 @@ Object.assign(es, { 'fin.taxa_cartao': 'Tasa de la tarjeta', 'fin.liquido_cartao
 
 // ===== Rastreio do motoboy (entrega + mapa) =====
 Object.assign(pt, {
-  'menu.minhas_entregas': 'Minhas entregas', 'menu.painel_entregas': 'Entregas (mapa)',
+  'menu.minhas_entregas': 'Minhas entregas', 'menu.painel_entregas': 'Entregas (mapa)', 'menu.montar_rota': 'Montar rota',
+  'rota.crumb': 'Logística / Montar rota', 'rota.titulo': 'Montar rota do motoboy', 'rota.sub': 'Ordene as paradas arrastando; otimize pelo caminho mais curto.', 'rota.motoboy': 'Motoboy', 'rota.escolha_motoboy': 'Selecione um motoboy…', 'rota.sem_paradas': 'Nenhuma entrega em rota para este motoboy.', 'rota.otimizar': 'Otimizar rota', 'rota.otimizando': 'Otimizando…', 'rota.otimizada': 'Rota otimizada.', 'rota.salvar': 'Salvar rota', 'rota.salvando': 'Salvando…', 'rota.salva': 'Rota salva.', 'rota.paradas': 'paradas', 'rota.sem_endereco': 'Sem endereço de entrega',
   'cap.logistica.entrega.ver': 'Ver entregas / painel de rastreio', 'cap.logistica.entrega.atualizar': 'App do motoboy (atualizar status/posição)',
   'rastreio.crumb_minhas': 'Logística / Minhas entregas', 'rastreio.minhas': 'Minhas entregas', 'rastreio.minhas_sub': 'As entregas atribuídas a você. Inicie a corrida para enviar sua localização.',
   'rastreio.gps_ativo': 'Localização ativa — enviando sua posição.', 'rastreio.sem_entregas': 'Nenhuma entrega no momento.', 'rastreio.sem_gps': 'Este dispositivo não tem GPS/localização.', 'rastreio.gps_negado': 'Permissão de localização negada. Ative o GPS e a permissão de localização do app.',
@@ -3263,7 +3266,8 @@ Object.assign(pt, {
   'usuarios.motoboy': 'Motoboy vinculado', 'usuarios.motoboy_nenhum': 'Nenhum (não é motoboy)',
 });
 Object.assign(en, {
-  'menu.minhas_entregas': 'My deliveries', 'menu.painel_entregas': 'Deliveries (map)',
+  'menu.minhas_entregas': 'My deliveries', 'menu.painel_entregas': 'Deliveries (map)', 'menu.montar_rota': 'Plan route',
+  'rota.crumb': 'Logistics / Plan route', 'rota.titulo': 'Plan courier route', 'rota.sub': 'Drag to order the stops; optimize by shortest path.', 'rota.motoboy': 'Courier', 'rota.escolha_motoboy': 'Select a courier…', 'rota.sem_paradas': 'No deliveries in route for this courier.', 'rota.otimizar': 'Optimize route', 'rota.otimizando': 'Optimizing…', 'rota.otimizada': 'Route optimized.', 'rota.salvar': 'Save route', 'rota.salvando': 'Saving…', 'rota.salva': 'Route saved.', 'rota.paradas': 'stops', 'rota.sem_endereco': 'No delivery address',
   'cap.logistica.entrega.ver': 'View deliveries / tracking panel', 'cap.logistica.entrega.atualizar': 'Courier app (update status/position)',
   'rastreio.crumb_minhas': 'Logistics / My deliveries', 'rastreio.minhas': 'My deliveries', 'rastreio.minhas_sub': 'Deliveries assigned to you. Start the trip to share your location.',
   'rastreio.gps_ativo': 'Location active — sending your position.', 'rastreio.sem_entregas': 'No deliveries right now.', 'rastreio.sem_gps': 'This device has no GPS/location.', 'rastreio.gps_negado': 'Location permission denied. Enable GPS and the app location permission.',
@@ -3281,7 +3285,8 @@ Object.assign(en, {
   'usuarios.motoboy': 'Linked courier', 'usuarios.motoboy_nenhum': 'None (not a courier)',
 });
 Object.assign(es, {
-  'menu.minhas_entregas': 'Mis entregas', 'menu.painel_entregas': 'Entregas (mapa)',
+  'menu.minhas_entregas': 'Mis entregas', 'menu.painel_entregas': 'Entregas (mapa)', 'menu.montar_rota': 'Armar ruta',
+  'rota.crumb': 'Logística / Armar ruta', 'rota.titulo': 'Armar ruta del motoboy', 'rota.sub': 'Ordena las paradas arrastrando; optimiza por el camino más corto.', 'rota.motoboy': 'Motoboy', 'rota.escolha_motoboy': 'Selecciona un motoboy…', 'rota.sem_paradas': 'Ninguna entrega en ruta para este motoboy.', 'rota.otimizar': 'Optimizar ruta', 'rota.otimizando': 'Optimizando…', 'rota.otimizada': 'Ruta optimizada.', 'rota.salvar': 'Guardar ruta', 'rota.salvando': 'Guardando…', 'rota.salva': 'Ruta guardada.', 'rota.paradas': 'paradas', 'rota.sem_endereco': 'Sin dirección de entrega',
   'cap.logistica.entrega.ver': 'Ver entregas / panel de rastreo', 'cap.logistica.entrega.atualizar': 'App del motoboy (actualizar estado/posición)',
   'rastreio.crumb_minhas': 'Logística / Mis entregas', 'rastreio.minhas': 'Mis entregas', 'rastreio.minhas_sub': 'Las entregas asignadas a ti. Inicia el viaje para enviar tu ubicación.',
   'rastreio.gps_ativo': 'Ubicación activa — enviando tu posición.', 'rastreio.sem_entregas': 'Ninguna entrega por ahora.', 'rastreio.sem_gps': 'Este dispositivo no tiene GPS/ubicación.', 'rastreio.gps_negado': 'Permiso de ubicación denegado. Activa el GPS y el permiso de ubicación de la app.',

@@ -26,6 +26,19 @@ export function rotasEntregas(deps: Dependencias): Router {
   r.get('/entregas/ativas', aut, az('logistica.entrega.ver'), async (req, res: Response) => {
     try { res.json(await deps.rastreioService.ativas(sch(req))); } catch (e) { tratarErro(res, e); }
   });
+
+  // Montar rota: paradas (entregas expedidas) de um motoboy, na ordem salva.
+  r.get('/logistica/rota/:motoboyId', aut, az('logistica.entrega.ver'), async (req, res: Response) => {
+    try { res.json(await deps.rotaService.listar(sch(req), req.params.motoboyId!)); } catch (e) { tratarErro(res, e); }
+  });
+  // Salva a ordem das paradas (índice do array vira ordem_rota).
+  r.post('/logistica/rota', aut, az('logistica.entrega.ver'), async (req, res: Response) => {
+    try { const b = req.body ?? {}; await deps.rotaService.salvar(sch(req), b.motoboyId, b.ordem); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+  });
+  // Otimiza pelo caminho mais curto (não salva — devolve a ordem sugerida de pedidoIds).
+  r.post('/logistica/rota/otimizar', aut, az('logistica.entrega.ver'), async (req, res: Response) => {
+    try { const b = req.body ?? {}; res.json({ ordem: await deps.rotaService.otimizar(sch(req), b.motoboyId, b.ordem) }); } catch (e) { tratarErro(res, e); }
+  });
   // PÚBLICO (sem login): link de acompanhamento do cliente. O token é "<codigo>.<aleatório>",
   // então o código da empresa (tenant) sai do próprio token.
   r.get('/rastreio/:token', async (req: Request, res: Response) => {

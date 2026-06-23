@@ -66,12 +66,14 @@ Relatórios · Configurações/Acesso.
   de uma porta (adapter). No MVP são registro interno.
 - Produtos têm **lote, validade e localização** (rastreabilidade) — domínio
   estético/regulado.
-- **Datetime sempre em UTC** no banco/backend; conversão por timezone só na
-  borda (frontend). A empresa (tenant) tem idioma e timezone padrão; usuário
-  pode sobrescrever.
+- **Datetime em UTC** no banco/backend; datas exibidas em pt-BR (`toLocaleString('pt-BR')`).
+  **SEM suporte a fuso horário/timezone** (removido em 2026-06-22 a pedido do Gui).
+- **Idioma: SÓ pt-BR.** O sistema **não é multilíngue** (decisão do Gui, 2026-06-22).
+  Existe a função `t('chave')` em todas as telas, mas resolve sempre no único dicionário
+  português (`dicionario` em `dicionarios.ts`). **NUNCA** adicionar/manter en-US ou es;
+  ao criar texto novo, só pt-BR. (Os objetos `en`/`es` no `dicionarios.ts` são código morto.)
 - **White-label por empresa:** cada empresa define logo, nome fantasia e
-  paleta de cores aplicada ao layout (tela "Dados da empresa"). i18n
-  pt-BR / en-US / es.
+  paleta de cores aplicada ao layout (tela "Dados da empresa").
 - **Permissões auto-descobertas:** as funcionalidades vinculáveis a perfil são
   geradas pelo sistema (registry no boot), **não** um CRUD manual.
 - **Nomenclatura (decidido):** *Empresa* = tenant (conta que usa o sistema;
@@ -187,6 +189,41 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 - [ ] Commit + push
 
 ## 8. Estado / histórico
+
+- **2026-06-22 (Sistema só pt-BR — removida multilíngua + timezone)** — **Decisão do Gui: o sistema não será
+  usado em outros idiomas nem fusos.** Escolha dele: **manter só pt-BR** (não arrancar o `t()` de todas as telas).
+  **Frontend:** `I18nContext` simplificado p/ só `{ t }` (sem `idioma`/`idiomas`/`setIdioma`, sem `localStorage
+  triade_idioma`); `t()` resolve sempre no dicionário **pt** (`export const dicionario = pt`). Os objetos `en`/`es`
+  do `dicionarios.ts` viraram **código morto** (não referenciados; `void en; void es;` — saem numa limpeza dedicada
+  depois). `BrandingContext` não aplica mais o idioma da empresa no login. `SeletorIdioma.tsx` virou **no-op**
+  (return null, não é importado em lugar nenhum). `DadosEmpresa` parou de enviar `idiomaPadrao`/`timezonePadrao`.
+  `tema.ts`: removidos `TIMEZONES` e os campos `idiomaPadrao`/`timezonePadrao` da interface `Branding`. **Backend:**
+  deixado **inerte** (colunas `empresa.idioma_padrao`/`timezone_padrao` + validação ficam, sem uso — igual marca/
+  categoria; sem migration destrutiva). **REGRA p/ próximas sessões:** ao escrever texto de UI, **só pt-BR** — nunca
+  mais `Object.assign(en/es, …)` nem "i18n pt/en/es" nas notas. **Validação:** hand-review (grep confirmou zero
+  referências remanescentes a idiomaPadrao/timezonePadrao/setIdioma/idiomas/IDIOMAS no `apps/web`). **Pendente Gui:**
+  `npm run build -w @triade/web` (validar!) → commit+push → `scripts\app-apk.bat`.
+
+- **2026-06-22 (Fase 8 — parte 3: Montar rota + mapa suave JS SDK)** — **Migration tenant 072. Sem cap nova.**
+  **Item 5 (mapa suave):** `MapaEntrega.tsx` reescrito do iframe Embed p/ o **Google Maps JS SDK** — o pin do motoboy desliza
+  (`marker.setPosition` + `map.panTo`, sem reload/flicker) e a rota é desenhada **uma vez** por destino (`DirectionsService`/
+  `DirectionsRenderer`, `preserveViewport`). Loader singleton (`carregarMaps`); fallback p/ link se sem `VITE_GOOGLE_MAPS_KEY` ou
+  falha. **Setup Google (chave de NAVEGADOR):** ativar **"Maps JavaScript API"** e **"Directions API"** no projeto da chave
+  `VITE_GOOGLE_MAPS_KEY` (a de referrer). Sem isso → fallback de link. **Item 4 (montar rota):** migration **072**
+  `pedido.ordem_rota int`. Hexagonal: `domain/logistica/Rota.ts` (`ParadaRota`/`RotaRepository`), `SqlRotaRepository`
+  (`entregasDoMotoboy` = pedidos expedidos/forma motoboy/não entregues do motoboy, ORDER BY ordem_rota NULLS LAST; `definirOrdem`),
+  `application/logistica/RotaService` (`listar`/`salvar`/**`otimizar`**). **Otimização = Directions waypoint optimization**
+  (`optimize:true`, origin=destination=endereço da empresa via `empresasRepo.buscarPorCodigo`; **usa a chave de SERVIDOR
+  `GOOGLE_MAPS_API_KEY`** → precisa **Directions API ativada nessa chave também**; degrada p/ ordem manual em qualquer falha —
+  1 chamada por montagem de rota, barato). Rotas (em `entregas.ts`): `GET /logistica/rota/:motoboyId`, `POST /logistica/rota`
+  {motoboyId, ordem[]}, `POST /logistica/rota/otimizar` (cap `logistica.entrega.ver`). `SqlRastreioRepository.minhasEntregas`
+  agora ordena por `ordem_rota NULLS LAST` (o app do motoboy segue a rota). **Front:** `MontarRota.tsx` (menu **Logística › Montar
+  rota**, cap `logistica.entrega.ver`) — seletor de motoboy, lista de paradas **arrastável** (HTML5 drag, círculo nº 1/2/3),
+  **Otimizar rota** + **Salvar rota**; i18n `rota.*`/`menu.montar_rota` pt/en/es. **Cap p/ não-admin:** o perfil que monta rota
+  precisa **`logistica.entrega.ver`** + **`cadastros.motoboy.listar`** (o dropdown lê `/motoboys`). **Validação:** hand-review
+  (sandbox tsc não-confiável; build local = fonte de verdade). **Pendente Gui:** `npm install` → `npm run build -w @triade/web`
+  (validar!) → commit+push (Render aplica 072) → relogar → `scripts\app-apk.bat`. **Setup Google:** ativar **Maps JavaScript API**
+  + **Directions API** na chave de navegador (mapa suave) e **Directions API** na chave de servidor (otimizar rota).
 
 - **2026-06-22 (Fase 8 — ajustes pós-teste, parte 1)** — **4 itens (sem migration nova; caps mexidas → relogar).**
   (4) **Voltar p/ orçamento** agora só de **aguardando_pagamento/aprovado** (TRANSICOES back+`lib/pedido`); de separacao/expedido/entregue não é mais permitido (bloqueia se houve movimentação de estoque) — removido o auto-`devolverPorRef`/`reverterPorPedido` do ramo `orcamento` (só remove títulos, bloqueia se pago). Botão no detalhe gateado por `proximos.includes('orcamento')` + `!modoExpedicao` (só Comercial). i18n nova `pedidos.acao.orcamento` (corrige o "botão estranho" cru no Kanban) + confirma atualizado. (6) **Desconto no card do Kanban:** `PedidoResumo` += `desconto` (SqlPedidoRepository.listar + domínio); `Pedidos.tsx` mostra linha verde "Desconto: R$ X" no card. (2) **Menu do motoboy:** `CAPS_PAINEL_TV` += `logistica.entrega.atualizar` (não vai p/ perfis "vê tudo"); perfil **Motoboy** ficou só com `logistica.entrega.atualizar` (sem `.ver` → não vê Logística/painel); `GET /entregas/minhas` regateado p/ `atualizar`. (8) **Notificações "Limpar todas":** `Notificacoes.tsx` botão que conclui todos os grupos (localStorage `triade_notif_concluidas`) + i18n `notif.limpar_todas`. **Pendente Gui:** `npm install` → `npm run build -w @triade/web` → commit+push → relogar. **FEITO (parte 2a):** **mapa+rota+ETA** — `MapaEntrega` ganhou modo Embed **directions** (rota motoboy→cliente) c/ destino; ETA (distância+tempo) calculado no `RastreioService` via **Distance Matrix** (reusa `GOOGLE_MAPS_API_KEY` do servidor) com **cache de 2min** por entrega; `EntregaMotoboy/Ativa/RastreioPublico` += `posicao`/`eta`; mostrado em Minhas entregas (mapa por entrega), Painel e link público. i18n `rastreio.faltam`. Sem setup novo no Google (reusa as 2 chaves). **FEITO (parte 2b-i):** **link do motoboy avulso (freelancer, sem login)** — migration **071** `pedido.motoboy_token` (único); `RastreioRepository` += `garantirMotoboyToken`/`buscarPorMotoboyToken` (+ `EntregaFreelancer`); `RastreioService` += `gerarLinkMotoboy`/`freelancerEntrega`/`freelancerStatus`/`freelancerPosicao` (token autoriza atualizar; reusa cache de ETA). Rotas: `POST /pedidos/:id/motoboy-link` (cap `comercial.pedido.expedir`) + **públicas** `GET/PATCH/POST /entrega-motoboy/:token[...]` (schema sai do prefixo do token). Front: página pública `EntregaMotoboyPublico.tsx` (rota `/entrega/:token`, botões A caminho/Cheguei/Entregue + GPS via navigator.geolocation, mapa+ETA) + botão **"Link do motoboy (avulso)"** no detalhe do pedido (expedição, copia o link). i18n `rastreio.link_motoboy*`/`entrega.*`. Sem cap nova. **FEITO (parte 2b-ii):** (frete extra) migration não precisou — `PedidoRepository.reabrirEntrega` (troca endereço + entrega_status='aguardando' + zera motoboy_token) + `PedidosService.refazerEntrega` (gera título a pagar do motoboy SEMPRE + título a receber "Frete adicional" se quemPaga='cliente'; rota `POST /pedidos/:id/refazer-entrega` cap `comercial.pedido.expedir`; modal `ModalRefazerEntrega` no detalhe, botão só em expedido/motoboy). (cliente) **mini-cadastro inline** (`SeletorPessoa.ModalNovaPessoa`) ganhou os campos de **endereço completo** (logradouro/número/complemento/bairro) no ramo cliente — espelha o de fornecedor; salva no endereço favorito. (relatório) **`lib/excel.ts`**: título limpa as datas ISO do nome (período fica no subtítulo) → corrige o "Contas pagar 2026 06 01..." cru; **total virou fórmula `SUM(...)`** no Excel — vale p/ TODOS os relatórios. **Extrato bancário:** já existe na Conciliação (OFX/CSV). **Pendente Gui:** `npm install` → `npm run build -w @triade/web` → commit+push (Render aplica 070+071) → relogar (caps da parte 1) → `scripts\app-apk.bat`.
