@@ -190,6 +190,14 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-23 (Perfil multi-empresa: "marcar todas as empresas")** — Só frontend (`Perfis.tsx` `ModalPerfilMulti`). Acima
+  da lista de empresas entrou um contador `sel.size/empresas.length selecionadas` + botão **"Marcar todas as empresas"** /
+  **"Desmarcar todas"** (`todasMarcadas` = todas no `sel`; `toggleTodas` seta tudo ou limpa). Permite o super-admin **replicar
+  o mesmo perfil (nome + permissões) em TODAS as empresas de uma vez** (o backend `PerfilMultiEmpresa.sincronizar` já aplica em
+  cada empresa marcada — cria onde não existe pelo nome, atualiza as permissões onde existe; desmarcadas não são tocadas). i18n
+  `perfis.multi_todas`/`_desmarcar_todas`/`_selecionadas` (pt). Sem backend novo, sem migration, sem cap. **Pendente Gui:**
+  `cd /d C:\Users\guilherme.dias\Desktop\ERP_TRIADE` → `npm run build -w @triade/web` → commit+push → `scripts\app-apk.bat`.
+
 - **2026-06-23 (Lote 2: Acesso multi-empresa padronizado + olho na troca de senha + importação Produtos/Fornecedores)** —
   Três frentes (sem migration; sem cap nova). **(1) Acesso multi-empresa (Usuários):** o `AcessoMultiEmpresa.situacao` virou
   `situacao(termo)` — aceita **e-mail OU nome** (resolve o login pelo nome via `usuarios.listar` quando não tem `@`) e retorna

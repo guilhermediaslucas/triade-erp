@@ -83,12 +83,6 @@ export function MinhasEntregas() {
     } catch (err) { const k = (err as ErroApi).chaveI18n; setErro(k); toast(t(k), 'erro'); }
   }
 
-  function copiarLink(e: Entrega) {
-    if (!e.rastreioToken) return;
-    const url = window.location.origin + '/rastreio/' + e.rastreioToken;
-    navigator.clipboard?.writeText(url).then(() => toast(t('rastreio.link_copiado'))).catch(() => { window.prompt(t('rastreio.link_cliente'), url); });
-  }
-
   const proximo = (s: StatusEntrega): { st: StatusEntrega; k: string } | null =>
     s === 'aguardando' ? { st: 'a_caminho', k: 'rastreio.btn_a_caminho' }
     : s === 'a_caminho' ? { st: 'chegou', k: 'rastreio.btn_cheguei' }
@@ -124,7 +118,6 @@ export function MinhasEntregas() {
               )}
               <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
                 {prox && <button className="btn-primary" onClick={() => mudar(e, prox.st)}>{t(prox.k)}</button>}
-                {e.rastreioToken && <button className="btn-ghost" onClick={() => copiarLink(e)}><Ic name="i-clip" className="sm" /> {t('rastreio.copiar_link')}</button>}
               </div>
             </div>
           );

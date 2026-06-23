@@ -3184,6 +3184,7 @@ Object.assign(pt, {
   'perfis.multi_ajuda': 'Defina o perfil (nome + permissões) e aplique nas empresas marcadas. Onde já existir o mesmo nome, as permissões são atualizadas; as desmarcadas não são alteradas.',
   'perfis.multi_buscar': 'Buscar',
   'perfis.multi_empresas': 'Aplicar nas empresas',
+  'perfis.multi_todas': 'Marcar todas as empresas', 'perfis.multi_desmarcar_todas': 'Desmarcar todas', 'perfis.multi_selecionadas': 'selecionadas',
   'perfis.multi_vazio': 'Nenhuma empresa.',
   'perfis.multi_existe': 'já existe',
   'perfis.multi_novo': 'novo',

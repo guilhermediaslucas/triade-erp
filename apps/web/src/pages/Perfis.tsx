@@ -119,6 +119,8 @@ function ModalPerfilMulti({ porModulo, onFechar, onSalvo }: {
     setCaps((c) => (todos ? c.filter((x) => !ids.includes(x)) : [...new Set([...c, ...ids])]));
   }
   function toggleEmp(codigo: string) { setSel((s) => { const n = new Set(s); n.has(codigo) ? n.delete(codigo) : n.add(codigo); return n; }); }
+  const todasMarcadas = empresas.length > 0 && empresas.every((e) => sel.has(e.codigo));
+  function toggleTodas() { setSel(todasMarcadas ? new Set() : new Set(empresas.map((e) => e.codigo))); }
 
   async function buscar(nomeAtual: string) {
     setErro(null); setCarregando(true);
@@ -186,6 +188,12 @@ function ModalPerfilMulti({ porModulo, onFechar, onSalvo }: {
       </div>
 
       <div className="campo">{t('perfis.multi_empresas')}
+        {empresas.length > 0 && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6 }}>
+            <span className="muted" style={{ fontSize: 12 }}>{sel.size}/{empresas.length} {t('perfis.multi_selecionadas')}</span>
+            <button type="button" className="btn-link" onClick={toggleTodas}>{todasMarcadas ? t('perfis.multi_desmarcar_todas') : t('perfis.multi_todas')}</button>
+          </div>
+        )}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 6, maxHeight: 220, overflowY: 'auto' }}>
           {empresas.length === 0 && <span className="muted">{carregando ? t('common.carregando') : t('perfis.multi_vazio')}</span>}
           {empresas.map((e) => (

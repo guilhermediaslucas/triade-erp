@@ -3,6 +3,7 @@
 // Mantido em sincronia com o menu (components/Layout.tsx).
 const ROTAS: Array<{ cap: string; to: string }> = [
   { cap: 'dashboard.ver', to: '/' },
+  { cap: 'logistica.entrega.atualizar', to: '/entregas/minhas' },   // motoboy: 1ª (e única) tela dele
   { cap: 'comercial.pedido.listar', to: '/comercial/pedidos' },
   { cap: 'comercial.crm.ver', to: '/comercial/crm' },
   { cap: 'comercial.meta.ver', to: '/comercial/metas' },
