@@ -190,6 +190,23 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-23 (Entrega só por código de 4 dígitos + tela do motoboy melhorada + máscara de telefone)** — Decisões do Gui.
+  **(1) Confirmação da entrega só pelo código (sem "quem recebeu"):** nos 3 fluxos do motoboy (`mudarStatus`, `freelancerStatus`,
+  `rotaStatus`) removida a exigência de `recebidoPor`; mantido `exigirCodigoTelefone` (4 últimos dígitos do telefone do cliente);
+  `definirEntrega` recebe `recebido_por` null. Código errado → `entrega.codigo_invalido` (400) e NÃO finaliza. Novo componente
+  `components/ConfirmarEntrega.tsx` (modal com input numérico de 4 dígitos, mostra a mensagem de erro inline e só finaliza com 4
+  dígitos) substitui os 2 `window.prompt` ("quem recebeu" + código) em `MinhasEntregas`, `EntregaMotoboyPublico` e `RotaPublica`.
+  **(2) Tela "Minhas entregas" do motoboy melhorada:** paradas **numeradas na ordem da rota** (1,2,3… — o repo já ordena por
+  `ordem_rota`), **parada atual destacada** (outline + selo "Próxima"), botão de ação full-width, mapa 260px, contador de pendentes
+  + "siga a ordem da rota". A confirmação usa o novo modal. **(3) Máscara de telefone** `mascaraTelefone` em `lib/br.ts` — formata
+  `(xx)xxxx-xxxx` (fixo 10 díg.) ou `(xx)xxxxx-xxxx` (celular 11 díg.), **auto-detecta** fixo/celular pela contagem (atende "telefone
+  ou celular" sem campo novo). Aplicada nos campos telefone de Clientes, Fornecedores, Vendedores, Motoboys e no mini-cadastro
+  `SeletorPessoa`. i18n `rastreio.confirmar_entrega`/`codigo_telefone_label`/`_hint`/`siga_rota`/`proxima` (pt). **Back-office
+  (Expedição/ModalDataEntrega) não mudou** — "quem recebeu" lá é manual da empresa, não do motoboy. **Sem migration, sem cap.**
+  **OBS APK:** o `app-apk.bat` não trocava a data do .apk porque o código estava **idêntico** ao build das 16:56 (Gradle "up-to-date").
+  Com estas mudanças o próximo build gera APK novo. **Pendente Gui:** `cd /d C:\Users\guilherme.dias\Desktop\ERP_TRIADE` →
+  `npm run build -w @triade/web` → commit+push → `scripts\app-apk.bat`.
+
 - **2026-06-23 (BUG do carregador do Google Maps — `loading=async` + onload resolvia cedo demais)** — Verificado ao vivo
   (Claude no Chrome, link público `/rastreio/teste...`): a chave **entra no build** (request `maps/api/js?key=AIza...` → 200,
   main/common/util.js 200) mas a tela ficava no **fallback**. Causa: `MapaEntrega.carregarMaps` montava o script com

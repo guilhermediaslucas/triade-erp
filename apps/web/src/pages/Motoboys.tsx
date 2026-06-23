@@ -3,6 +3,7 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { Ic } from '../components/Icones.js';
+import { mascaraTelefone } from '../lib/br.js';
 
 interface Motoboy { id: string; nome: string; telefone: string | null; cpf: string | null; chavePix: string | null; ativo: boolean; }
 
@@ -97,7 +98,7 @@ function ModalMotoboy({ m, onFechar, onSalvo }: { m: Motoboy; onFechar: () => vo
         <label className="campo">{t('motoboys.nome')}<input value={nome} onChange={(e) => setNome(e.target.value)} autoFocus /></label>
         <div className="cores-grid">
           <label className="campo">CPF<input value={cpf} onChange={(e) => setCpf(e.target.value)} placeholder="000.000.000-00" /></label>
-          <label className="campo">{t('motoboys.telefone')}<input value={telefone} onChange={(e) => setTelefone(e.target.value)} /></label>
+          <label className="campo">{t('motoboys.telefone')}<input value={telefone} onChange={(e) => setTelefone(mascaraTelefone(e.target.value))} placeholder="(11)99999-9999" /></label>
         </div>
         <label className="campo">{t('motoboys.chave_pix')}<input value={chavePix} onChange={(e) => setChavePix(e.target.value)} /></label>
         {erro && <div className="alerta-erro">{t(erro)}</div>}

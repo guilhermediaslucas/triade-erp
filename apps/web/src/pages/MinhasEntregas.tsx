@@ -6,6 +6,7 @@ import { useToast } from '../components/Toast.js';
 import { Ic } from '../components/Icones.js';
 import { moeda, numeroPedido } from '../lib/pedido.js';
 import { MapaEntrega } from '../components/MapaEntrega.js';
+import { ConfirmarEntrega } from '../components/ConfirmarEntrega.js';
 import { Capacitor } from '@capacitor/core';
 import { Geolocation } from '@capacitor/geolocation';
 
@@ -20,6 +21,7 @@ export function MinhasEntregas() {
   const [entregas, setEntregas] = useState<Entrega[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(true);
+  const [confirmar, setConfirmar] = useState<Entrega | null>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
 
   async function carregar() {
@@ -41,7 +43,6 @@ export function MinhasEntregas() {
     async function iniciar() {
       if (!ativasIds.length) return;
       if (Capacitor.isNativePlatform()) {
-        // App nativo: usa o plugin do Capacitor (pede a permissão de localização).
         try {
           const perm = await Geolocation.requestPermissions();
           if (perm.location === 'denied') { setErro('rastreio.gps_negado'); return; }
@@ -51,7 +52,6 @@ export function MinhasEntregas() {
           cleanupRef.current = () => { Geolocation.clearWatch({ id: wid }).catch(() => {}); };
         } catch { setErro('rastreio.sem_gps'); }
       } else if ('geolocation' in navigator) {
-        // Navegador (web/celular): usa a API do navegador.
         const wid = navigator.geolocation.watchPosition(
           (pos) => { if (!cancelado) enviar(pos.coords.latitude, pos.coords.longitude); },
           () => { setErro('rastreio.gps_negado'); },
@@ -65,20 +65,11 @@ export function MinhasEntregas() {
     /* eslint-disable-next-line */
   }, [ativasKey]);
 
-  async function mudar(e: Entrega, status: StatusEntrega) {
+  // Avança o status (A caminho / Cheguei). "Entregue" passa pelo modal de código.
+  async function avancar(e: Entrega, status: StatusEntrega) {
     setErro(null);
-    let recebidoPor: string | undefined;
-    let codigoConfirmacao: string | undefined;
-    if (status === 'entregue') {
-      const quem = window.prompt(t('rastreio.quem_recebeu'));
-      if (quem == null || !quem.trim()) return;
-      recebidoPor = quem.trim();
-      const cod = window.prompt(t('rastreio.codigo_telefone'));
-      if (cod == null || !cod.trim()) return;
-      codigoConfirmacao = cod.trim();
-    }
     try {
-      await api.patch('/entregas/' + e.pedidoId + '/status', { status, recebidoPor, codigoConfirmacao }, token!);
+      await api.patch('/entregas/' + e.pedidoId + '/status', { status }, token!);
       carregar(); toast(t('rastreio.atualizado'));
     } catch (err) { const k = (err as ErroApi).chaveI18n; setErro(k); toast(t(k), 'erro'); }
   }
@@ -89,40 +80,66 @@ export function MinhasEntregas() {
     : s === 'chegou' ? { st: 'entregue', k: 'rastreio.btn_entregue' }
     : null;
 
+  // Parada "atual": a que está em rota; se nenhuma, a primeira da lista (a próxima a sair).
+  const idxAtual = (() => {
+    const i = entregas.findIndex((e) => e.status === 'a_caminho' || e.status === 'chegou');
+    return i >= 0 ? i : (entregas.length ? 0 : -1);
+  })();
+  const pendentes = entregas.length;
+
   return (
     <div>
       <div className="crumb">{t('rastreio.crumb_minhas')}</div>
       <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('rastreio.minhas')}</h1><div className="muted page-sub">{t('rastreio.minhas_sub')}</div></div></div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       {ativasIds.length > 0 && <div className="alerta-ok" style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Ic name="i-truck" className="sm" /> {t('rastreio.gps_ativo')}</div>}
+      {!carregando && pendentes > 0 && <div className="muted" style={{ marginBottom: 10, fontSize: 13 }}>{pendentes} {t('rota.pendentes')} · {t('rastreio.siga_rota')}</div>}
       {carregando && <div className="muted">{t('common.carregando')}</div>}
-      {!carregando && entregas.length === 0 && <div className="card" style={{ textAlign: 'center', padding: 40 }} ><div className="muted">{t('rastreio.sem_entregas')}</div></div>}
+      {!carregando && entregas.length === 0 && <div className="card" style={{ textAlign: 'center', padding: 40 }}><div className="muted">{t('rastreio.sem_entregas')}</div></div>}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {entregas.map((e) => {
+        {entregas.map((e, i) => {
           const prox = proximo(e.status);
+          const atual = i === idxAtual;
           return (
-            <div key={e.pedidoId} className="card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                <div>
-                  <b>{numeroPedido(e.numero)}</b> · {e.clienteNome ?? '—'} · <b>{moeda(e.total)}</b>
+            <div key={e.pedidoId} className="card" style={atual ? { outline: '2px solid var(--accent)', outlineOffset: 0 } : undefined}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                <span style={{ flex: '0 0 34px', height: 34, borderRadius: '50%', background: atual ? 'var(--accent)' : 'var(--borda)', color: atual ? '#fff' : 'var(--muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{i + 1}</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                    <div><b>{numeroPedido(e.numero)}</b> · {e.clienteNome ?? '—'} · <b>{moeda(e.total)}</b></div>
+                    <span className={'pill ' + corStatus(e.status)}>{atual && e.status === 'aguardando' ? t('rastreio.proxima') : t('rastreio.st.' + e.status)}</span>
+                  </div>
                   <div className="muted" style={{ fontSize: 13, marginTop: 4 }}><Ic name="i-pin" className="sm" /> {e.enderecoEntrega ?? '—'}</div>
                 </div>
-                <span className={'pill ' + corStatus(e.status)}>{t('rastreio.st.' + e.status)}</span>
               </div>
               {(e.enderecoEntrega || e.posicao) && (
                 <div style={{ marginTop: 10 }}>
-                  <MapaEntrega lat={e.posicao?.lat ?? null} lng={e.posicao?.lng ?? null} destino={e.enderecoEntrega} altura={300} />
+                  <MapaEntrega lat={e.posicao?.lat ?? null} lng={e.posicao?.lng ?? null} destino={e.enderecoEntrega} altura={260} />
                   {e.eta && <div style={{ marginTop: 6, fontWeight: 500, fontSize: 13 }}><Ic name="i-clock" className="sm" /> {t('rastreio.faltam')} {e.eta.min} min · {e.eta.km.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} km</div>}
                 </div>
               )}
-              <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
-                {prox && <button className="btn-primary" onClick={() => mudar(e, prox.st)}>{t(prox.k)}</button>}
-              </div>
+              {prox && (
+                <button className="btn-primary" style={{ width: '100%', marginTop: 12 }}
+                  onClick={() => prox.st === 'entregue' ? setConfirmar(e) : avancar(e, prox.st)}>
+                  {t(prox.k)}
+                </button>
+              )}
             </div>
           );
         })}
       </div>
+
+      {confirmar && (
+        <ConfirmarEntrega
+          pedido={numeroPedido(confirmar.numero) + ' · ' + (confirmar.clienteNome ?? '')}
+          onFechar={() => setConfirmar(null)}
+          onConfirmar={async (codigo) => {
+            await api.patch('/entregas/' + confirmar.pedidoId + '/status', { status: 'entregue', codigoConfirmacao: codigo }, token!);
+            setConfirmar(null); carregar(); toast(t('rastreio.atualizado'));
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
-import { mascaraCnpj, mascaraCep, buscarCnpj, buscarCep, UFS } from '../lib/br.js';
+import { mascaraCnpj, mascaraCep, mascaraTelefone, buscarCnpj, buscarCep, UFS } from '../lib/br.js';
 
 type TipoPessoaSel = 'cliente' | 'fornecedor';
 
@@ -102,7 +102,7 @@ export function ModalNovaPessoa({ tipo, onFechar, onCriado }: {
               </div>
             : <input value={documento} onChange={(e) => setDoc(e.target.value)} placeholder={t('fin.doc_ph')} />}
         </label>
-        <label className="campo">{t('fin.celular')}<input value={telefone} onChange={(e) => setTel(e.target.value)} placeholder="+55" /></label>
+        <label className="campo">{t('fin.celular')}<input value={telefone} onChange={(e) => setTel(mascaraTelefone(e.target.value))} placeholder="(11)99999-9999" /></label>
       </div>
       <div className="cores-grid">
         <label className="campo">{t('pessoa.email')}<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></label>
@@ -141,7 +141,7 @@ export function ModalNovaPessoa({ tipo, onFechar, onCriado }: {
             <button type="button" className="btn-ghost btn-mini" disabled={buscandoCnpj} onClick={buscarDoc}>{buscandoCnpj ? '...' : t('clientes.buscar_cnpj')}</button>
           </div>
         </label>
-        <label className="campo">{t('fin.celular')}<input value={telefone} onChange={(e) => setTel(e.target.value)} placeholder="+55" /></label>
+        <label className="campo">{t('fin.celular')}<input value={telefone} onChange={(e) => setTel(mascaraTelefone(e.target.value))} placeholder="(11)99999-9999" /></label>
       </div>
       <div className="cores-grid">
         <label className="campo">{t('pessoa.email')}<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></label>

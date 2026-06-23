@@ -2,6 +2,15 @@ export const soDigitos = (v: string) => (v || '').replace(/\D/g, '');
 export function mascaraCnpj(v: string) { const d = soDigitos(v).slice(0, 14); return d.replace(/^(\d{2})(\d)/, '$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1/$2').replace(/(\d{4})(\d)/, '$1-$2'); }
 export function mascaraCpf(v: string) { const d = soDigitos(v).slice(0, 11); return d.replace(/^(\d{3})(\d)/, '$1.$2').replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1-$2'); }
 export function mascaraCep(v: string) { const d = soDigitos(v).slice(0, 8); return d.replace(/^(\d{5})(\d)/, '$1-$2'); }
+// Telefone BR: formata (xx)xxxx-xxxx (fixo, 10 díg.) ou (xx)xxxxx-xxxx (celular, 11 díg.).
+// Detecta automaticamente fixo/celular pela quantidade de dígitos — serve para os dois.
+export function mascaraTelefone(v: string) {
+  const d = soDigitos(v).slice(0, 11);
+  if (d.length <= 2) return d.replace(/^(\d{0,2})/, '($1');
+  const meio = d.length <= 10 ? 4 : 5;   // fixo: 4 dígitos antes do hífen; celular: 5
+  const ddd = d.slice(0, 2), p1 = d.slice(2, 2 + meio), p2 = d.slice(2 + meio);
+  return p2 ? `(${ddd})${p1}-${p2}` : `(${ddd})${p1}`;
+}
 
 export interface DadosCnpj { razao: string | null; fantasia: string | null; cep: string | null; cidade: string | null; uf: string | null; }
 export async function buscarCnpj(documento: string): Promise<DadosCnpj | null> {

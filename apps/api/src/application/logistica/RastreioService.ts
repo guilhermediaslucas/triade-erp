@@ -72,12 +72,11 @@ export class RastreioService {
     // já carrega o tenant (codigo = schema sem o prefixo t_).
     if (status === 'a_caminho' && !token) token = schema.replace(/^t_/, '') + '.' + randomBytes(8).toString('hex');
     if (status === 'entregue') {
-      const quem = String(recebidoPor ?? '').trim();
-      if (!quem) throw new ErroAplicacao('pedido.recebido_obrigatorio', 400);
+      // Entrega confirmada SÓ pelos 4 últimos dígitos do telefone do cliente (sem "quem recebeu").
       await this.exigirCodigoTelefone(schema, pedidoId, codigoConfirmacao);
       await this.repo.definirStatus(schema, pedidoId, 'entregue', token);
       const hoje = new Date().toISOString().slice(0, 10);
-      await this.pedidos.definirEntrega(schema, pedidoId, hoje, quem);
+      await this.pedidos.definirEntrega(schema, pedidoId, hoje, (recebidoPor && String(recebidoPor).trim()) || null);
       if (d.pedidoStatus === 'expedido') await this.pedidos.mudarStatus(schema, pedidoId, 'entregue');
       return;
     }
@@ -122,12 +121,10 @@ export class RastreioService {
     let rt = d.rastreioToken;
     if (status === 'a_caminho' && !rt) rt = schema.replace(/^t_/, '') + '.' + randomBytes(8).toString('hex');
     if (status === 'entregue') {
-      const quem = String(recebidoPor ?? '').trim();
-      if (!quem) throw new ErroAplicacao('pedido.recebido_obrigatorio', 400);
       await this.exigirCodigoTelefone(schema, d.pedidoId, codigoConfirmacao);
       await this.repo.definirStatus(schema, d.pedidoId, 'entregue', rt);
       const hoje = new Date().toISOString().slice(0, 10);
-      await this.pedidos.definirEntrega(schema, d.pedidoId, hoje, quem);
+      await this.pedidos.definirEntrega(schema, d.pedidoId, hoje, (recebidoPor && String(recebidoPor).trim()) || null);
       if (d.pedidoStatus === 'expedido') await this.pedidos.mudarStatus(schema, d.pedidoId, 'entregue');
       return;
     }
@@ -180,12 +177,10 @@ export class RastreioService {
     let rt = d.token;
     if (status === 'a_caminho' && !rt) rt = schema.replace(/^t_/, '') + '.' + randomBytes(8).toString('hex');
     if (status === 'entregue') {
-      const quem = String(recebidoPor ?? '').trim();
-      if (!quem) throw new ErroAplicacao('pedido.recebido_obrigatorio', 400);
       await this.exigirCodigoTelefone(schema, pedidoId, codigoConfirmacao);
       await this.repo.definirStatus(schema, pedidoId, 'entregue', rt);
       const hoje = new Date().toISOString().slice(0, 10);
-      await this.pedidos.definirEntrega(schema, pedidoId, hoje, quem);
+      await this.pedidos.definirEntrega(schema, pedidoId, hoje, (recebidoPor && String(recebidoPor).trim()) || null);
       if (d.pedidoStatus === 'expedido') await this.pedidos.mudarStatus(schema, pedidoId, 'entregue');
       return;
     }

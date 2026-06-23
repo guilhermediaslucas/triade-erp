@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { MapaEntrega } from '../components/MapaEntrega.js';
+import { ConfirmarEntrega } from '../components/ConfirmarEntrega.js';
 
 type StatusEntrega = 'aguardando' | 'a_caminho' | 'chegou' | 'entregue';
 interface Entrega { pedidoId: string; numero: number; clienteNome: string | null; enderecoEntrega: string | null; status: StatusEntrega; total: number; posicao: { lat: number; lng: number; criadoEm: string } | null; eta: { km: number; min: number } | null; }
@@ -18,6 +19,7 @@ export function EntregaMotoboyPublico() {
   const [e, setE] = useState<Entrega | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [naoAchou, setNaoAchou] = useState(false);
+  const [confirmar, setConfirmar] = useState(false);
   const watchRef = useRef<number | null>(null);
 
   async function carregar() {
@@ -39,18 +41,9 @@ export function EntregaMotoboyPublico() {
   }, [emRota]);
 
   async function mudar(status: StatusEntrega) {
+    if (status === 'entregue') { setConfirmar(true); return; }
     setErro(null);
-    let recebidoPor: string | undefined;
-    let codigoConfirmacao: string | undefined;
-    if (status === 'entregue') {
-      const quem = window.prompt(t('rastreio.quem_recebeu'));
-      if (quem == null || !quem.trim()) return;
-      recebidoPor = quem.trim();
-      const cod = window.prompt(t('rastreio.codigo_telefone'));
-      if (cod == null || !cod.trim()) return;
-      codigoConfirmacao = cod.trim();
-    }
-    try { await api.patch('/entrega-motoboy/' + token + '/status', { status, recebidoPor, codigoConfirmacao }); carregar(); }
+    try { await api.patch('/entrega-motoboy/' + token + '/status', { status }); carregar(); }
     catch (err) { setErro((err as { chaveI18n?: string }).chaveI18n ?? 'rastreio.erro_status'); }
   }
 
@@ -80,6 +73,16 @@ export function EntregaMotoboyPublico() {
           : <div className="muted" style={{ textAlign: 'center', padding: 20 }}>{t('rastreio.entregue_msg')}</div>}
         {emRota && <div className="muted" style={{ fontSize: 12, textAlign: 'center', marginTop: 10 }}>{t('rastreio.aguardando_msg_motoboy')}</div>}
       </div>
+      {confirmar && (
+        <ConfirmarEntrega
+          pedido={'#' + String(e.numero).padStart(6, '0') + ' · ' + (e.clienteNome ?? '')}
+          onFechar={() => setConfirmar(false)}
+          onConfirmar={async (codigo) => {
+            await api.patch('/entrega-motoboy/' + token + '/status', { status: 'entregue', codigoConfirmacao: codigo });
+            setConfirmar(false); carregar();
+          }}
+        />
+      )}
     </div>
   );
 }

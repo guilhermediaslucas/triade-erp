@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
-import { UFS, buscarMunicipios } from '../lib/br.js';
+import { UFS, buscarMunicipios, mascaraTelefone } from '../lib/br.js';
 import { Ic } from '../components/Icones.js';
 import { MoedaInput } from '../components/MoedaInput.js';
 import { ImportadorPlanilha, type CampoImport } from '../components/ImportadorPlanilha.js';
@@ -222,7 +222,7 @@ function ModalCli({ c, onFechar, onSalvo }: { c: Cliente; onFechar: () => void; 
       </div>
       <div className="cores-grid">
         <label className="campo">{t('pessoa.email')}<input type="email" value={v.email ?? ''} onChange={(e) => set('email', e.target.value)} /></label>
-        <label className="campo">{t('pessoa.telefone')}<input value={v.telefone ?? ''} onChange={(e) => set('telefone', e.target.value)} /></label>
+        <label className="campo">{t('pessoa.telefone')}<input value={v.telefone ?? ''} onChange={(e) => set('telefone', mascaraTelefone(e.target.value))} placeholder="(11)99999-9999" /></label>
       </div>
 
       <div className="perm-titulo" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

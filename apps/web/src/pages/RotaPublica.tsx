@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { MapaEntrega } from '../components/MapaEntrega.js';
+import { ConfirmarEntrega } from '../components/ConfirmarEntrega.js';
 
 type StatusEntrega = 'aguardando' | 'a_caminho' | 'chegou' | 'entregue';
 interface Pos { lat: number; lng: number; criadoEm: string; }
@@ -22,6 +23,7 @@ export function RotaPublica() {
   const [rota, setRota] = useState<Rota | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [naoAchou, setNaoAchou] = useState(false);
+  const [confirmar, setConfirmar] = useState<Parada | null>(null);
   const watchRef = useRef<number | null>(null);
 
   async function carregar() {
@@ -48,18 +50,9 @@ export function RotaPublica() {
 
   async function mudar(p: Parada) {
     const prox = proximo(p.status); if (!prox) return;
+    if (prox.st === 'entregue') { setConfirmar(p); return; }
     setErro(null);
-    let recebidoPor: string | undefined;
-    let codigoConfirmacao: string | undefined;
-    if (prox.st === 'entregue') {
-      const quem = window.prompt(t('rastreio.quem_recebeu'));
-      if (quem == null || !quem.trim()) return;
-      recebidoPor = quem.trim();
-      const cod = window.prompt(t('rastreio.codigo_telefone'));
-      if (cod == null || !cod.trim()) return;
-      codigoConfirmacao = cod.trim();
-    }
-    try { await api.patch('/rota-publica/' + token + '/' + p.pedidoId + '/status', { status: prox.st, recebidoPor, codigoConfirmacao }); carregar(); }
+    try { await api.patch('/rota-publica/' + token + '/' + p.pedidoId + '/status', { status: prox.st }); carregar(); }
     catch (err) { setErro((err as { chaveI18n?: string }).chaveI18n ?? 'rastreio.erro_status'); }
   }
 
@@ -105,6 +98,16 @@ export function RotaPublica() {
         })}
       </div>
       {pendentes === 0 && <div className="muted" style={{ textAlign: 'center', padding: 20 }}>{t('rota.tudo_entregue')}</div>}
+      {confirmar && (
+        <ConfirmarEntrega
+          pedido={'#' + String(confirmar.numero).padStart(6, '0') + ' · ' + (confirmar.clienteNome ?? '')}
+          onFechar={() => setConfirmar(null)}
+          onConfirmar={async (codigo) => {
+            await api.patch('/rota-publica/' + token + '/' + confirmar.pedidoId + '/status', { status: 'entregue', codigoConfirmacao: codigo });
+            setConfirmar(null); carregar();
+          }}
+        />
+      )}
     </div>
   );
 }

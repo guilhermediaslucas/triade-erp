@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
-import { mascaraCnpj, mascaraCep, buscarCnpj, buscarCep, UFS, buscarMunicipios } from '../lib/br.js';
+import { mascaraCnpj, mascaraCep, mascaraTelefone, buscarCnpj, buscarCep, UFS, buscarMunicipios } from '../lib/br.js';
 import { Ic } from '../components/Icones.js';
 import { ImportadorPlanilha, type CampoImport } from '../components/ImportadorPlanilha.js';
 
@@ -113,7 +113,7 @@ function ModalForn({ f, onFechar, onSalvo }: { f: Fornecedor; onFechar: () => vo
       </label>
       <div className="cores-grid">
         <label className="campo">{t('pessoa.email')}<input type="email" value={v.email ?? ''} onChange={(e) => set('email', e.target.value)} /></label>
-        <label className="campo">{t('pessoa.telefone')}<input value={v.telefone ?? ''} onChange={(e) => set('telefone', e.target.value)} /></label>
+        <label className="campo">{t('pessoa.telefone')}<input value={v.telefone ?? ''} onChange={(e) => set('telefone', mascaraTelefone(e.target.value))} placeholder="(11)99999-9999" /></label>
       </div>
       <div className="cores-grid">
         <label className="campo">CEP<input value={v.cep ?? ''} onChange={(e) => set('cep', mascaraCep(e.target.value))} onBlur={acharCep} /></label>

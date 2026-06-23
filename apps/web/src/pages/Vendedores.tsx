@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { Ic } from '../components/Icones.js';
 import { MoedaInput } from '../components/MoedaInput.js';
+import { mascaraTelefone } from '../lib/br.js';
 
 interface Vendedor { id: string; nome: string; email: string | null; telefone: string | null; regiao: string | null; metaMensal: number; comissaoPercentual: number; segueRegraGeral: boolean; ativo: boolean; vendasMes: number; }
 const moeda = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -78,7 +79,7 @@ function ModalVend({ v, onFechar, onSalvo }: { v: Vendedor; onFechar: () => void
       <label className="campo">{t('clientes.nome_completo')}<input value={f.nome} onChange={(e) => set('nome', e.target.value)} autoFocus /></label>
       <div className="cores-grid">
         <label className="campo">{t('pessoa.email')}<input type="email" value={f.email ?? ''} onChange={(e) => set('email', e.target.value)} /></label>
-        <label className="campo">{t('pessoa.telefone')}<input value={f.telefone ?? ''} onChange={(e) => set('telefone', e.target.value)} /></label>
+        <label className="campo">{t('pessoa.telefone')}<input value={f.telefone ?? ''} onChange={(e) => set('telefone', mascaraTelefone(e.target.value))} placeholder="(11)99999-9999" /></label>
       </div>
       <label className="campo">{t('vendedores.regiao')}<input value={f.regiao ?? ''} onChange={(e) => set('regiao', e.target.value)} placeholder={t('vendedores.regiao_ph')} /></label>
       <div className="cores-grid">
