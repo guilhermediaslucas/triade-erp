@@ -23,6 +23,7 @@ export function Notificacoes() {
   function persistir(s: Set<string>) { try { localStorage.setItem(CHAVE_LS, JSON.stringify([...s])); } catch { /* */ } }
   function concluir(chave: string) { setConcluidas((cur) => { const n = new Set(cur); n.add(chave); persistir(n); return n; }); }
   function reabrir(chave: string) { setConcluidas((cur) => { const n = new Set(cur); n.delete(chave); persistir(n); return n; }); }
+  function concluirTodas() { setConcluidas((cur) => { const n = new Set(cur); grupos.forEach((g) => n.add(g.chave)); persistir(n); return n; }); }
 
   useEffect(() => {
     (async () => {
@@ -59,11 +60,16 @@ export function Notificacoes() {
     <div>
       <div className="crumb">{t('notif.crumb')}</div><h1 className="page-titulo">{t('notif.titulo')}</h1><p className="muted page-sub">{t('notif.sub')}</p>
       {carregando && <div className="muted">{t('common.carregando')}</div>}
-      {!carregando && qtdConcl > 0 && (
-        <div className="toolbar" style={{ marginBottom: 8 }}>
-          <button className={'chip-f' + (mostrarConcl ? ' on' : '')} onClick={() => setMostrarConcl((v) => !v)}>
-            {mostrarConcl ? t('notif.ocultar_concluidas') : t('notif.mostrar_concluidas')} ({qtdConcl})
-          </button>
+      {!carregando && grupos.length > 0 && (
+        <div className="toolbar" style={{ marginBottom: 8, gap: 8 }}>
+          {grupos.some((g) => !concluidas.has(g.chave)) && (
+            <button className="btn-ghost btn-mini" onClick={concluirTodas}><Ic name="i-check" className="sm" /> {t('notif.limpar_todas')}</button>
+          )}
+          {qtdConcl > 0 && (
+            <button className={'chip-f' + (mostrarConcl ? ' on' : '')} onClick={() => setMostrarConcl((v) => !v)}>
+              {mostrarConcl ? t('notif.ocultar_concluidas') : t('notif.mostrar_concluidas')} ({qtdConcl})
+            </button>
+          )}
         </div>
       )}
       {!carregando && visiveis.length === 0 && (

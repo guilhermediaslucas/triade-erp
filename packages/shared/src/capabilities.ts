@@ -99,7 +99,7 @@ export function capabilityExiste(id: string): boolean { return CAPABILITY_IDS.in
 // Caps de "painel TV": NÃO são acesso comum — marcam usuários de Gestão à Vista,
 // cuja tela inicial redireciona para o painel. Não devem ir para perfis "vê tudo"
 // (Administrador/Diretor), senão esses usuários cairiam no painel TV ao logar.
-export const CAPS_PAINEL_TV: string[] = ['painel.tv_comercial', 'painel.tv_expedicao'];
+export const CAPS_PAINEL_TV: string[] = ['painel.tv_comercial', 'painel.tv_expedicao', 'logistica.entrega.atualizar'];
 export const CAPABILITY_IDS_GERAIS: string[] = CAPABILITY_IDS.filter((id) => !CAPS_PAINEL_TV.includes(id));
 
 // ===== Perfis padrão (criados em toda empresa, atuais e novas) =====
@@ -138,7 +138,7 @@ export const PERFIS_PADRAO: PerfilPadrao[] = [
   },
   {
     nome: 'Motoboy', descricao: 'App do motoboy — só as entregas atribuídas a ele',
-    caps: ['logistica.entrega.ver', 'logistica.entrega.atualizar'],
+    caps: ['logistica.entrega.atualizar'],
   },
   {
     nome: 'Gestão à Vista Comercial', descricao: 'Painel de vendas em TV (somente leitura)',

@@ -7,7 +7,7 @@ import { moeda, numeroPedido, type StatusPedido } from '../lib/pedido.js';
 import { Ic } from '../components/Icones.js';
 import { FiltrosModal } from '../components/FiltrosModal.js';
 
-interface PedidoResumo { id: string; numero: number; clienteNome: string | null; vendedorNome: string | null; status: StatusPedido; total: number; criadoEm: string; formaPagamento: string | null; }
+interface PedidoResumo { id: string; numero: number; clienteNome: string | null; vendedorNome: string | null; status: StatusPedido; total: number; desconto: number; criadoEm: string; formaPagamento: string | null; }
 
 // Colunas do pipeline (cancelado não aparece no quadro). Cores/ícones espelham o mockup.
 // "separacao" é exibido como "Aguardando retirada" (decisão do Gui).
@@ -127,6 +127,7 @@ export function Pedidos() {
                       </span>
                     </div>
                     <div className="pk-cli">{p.clienteNome ?? '—'}{p.vendedorNome ? ' · ' + p.vendedorNome : ''}</div>
+                    {p.desconto > 0 && <div style={{ color: '#166534', fontSize: 12, marginTop: 2 }}><Ic name="i-tag" className="sm" /> {t('descped.desconto')}: {moeda(p.desconto)}</div>}
                     <div className="pk-meta"><span className={pillForma(p.formaPagamento)}>{p.formaPagamento ?? '—'}</span><span className="pk-tot">{moeda(p.total)}</span></div>
                   </div>
                 ))}

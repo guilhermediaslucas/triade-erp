@@ -57,7 +57,7 @@ export class SqlPedidoRepository implements PedidoRepository {
   async listar(schema: string): Promise<PedidoResumo[]> {
     const s = validarSchema(schema);
     const linhas = await this.ds.query(
-      `SELECT p.id, p.numero, p.status, p.total, p.criado_em, p.forma_entrega, p.forma_pagamento,
+      `SELECT p.id, p.numero, p.status, p.total, p.desconto, p.criado_em, p.forma_entrega, p.forma_pagamento,
               c.nome AS cliente_nome, v.nome AS vendedor_nome
          FROM "${s}".pedido p
          LEFT JOIN "${s}".cliente c ON c.id = p.cliente_id
@@ -65,7 +65,7 @@ export class SqlPedidoRepository implements PedidoRepository {
         ORDER BY p.numero DESC`);
     return linhas.map((r: any) => ({
       id: r.id, numero: r.numero, clienteNome: r.cliente_nome ?? null, vendedorNome: r.vendedor_nome ?? null,
-      status: r.status, total: Number(r.total), criadoEm: new Date(r.criado_em), formaEntrega: r.forma_entrega ?? 'retirada',
+      status: r.status, total: Number(r.total), desconto: Number(r.desconto ?? 0), criadoEm: new Date(r.criado_em), formaEntrega: r.forma_entrega ?? 'retirada',
       formaPagamento: r.forma_pagamento ?? null,
     }));
   }

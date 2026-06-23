@@ -65,7 +65,7 @@ export interface PedidoTituloResumo {
 
 export interface PedidoResumo {
   id: string; numero: number; clienteNome: string | null; vendedorNome: string | null;
-  status: StatusPedido; total: number; criadoEm: Date; formaEntrega: string; formaPagamento: string | null;
+  status: StatusPedido; total: number; desconto: number; criadoEm: Date; formaEntrega: string; formaPagamento: string | null;
 }
 
 export interface NovoPedido {

@@ -11,7 +11,7 @@ export function rotasEntregas(deps: Dependencias): Router {
   const sch = (req: Request) => req.usuario!.schema;
 
   // Entregas atribuídas ao motoboy logado.
-  r.get('/entregas/minhas', aut, az('logistica.entrega.ver'), async (req, res: Response) => {
+  r.get('/entregas/minhas', aut, az('logistica.entrega.atualizar'), async (req, res: Response) => {
     try { res.json(await deps.rastreioService.minhasEntregas(sch(req), req.usuario!.sub)); } catch (e) { tratarErro(res, e); }
   });
   // Avança o status da entrega (aguardando → a_caminho → chegou → entregue).

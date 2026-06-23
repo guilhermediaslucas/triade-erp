@@ -558,7 +558,7 @@ Object.assign(pt, {
   'status.separacao': 'Pedido Pronto', 'status.expedido': 'Expedido', 'status.entregue': 'Entregue', 'status.cancelado': 'Cancelado',
   'pedidos.acao.aguardando_pagamento': 'Confirmar pedido', 'pedidos.acao.aprovado': 'Aprovar pagamento',
   'pedidos.acao.separacao': 'Enviar p/ separação', 'pedidos.acao.expedido': 'Marcar expedido', 'pedidos.acao.entregue': 'Marcar entregue',
-  'pedidos.acao.cancelado': 'Cancelar pedido',
+  'pedidos.acao.cancelado': 'Cancelar pedido', 'pedidos.acao.orcamento': 'Voltar para orçamento',
   'pedido.nao_encontrado': 'Pedido não encontrado.', 'pedido.cliente_obrigatorio': 'Selecione um cliente.',
   'pedido.sem_itens': 'Adicione ao menos um item.', 'pedido.produto_invalido': 'Produto inválido no pedido.',
   'pedido.qtd_invalida': 'Quantidade inválida.', 'pedido.transicao_invalida': 'Mudança de status não permitida.',
@@ -593,7 +593,7 @@ Object.assign(en, {
   'status.separacao': 'Order ready', 'status.expedido': 'Shipped', 'status.entregue': 'Delivered', 'status.cancelado': 'Canceled',
   'pedidos.acao.aguardando_pagamento': 'Confirm order', 'pedidos.acao.aprovado': 'Approve payment',
   'pedidos.acao.separacao': 'Send to picking', 'pedidos.acao.expedido': 'Mark shipped', 'pedidos.acao.entregue': 'Mark delivered',
-  'pedidos.acao.cancelado': 'Cancel order',
+  'pedidos.acao.cancelado': 'Cancel order', 'pedidos.acao.orcamento': 'Back to quote',
   'pedido.nao_encontrado': 'Order not found.', 'pedido.cliente_obrigatorio': 'Select a customer.',
   'pedido.sem_itens': 'Add at least one item.', 'pedido.produto_invalido': 'Invalid product in order.',
   'pedido.qtd_invalida': 'Invalid quantity.', 'pedido.transicao_invalida': 'Status change not allowed.',
@@ -628,7 +628,7 @@ Object.assign(es, {
   'status.separacao': 'Pedido listo', 'status.expedido': 'Expedido', 'status.entregue': 'Entregado', 'status.cancelado': 'Cancelado',
   'pedidos.acao.aguardando_pagamento': 'Confirmar pedido', 'pedidos.acao.aprovado': 'Aprobar pago',
   'pedidos.acao.separacao': 'Enviar a preparación', 'pedidos.acao.expedido': 'Marcar expedido', 'pedidos.acao.entregue': 'Marcar entregado',
-  'pedidos.acao.cancelado': 'Cancelar pedido',
+  'pedidos.acao.cancelado': 'Cancelar pedido', 'pedidos.acao.orcamento': 'Volver a presupuesto',
   'pedido.nao_encontrado': 'Pedido no encontrado.', 'pedido.cliente_obrigatorio': 'Selecciona un cliente.',
   'pedido.sem_itens': 'Agrega al menos un ítem.', 'pedido.produto_invalido': 'Producto inválido en el pedido.',
   'pedido.qtd_invalida': 'Cantidad inválida.', 'pedido.transicao_invalida': 'Cambio de estado no permitido.',
@@ -1465,9 +1465,9 @@ Object.assign(es, {
 });
 
 // --- Refinamento: Sino de notificações ---
-Object.assign(pt, { 'sino.titulo': 'Notificações', 'sino.vazio': 'Nada pendente. Tudo em dia!', 'sino.titulos_vencidos': 'Títulos a receber vencidos', 'sino.lotes_vencendo': 'Lotes vencendo (30 d)', 'sino.estoque_baixo': 'Produtos com estoque baixo', 'sino.pendencia_baixa': 'Pedidos aguardando baixa (Pix/Boleto)', 'sino.aguardando_separacao': 'Pedidos aguardando separação', 'sino.toast_nova_separacao': 'Novo pedido aguardando separação', 'sino.ver_todas': 'Ver todas', 'notif.crumb': 'Notificações', 'notif.titulo': 'Notificações', 'notif.sub': 'Avisos e pendências da operação', 'notif.vazio': 'Nada pendente. Tudo em dia!', 'notif.concluir': 'Concluir', 'notif.reabrir': 'Reabrir', 'notif.mostrar_concluidas': 'Mostrar concluídas', 'notif.ocultar_concluidas': 'Ocultar concluídas' });
-Object.assign(en, { 'sino.titulo': 'Notifications', 'sino.vazio': 'Nothing pending. All caught up!', 'sino.titulos_vencidos': 'Overdue receivables', 'sino.lotes_vencendo': 'Lots expiring (30 d)', 'sino.estoque_baixo': 'Low-stock products', 'sino.pendencia_baixa': 'Orders awaiting receipt (Pix/Boleto)', 'sino.aguardando_separacao': 'Orders awaiting picking', 'sino.toast_nova_separacao': 'New order awaiting picking', 'sino.ver_todas': 'See all', 'notif.crumb': 'Notifications', 'notif.titulo': 'Notifications', 'notif.sub': 'Operation alerts and pending items', 'notif.vazio': 'Nothing pending. All caught up!', 'notif.concluir': 'Done', 'notif.reabrir': 'Reopen', 'notif.mostrar_concluidas': 'Show done', 'notif.ocultar_concluidas': 'Hide done' });
-Object.assign(es, { 'sino.titulo': 'Notificaciones', 'sino.vazio': 'Nada pendiente. ¡Todo al día!', 'sino.titulos_vencidos': 'Cobranzas vencidas', 'sino.lotes_vencendo': 'Lotes por vencer (30 d)', 'sino.estoque_baixo': 'Productos con stock bajo', 'sino.pendencia_baixa': 'Pedidos esperando cobro (Pix/Boleto)', 'sino.aguardando_separacao': 'Pedidos esperando preparación', 'sino.toast_nova_separacao': 'Nuevo pedido esperando preparación', 'sino.ver_todas': 'Ver todas', 'notif.crumb': 'Notificaciones', 'notif.titulo': 'Notificaciones', 'notif.sub': 'Avisos y pendientes de la operación', 'notif.vazio': '¡Nada pendiente. Todo al día!', 'notif.concluir': 'Concluir', 'notif.reabrir': 'Reabrir', 'notif.mostrar_concluidas': 'Mostrar concluidas', 'notif.ocultar_concluidas': 'Ocultar concluidas' });
+Object.assign(pt, { 'sino.titulo': 'Notificações', 'sino.vazio': 'Nada pendente. Tudo em dia!', 'sino.titulos_vencidos': 'Títulos a receber vencidos', 'sino.lotes_vencendo': 'Lotes vencendo (30 d)', 'sino.estoque_baixo': 'Produtos com estoque baixo', 'sino.pendencia_baixa': 'Pedidos aguardando baixa (Pix/Boleto)', 'sino.aguardando_separacao': 'Pedidos aguardando separação', 'sino.toast_nova_separacao': 'Novo pedido aguardando separação', 'sino.ver_todas': 'Ver todas', 'notif.crumb': 'Notificações', 'notif.titulo': 'Notificações', 'notif.sub': 'Avisos e pendências da operação', 'notif.vazio': 'Nada pendente. Tudo em dia!', 'notif.concluir': 'Concluir', 'notif.reabrir': 'Reabrir', 'notif.mostrar_concluidas': 'Mostrar concluídas', 'notif.ocultar_concluidas': 'Ocultar concluídas', 'notif.limpar_todas': 'Limpar todas' });
+Object.assign(en, { 'sino.titulo': 'Notifications', 'sino.vazio': 'Nothing pending. All caught up!', 'sino.titulos_vencidos': 'Overdue receivables', 'sino.lotes_vencendo': 'Lots expiring (30 d)', 'sino.estoque_baixo': 'Low-stock products', 'sino.pendencia_baixa': 'Orders awaiting receipt (Pix/Boleto)', 'sino.aguardando_separacao': 'Orders awaiting picking', 'sino.toast_nova_separacao': 'New order awaiting picking', 'sino.ver_todas': 'See all', 'notif.crumb': 'Notifications', 'notif.titulo': 'Notifications', 'notif.sub': 'Operation alerts and pending items', 'notif.vazio': 'Nothing pending. All caught up!', 'notif.concluir': 'Done', 'notif.reabrir': 'Reopen', 'notif.mostrar_concluidas': 'Show done', 'notif.ocultar_concluidas': 'Hide done', 'notif.limpar_todas': 'Clear all' });
+Object.assign(es, { 'sino.titulo': 'Notificaciones', 'sino.vazio': 'Nada pendiente. ¡Todo al día!', 'sino.titulos_vencidos': 'Cobranzas vencidas', 'sino.lotes_vencendo': 'Lotes por vencer (30 d)', 'sino.estoque_baixo': 'Productos con stock bajo', 'sino.pendencia_baixa': 'Pedidos esperando cobro (Pix/Boleto)', 'sino.aguardando_separacao': 'Pedidos esperando preparación', 'sino.toast_nova_separacao': 'Nuevo pedido esperando preparación', 'sino.ver_todas': 'Ver todas', 'notif.crumb': 'Notificaciones', 'notif.titulo': 'Notificaciones', 'notif.sub': 'Avisos y pendientes de la operación', 'notif.vazio': '¡Nada pendiente. Todo al día!', 'notif.concluir': 'Concluir', 'notif.reabrir': 'Reabrir', 'notif.mostrar_concluidas': 'Mostrar concluidas', 'notif.ocultar_concluidas': 'Ocultar concluidas', 'notif.limpar_todas': 'Limpiar todas' });
 
 // --- Refinamento: Ações em massa ---
 Object.assign(pt, {
@@ -2620,7 +2620,7 @@ Object.assign(es, {
 // ===== Lote: confirmar baixa, voltar p/ orçamento, busca por nº, competência, metas por dia =====
 Object.assign(pt, {
   'pedido.voltar_orcamento': 'Voltar para orçamento',
-  'pedido.voltar_orcamento_confirma': 'Voltar este pedido para orçamento? O estoque e as etiquetas voltam, e os títulos do pedido são removidos. Se algum título já foi baixado, cancele a baixa antes.',
+  'pedido.voltar_orcamento_confirma': 'Voltar este pedido para orçamento? Os títulos gerados são removidos. Só é possível antes da separação (sem movimentação de estoque); se algum título já foi baixado, cancele a baixa antes.',
   'pedido.voltar_baixa_antes': 'Não dá para voltar: o pagamento já foi baixado. Cancele a baixa no Financeiro antes.',
   'pedido.financeiro': 'Financeiro', 'pedido.vence': 'vence', 'pedido.baixado_em': 'baixado em',
   'pedido.baixado': 'Baixado', 'pedido.em_aberto': 'Em aberto', 'pedido.recebido_por': 'Recebido por', 'pedido.abrir_titulo': 'Abrir título',
@@ -2637,7 +2637,7 @@ Object.assign(pt, {
 });
 Object.assign(en, {
   'pedido.voltar_orcamento': 'Back to quote',
-  'pedido.voltar_orcamento_confirma': 'Move this order back to quote? Stock and labels are returned, and the order entries are removed. If any entry was already settled, cancel the settlement first.',
+  'pedido.voltar_orcamento_confirma': 'Move this order back to quote? The generated entries are removed. Only possible before picking (no stock movement); if any entry was settled, cancel the settlement first.',
   'pedido.voltar_baixa_antes': "Can't go back: the payment was already settled. Cancel the settlement in Finance first.",
   'pedido.financeiro': 'Finance', 'pedido.vence': 'due', 'pedido.baixado_em': 'settled on',
   'pedido.baixado': 'Settled', 'pedido.em_aberto': 'Open', 'pedido.recebido_por': 'Received by', 'pedido.abrir_titulo': 'Open entry',
@@ -2654,7 +2654,7 @@ Object.assign(en, {
 });
 Object.assign(es, {
   'pedido.voltar_orcamento': 'Volver a presupuesto',
-  'pedido.voltar_orcamento_confirma': '¿Volver este pedido a presupuesto? El stock y las etiquetas vuelven, y los títulos del pedido se eliminan. Si algún título ya fue pagado, cancela la baja antes.',
+  'pedido.voltar_orcamento_confirma': '¿Volver este pedido a presupuesto? Los títulos generados se eliminan. Solo es posible antes de la preparación (sin movimiento de stock); si algún título ya fue pagado, cancela la baja antes.',
   'pedido.voltar_baixa_antes': 'No se puede volver: el pago ya fue conciliado. Cancela la baja en Finanzas primero.',
   'pedido.financeiro': 'Finanzas', 'pedido.vence': 'vence', 'pedido.baixado_em': 'pagado el',
   'pedido.baixado': 'Pagado', 'pedido.em_aberto': 'Abierto', 'pedido.recebido_por': 'Recibido por', 'pedido.abrir_titulo': 'Abrir título',
