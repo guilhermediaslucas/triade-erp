@@ -5,7 +5,7 @@ import { useI18n } from '../i18n/I18nContext.js';
 // Sem chave, cai num fallback com link para o Google Maps.
 const KEY = (import.meta as any).env?.VITE_GOOGLE_MAPS_KEY as string | undefined;
 
-export function MapaEntrega({ lat, lng, altura = 320 }: { lat: number | null; lng: number | null; altura?: number }) {
+export function MapaEntrega({ lat, lng, destino, altura = 320 }: { lat: number | null; lng: number | null; destino?: string | null; altura?: number }) {
   const { t } = useI18n();
   if (lat == null || lng == null) {
     return <div className="muted" style={{ padding: 24, textAlign: 'center', border: '0.5px solid var(--borda)', borderRadius: 12 }}>{t('rastreio.sem_posicao')}</div>;
@@ -18,6 +18,9 @@ export function MapaEntrega({ lat, lng, altura = 320 }: { lat: number | null; ln
       </div>
     );
   }
-  const src = `https://www.google.com/maps/embed/v1/place?key=${KEY}&q=${lat},${lng}&zoom=16`;
+  // Com destino → modo "directions" (desenha a rota motoboy→cliente). Sem destino → só o pin.
+  const src = destino && destino.trim()
+    ? `https://www.google.com/maps/embed/v1/directions?key=${KEY}&origin=${lat},${lng}&destination=${encodeURIComponent(destino)}&mode=driving`
+    : `https://www.google.com/maps/embed/v1/place?key=${KEY}&q=${lat},${lng}&zoom=16`;
   return <iframe title="mapa" src={src} style={{ width: '100%', height: altura, border: 0, borderRadius: 12 }} loading="lazy" referrerPolicy="no-referrer-when-downgrade" />;
 }

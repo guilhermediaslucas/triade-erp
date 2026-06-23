@@ -5,7 +5,7 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { MapaEntrega } from '../components/MapaEntrega.js';
 
 type StatusEntrega = 'aguardando' | 'a_caminho' | 'chegou' | 'entregue';
-interface Pub { numero: number; status: StatusEntrega; destino: string | null; motoboy: string | null; posicao: { lat: number; lng: number; criadoEm: string } | null; }
+interface Pub { numero: number; status: StatusEntrega; destino: string | null; motoboy: string | null; posicao: { lat: number; lng: number; criadoEm: string } | null; eta: { km: number; min: number } | null; }
 const PASSOS: StatusEntrega[] = ['aguardando', 'a_caminho', 'chegou', 'entregue'];
 
 export function RastreioPublico() {
@@ -46,7 +46,10 @@ export function RastreioPublico() {
         </div>
 
         {dados.status === 'a_caminho' || dados.status === 'chegou'
-          ? <MapaEntrega lat={dados.posicao?.lat ?? null} lng={dados.posicao?.lng ?? null} altura={360} />
+          ? <>
+              <MapaEntrega lat={dados.posicao?.lat ?? null} lng={dados.posicao?.lng ?? null} destino={dados.destino} altura={360} />
+              {dados.eta && <div style={{ textAlign: 'center', marginTop: 8, fontWeight: 500 }}>{t('rastreio.faltam')} {dados.eta.min} min · {dados.eta.km.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} km</div>}
+            </>
           : <div className="muted" style={{ textAlign: 'center', padding: 24 }}>{dados.status === 'entregue' ? t('rastreio.entregue_msg') : t('rastreio.aguardando_msg')}</div>}
 
         {dados.posicao && (dados.status === 'a_caminho' || dados.status === 'chegou') &&

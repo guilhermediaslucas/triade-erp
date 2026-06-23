@@ -5,11 +5,12 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { useToast } from '../components/Toast.js';
 import { Ic } from '../components/Icones.js';
 import { moeda, numeroPedido } from '../lib/pedido.js';
+import { MapaEntrega } from '../components/MapaEntrega.js';
 import { Capacitor } from '@capacitor/core';
 import { Geolocation } from '@capacitor/geolocation';
 
 type StatusEntrega = 'aguardando' | 'a_caminho' | 'chegou' | 'entregue';
-interface Entrega { pedidoId: string; numero: number; clienteNome: string | null; enderecoEntrega: string | null; status: StatusEntrega; rastreioToken: string | null; total: number; criadoEm: string; }
+interface Entrega { pedidoId: string; numero: number; clienteNome: string | null; enderecoEntrega: string | null; status: StatusEntrega; rastreioToken: string | null; total: number; criadoEm: string; posicao: { lat: number; lng: number; criadoEm: string } | null; eta: { km: number; min: number } | null; }
 
 const corStatus = (s: StatusEntrega) => s === 'entregue' ? 'st-verde' : s === 'chegou' ? 'st-ciano' : s === 'a_caminho' ? 'st-azul' : 'st-cinza';
 
@@ -111,6 +112,12 @@ export function MinhasEntregas() {
                 </div>
                 <span className={'pill ' + corStatus(e.status)}>{t('rastreio.st.' + e.status)}</span>
               </div>
+              {(e.status === 'a_caminho' || e.status === 'chegou') && e.posicao && (
+                <div style={{ marginTop: 10 }}>
+                  <MapaEntrega lat={e.posicao.lat} lng={e.posicao.lng} destino={e.enderecoEntrega} altura={170} />
+                  {e.eta && <div style={{ marginTop: 6, fontWeight: 500, fontSize: 13 }}><Ic name="i-clock" className="sm" /> {t('rastreio.faltam')} {e.eta.min} min · {e.eta.km.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} km</div>}
+                </div>
+              )}
               <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
                 {prox && <button className="btn-primary" onClick={() => mudar(e, prox.st)}>{t(prox.k)}</button>}
                 {e.rastreioToken && <button className="btn-ghost" onClick={() => copiarLink(e)}><Ic name="i-clip" className="sm" /> {t('rastreio.copiar_link')}</button>}

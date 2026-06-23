@@ -22,9 +22,11 @@ export class SqlRastreioRepository implements RastreioRepository {
   async minhasEntregas(schema: string, motoboyId: string): Promise<EntregaMotoboy[]> {
     const s = validarSchema(schema);
     const rs = await this.ds.query(
-      `SELECT p.id, p.numero, c.nome cliente, p.endereco_entrega, p.entrega_status, p.rastreio_token, p.total, p.criado_em
+      `SELECT p.id, p.numero, c.nome cliente, p.endereco_entrega, p.entrega_status, p.rastreio_token, p.total, p.criado_em,
+              ep.lat, ep.lng, ep.criado_em pos_em
          FROM "${s}".pedido p
          LEFT JOIN "${s}".cliente c ON c.id = p.cliente_id
+         LEFT JOIN LATERAL (SELECT lat, lng, criado_em FROM "${s}".entrega_posicao WHERE pedido_id = p.id ORDER BY criado_em DESC LIMIT 1) ep ON true
         WHERE p.motoboy_id = $1 AND p.forma_entrega = 'motoboy'
           AND p.status NOT IN ('cancelado','orcamento','aguardando_pagamento')
           AND p.entrega_status <> 'entregue'
@@ -32,7 +34,7 @@ export class SqlRastreioRepository implements RastreioRepository {
     return rs.map((r: any): EntregaMotoboy => ({
       pedidoId: r.id, numero: Number(r.numero), clienteNome: r.cliente ?? null,
       enderecoEntrega: r.endereco_entrega ?? null, status: st(r.entrega_status), rastreioToken: r.rastreio_token ?? null,
-      total: Number(r.total), criadoEm: new Date(r.criado_em).toISOString(),
+      total: Number(r.total), criadoEm: new Date(r.criado_em).toISOString(), posicao: pos(r), eta: null,
     }));
   }
 
@@ -67,7 +69,7 @@ export class SqlRastreioRepository implements RastreioRepository {
         ORDER BY p.criado_em DESC`);
     return rs.map((r: any): EntregaAtiva => ({
       pedidoId: r.id, numero: Number(r.numero), clienteNome: r.cliente ?? null, motoboy: r.motoboy ?? null,
-      status: st(r.entrega_status), rastreioToken: r.rastreio_token ?? null, enderecoEntrega: r.endereco_entrega ?? null, posicao: pos(r),
+      status: st(r.entrega_status), rastreioToken: r.rastreio_token ?? null, enderecoEntrega: r.endereco_entrega ?? null, posicao: pos(r), eta: null,
     }));
   }
 
@@ -81,6 +83,6 @@ export class SqlRastreioRepository implements RastreioRepository {
          LEFT JOIN LATERAL (SELECT lat, lng, criado_em FROM "${s}".entrega_posicao WHERE pedido_id = p.id ORDER BY criado_em DESC LIMIT 1) ep ON true
         WHERE p.rastreio_token = $1 LIMIT 1`, [token]))[0];
     if (!r) return null;
-    return { numero: Number(r.numero), status: st(r.entrega_status), destino: r.endereco_entrega ?? null, motoboy: r.motoboy ?? null, posicao: pos(r) };
+    return { numero: Number(r.numero), status: st(r.entrega_status), destino: r.endereco_entrega ?? null, motoboy: r.motoboy ?? null, posicao: pos(r), eta: null };
   }
 }

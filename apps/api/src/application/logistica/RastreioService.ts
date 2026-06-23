@@ -1,16 +1,47 @@
 import { randomBytes } from 'node:crypto';
-import type { EntregaAtiva, EntregaMotoboy, RastreioPublico, RastreioRepository, StatusEntrega } from '../../domain/logistica/Entrega.js';
+import type { EntregaAtiva, EntregaMotoboy, EtaEntrega, RastreioPublico, RastreioRepository, StatusEntrega } from '../../domain/logistica/Entrega.js';
 import { STATUS_ENTREGA } from '../../domain/logistica/Entrega.js';
 import type { PedidoRepository } from '../../domain/comercial/Pedido.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
+// Distância + tempo restantes via Distance Matrix (reusa GOOGLE_MAPS_API_KEY do servidor).
+async function distanciaTempoGoogle(origem: string, destino: string): Promise<EtaEntrega | null> {
+  const key = process.env.GOOGLE_MAPS_API_KEY;
+  if (!key || !origem.trim() || !destino.trim()) return null;
+  try {
+    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&mode=driving`
+      + `&origins=${encodeURIComponent(origem)}&destinations=${encodeURIComponent(destino)}&key=${key}`;
+    const resp = await fetch(url);
+    if (!resp.ok) return null;
+    const j: any = await resp.json();
+    const el = j?.rows?.[0]?.elements?.[0];
+    if (!el || el.status !== 'OK' || !el.distance || !el.duration) return null;
+    return { km: Math.round((el.distance.value / 1000) * 10) / 10, min: Math.round(el.duration.value / 60) };
+  } catch { return null; }
+}
+
 export class RastreioService {
   constructor(private readonly repo: RastreioRepository, private readonly pedidos: PedidoRepository) {}
+
+  // Cache do ETA por entrega — limita as chamadas ao Distance Matrix a ~1 a cada 2 min.
+  private etaCache = new Map<string, { eta: EtaEntrega | null; em: number }>();
+  private async calcEta(chave: string, lat: number, lng: number, destino: string | null): Promise<EtaEntrega | null> {
+    if (!destino) return null;
+    const c = this.etaCache.get(chave);
+    if (c && Date.now() - c.em < 120_000) return c.eta;
+    const eta = await distanciaTempoGoogle(`${lat},${lng}`, destino);
+    this.etaCache.set(chave, { eta, em: Date.now() });
+    return eta;
+  }
 
   async minhasEntregas(schema: string, usuarioId: string): Promise<EntregaMotoboy[]> {
     const mb = await this.repo.motoboyDoUsuario(schema, usuarioId);
     if (!mb) return [];
-    return this.repo.minhasEntregas(schema, mb);
+    const lista = await this.repo.minhasEntregas(schema, mb);
+    for (const e of lista) {
+      if (e.posicao && (e.status === 'a_caminho' || e.status === 'chegou')) e.eta = await this.calcEta(e.pedidoId, e.posicao.lat, e.posicao.lng, e.enderecoEntrega);
+    }
+    return lista;
   }
 
   private async donoChecado(schema: string, usuarioId: string, pedidoId: string) {
@@ -49,6 +80,14 @@ export class RastreioService {
     await this.repo.registrarPosicao(schema, pedidoId, la, ln);
   }
 
-  ativas(schema: string): Promise<EntregaAtiva[]> { return this.repo.ativas(schema); }
-  publico(schema: string, token: any): Promise<RastreioPublico | null> { return this.repo.publicoPorToken(schema, String(token ?? '')); }
+  async ativas(schema: string): Promise<EntregaAtiva[]> {
+    const lista = await this.repo.ativas(schema);
+    for (const e of lista) if (e.posicao) e.eta = await this.calcEta(e.pedidoId, e.posicao.lat, e.posicao.lng, e.enderecoEntrega);
+    return lista;
+  }
+  async publico(schema: string, token: any): Promise<RastreioPublico | null> {
+    const d = await this.repo.publicoPorToken(schema, String(token ?? ''));
+    if (d && d.posicao && (d.status === 'a_caminho' || d.status === 'chegou')) d.eta = await this.calcEta('pub:' + String(token ?? ''), d.posicao.lat, d.posicao.lng, d.destino);
+    return d;
+  }
 }
