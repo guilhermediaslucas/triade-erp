@@ -190,6 +190,20 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-23 (Motoboy: 1ª tela ao logar + remover link do cliente no Minhas entregas)** — Só frontend. **(1) "Nenhuma tela
+  liberada" no motoboy (BUG):** o `lib/primeiraRota.ts` (usado pelo `PainelInicial` p/ quem não tem `dashboard.ver`) **não listava**
+  a tela do motoboy → motoboy (perfil só com `logistica.entrega.atualizar`) caía em "sem telas". Fix: adicionada
+  `{ cap: 'logistica.entrega.atualizar', to: '/entregas/minhas' }` como 2ª rota (logo após o dashboard) → agora o motoboy é levado
+  direto a **Minhas entregas**. **(2) Menu Logística no motoboy:** o menu **já** esconde grupo vazio (`totalVisiveis === 0 → null`)
+  e o perfil padrão **Motoboy** tem só `logistica.entrega.atualizar` (sem `.ver`) → não vê o grupo Logística. Se algum motoboy
+  estiver vendo Logística, é porque o usuário dele está num **perfil com `logistica.entrega.ver`** (ex.: Estoque) — basta pôr o
+  usuário no perfil **Motoboy**. **(3) Remover link do cliente:** tirado o botão "Copiar link do cliente" (e a função `copiarLink`)
+  do `MinhasEntregas.tsx` (chaves i18n `rastreio.copiar_link`/`link_cliente` ficam inertes). **Mapa:** o `MapaEntrega` mostra o mapa
+  + rota **dentro do app** (Google Maps JS SDK) **quando há `VITE_GOOGLE_MAPS_KEY`** (chave de navegador com Maps JavaScript API +
+  Directions API) no Cloudflare Pages **e** o motoboy já está "A caminho"/"Cheguei" com GPS capturado; sem a chave (ou sem posição),
+  cai no **fallback de link** "Ver no mapa". Sem migration, sem cap. **Pendente Gui:** `cd /d C:\Users\guilherme.dias\Desktop\ERP_TRIADE`
+  → `npm run build -w @triade/web` → commit+push → `scripts\app-apk.bat`. P/ mapa no app: setar `VITE_GOOGLE_MAPS_KEY` no Cloudflare.
+
 - **2026-06-23 (Perfil multi-empresa: "marcar todas as empresas")** — Só frontend (`Perfis.tsx` `ModalPerfilMulti`). Acima
   da lista de empresas entrou um contador `sel.size/empresas.length selecionadas` + botão **"Marcar todas as empresas"** /
   **"Desmarcar todas"** (`todasMarcadas` = todas no `sel`; `toggleTodas` seta tudo ou limpa). Permite o super-admin **replicar
