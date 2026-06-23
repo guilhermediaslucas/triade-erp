@@ -13,6 +13,7 @@ import { RotaPublica } from './pages/RotaPublica.js';
 import { MinhasEntregas } from './pages/MinhasEntregas.js';
 import { PainelEntregas } from './pages/PainelEntregas.js';
 import { MontarRota } from './pages/MontarRota.js';
+import { VolumeEntregas } from './pages/VolumeEntregas.js';
 import { DashboardSerie } from './pages/DashboardSerie.js';
 import { DashboardTV } from './pages/DashboardTV.js';
 import { DashboardTVExpedicao } from './pages/DashboardTVExpedicao.js';
@@ -105,6 +106,7 @@ export function App() {
                 <Route path="/entregas/minhas" element={<Protegida cap="logistica.entrega.atualizar"><MinhasEntregas /></Protegida>} />
                 <Route path="/logistica/entregas" element={<Protegida cap="logistica.entrega.ver"><PainelEntregas /></Protegida>} />
                 <Route path="/logistica/rota" element={<Protegida cap="logistica.entrega.ver"><MontarRota /></Protegida>} />
+                <Route path="/logistica/volume-entregas" element={<Protegida cap="logistica.entrega.ver"><VolumeEntregas /></Protegida>} />
                 <Route path="/dashboard/serie/:tipo" element={<Protegida cap="dashboard.ver"><DashboardSerie /></Protegida>} />
                 <Route path="/dashboard/tv" element={<ProtectedRoute capability="dashboard.ver"><DashboardTV /></ProtectedRoute>} />
                 <Route path="/estoque/tv" element={<ProtectedRoute capability="comercial.pedido.listar"><DashboardTVExpedicao /></ProtectedRoute>} />

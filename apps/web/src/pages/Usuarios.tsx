@@ -104,11 +104,13 @@ export function Usuarios() {
 // Super-admin: vincula um login (e-mail) a várias empresas sem recadastrar.
 const NOMES_PERFIL = ['Administrador', 'Diretor', 'Comercial', 'Financeiro', 'Estoque'];
 interface AcessoInfo { codigo: string; fantasia: string; temAcesso: boolean; existe: boolean; perfilNome: string | null; }
+interface SituacaoAcesso { email: string; nome: string; perfilNome: string | null; empresas: AcessoInfo[]; }
 
 function ModalAcessoEmpresas({ emailInicial, onFechar, onSalvo }: { emailInicial: string; onFechar: () => void; onSalvo: () => void; }) {
   const { token } = useAuth();
   const { t } = useI18n();
-  const [email, setEmail] = useState(emailInicial);
+  const [termo, setTermo] = useState(emailInicial);                 // busca: e-mail OU nome
+  const [email, setEmail] = useState(emailInicial.includes('@') ? emailInicial : ''); // e-mail resolvido (usado no salvar)
   const [nome, setNome] = useState('');
   const [perfilNome, setPerfilNome] = useState('Comercial');
   const [senha, setSenha] = useState('');
@@ -116,47 +118,48 @@ function ModalAcessoEmpresas({ emailInicial, onFechar, onSalvo }: { emailInicial
   const [info, setInfo] = useState<AcessoInfo[]>([]);
   const [sel, setSel] = useState<Set<string>>(new Set());
   const [erro, setErro] = useState<string | null>(null);
-  const [okMsg, setOkMsg] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);
   const [salvando, setSalvando] = useState(false);
 
-  async function carregarSituacao(e: string) {
-    setErro(null); setOkMsg(null); setCarregando(true);
+  async function carregarSituacao(termoBusca: string) {
+    setErro(null); setCarregando(true);
     try {
-      const lista = await api.get<AcessoInfo[]>('/superadmin/usuarios/acessos?email=' + encodeURIComponent(e), token!);
-      setInfo(lista);
-      setSel(new Set(lista.filter((x) => x.temAcesso).map((x) => x.codigo)));
-      const comNome = lista.find((x) => x.existe);
-      const comPerfil = lista.find((x) => x.perfilNome);
-      if (comPerfil?.perfilNome && NOMES_PERFIL.includes(comPerfil.perfilNome)) setPerfilNome(comPerfil.perfilNome);
-      // nome não vem da situação; mantém o que o admin digitar (ou em branco para novo).
-      void comNome;
+      const s = await api.get<SituacaoAcesso>('/superadmin/usuarios/acessos?termo=' + encodeURIComponent(termoBusca), token!);
+      setInfo(s.empresas);
+      setSel(new Set(s.empresas.filter((x) => x.temAcesso).map((x) => x.codigo)));
+      // Pré-preenche os dados do login encontrado (padrão = cadastro existente).
+      if (s.email) { setEmail(s.email); setTermo(s.email); }
+      if (s.nome) setNome(s.nome);
+      if (s.perfilNome && NOMES_PERFIL.includes(s.perfilNome)) setPerfilNome(s.perfilNome);
     } catch (er) { setErro((er as ErroApi).chaveI18n); }
     finally { setCarregando(false); }
   }
-  useEffect(() => { if (emailInicial && emailInicial.includes('@')) carregarSituacao(emailInicial); /* eslint-disable-next-line */ }, []);
+  useEffect(() => { if (emailInicial.trim().length >= 2) carregarSituacao(emailInicial); /* eslint-disable-next-line */ }, []);
 
   function toggle(codigo: string) { setSel((s) => { const n = new Set(s); n.has(codigo) ? n.delete(codigo) : n.add(codigo); return n; }); }
 
+  // E-mail efetivo p/ salvar: o resolvido pela busca, ou o próprio termo se for um e-mail.
+  const emailFinal = (email || (termo.includes('@') ? termo.trim().toLowerCase() : '')).trim();
+
   async function salvar() {
-    setErro(null); setOkMsg(null); setSalvando(true);
+    setErro(null); setSalvando(true);
     try {
       await api.put('/superadmin/usuarios/acessos', {
-        email, nome, perfilNome, empresas: Array.from(sel), senha: senha || null, trocarSenha,
+        email: emailFinal, nome, perfilNome, empresas: Array.from(sel), senha: senha || null, trocarSenha,
       }, token!);
       onSalvo();
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalvando(false); }
   }
 
   return (
-    <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 560 }}>
+    <div className="modal-fundo"><div className="modal modal-lg" onClick={(e) => e.stopPropagation()}>
       <h2><Ic name="i-shop" /> {t('usuarios.acesso_empresas')}</h2>
       <div className="nota-info" style={{ marginBottom: 10 }}>{t('usuarios.acesso_ajuda')}</div>
       <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
-        <label className="campo" style={{ flex: 1 }}>{t('usuarios.email')}
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="usuario@empresa.com" />
+        <label className="campo" style={{ flex: 1 }}>{t('usuarios.acesso_busca')}
+          <input value={termo} onChange={(e) => setTermo(e.target.value)} onBlur={() => termo.trim().length >= 2 && carregarSituacao(termo)} placeholder={t('usuarios.acesso_busca_ph')} />
         </label>
-        <button type="button" className="btn-ghost" disabled={!email.includes('@') || carregando} onClick={() => carregarSituacao(email)}>{t('usuarios.acesso_buscar')}</button>
+        <button type="button" className="btn-ghost" disabled={termo.trim().length < 2 || carregando} onClick={() => carregarSituacao(termo)}>{t('usuarios.acesso_buscar')}</button>
       </div>
       <label className="campo">{t('usuarios.nome')}
         <input value={nome} onChange={(e) => setNome(e.target.value)} />
@@ -175,20 +178,21 @@ function ModalAcessoEmpresas({ emailInicial, onFechar, onSalvo }: { emailInicial
 
       <div className="campo">{t('usuarios.acesso_empresas_lista')}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 6, maxHeight: 220, overflowY: 'auto' }}>
-          {info.length === 0 && <span className="muted">{t('usuarios.acesso_busque')}</span>}
+          {info.length === 0 && <span className="muted">{carregando ? t('common.carregando') : t('usuarios.acesso_busque')}</span>}
           {info.map((e) => (
             <label key={e.codigo} className="chk-linha" style={{ justifyContent: 'space-between' }}>
               <span><input type="checkbox" checked={sel.has(e.codigo)} onChange={() => toggle(e.codigo)} /> {e.fantasia} <small className="muted">({e.codigo})</small></span>
-              {e.temAcesso ? <span className="pill-ok">{e.perfilNome ?? t('usuarios.sem_perfil')}</span> : e.existe ? <span className="pill-off">{t('usuarios.inativo')}</span> : null}
+              {e.temAcesso ? <span className="pill-ok">{e.perfilNome ?? t('usuarios.sem_perfil')}</span>
+                : e.existe ? <span className="pill-off">{t('usuarios.inativo')}</span>
+                : sel.has(e.codigo) ? <span className="pill-off">{t('usuarios.acesso_novo')}</span> : null}
             </label>
           ))}
         </div>
       </div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
-      {okMsg && <div className="nota-info">{okMsg}</div>}
       <div className="modal-acoes">
         <button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button>
-        <button className="btn-primary" disabled={salvando || !email.includes('@') || nome.trim().length < 2} onClick={salvar}>{t('common.salvar')}</button>
+        <button className="btn-primary" disabled={salvando || !emailFinal.includes('@') || nome.trim().length < 2} onClick={salvar}>{t('common.salvar')}</button>
       </div>
     </div></div>
   );

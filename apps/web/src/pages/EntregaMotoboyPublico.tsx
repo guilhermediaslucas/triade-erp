@@ -41,13 +41,17 @@ export function EntregaMotoboyPublico() {
   async function mudar(status: StatusEntrega) {
     setErro(null);
     let recebidoPor: string | undefined;
+    let codigoConfirmacao: string | undefined;
     if (status === 'entregue') {
       const quem = window.prompt(t('rastreio.quem_recebeu'));
       if (quem == null || !quem.trim()) return;
       recebidoPor = quem.trim();
+      const cod = window.prompt(t('rastreio.codigo_telefone'));
+      if (cod == null || !cod.trim()) return;
+      codigoConfirmacao = cod.trim();
     }
-    try { await api.patch('/entrega-motoboy/' + token + '/status', { status, recebidoPor }); carregar(); }
-    catch { setErro('rastreio.erro_status'); }
+    try { await api.patch('/entrega-motoboy/' + token + '/status', { status, recebidoPor, codigoConfirmacao }); carregar(); }
+    catch (err) { setErro((err as { chaveI18n?: string }).chaveI18n ?? 'rastreio.erro_status'); }
   }
 
   if (naoAchou) return <div style={{ maxWidth: 520, margin: '60px auto', textAlign: 'center' }} className="card"><h2>{t('rastreio.nao_encontrado')}</h2></div>;

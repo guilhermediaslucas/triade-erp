@@ -1,5 +1,5 @@
 import type { DataSource } from 'typeorm';
-import type { LinhaEstoqueParado, LinhaPedidoRel, LinhaPerda, LinhaProduto, LinhaValidadeLote, RelatorioRepository, RelatorioVendas, RelatorioVendasContabil } from '../../domain/relatorio/Relatorio.js';
+import type { LinhaEntregaVol, LinhaEstoqueParado, LinhaPedidoRel, LinhaPerda, LinhaProduto, LinhaValidadeLote, RelatorioRepository, RelatorioVendas, RelatorioVendasContabil } from '../../domain/relatorio/Relatorio.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 const ATIVO = "status NOT IN ('orcamento','cancelado')";
@@ -74,6 +74,23 @@ export class SqlRelatorioRepository implements RelatorioRepository {
       numero: r.numero, data: new Date(r.criado_em).toISOString(), cliente: r.cliente ?? null, vendedor: r.vendedor ?? null,
       formaEntrega: r.forma_entrega ?? 'retirada', formaEnvio: r.forma_envio ?? null, status: r.status, total: Number(r.total),
       entregueEm: r.entregue_em ? new Date(r.entregue_em).toISOString().slice(0, 10) : null,
+    }));
+  }
+
+  // Volume de entregas: pedidos entregues (entregue_em preenchido) no período, pela data de entrega.
+  // Uma linha por pedido — a tela agrupa por dia/semana/mês e separa por forma de entrega.
+  async volumeEntregas(schema: string, de: string | null, ate: string | null): Promise<LinhaEntregaVol[]> {
+    const s = validarSchema(schema);
+    const linhas = await this.ds.query(
+      `SELECT to_char(p.entregue_em, 'YYYY-MM-DD') AS data, p.forma_entrega, p.total
+         FROM "${s}".pedido p
+        WHERE p.entregue_em IS NOT NULL
+          AND p.status <> 'cancelado'
+          AND ($1::date IS NULL OR p.entregue_em >= $1)
+          AND ($2::date IS NULL OR p.entregue_em <= $2)
+        ORDER BY p.entregue_em`, [de, ate]);
+    return linhas.map((r: any) => ({
+      data: r.data, formaEntrega: r.forma_entrega ?? 'retirada', total: Number(r.total),
     }));
   }
 

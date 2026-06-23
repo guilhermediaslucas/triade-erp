@@ -3,6 +3,16 @@ import { api, type ErroApi } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { Ic } from '../components/Icones.js';
+import { ImportadorPlanilha, type CampoImport } from '../components/ImportadorPlanilha.js';
+
+const CAMPOS_PRODUTO: CampoImport[] = [
+  { chave: 'nome', rotulo: 'Nome', obrigatorio: true, exemplo: 'Toxina Botulínica 100U', aliases: ['produto', 'descricao', 'descrição'] },
+  { chave: 'unidade', rotulo: 'Unidade', exemplo: 'UN', aliases: ['un', 'medida'] },
+  { chave: 'estoqueMinimo', rotulo: 'Estoque mínimo', exemplo: '0', aliases: ['minimo', 'mínimo', 'estoque minimo'] },
+  { chave: 'localizacao', rotulo: 'Localização', exemplo: 'A1-03', aliases: ['local', 'localizacao'] },
+  { chave: 'registroAnvisa', rotulo: 'Registro ANVISA', exemplo: '', aliases: ['anvisa', 'registro'] },
+  { chave: 'ncm', rotulo: 'NCM', exemplo: '', aliases: ['ncm'] },
+];
 
 interface Produto {
   id: string; nome: string;
@@ -19,7 +29,13 @@ export function Produtos() {
   const [itens, setItens] = useState<Produto[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [edit, setEdit] = useState<Produto | null>(null);
+  const [importar, setImportar] = useState(false);
   const [busca, setBusca] = useState('');
+
+  function enviarImportacao(linhas: Record<string, string>[]) {
+    const corpo = linhas.map((l) => ({ nome: l.nome, unidade: l.unidade || 'UN', estoqueMinimo: Number(l.estoqueMinimo) || 0, localizacao: l.localizacao || null, registroAnvisa: l.registroAnvisa || null, ncm: l.ncm || null }));
+    return api.post<{ criados: number; ignorados: number; erros: { linha: number; motivo: string }[] }>('/produtos/importar', { linhas: corpo }, token!);
+  }
 
   async function carregar() {
     try {
@@ -41,7 +57,10 @@ export function Produtos() {
     <div>
       <div className="crumb">{t('produtos.crumb')}</div>
       <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('produtos.titulo')}</h1><div className="muted page-sub">{t('produtos.sub')}</div></div>
-        {pode && <button className="btn-primary" onClick={() => setEdit(vazio())}>+ {t('produtos.novo')}</button>}</div>
+        {pode && <div style={{ display: 'flex', gap: 8 }}>
+          <button className="btn-ghost" onClick={() => setImportar(true)}><Ic name="i-upload" className="sm" /> {t('produtos.importar')}</button>
+          <button className="btn-primary" onClick={() => setEdit(vazio())}>+ {t('produtos.novo')}</button>
+        </div>}</div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
 
       <div className="toolbar">
@@ -65,6 +84,7 @@ export function Produtos() {
           ))}
         </tbody>
       </table></div>
+      {importar && <ImportadorPlanilha titulo={t('produtos.importar')} campos={CAMPOS_PRODUTO} modelo="modelo-produtos" onImportar={enviarImportacao} onConcluido={carregar} onFechar={() => setImportar(false)} />}
     </div>
   );
 }

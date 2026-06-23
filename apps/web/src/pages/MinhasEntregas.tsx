@@ -68,13 +68,17 @@ export function MinhasEntregas() {
   async function mudar(e: Entrega, status: StatusEntrega) {
     setErro(null);
     let recebidoPor: string | undefined;
+    let codigoConfirmacao: string | undefined;
     if (status === 'entregue') {
       const quem = window.prompt(t('rastreio.quem_recebeu'));
       if (quem == null || !quem.trim()) return;
       recebidoPor = quem.trim();
+      const cod = window.prompt(t('rastreio.codigo_telefone'));
+      if (cod == null || !cod.trim()) return;
+      codigoConfirmacao = cod.trim();
     }
     try {
-      await api.patch('/entregas/' + e.pedidoId + '/status', { status, recebidoPor }, token!);
+      await api.patch('/entregas/' + e.pedidoId + '/status', { status, recebidoPor, codigoConfirmacao }, token!);
       carregar(); toast(t('rastreio.atualizado'));
     } catch (err) { const k = (err as ErroApi).chaveI18n; setErro(k); toast(t(k), 'erro'); }
   }

@@ -147,7 +147,7 @@ export class ComprasService {
     if (todosCodigos.length !== Number(rec.quantidade)) throw new ErroAplicacao('recebimento.soma_invalida', 400);
     // Nenhum código já pode existir no estoque.
     const jaExistem = await this.etiquetas.jaExistem(schema, todosCodigos);
-    if (jaExistem.length > 0) throw new ErroAplicacao('etiqueta.duplicada', 409);
+    if (jaExistem.length > 0) throw new ErroAplicacao('etiqueta.duplicada', 409, jaExistem.join(', '));
 
     // Origem da nota gravada nas etiquetas (fornecedor / NF / emissão — emissão vem do título).
     const tit = rec.tituloId ? await this.titulos.buscarPorId(schema, rec.tituloId) : null;

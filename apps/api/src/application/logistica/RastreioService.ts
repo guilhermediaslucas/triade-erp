@@ -45,6 +45,16 @@ export class RastreioService {
     return lista;
   }
 
+  // Confirmação da entrega pelos 4 últimos dígitos do telefone do cliente.
+  // Decisão do Gui: o cliente PRECISA ter telefone cadastrado (senão a entrega é bloqueada).
+  private async exigirCodigoTelefone(schema: string, pedidoId: string, codigo: any): Promise<void> {
+    const tel = await this.repo.telefoneClienteDoPedido(schema, pedidoId);
+    const dig = String(tel ?? '').replace(/\D/g, '');
+    if (dig.length < 4) throw new ErroAplicacao('entrega.cliente_sem_telefone', 400);
+    const cod = String(codigo ?? '').replace(/\D/g, '');
+    if (cod.length < 4 || cod.slice(-4) !== dig.slice(-4)) throw new ErroAplicacao('entrega.codigo_invalido', 400);
+  }
+
   private async donoChecado(schema: string, usuarioId: string, pedidoId: string) {
     const mb = await this.repo.motoboyDoUsuario(schema, usuarioId);
     if (!mb) throw new ErroAplicacao('entrega.sem_motoboy', 403);
@@ -54,7 +64,7 @@ export class RastreioService {
     return d;
   }
 
-  async mudarStatus(schema: string, usuarioId: string, pedidoId: string, status: any, recebidoPor: any): Promise<void> {
+  async mudarStatus(schema: string, usuarioId: string, pedidoId: string, status: any, recebidoPor: any, codigoConfirmacao?: any): Promise<void> {
     if (!STATUS_ENTREGA.includes(status as StatusEntrega)) throw new ErroAplicacao('entrega.status_invalido', 400);
     const d = await this.donoChecado(schema, usuarioId, pedidoId);
     let token = d.token;
@@ -64,6 +74,7 @@ export class RastreioService {
     if (status === 'entregue') {
       const quem = String(recebidoPor ?? '').trim();
       if (!quem) throw new ErroAplicacao('pedido.recebido_obrigatorio', 400);
+      await this.exigirCodigoTelefone(schema, pedidoId, codigoConfirmacao);
       await this.repo.definirStatus(schema, pedidoId, 'entregue', token);
       const hoje = new Date().toISOString().slice(0, 10);
       await this.pedidos.definirEntrega(schema, pedidoId, hoje, quem);
@@ -104,7 +115,7 @@ export class RastreioService {
     if (d && d.posicao && (d.status === 'a_caminho' || d.status === 'chegou')) d.eta = await this.calcEta('mb:' + String(token ?? ''), d.posicao.lat, d.posicao.lng, d.enderecoEntrega);
     return d;
   }
-  async freelancerStatus(schema: string, token: any, status: any, recebidoPor: any): Promise<void> {
+  async freelancerStatus(schema: string, token: any, status: any, recebidoPor: any, codigoConfirmacao?: any): Promise<void> {
     if (!STATUS_ENTREGA.includes(status as StatusEntrega)) throw new ErroAplicacao('entrega.status_invalido', 400);
     const d = await this.repo.buscarPorMotoboyToken(schema, String(token ?? ''));
     if (!d) throw new ErroAplicacao('pedido.nao_encontrado', 404);
@@ -113,6 +124,7 @@ export class RastreioService {
     if (status === 'entregue') {
       const quem = String(recebidoPor ?? '').trim();
       if (!quem) throw new ErroAplicacao('pedido.recebido_obrigatorio', 400);
+      await this.exigirCodigoTelefone(schema, d.pedidoId, codigoConfirmacao);
       await this.repo.definirStatus(schema, d.pedidoId, 'entregue', rt);
       const hoje = new Date().toISOString().slice(0, 10);
       await this.pedidos.definirEntrega(schema, d.pedidoId, hoje, quem);
@@ -162,7 +174,7 @@ export class RastreioService {
     return d;
   }
 
-  async rotaStatus(schema: string, token: any, pedidoId: string, status: any, recebidoPor: any): Promise<void> {
+  async rotaStatus(schema: string, token: any, pedidoId: string, status: any, recebidoPor: any, codigoConfirmacao?: any): Promise<void> {
     if (!STATUS_ENTREGA.includes(status as StatusEntrega)) throw new ErroAplicacao('entrega.status_invalido', 400);
     const d = await this.paradaDaRota(schema, token, pedidoId);
     let rt = d.token;
@@ -170,6 +182,7 @@ export class RastreioService {
     if (status === 'entregue') {
       const quem = String(recebidoPor ?? '').trim();
       if (!quem) throw new ErroAplicacao('pedido.recebido_obrigatorio', 400);
+      await this.exigirCodigoTelefone(schema, pedidoId, codigoConfirmacao);
       await this.repo.definirStatus(schema, pedidoId, 'entregue', rt);
       const hoje = new Date().toISOString().slice(0, 10);
       await this.pedidos.definirEntrega(schema, pedidoId, hoje, quem);

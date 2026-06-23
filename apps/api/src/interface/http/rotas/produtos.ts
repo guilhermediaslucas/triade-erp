@@ -22,5 +22,9 @@ export function rotasProdutos(deps: Dependencias): Router {
   r.patch('/produtos/:id/ativo', aut, az('cadastros.produto.gerenciar'), async (req, res: Response) => {
     try { await deps.produtosService.alternarAtivo(sch(req), req.params.id!, !!(req.body ?? {}).ativo); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });
+  // Importação em lote de produtos (CSV/XLSX parseado no front).
+  r.post('/produtos/importar', aut, az('cadastros.produto.gerenciar'), async (req, res: Response) => {
+    try { res.json(await deps.produtosService.importar(sch(req), (req.body ?? {}).linhas ?? [])); } catch (e) { tratarErro(res, e); }
+  });
   return r;
 }

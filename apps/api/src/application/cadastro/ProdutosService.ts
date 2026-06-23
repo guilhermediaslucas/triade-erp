@@ -36,4 +36,25 @@ export class ProdutosService {
     if (!(await this.produtos.buscarPorId(schema, id))) throw new ErroAplicacao('cadastro.nao_encontrado', 404);
     await this.produtos.definirAtivo(schema, id, ativo);
   }
+
+  // Importação em lote (CSV/XLSX normalizado no front). Dedup por nome (produto não
+  // tem documento). Erro por linha não aborta o lote.
+  async importar(schema: string, linhas: any[]): Promise<{ criados: number; ignorados: number; erros: { linha: number; motivo: string }[] }> {
+    const lista = Array.isArray(linhas) ? linhas : [];
+    const nomes = new Set((await this.produtos.listar(schema)).map((p) => p.nome.toLowerCase().trim()));
+    let criados = 0, ignorados = 0; const erros: { linha: number; motivo: string }[] = [];
+    for (let i = 0; i < lista.length; i++) {
+      try {
+        const novo = await this.validar(schema, lista[i] ?? {});
+        const nomeN = novo.nome.toLowerCase().trim();
+        if (nomes.has(nomeN)) { ignorados++; continue; }
+        await this.produtos.criar(schema, novo);
+        nomes.add(nomeN);
+        criados++;
+      } catch (err) {
+        erros.push({ linha: i + 1, motivo: err instanceof ErroAplicacao ? err.chaveI18n : 'cadastro.import_erro_linha' });
+      }
+    }
+    return { criados, ignorados, erros };
+  }
 }

@@ -22,6 +22,7 @@ export function EntradaEstoque() {
   const [codigos, setCodigos] = useState<string[]>([]);
   const [scan, setScan] = useState('');
   const [erro, setErro] = useState<string | null>(null);
+  const [detErro, setDetErro] = useState<string | null>(null);
   const [ok, setOk] = useState(false);
   const [salv, setSalv] = useState(false);
   const scanRef = useRef<HTMLInputElement>(null);
@@ -34,7 +35,7 @@ export function EntradaEstoque() {
   function bipar(valor: string) {
     const cod = valor.trim().toUpperCase();
     if (!cod) return;
-    setErro(null);
+    setErro(null); setDetErro(null);
     if (codigos.includes(cod)) { setErro('etiqueta.duplicada_leitura'); setScan(''); return; }
     setCodigos((cs) => [...cs, cod]);
     setScan('');
@@ -44,11 +45,11 @@ export function EntradaEstoque() {
   const { aoDigitar, aoEnter } = useAutoBip(bipar);
 
   async function salvar() {
-    setErro(null); setOk(false); setSalv(true);
+    setErro(null); setDetErro(null); setOk(false); setSalv(true);
     try {
       await api.post('/estoque/entrada', { produtoId, lote, validade, custoUnitario: Number(custo) || 0, codigos, fornecedor: fornecedor || null, nf: nf || null, emissao: emissao || null }, token!);
       setOk(true); setLote(''); setValidade(''); setCusto(''); setFornecedor(''); setNf(''); setEmissao(''); setCodigos([]); setScan('');
-    } catch (e) { setErro((e as ErroApi).chaveI18n); }
+    } catch (e) { const er = e as ErroApi; setErro(er.chaveI18n); setDetErro(er.detalhe ?? null); }
     finally { setSalv(false); }
   }
 
@@ -56,7 +57,7 @@ export function EntradaEstoque() {
     <div>
       <div className="crumb">{t('entrada.crumb')}</div><h1 className="page-titulo">{t('entrada.titulo')}</h1>
       <p className="muted" style={{ marginTop: -8 }}>{t('entrada.sub')}</p>
-      {erro && <div className="alerta-erro">{t(erro)}</div>}
+      {erro && <div className="alerta-erro">{t(erro)}{detErro ? ': ' + detErro : ''}</div>}
       {ok && <div className="alerta-ok">{t('entrada.ok')}</div>}
       <div className="card" style={{ maxWidth: 560 }}>
         <div className="card-head"><h3>{t('entrada.card')}</h3></div>

@@ -33,5 +33,9 @@ export function rotasRelatorios(deps: Dependencias): Router {
   r.get('/relatorios/pedidos', aut, az('relatorios.pedidos.ver'), async (req, res: Response) => {
     try { res.json(await deps.relatoriosService.pedidos(sch(req), req.query.de, req.query.ate, req.query.status)); } catch (e) { tratarErro(res, e); }
   });
+  // Volume de entregas (Logística): reusa a cap de entregas, sem cap nova.
+  r.get('/relatorios/volume-entregas', aut, az('logistica.entrega.ver'), async (req, res: Response) => {
+    try { res.json(await deps.relatoriosService.volumeEntregas(sch(req), req.query.de, req.query.ate)); } catch (e) { tratarErro(res, e); }
+  });
   return r;
 }

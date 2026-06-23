@@ -190,6 +190,57 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-23 (Lote 2: Acesso multi-empresa padronizado + olho na troca de senha + importação Produtos/Fornecedores)** —
+  Três frentes (sem migration; sem cap nova). **(1) Acesso multi-empresa (Usuários):** o `AcessoMultiEmpresa.situacao` virou
+  `situacao(termo)` — aceita **e-mail OU nome** (resolve o login pelo nome via `usuarios.listar` quando não tem `@`) e retorna
+  `SituacaoAcesso {email, nome, perfilNome, empresas[]}` (antes só o array de empresas). Rota `GET /superadmin/usuarios/acessos`
+  passou a ler `?termo=` (com `?email=` por retrocompat). **Front `ModalAcessoEmpresas`:** campo de busca "E-mail ou nome" (busca
+  on-blur), **pré-preenche Nome + Perfil** do cadastro existente (decisão do Gui: padrão = igual ao registrado), checklist com
+  **selo "novo"** quando marcada e inexistente (espelha o Perfil multi-empresa), `modal-lg`. `email` resolvido guardado à parte p/
+  o salvar (`emailFinal`). i18n `usuarios.acesso_busca`/`_busca_ph`/`_novo`. **(2) Olho na troca de senha:** `TrocarSenha.tsx`
+  (provisória **e** normal) ganhou botão de olho (`login-senha`/`login-eye`/`i-eye`, reuso do Login) nos 3 campos, um `ver` único.
+  **(3) Importação em lote em Produtos e Fornecedores** (Clientes já tinha): backend `ProdutosService.importar` (dedup por **nome**)
+  e `FornecedoresService.importar` (dedup por **documento**→nome), rotas `POST /produtos/importar` e `POST /fornecedores/importar`
+  (caps `cadastros.produto/fornecedor.gerenciar`, sem cap nova). Front: botão **Importar** + `ImportadorPlanilha` + `CAMPOS_*` em
+  `Produtos.tsx`/`Fornecedores.tsx` (mesmo componente CSV/XLSX do Clientes). i18n `produtos.importar`/`fornecedores.importar`.
+  **Validação:** hand-review (tsc do sandbox segue inútil — mount trunca). **Sem migration, sem cap → não precisa relogar.**
+  **OBS comando:** o build anterior falhou porque foi rodado em `Desktop\FIN_PESSOAS` (outro repo) — rodar SEMPRE em
+  `Desktop\ERP_TRIADE`. **Pendente Gui:** `cd /d C:\Users\guilherme.dias\Desktop\ERP_TRIADE` → `npm run build -w @triade/web` →
+  commit+push → `scripts\app-apk.bat`. **PWA/instalável (pedido do Gui — NÃO feito):** o TRIADE web ainda **não** é PWA (sem
+  manifest/service worker), por isso o navegador não oferece "Instalar app" como no FinPessoais. Para habilitar: `vite-plugin-pwa`
+  + manifest + ícones (proposto, aguardando ok). Arquivo de instalação p/ distribuir: Android = o **APK** do `scripts\app-apk.bat`
+  (compartilhável); desktop instalável = via PWA (cada um instala pela URL) ou Electron/Tauri p/ um `.exe` real (esforço maior).
+
+- **2026-06-23 (Lote: fix rota.motoboy_invalido + confirmação por telefone + etiqueta duplicada + Volume de entregas)** —
+  Quatro frentes (sem migration nova; sem cap nova). **(1) BUG rota.motoboy_invalido (RAIZ ENCONTRADA):** o TypeORM 0.3.30
+  retorna `UPDATE…RETURNING` como **tupla `[linhas, contagem]`** (`PostgresQueryRunner`: `case 'UPDATE'/'DELETE' → result.raw =
+  [raw.rows, raw.rowCount]`); SELECT/INSERT retornam só as linhas. O código lia `(await ds.query(UPDATE…RETURNING))[0]`
+  esperando a 1ª LINHA, mas pegava o **array de linhas** → `.rota_token` = undefined → null → `rota.motoboy_invalido`. O MESMO
+  bug quebrava o link avulso por pedido. **Fix:** `SqlRotaRepository.garantirRotaToken` e `SqlRastreioRepository.garantirMotoboyToken`
+  passam a ler `const r = Array.isArray(res?.[0]) ? res[0][0] : res?.[0]` (robusto às duas formas). + adicionada a tradução
+  pt `rota.motoboy_invalido`/`rota.nao_encontrada` (faltava → aparecia a chave crua). **(2) Etiqueta duplicada informa QUAL:**
+  `ErroAplicacao` ganhou 3º param `detalhe?` (texto livre, não-i18n); `tratarErro` inclui `{erro, detalhe}`; `api/client.ts`
+  `ErroApi.detalhe`. `EstoqueService`/`ComprasService` passam `jaExistem.join(', ')` no `etiqueta.duplicada` (409). Front
+  (`EntradaEstoque`/`Recebimento`) mostram `t(erro) + ': ' + detErro`. pt `etiqueta.duplicada` reescrita p/ casar com a lista.
+  **(3) Confirmação de entrega por TELEFONE (4 dígitos):** ao marcar **Entregue** nos 3 fluxos do motoboy (app logado
+  `mudarStatus`, link avulso por pedido `freelancerStatus`, link de rota `rotaStatus`), o motoboy digita os 4 últimos dígitos
+  do telefone do cliente — validado server-side (`RastreioService.exigirCodigoTelefone` → `RastreioRepository.telefoneClienteDoPedido`
+  = `cliente.telefone` do pedido). **Decisão do Gui: cliente PRECISA ter telefone** — sem telefone bloqueia
+  (`entrega.cliente_sem_telefone`, 400); código errado → `entrega.codigo_invalido` (400). Rotas passam `b.codigoConfirmacao`.
+  Front: 2º `window.prompt` (após "quem recebeu") em `MinhasEntregas`/`EntregaMotoboyPublico`/`RotaPublica`; os 2 públicos
+  agora mostram a chave de erro real (antes caíam num genérico). i18n `rastreio.codigo_telefone`/`entrega.codigo_invalido`/
+  `entrega.cliente_sem_telefone`. **OBS p/ o Gui:** clientes existentes SEM celular cadastrado terão a entrega bloqueada até
+  cadastrar o telefone. A expedição/Comercial (ModalDataEntrega) **não** mudou — a confirmação é só do motoboy. **(4) Relatório
+  Volume de entregas (Logística):** `RelatorioRepository.volumeEntregas` (pedidos com `entregue_em` no período, por data de
+  entrega; `LinhaEntregaVol {data, formaEntrega, total}`); rota `GET /relatorios/volume-entregas` (cap `logistica.entrega.ver`,
+  sem cap nova). Tela `VolumeEntregas.tsx` (menu **Logística › Volume de entregas**, rota `/logistica/volume-entregas`): filtro
+  de período + **toggle dia/semana/mês** (agrupado no front), KPIs **Entregas / Valor total / Ticket médio**, tabela por período
+  e **tabela separada por forma de entrega** (motoboy/correios/etc.), export CSV/Excel. i18n `volent.*`/`menu.volume_entregas`.
+  **Validação:** hand-review (o tsc do sandbox segue inútil — o mount **trunca** os arquivos editados, ex.: `ErroAplicacao.ts`
+  lido com 5 linhas cortado no meio → TS1005/TS1160 falsos; **build local = fonte de verdade**). **Sem migration, sem cap nova
+  → não precisa relogar.** **Pendente Gui:** `npm run build -w @triade/web` (validar!) → commit+push (Render pega o backend via
+  tsx) → `scripts\app-apk.bat` (telas mudaram).
+
 - **2026-06-22 (Sistema só pt-BR — removida multilíngua + timezone)** — **Decisão do Gui: o sistema não será
   usado em outros idiomas nem fusos.** Escolha dele: **manter só pt-BR** (não arrancar o `t()` de todas as telas).
   **Frontend:** `I18nContext` simplificado p/ só `{ t }` (sem `idioma`/`idiomas`/`setIdioma`, sem `localStorage

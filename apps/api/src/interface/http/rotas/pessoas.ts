@@ -72,5 +72,13 @@ export function rotasPessoas(deps: Dependencias): Router {
       res.json(resultado);
     } catch (e) { tratarErro(res, e); }
   });
+  // Importação em lote de fornecedores.
+  r.post('/fornecedores/importar', aut, az('cadastros.fornecedor.gerenciar'), async (req, res: Response) => {
+    try {
+      const resultado = await deps.fornecedoresService.importar(sch(req), (req.body ?? {}).linhas ?? []);
+      auditar(req, { modulo: 'Cadastros', entidade: 'fornecedor', descricao: `Importou fornecedores: ${resultado.criados} criados, ${resultado.ignorados} ignorados` });
+      res.json(resultado);
+    } catch (e) { tratarErro(res, e); }
+  });
   return r;
 }

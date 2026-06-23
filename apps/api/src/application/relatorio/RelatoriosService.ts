@@ -1,4 +1,4 @@
-import type { ClasseAbc, LinhaAbc, LinhaEstoqueParado, LinhaPerda, LinhaProduto, RelatorioAbc, RelatorioRepository, RelatorioVendas, RelatorioVendasContabil } from '../../domain/relatorio/Relatorio.js';
+import type { ClasseAbc, LinhaAbc, LinhaEntregaVol, LinhaEstoqueParado, LinhaPerda, LinhaProduto, RelatorioAbc, RelatorioRepository, RelatorioVendas, RelatorioVendasContabil } from '../../domain/relatorio/Relatorio.js';
 const lim = (v: any): string | null => (v && /^\d{4}-\d{2}-\d{2}$/.test(String(v)) ? String(v) : null);
 const r2 = (n: number) => Math.round(n * 100) / 100;
 
@@ -14,6 +14,7 @@ export class RelatoriosService {
     const st = (status && String(status).trim()) || null;
     return this.repo.pedidos(schema, lim(de), lim(ate), st);
   }
+  volumeEntregas(schema: string, de: any, ate: any): Promise<LinhaEntregaVol[]> { return this.repo.volumeEntregas(schema, lim(de), lim(ate)); }
 
   // Curva ABC: ordenados por receita, classe A (≤80% acumulado), B (≤95%), C (resto). por=produtos|clientes.
   async curvaAbc(schema: string, de: any, ate: any, por: any): Promise<RelatorioAbc> {

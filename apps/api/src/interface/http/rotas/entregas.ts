@@ -16,7 +16,7 @@ export function rotasEntregas(deps: Dependencias): Router {
   });
   // Avança o status da entrega (aguardando → a_caminho → chegou → entregue).
   r.patch('/entregas/:id/status', aut, az('logistica.entrega.atualizar'), async (req, res: Response) => {
-    try { const b = req.body ?? {}; await deps.rastreioService.mudarStatus(sch(req), req.usuario!.sub, req.params.id!, b.status, b.recebidoPor); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
+    try { const b = req.body ?? {}; await deps.rastreioService.mudarStatus(sch(req), req.usuario!.sub, req.params.id!, b.status, b.recebidoPor, b.codigoConfirmacao); res.json({ ok: true }); } catch (e) { tratarErro(res, e); }
   });
   // Envia a posição GPS do motoboy (alta frequência enquanto em rota).
   r.post('/entregas/:id/posicao', aut, az('logistica.entrega.atualizar'), async (req, res: Response) => {
@@ -82,7 +82,7 @@ export function rotasEntregas(deps: Dependencias): Router {
       const emp = await empPorToken(String(req.params.token));
       if (!emp) { res.status(404).json({ erro: 'rastreio.nao_encontrado' }); return; }
       const b = req.body ?? {};
-      await deps.rastreioService.freelancerStatus(emp.schemaName, req.params.token, b.status, b.recebidoPor);
+      await deps.rastreioService.freelancerStatus(emp.schemaName, req.params.token, b.status, b.recebidoPor, b.codigoConfirmacao);
       res.json({ ok: true });
     } catch (e) { tratarErro(res, e); }
   });
@@ -111,7 +111,7 @@ export function rotasEntregas(deps: Dependencias): Router {
       const emp = await empPorToken(String(req.params.token));
       if (!emp) { res.status(404).json({ erro: 'rastreio.nao_encontrado' }); return; }
       const b = req.body ?? {};
-      await deps.rastreioService.rotaStatus(emp.schemaName, req.params.token, req.params.pedidoId!, b.status, b.recebidoPor);
+      await deps.rastreioService.rotaStatus(emp.schemaName, req.params.token, req.params.pedidoId!, b.status, b.recebidoPor, b.codigoConfirmacao);
       res.json({ ok: true });
     } catch (e) { tratarErro(res, e); }
   });

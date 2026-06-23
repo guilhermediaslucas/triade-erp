@@ -63,7 +63,8 @@ export function rotasUsuarios(deps: Dependencias): Router {
   // ===== Super-admin: acesso de um login a várias empresas (sem recadastrar) =====
   // Situação atual do e-mail em cada empresa ativa (acesso + perfil).
   r.get('/superadmin/usuarios/acessos', autenticar, exigirSuperAdmin, async (req, res: Response) => {
-    try { res.json(await deps.acessoMultiEmpresa.situacao(String(req.query.email ?? ''))); }
+    // termo = e-mail OU nome (busca por nome também). `email` mantido por retrocompat.
+    try { res.json(await deps.acessoMultiEmpresa.situacao(String(req.query.termo ?? req.query.email ?? ''))); }
     catch (e) { tratarErro(res, e); }
   });
 

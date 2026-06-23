@@ -4,6 +4,17 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { mascaraCnpj, mascaraCep, buscarCnpj, buscarCep, UFS, buscarMunicipios } from '../lib/br.js';
 import { Ic } from '../components/Icones.js';
+import { ImportadorPlanilha, type CampoImport } from '../components/ImportadorPlanilha.js';
+
+const CAMPOS_FORNECEDOR: CampoImport[] = [
+  { chave: 'nome', rotulo: 'Razão social / Nome', obrigatorio: true, exemplo: 'Distribuidora Estética LTDA', aliases: ['nome', 'razao social', 'razão social', 'fornecedor', 'empresa'] },
+  { chave: 'fantasia', rotulo: 'Nome fantasia', exemplo: 'EstétiDist', aliases: ['fantasia'] },
+  { chave: 'documento', rotulo: 'CNPJ', exemplo: '00.000.000/0000-00', aliases: ['cnpj', 'documento', 'cpf'] },
+  { chave: 'email', rotulo: 'E-mail', exemplo: 'contato@forn.com', aliases: ['email', 'e-mail'] },
+  { chave: 'telefone', rotulo: 'Telefone', exemplo: '(11) 99999-9999', aliases: ['telefone', 'celular', 'fone'] },
+  { chave: 'cidade', rotulo: 'Cidade', exemplo: 'São Paulo', aliases: ['cidade', 'municipio', 'município'] },
+  { chave: 'uf', rotulo: 'UF', exemplo: 'SP', aliases: ['uf', 'estado'] },
+];
 
 interface Fornecedor { id: string; nome: string; fantasia: string | null; documento: string; email: string | null; telefone: string | null; cep: string | null; cidade: string | null; uf: string | null; logradouro: string | null; numero: string | null; complemento: string | null; bairro: string | null; ativo: boolean; }
 const vazio = (): Fornecedor => ({ id: '', nome: '', fantasia: '', documento: '', email: '', telefone: '', cep: '', cidade: '', uf: '', logradouro: '', numero: '', complemento: '', bairro: '', ativo: true });
@@ -15,8 +26,13 @@ export function Fornecedores() {
   const [itens, setItens] = useState<Fornecedor[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [edit, setEdit] = useState<Fornecedor | null>(null);
+  const [importar, setImportar] = useState(false);
   const [busca, setBusca] = useState(''); const [statusF, setStatusF] = useState<'todos' | 'ativos' | 'inativos'>('todos');
   async function carregar() { try { setItens(await api.get('/fornecedores', token!)); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
+  function enviarImportacao(linhas: Record<string, string>[]) {
+    const corpo = linhas.map((l) => ({ nome: l.nome, fantasia: l.fantasia || null, documento: l.documento || '', email: l.email || null, telefone: l.telefone || null, cidade: l.cidade || null, uf: l.uf || null }));
+    return api.post<{ criados: number; ignorados: number; erros: { linha: number; motivo: string }[] }>('/fornecedores/importar', { linhas: corpo }, token!);
+  }
   useEffect(() => { carregar(); /* eslint-disable-next-line */ }, []);
   async function alternar(f: Fornecedor) { try { await api.patch('/fornecedores/' + f.id + '/ativo', { ativo: !f.ativo }, token!); carregar(); } catch (e) { setErro((e as ErroApi).chaveI18n); } }
 
@@ -31,7 +47,10 @@ export function Fornecedores() {
     <div>
       <div className="crumb">{t('fornecedores.crumb')}</div>
       <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('fornecedores.titulo')}</h1><div className="muted page-sub">{t('fornecedores.sub')}</div></div>
-        {pode && <button className="btn-primary" onClick={() => setEdit(vazio())}>+ {t('fornecedores.novo')}</button>}</div>
+        {pode && <div style={{ display: 'flex', gap: 8 }}>
+          <button className="btn-ghost" onClick={() => setImportar(true)}><Ic name="i-upload" className="sm" /> {t('fornecedores.importar')}</button>
+          <button className="btn-primary" onClick={() => setEdit(vazio())}>+ {t('fornecedores.novo')}</button>
+        </div>}</div>
       <div className="toolbar">
         <div className="busca-box-tb"><Ic name="i-search" className="sm" /><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('fornecedores.buscar')} /></div>
         {(['todos', 'ativos', 'inativos'] as const).map((sf) => <span key={sf} className={'chip-f' + (statusF === sf ? ' on' : '')} onClick={() => setStatusF(sf)}>{t('common.' + sf)}</span>)}
@@ -55,6 +74,7 @@ export function Fornecedores() {
         </tbody>
       </table></div>
       {edit && <ModalForn f={edit} onFechar={() => setEdit(null)} onSalvo={() => { setEdit(null); carregar(); }} />}
+      {importar && <ImportadorPlanilha titulo={t('fornecedores.importar')} campos={CAMPOS_FORNECEDOR} modelo="modelo-fornecedores" onImportar={enviarImportacao} onConcluido={carregar} onFechar={() => setImportar(false)} />}
     </div>
   );
 }

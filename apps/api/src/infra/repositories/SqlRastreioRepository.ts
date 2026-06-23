@@ -40,9 +40,11 @@ export class SqlRastreioRepository implements RastreioRepository {
 
   async garantirMotoboyToken(schema: string, pedidoId: string, novo: string): Promise<string | null> {
     const s = validarSchema(schema);
-    const r = (await this.ds.query(
+    // TypeORM 0.3.x retorna UPDATE...RETURNING como tupla [linhas, contagem] → a 1ª linha é res[0][0].
+    const res = await this.ds.query(
       `UPDATE "${s}".pedido SET motoboy_token = COALESCE(motoboy_token, $2) WHERE id = $1 AND forma_entrega = 'motoboy' RETURNING motoboy_token`,
-      [pedidoId, novo]))[0];
+      [pedidoId, novo]);
+    const r = Array.isArray(res?.[0]) ? res[0][0] : res?.[0];
     return r?.motoboy_token ?? null;
   }
 
@@ -67,6 +69,14 @@ export class SqlRastreioRepository implements RastreioRepository {
     const s = validarSchema(schema);
     const r = (await this.ds.query(`SELECT motoboy_id, entrega_status, rastreio_token, status FROM "${s}".pedido WHERE id = $1`, [pedidoId]))[0];
     return r ? { motoboyId: r.motoboy_id ?? null, status: st(r.entrega_status), token: r.rastreio_token ?? null, pedidoStatus: r.status } : null;
+  }
+
+  async telefoneClienteDoPedido(schema: string, pedidoId: string): Promise<string | null> {
+    const s = validarSchema(schema);
+    const r = (await this.ds.query(
+      `SELECT c.telefone FROM "${s}".pedido p LEFT JOIN "${s}".cliente c ON c.id = p.cliente_id WHERE p.id = $1`,
+      [pedidoId]))[0];
+    return r?.telefone ?? null;
   }
 
   async definirStatus(schema: string, pedidoId: string, status: StatusEntrega, token: string | null): Promise<void> {

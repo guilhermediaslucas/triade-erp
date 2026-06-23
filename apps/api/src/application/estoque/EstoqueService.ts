@@ -39,7 +39,7 @@ export class EstoqueService {
     if (new Set(codigos).size !== codigos.length) throw new ErroAplicacao('etiqueta.duplicada_leitura', 400);
     // Não pode reutilizar um código que já está no estoque.
     const jaExistem = await this.etiquetas.jaExistem(schema, codigos);
-    if (jaExistem.length > 0) throw new ErroAplicacao('etiqueta.duplicada', 409);
+    if (jaExistem.length > 0) throw new ErroAplicacao('etiqueta.duplicada', 409, jaExistem.join(', '));
 
     await this.repo.registrarEntrada(schema, {
       produtoId: e.produtoId, lote, validade, quantidade: codigos.length, custoUnitario: custo, codigos,

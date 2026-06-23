@@ -50,7 +50,7 @@ export function Recebimento() {
 function ModalReceber({ p, onFechar, onSalvo }: { p: Pend; onFechar: () => void; onSalvo: () => void; }) {
   const { token } = useAuth(); const { t } = useI18n();
   const [blocos, setBlocos] = useState<Bloco[]>([blocoVazio()]);
-  const [erro, setErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
+  const [erro, setErro] = useState<string | null>(null); const [detErro, setDetErro] = useState<string | null>(null); const [salv, setSalv] = useState(false);
 
   const totalBipado = blocos.reduce((a, b) => a + b.codigos.length, 0);
   const todosCodigos = blocos.flatMap((b) => b.codigos);
@@ -62,8 +62,8 @@ function ModalReceber({ p, onFechar, onSalvo }: { p: Pend; onFechar: () => void;
   function biparEm(i: number, valor: string): boolean {
     const cod = valor.trim().toUpperCase();
     if (!cod) return false;
-    if (todosCodigos.includes(cod)) { setErro('etiqueta.duplicada_leitura'); return false; }
-    setErro(null);
+    if (todosCodigos.includes(cod)) { setErro('etiqueta.duplicada_leitura'); setDetErro(null); return false; }
+    setErro(null); setDetErro(null);
     setBlocos((bs) => bs.map((b, j) => (j === i ? { ...b, codigos: [...b.codigos, cod] } : b)));
     return true;
   }
@@ -72,13 +72,13 @@ function ModalReceber({ p, onFechar, onSalvo }: { p: Pend; onFechar: () => void;
   const removerBloco = (i: number) => setBlocos((bs) => (bs.length > 1 ? bs.filter((_, j) => j !== i) : bs));
 
   async function salvar() {
-    setErro(null); setSalv(true);
+    setErro(null); setDetErro(null); setSalv(true);
     try {
       await api.post('/estoque/recebimentos/' + p.id + '/receber', {
         lotes: blocos.map((b) => ({ lote: b.lote, validade: b.validade, codigos: b.codigos })),
       }, token!);
       onSalvo();
-    } catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
+    } catch (e) { const er = e as ErroApi; setErro(er.chaveI18n); setDetErro(er.detalhe ?? null); setSalv(false); }
   }
 
   return (
@@ -92,7 +92,7 @@ function ModalReceber({ p, onFechar, onSalvo }: { p: Pend; onFechar: () => void;
           onPatch={(d) => patch(i, d)} onBipar={(v) => biparEm(i, v)} onRemoverCod={(c) => removerCod(i, c)} onRemoverBloco={() => removerBloco(i)} />
       ))}
       <button className="btn-ghost btn-mini" onClick={addBloco}>+ {t('receb.add_lote')}</button>
-      {erro && <div className="alerta-erro">{t(erro)}</div>}
+      {erro && <div className="alerta-erro">{t(erro)}{detErro ? ': ' + detErro : ''}</div>}
       <div className="modal-acoes">
         <button className="btn-ghost" onClick={onFechar}>{t('common.cancelar')}</button>
         <button className="btn-primary" disabled={salv || !podeConfirmar} onClick={salvar}>{t('receb.confirmar')}</button>

@@ -69,6 +69,7 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'menu.campanhas_frete', to: '/logistica/campanhas-frete', cap: 'logistica.frete.ver' },
       { rotulo: 'menu.painel_entregas', to: '/logistica/entregas', cap: 'logistica.entrega.ver' },
       { rotulo: 'menu.montar_rota', to: '/logistica/rota', cap: 'logistica.entrega.ver' },
+      { rotulo: 'menu.volume_entregas', to: '/logistica/volume-entregas', cap: 'logistica.entrega.ver' },
     ] }],
   },
   { secoes: [{ itens: [{ rotulo: 'menu.relatorios', icone: 'i-chart', to: '/relatorios', cap: 'relatorios.ver' }] }] },

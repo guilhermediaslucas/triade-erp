@@ -13,7 +13,8 @@ const pt: Dict = {
   'usuarios.acesso_senha': 'Senha provisória',
   'usuarios.acesso_senha_ph': 'em branco = mantém a atual',
   'usuarios.acesso_empresas_lista': 'Empresas de acesso',
-  'usuarios.acesso_busque': 'Informe o e-mail e clique em Buscar para ver as empresas.',
+  'usuarios.acesso_busque': 'Informe o e-mail ou nome e clique em Buscar para ver as empresas.',
+  'usuarios.acesso_busca': 'E-mail ou nome', 'usuarios.acesso_busca_ph': 'usuario@empresa.com ou o nome', 'usuarios.acesso_novo': 'novo',
   'menu.disponibilidade': 'Disponibilidade',
   'disp.crumb': 'Estoque/Expedição / Disponibilidade',
   'disp.titulo': 'Disponibilidade de produtos',
@@ -1103,7 +1104,7 @@ Object.assign(pt, {
   'common.remover': 'Remover',
   'etiqueta.codigo_invalido': 'Código de etiqueta inválido.', 'etiqueta.nao_encontrada': 'Etiqueta não encontrada.',
   'etiqueta.bipe_obrigatorio': 'Bipe ao menos uma etiqueta para dar entrada.',
-  'etiqueta.duplicada': 'Etiqueta já existe no estoque (item já cadastrado).',
+  'etiqueta.duplicada': 'Etiqueta(s) já utilizada(s) no estoque',
   'etiqueta.duplicada_leitura': 'Esta etiqueta já foi bipada nesta entrada.',
 });
 Object.assign(en, {
@@ -2059,6 +2060,7 @@ Object.assign(es, { 'common.todos': 'Todos', 'common.ativos': 'Activos', 'common
 // --- Importação de planilha (clientes/leads) ---
 Object.assign(pt, {
   'clientes.importar': 'Importar clientes', 'cadastro.import_erro_linha': 'Não foi possível importar esta linha.',
+  'produtos.importar': 'Importar produtos', 'fornecedores.importar': 'Importar fornecedores',
   'import.baixar_modelo': 'Baixar modelo (CSV)', 'import.aceita': 'Aceita CSV ou Excel (.xlsx). A 1ª linha deve conter os títulos das colunas.',
   'import.mapear': 'Mapear colunas', 'import.ignorar': 'ignorar', 'import.coluna': 'coluna', 'import.previa': 'Prévia',
   'import.linhas': 'linhas', 'import.validas': 'válidas', 'import.importar': 'Importar',
@@ -3247,13 +3249,18 @@ Object.assign(es, { 'fin.taxa_cartao': 'Tasa de la tarjeta', 'fin.liquido_cartao
 
 // ===== Rastreio do motoboy (entrega + mapa) =====
 Object.assign(pt, {
-  'menu.minhas_entregas': 'Minhas entregas', 'menu.painel_entregas': 'Entregas (mapa)', 'menu.montar_rota': 'Montar rota',
+  'menu.minhas_entregas': 'Minhas entregas', 'menu.painel_entregas': 'Entregas (mapa)', 'menu.montar_rota': 'Montar rota', 'menu.volume_entregas': 'Volume de entregas',
+  'volent.crumb': 'Logística / Volume de entregas', 'volent.titulo': 'Volume de entregas', 'volent.sub': 'Quantidade, valor e ticket médio das entregas concluídas, por dia/semana/mês e por forma de entrega.',
+  'volent.filtrar': 'Filtrar', 'volent.dia': 'Por dia', 'volent.semana': 'Por semana', 'volent.mes': 'Por mês', 'volent.semana_de': 'Semana de',
+  'volent.periodo': 'Período', 'volent.qtd': 'Entregas', 'volent.valor_total': 'Valor total', 'volent.ticket': 'Ticket médio', 'volent.por_forma': 'Por forma de entrega',
   'rota.crumb': 'Logística / Montar rota', 'rota.titulo': 'Montar rota do motoboy', 'rota.sub': 'Ordene as paradas arrastando; otimize pelo caminho mais curto.', 'rota.motoboy': 'Motoboy', 'rota.escolha_motoboy': 'Selecione um motoboy…', 'rota.sem_paradas': 'Nenhuma entrega em rota para este motoboy.', 'rota.otimizar': 'Otimizar rota', 'rota.otimizando': 'Otimizando…', 'rota.otimizada': 'Rota otimizada.', 'rota.salvar': 'Salvar rota', 'rota.salvando': 'Salvando…', 'rota.salva': 'Rota salva.', 'rota.paradas': 'paradas', 'rota.sem_endereco': 'Sem endereço de entrega',
   'rota.link_freelancer': 'Link do motoboy (avulso)', 'rota.link_freelancer_dica': 'Gera um link com todas as paradas em ordem para o motoboy freelancer acompanhar sem login.', 'rota.link_copiado': 'Link da rota copiado!', 'rota.publica_titulo': 'Sua rota de entregas', 'rota.pendentes': 'parada(s) pendente(s)', 'rota.tudo_entregue': 'Todas as entregas concluídas. Obrigado!',
+  'rota.motoboy_invalido': 'Motoboy inválido ou sem entregas em rota.', 'rota.nao_encontrada': 'Rota não encontrada.',
   'cap.logistica.entrega.ver': 'Ver entregas / painel de rastreio', 'cap.logistica.entrega.atualizar': 'App do motoboy (atualizar status/posição)',
   'rastreio.crumb_minhas': 'Logística / Minhas entregas', 'rastreio.minhas': 'Minhas entregas', 'rastreio.minhas_sub': 'As entregas atribuídas a você. Inicie a corrida para enviar sua localização.',
   'rastreio.gps_ativo': 'Localização ativa — enviando sua posição.', 'rastreio.sem_entregas': 'Nenhuma entrega no momento.', 'rastreio.sem_gps': 'Este dispositivo não tem GPS/localização.', 'rastreio.gps_negado': 'Permissão de localização negada. Ative o GPS e a permissão de localização do app.',
   'rastreio.quem_recebeu': 'Quem recebeu o pedido?', 'rastreio.atualizado': 'Entrega atualizada.', 'rastreio.link_copiado': 'Link copiado!', 'rastreio.link_cliente': 'Link de acompanhamento do cliente:',
+  'rastreio.codigo_telefone': 'Confirme a entrega: digite os 4 últimos dígitos do telefone do cliente.', 'entrega.codigo_invalido': 'Código incorreto. Confira os 4 últimos dígitos do telefone do cliente.', 'entrega.cliente_sem_telefone': 'Cliente sem telefone cadastrado. Cadastre o celular do cliente para liberar a entrega.',
   'rastreio.copiar_link': 'Copiar link do cliente', 'rastreio.btn_a_caminho': 'Iniciar (A caminho)', 'rastreio.btn_cheguei': 'Cheguei', 'rastreio.btn_entregue': 'Entregue',
   'rastreio.st.aguardando': 'Aguardando', 'rastreio.st.a_caminho': 'A caminho', 'rastreio.st.chegou': 'Chegou', 'rastreio.st.entregue': 'Entregue',
   'rastreio.crumb_painel': 'Logística / Entregas', 'rastreio.painel': 'Entregas em rota', 'rastreio.painel_sub': 'Acompanhe os motoboys no mapa em tempo real.', 'rastreio.sem_ativas': 'Nenhuma entrega em rota agora.',

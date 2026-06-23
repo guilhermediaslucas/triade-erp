@@ -12,6 +12,9 @@ export interface LinhaEstoqueParado {
 export interface LinhaPerda {
   produtoId: string; produto: string; lote: string | null; quantidade: number; motivo: string | null; data: string; valor: number;
 }
+// Volume de entregas: uma linha por pedido entregue (data da entrega + forma + valor).
+// O agrupamento por dia/semana/mês e por forma de entrega é feito na tela.
+export interface LinhaEntregaVol { data: string; formaEntrega: string; total: number; }
 export interface LinhaPedidoRel {
   numero: number; data: string; cliente: string | null; vendedor: string | null;
   formaEntrega: string; formaEnvio: string | null; status: string; total: number; entregueEm: string | null;
@@ -39,4 +42,5 @@ export interface RelatorioRepository {
   estoqueParado(schema: string): Promise<LinhaEstoqueParado[]>;
   perdasEstoque(schema: string, de: string | null, ate: string | null): Promise<LinhaPerda[]>;
   pedidos(schema: string, de: string | null, ate: string | null, status: string | null): Promise<LinhaPedidoRel[]>;
+  volumeEntregas(schema: string, de: string | null, ate: string | null): Promise<LinhaEntregaVol[]>;
 }

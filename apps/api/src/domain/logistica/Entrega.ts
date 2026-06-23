@@ -34,6 +34,8 @@ export interface RastreioRepository {
   garantirMotoboyToken(schema: string, pedidoId: string, novo: string): Promise<string | null>;
   buscarPorMotoboyToken(schema: string, token: string): Promise<EntregaFreelancer | null>;
   dono(schema: string, pedidoId: string): Promise<DonoEntrega | null>;
+  // Telefone do cliente do pedido (usado p/ a confirmação por dígitos na entrega).
+  telefoneClienteDoPedido(schema: string, pedidoId: string): Promise<string | null>;
   definirStatus(schema: string, pedidoId: string, status: StatusEntrega, token: string | null): Promise<void>;
   registrarPosicao(schema: string, pedidoId: string, lat: number, lng: number): Promise<void>;
   ativas(schema: string): Promise<EntregaAtiva[]>;

@@ -36,9 +36,11 @@ export class SqlRotaRepository implements RotaRepository {
 
   async garantirRotaToken(schema: string, motoboyId: string, novo: string): Promise<string | null> {
     const s = validarSchema(schema);
-    const r = (await this.ds.query(
+    // TypeORM 0.3.x retorna UPDATE...RETURNING como tupla [linhas, contagem] → a 1ª linha é res[0][0].
+    const res = await this.ds.query(
       `UPDATE "${s}".motoboy SET rota_token = COALESCE(rota_token, $2) WHERE id = $1 RETURNING rota_token`,
-      [motoboyId, novo]))[0];
+      [motoboyId, novo]);
+    const r = Array.isArray(res?.[0]) ? res[0][0] : res?.[0];
     return r?.rota_token ?? null;
   }
 

@@ -95,6 +95,31 @@ export class FornecedoresService {
     if (!(await this.repo.buscarPorId(s, id))) throw new ErroAplicacao('cadastro.nao_encontrado', 404);
     await this.repo.definirAtivo(s, id, ativo);
   }
+
+  // Importação em lote (CSV/XLSX normalizado no front). Dedup por documento (dígitos)
+  // e, na falta, por nome. Erro por linha não aborta o lote.
+  async importar(s: string, linhas: any[]): Promise<{ criados: number; ignorados: number; erros: { linha: number; motivo: string }[] }> {
+    const lista = Array.isArray(linhas) ? linhas : [];
+    const existentes = await this.repo.listar(s);
+    const docs = new Set(existentes.map((c) => so(c.documento)).filter(Boolean));
+    const nomes = new Set(existentes.map((c) => c.nome.toLowerCase().trim()));
+    let criados = 0, ignorados = 0; const erros: { linha: number; motivo: string }[] = [];
+    for (let i = 0; i < lista.length; i++) {
+      try {
+        const novo = this.montar(lista[i] ?? {});
+        const docN = so(novo.documento);
+        const nomeN = novo.nome.toLowerCase().trim();
+        if ((docN && docs.has(docN)) || nomes.has(nomeN)) { ignorados++; continue; }
+        await this.repo.criar(s, novo);
+        if (docN) docs.add(docN);
+        nomes.add(nomeN);
+        criados++;
+      } catch (err) {
+        erros.push({ linha: i + 1, motivo: err instanceof ErroAplicacao ? err.chaveI18n : 'cadastro.import_erro_linha' });
+      }
+    }
+    return { criados, ignorados, erros };
+  }
 }
 
 export class VendedoresService {
