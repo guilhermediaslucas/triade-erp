@@ -190,6 +190,16 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-23 (BUG do carregador do Google Maps — `loading=async` + onload resolvia cedo demais)** — Verificado ao vivo
+  (Claude no Chrome, link público `/rastreio/teste...`): a chave **entra no build** (request `maps/api/js?key=AIza...` → 200,
+  main/common/util.js 200) mas a tela ficava no **fallback**. Causa: `MapaEntrega.carregarMaps` montava o script com
+  `&loading=async` e resolvia a promise no `s.onload` — mas com `loading=async` o `onload` é só do **bootstrap** e o
+  `window.google.maps` **ainda não existe** nesse instante → caía no `.catch` → `falhou=true` → fallback. Bug **pré-existente**
+  (estava assim desde a 1ª versão do componente; nunca renderizou o mapa embutido). **Fix:** usar o **callback oficial** do Google
+  (`&callback=__triadeMapsReady`) que dispara quando `google.maps` está pronto, e resolver a promise nele (removido o resolve no
+  onload; mantido `onerror`→reject). Sem isso, nem com chave+referrer corretos o mapa aparece. Precisa **rebuild+deploy** (var de
+  build). **Pendente Gui:** `cd /d C:\Users\guilherme.dias\Desktop\ERP_TRIADE` → `npm run build -w @triade/web` → commit+push.
+
 - **2026-06-23 (Google Maps: chave de navegador corrigida — RAIZ do "mapa não aparece")** — Config no Google Cloud (projeto
   `triade-erp`), feito via Claude no Chrome. **Causa:** a chave de navegador `Maps Embed (web)` (= `VITE_GOOGLE_MAPS_KEY` do
   Cloudflare, valor `AIzaSyBpHIY...VVD4Iogs`) estava **restrita por referenciador só a `triadeerp.com.br`**; como o site roda

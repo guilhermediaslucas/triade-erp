@@ -16,10 +16,17 @@ function carregarMaps(key: string): Promise<any> {
   if (g?.maps) return Promise.resolve(g.maps);
   if (mapsPromise) return mapsPromise;
   mapsPromise = new Promise((resolve, reject) => {
+    // IMPORTANTE: com `loading=async`, o `google.maps` NÃO está pronto no onload do script
+    // (o onload é só do bootstrap). Tem que esperar o CALLBACK oficial do Google — senão
+    // resolve cedo demais com google.maps undefined e o mapa nunca renderiza.
+    const cb = '__triadeMapsReady';
+    (window as any)[cb] = () => {
+      const gg = (window as any).google;
+      gg?.maps ? resolve(gg.maps) : reject(new Error('maps'));
+    };
     const s = document.createElement('script');
-    s.src = `https://maps.googleapis.com/maps/api/js?key=${key}&loading=async`;
+    s.src = `https://maps.googleapis.com/maps/api/js?key=${key}&loading=async&callback=${cb}`;
     s.async = true; s.defer = true;
-    s.onload = () => { const gg = (window as any).google; gg?.maps ? resolve(gg.maps) : reject(new Error('maps')); };
     s.onerror = () => { mapsPromise = null; reject(new Error('maps')); };
     document.head.appendChild(s);
   });
