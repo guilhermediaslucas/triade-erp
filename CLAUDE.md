@@ -190,6 +190,16 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-23 (Google Maps: chave de navegador corrigida — RAIZ do "mapa não aparece")** — Config no Google Cloud (projeto
+  `triade-erp`), feito via Claude no Chrome. **Causa:** a chave de navegador `Maps Embed (web)` (= `VITE_GOOGLE_MAPS_KEY` do
+  Cloudflare, valor `AIzaSyBpHIY...VVD4Iogs`) estava **restrita por referenciador só a `triadeerp.com.br`**; como o site roda
+  em `triade-erp.pages.dev`, o Google bloqueava o Maps JS → caía no fallback de link. As 3 APIs (Maps JavaScript, Directions,
+  Geocoding) **já estavam ativas** e a restrição de API da chave já tinha as 3; billing OK (trial, ~R$1.727/80d). **Fix:**
+  adicionados aos referenciadores HTTP da chave: `https://triade-erp.pages.dev/*`, `https://*.triade-erp.pages.dev/*` (preview)
+  e `https://localhost/*` (WebView do APK — Capacitor bundled, androidScheme https → origem `https://localhost`). Propagação até
+  ~5 min. **Para valer no site:** refazer o deploy (a `VITE_GOOGLE_MAPS_KEY` é var de build). A `Maps Platform API Key` (2 APIs)
+  é a de **servidor** no Render (`GOOGLE_MAPS_API_KEY`, Distance Matrix/Directions) — não mexer.
+
 - **2026-06-23 (Preview do destino também nas telas públicas)** — Só frontend. `RastreioPublico` (link do cliente),
   `EntregaMotoboyPublico` (link avulso por pedido) e `RotaPublica` (link de rota) agora mostram o **mapa do destino** mesmo
   **antes** do motoboy iniciar (status aguardando): reusa o `MapaEntrega` em modo destino-only (geocode). `RastreioPublico`:
