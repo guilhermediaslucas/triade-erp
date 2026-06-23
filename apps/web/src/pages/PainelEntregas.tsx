@@ -47,7 +47,7 @@ export function PainelEntregas() {
       {ativas.length === 0 && <div className="card" style={{ textAlign: 'center', padding: 40 }}><div className="muted">{t('rastreio.sem_ativas')}</div></div>}
 
       {ativas.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: '340px 1fr', gap: 16, alignItems: 'start' }}>
+        <div className="painel-entregas-grid" style={{ display: 'grid', gridTemplateColumns: '300px minmax(0, 1fr)', gap: 16, alignItems: 'start' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {ativas.map((a) => (
               <div key={a.pedidoId} className={'card' + (a.pedidoId === sel ? ' clicavel' : '')} style={{ cursor: 'pointer', outline: a.pedidoId === sel ? '2px solid var(--accent)' : 'none' }} onClick={() => setSel(a.pedidoId)}>
@@ -61,9 +61,9 @@ export function PainelEntregas() {
               </div>
             ))}
           </div>
-          <div className="card">
+          <div className="card" style={{ position: 'sticky', top: 12 }}>
             {selecionada
-              ? <MapaEntrega lat={selecionada.posicao?.lat ?? null} lng={selecionada.posicao?.lng ?? null} destino={selecionada.enderecoEntrega} altura={420} />
+              ? <MapaEntrega lat={selecionada.posicao?.lat ?? null} lng={selecionada.posicao?.lng ?? null} destino={selecionada.enderecoEntrega} altura={560} />
               : <div className="muted">{t('rastreio.selecione')}</div>}
             {selecionada?.eta && <div style={{ marginTop: 8, fontWeight: 500 }}><Ic name="i-clock" className="sm" /> {t('rastreio.faltam')} {selecionada.eta.min} min · {selecionada.eta.km.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} km</div>}
             {selecionada?.posicao && <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>{t('rastreio.atualizado_em')}: {new Date(selecionada.posicao.criadoEm).toLocaleString('pt-BR')}</div>}

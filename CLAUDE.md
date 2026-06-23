@@ -190,6 +190,21 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-23 (Mapa de entregas maior + preview do destino antes da corrida)** — Só frontend. **`MapaEntrega.tsx` reescrito:**
+  além do modo "posição do motoboy + rota" (a_caminho/chegou), agora tem **preview do DESTINO sem GPS** — quando há só o endereço
+  de entrega, **geocodifica** (`maps.Geocoder`) e centraliza o mapa no destino (mostra antes de "A caminho"). Rota agora enquadra
+  os dois pontos (`preserveViewport:false` + marker do destino via `end_location`). **Fallback (sem chave)** ficou maior e com
+  link **"rota até o destino"** (`/maps/dir/?api=1&destination=`) em vez de só lat/lng, + nota `rastreio.mapa_sem_chave`.
+  **`PainelEntregas`:** mapa 420→**560**, card do mapa **sticky**, grid `300px minmax(0,1fr)` + media query ≤860px empilha
+  (`.painel-entregas-grid`). **`MinhasEntregas`:** o mapa agora aparece p/ **toda** entrega com endereço (não só a_caminho/chegou)
+  e subiu p/ **300px**. **Causa raiz das queixas ("não dá pra ver o mapa"):** a `VITE_GOOGLE_MAPS_KEY` **não está no Cloudflare**
+  → cai no fallback de link; com a chave, o mapa renderiza embutido. **Setup da chave (3 APIs):** Maps JavaScript API + Directions
+  API + **Geocoding API** (esta nova, p/ o preview do destino) na chave de navegador, var `VITE_GOOGLE_MAPS_KEY` no Cloudflare Pages.
+  **Menu Logística no motoboy:** o perfil do motoboy do Gui está com **`logistica.entrega.ver`** marcado (print) — é isso que mostra
+  o grupo Logística; desmarcar "Ver entregas / painel de rastreio" no perfil Motoboy (deixar só "App do motoboy"). Sem migration,
+  sem cap. **Pendente Gui:** `cd /d C:\Users\guilherme.dias\Desktop\ERP_TRIADE` → `npm run build -w @triade/web` → commit+push →
+  `scripts\app-apk.bat` + setar `VITE_GOOGLE_MAPS_KEY` no Cloudflare (com Geocoding API ativada).
+
 - **2026-06-23 (Motoboy: 1ª tela ao logar + remover link do cliente no Minhas entregas)** — Só frontend. **(1) "Nenhuma tela
   liberada" no motoboy (BUG):** o `lib/primeiraRota.ts` (usado pelo `PainelInicial` p/ quem não tem `dashboard.ver`) **não listava**
   a tela do motoboy → motoboy (perfil só com `logistica.entrega.atualizar`) caía em "sem telas". Fix: adicionada

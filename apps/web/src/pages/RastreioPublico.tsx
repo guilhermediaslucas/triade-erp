@@ -45,12 +45,15 @@ export function RastreioPublico() {
           ))}
         </div>
 
-        {dados.status === 'a_caminho' || dados.status === 'chegou'
-          ? <>
-              <MapaEntrega lat={dados.posicao?.lat ?? null} lng={dados.posicao?.lng ?? null} destino={dados.destino} altura={360} />
-              {dados.eta && <div style={{ textAlign: 'center', marginTop: 8, fontWeight: 500 }}>{t('rastreio.faltam')} {dados.eta.min} min · {dados.eta.km.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} km</div>}
-            </>
-          : <div className="muted" style={{ textAlign: 'center', padding: 24 }}>{dados.status === 'entregue' ? t('rastreio.entregue_msg') : t('rastreio.aguardando_msg')}</div>}
+        {dados.status === 'entregue'
+          ? <div className="muted" style={{ textAlign: 'center', padding: 24 }}>{t('rastreio.entregue_msg')}</div>
+          : (dados.destino || dados.posicao)
+            ? <>
+                <MapaEntrega lat={dados.posicao?.lat ?? null} lng={dados.posicao?.lng ?? null} destino={dados.destino} altura={360} />
+                {dados.eta && <div style={{ textAlign: 'center', marginTop: 8, fontWeight: 500 }}>{t('rastreio.faltam')} {dados.eta.min} min · {dados.eta.km.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} km</div>}
+                {dados.status === 'aguardando' && <div className="muted" style={{ textAlign: 'center', marginTop: 8 }}>{t('rastreio.aguardando_msg')}</div>}
+              </>
+            : <div className="muted" style={{ textAlign: 'center', padding: 24 }}>{t('rastreio.aguardando_msg')}</div>}
 
         {dados.posicao && (dados.status === 'a_caminho' || dados.status === 'chegou') &&
           <div className="muted" style={{ fontSize: 12, marginTop: 8, textAlign: 'center' }}>{t('rastreio.atualizado_em')}: {new Date(dados.posicao.criadoEm).toLocaleString('pt-BR')}</div>}

@@ -816,6 +816,8 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
 }
 
 @media (max-width: 860px) {
+  /* Painel de entregas: empilha (lista em cima, mapa embaixo) p/ o mapa não ficar espremido. */
+  .painel-entregas-grid { grid-template-columns: 1fr !important; }
   /* --- Sidebar vira drawer off-canvas --- */
   .sidebar {
     position: fixed; top: 0; left: 0; height: 100dvh;

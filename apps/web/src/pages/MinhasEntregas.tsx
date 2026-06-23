@@ -110,9 +110,9 @@ export function MinhasEntregas() {
                 </div>
                 <span className={'pill ' + corStatus(e.status)}>{t('rastreio.st.' + e.status)}</span>
               </div>
-              {(e.status === 'a_caminho' || e.status === 'chegou') && e.posicao && (
+              {(e.enderecoEntrega || e.posicao) && (
                 <div style={{ marginTop: 10 }}>
-                  <MapaEntrega lat={e.posicao.lat} lng={e.posicao.lng} destino={e.enderecoEntrega} altura={170} />
+                  <MapaEntrega lat={e.posicao?.lat ?? null} lng={e.posicao?.lng ?? null} destino={e.enderecoEntrega} altura={300} />
                   {e.eta && <div style={{ marginTop: 6, fontWeight: 500, fontSize: 13 }}><Ic name="i-clock" className="sm" /> {t('rastreio.faltam')} {e.eta.min} min · {e.eta.km.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} km</div>}
                 </div>
               )}

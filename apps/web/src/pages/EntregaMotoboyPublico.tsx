@@ -68,8 +68,8 @@ export function EntregaMotoboyPublico() {
         </div>
         <div className="muted" style={{ margin: '6px 0 10px' }}>{e.clienteNome ?? '—'}{e.enderecoEntrega ? ' · ' + e.enderecoEntrega : ''}</div>
 
-        {emRota && e.posicao && (<>
-          <MapaEntrega lat={e.posicao.lat} lng={e.posicao.lng} destino={e.enderecoEntrega} altura={300} />
+        {e.status !== 'entregue' && (e.enderecoEntrega || e.posicao) && (<>
+          <MapaEntrega lat={e.posicao?.lat ?? null} lng={e.posicao?.lng ?? null} destino={e.enderecoEntrega} altura={300} />
           {e.eta && <div style={{ textAlign: 'center', marginTop: 8, fontWeight: 500 }}>{t('rastreio.faltam')} {e.eta.min} min · {e.eta.km.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} km</div>}
         </>)}
 
