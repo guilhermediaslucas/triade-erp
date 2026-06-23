@@ -206,10 +206,17 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   **Validação:** hand-review (tsc do sandbox segue inútil — mount trunca). **Sem migration, sem cap → não precisa relogar.**
   **OBS comando:** o build anterior falhou porque foi rodado em `Desktop\FIN_PESSOAS` (outro repo) — rodar SEMPRE em
   `Desktop\ERP_TRIADE`. **Pendente Gui:** `cd /d C:\Users\guilherme.dias\Desktop\ERP_TRIADE` → `npm run build -w @triade/web` →
-  commit+push → `scripts\app-apk.bat`. **PWA/instalável (pedido do Gui — NÃO feito):** o TRIADE web ainda **não** é PWA (sem
-  manifest/service worker), por isso o navegador não oferece "Instalar app" como no FinPessoais. Para habilitar: `vite-plugin-pwa`
-  + manifest + ícones (proposto, aguardando ok). Arquivo de instalação p/ distribuir: Android = o **APK** do `scripts\app-apk.bat`
-  (compartilhável); desktop instalável = via PWA (cada um instala pela URL) ou Electron/Tauri p/ um `.exe` real (esforço maior).
+  commit+push → `scripts\app-apk.bat`. **PWA/instalável: FEITO em 2026-06-23** (ver entrada própria abaixo).
+
+- **2026-06-23 (PWA — TRIADE web instalável pelo navegador, igual ao FinPessoais)** — **Sem dependência nova (PWA manual).**
+  Adicionados em `apps/web/public`: `manifest.webmanifest` (name "Tríade ERP", display standalone, theme_color #dc2626,
+  ícones 192/512/maskable), `sw.js` (service worker mínimo — **sem cache de app-shell**: só intercepta navegação e vai à rede,
+  pra nunca prender o app numa versão antiga após deploy; `skipWaiting`+`clients.claim`), e os PNGs `icon-192/512/maskable-512`
+  (T branco em quadrado vermelho, gerados com Pillow). `index.html` += `<link rel=manifest>` + `theme-color` + `apple-touch-icon`
+  + metas apple. `main.tsx` registra o `/sw.js` **só fora do app nativo** (`!Capacitor.isNativePlatform()`) — não roda no APK.
+  Resultado: Chrome/Edge passam a oferecer **"Instalar app"** (PC e celular) na URL do Cloudflare Pages (já é HTTPS). Distribuição:
+  **APK** (Android) + **PWA** (cada um instala pela URL). `.exe` desktop real só com Electron/Tauri (não feito; proposto se quiser).
+  **Pendente Gui:** `cd /d C:\Users\guilherme.dias\Desktop\ERP_TRIADE` → `npm run build -w @triade/web` → commit+push.
 
 - **2026-06-23 (Lote: fix rota.motoboy_invalido + confirmação por telefone + etiqueta duplicada + Volume de entregas)** —
   Quatro frentes (sem migration nova; sem cap nova). **(1) BUG rota.motoboy_invalido (RAIZ ENCONTRADA):** o TypeORM 0.3.30
