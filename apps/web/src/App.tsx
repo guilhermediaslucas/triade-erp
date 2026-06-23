@@ -8,6 +8,7 @@ import { ThemeProvider } from './theme/ThemeContext.js';
 import { Login } from './pages/Login.js';
 import { RedefinirSenha } from './pages/RedefinirSenha.js';
 import { RastreioPublico } from './pages/RastreioPublico.js';
+import { EntregaMotoboyPublico } from './pages/EntregaMotoboyPublico.js';
 import { MinhasEntregas } from './pages/MinhasEntregas.js';
 import { PainelEntregas } from './pages/PainelEntregas.js';
 import { DashboardSerie } from './pages/DashboardSerie.js';
@@ -96,6 +97,7 @@ export function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/redefinir-senha" element={<RedefinirSenha />} />
                 <Route path="/rastreio/:token" element={<RastreioPublico />} />
+                <Route path="/entrega/:token" element={<EntregaMotoboyPublico />} />
                 <Route path="/" element={<Protegida><PainelInicial /></Protegida>} />
                 <Route path="/entregas/minhas" element={<Protegida cap="logistica.entrega.atualizar"><MinhasEntregas /></Protegida>} />
                 <Route path="/logistica/entregas" element={<Protegida cap="logistica.entrega.ver"><PainelEntregas /></Protegida>} />

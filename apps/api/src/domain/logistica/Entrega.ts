@@ -25,10 +25,14 @@ export interface RastreioPublico {
 }
 
 export interface DonoEntrega { motoboyId: string | null; status: StatusEntrega; token: string | null; pedidoStatus: string; }
+// Entrega resolvida pelo token do motoboy avulso (freelancer, sem login).
+export interface EntregaFreelancer extends EntregaMotoboy { pedidoStatus: string; }
 
 export interface RastreioRepository {
   motoboyDoUsuario(schema: string, usuarioId: string): Promise<string | null>;
   minhasEntregas(schema: string, motoboyId: string): Promise<EntregaMotoboy[]>;
+  garantirMotoboyToken(schema: string, pedidoId: string, novo: string): Promise<string | null>;
+  buscarPorMotoboyToken(schema: string, token: string): Promise<EntregaFreelancer | null>;
   dono(schema: string, pedidoId: string): Promise<DonoEntrega | null>;
   definirStatus(schema: string, pedidoId: string, status: StatusEntrega, token: string | null): Promise<void>;
   registrarPosicao(schema: string, pedidoId: string, lat: number, lng: number): Promise<void>;

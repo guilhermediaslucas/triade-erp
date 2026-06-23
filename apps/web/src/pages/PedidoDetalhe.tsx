@@ -56,6 +56,13 @@ export function PedidoDetalhe() {
   const [alterarForma, setAlterarForma] = useState(false);
   const [histForma, setHistForma] = useState<HistForma[]>([]);
   async function carregarHist() { try { setHistForma(await api.get('/pedidos/' + id + '/forma-entrega/historico', token!)); } catch { /* sem permissão/histórico */ } }
+  async function linkMotoboy() {
+    try {
+      const r = await api.post<{ token: string }>('/pedidos/' + id + '/motoboy-link', {}, token!);
+      const url = window.location.origin + '/entrega/' + r.token;
+      navigator.clipboard?.writeText(url).then(() => toast(t('rastreio.link_motoboy_copiado'))).catch(() => window.prompt(t('rastreio.link_motoboy'), url));
+    } catch (e) { const k = (e as ErroApi).chaveI18n; toast(t(k), 'erro'); }
+  }
   async function salvarForma(forma: string, motoboyId: string | null, justificativa: string) {
     try {
       await api.patch('/pedidos/' + id + '/forma-entrega', { formaEntrega: forma, motoboyId, justificativa }, token!);
@@ -137,6 +144,9 @@ export function PedidoDetalhe() {
             <button className="btn-primary" onClick={() => nav('/comercial/pedidos/' + p.id + '/editar')}><Ic name="i-edit" className="sm" /> {t('pedido.editar')}</button>
           )}
           <button className="btn-ghost" onClick={() => nav('/comercial/pedidos/' + p.id + '/romaneio')}><Ic name="i-print" className="sm" /> {t('romaneio.titulo')}</button>
+          {modoExpedicao && podeExpedir && p.formaEntrega === 'motoboy' && !['orcamento', 'cancelado', 'entregue'].includes(p.status) && (
+            <button className="btn-ghost" onClick={linkMotoboy}><Ic name="i-truck" className="sm" /> {t('rastreio.link_motoboy_btn')}</button>
+          )}
           {podeCancelar && !modoExpedicao && proximos.includes('orcamento') && (
             <button className="btn-ghost" onClick={() => mudar('orcamento')}><Ic name="i-edit" className="sm" /> {t('pedido.voltar_orcamento')}</button>
           )}

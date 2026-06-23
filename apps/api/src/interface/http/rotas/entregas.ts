@@ -39,5 +39,44 @@ export function rotasEntregas(deps: Dependencias): Router {
       res.json(dados);
     } catch (e) { tratarErro(res, e); }
   });
+
+  // Gera (ou retorna) o link do motoboy AVULSO (freelancer) para um pedido.
+  r.post('/pedidos/:id/motoboy-link', aut, az(['comercial.pedido.expedir', 'comercial.pedido.gerenciar']), async (req: Request, res: Response) => {
+    try { res.json({ token: await deps.rastreioService.gerarLinkMotoboy(sch(req), req.params.id!) }); } catch (e) { tratarErro(res, e); }
+  });
+
+  // PÚBLICO (sem login) — app do motoboy avulso, autorizado pelo token "<codigo>.<aleatório>".
+  const empPorToken = async (token: string) => {
+    const codigo = token.split('.')[0] ?? '';
+    const emp = await deps.empresasRepo.buscarPorCodigo(codigo);
+    return emp && emp.ativo ? emp : null;
+  };
+  r.get('/entrega-motoboy/:token', async (req: Request, res: Response) => {
+    try {
+      const emp = await empPorToken(String(req.params.token));
+      if (!emp) { res.status(404).json({ erro: 'rastreio.nao_encontrado' }); return; }
+      const d = await deps.rastreioService.freelancerEntrega(emp.schemaName, req.params.token);
+      if (!d) { res.status(404).json({ erro: 'rastreio.nao_encontrado' }); return; }
+      res.json(d);
+    } catch (e) { tratarErro(res, e); }
+  });
+  r.patch('/entrega-motoboy/:token/status', async (req: Request, res: Response) => {
+    try {
+      const emp = await empPorToken(String(req.params.token));
+      if (!emp) { res.status(404).json({ erro: 'rastreio.nao_encontrado' }); return; }
+      const b = req.body ?? {};
+      await deps.rastreioService.freelancerStatus(emp.schemaName, req.params.token, b.status, b.recebidoPor);
+      res.json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
+  });
+  r.post('/entrega-motoboy/:token/posicao', async (req: Request, res: Response) => {
+    try {
+      const emp = await empPorToken(String(req.params.token));
+      if (!emp) { res.status(404).json({ erro: 'rastreio.nao_encontrado' }); return; }
+      const b = req.body ?? {};
+      await deps.rastreioService.freelancerPosicao(emp.schemaName, req.params.token, b.lat, b.lng);
+      res.json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
+  });
   return r;
 }

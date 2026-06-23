@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { DataSource } from 'typeorm';
-import type { DonoEntrega, EntregaAtiva, EntregaMotoboy, PosicaoEntrega, RastreioPublico, RastreioRepository, StatusEntrega } from '../../domain/logistica/Entrega.js';
+import type { DonoEntrega, EntregaAtiva, EntregaFreelancer, EntregaMotoboy, PosicaoEntrega, RastreioPublico, RastreioRepository, StatusEntrega } from '../../domain/logistica/Entrega.js';
 import { validarSchema } from '../tenant/validarSchema.js';
 
 function st(v: any): StatusEntrega {
@@ -36,6 +36,31 @@ export class SqlRastreioRepository implements RastreioRepository {
       enderecoEntrega: r.endereco_entrega ?? null, status: st(r.entrega_status), rastreioToken: r.rastreio_token ?? null,
       total: Number(r.total), criadoEm: new Date(r.criado_em).toISOString(), posicao: pos(r), eta: null,
     }));
+  }
+
+  async garantirMotoboyToken(schema: string, pedidoId: string, novo: string): Promise<string | null> {
+    const s = validarSchema(schema);
+    const r = (await this.ds.query(
+      `UPDATE "${s}".pedido SET motoboy_token = COALESCE(motoboy_token, $2) WHERE id = $1 AND forma_entrega = 'motoboy' RETURNING motoboy_token`,
+      [pedidoId, novo]))[0];
+    return r?.motoboy_token ?? null;
+  }
+
+  async buscarPorMotoboyToken(schema: string, token: string): Promise<EntregaFreelancer | null> {
+    const s = validarSchema(schema);
+    const r = (await this.ds.query(
+      `SELECT p.id, p.numero, c.nome cliente, p.endereco_entrega, p.entrega_status, p.rastreio_token, p.total, p.criado_em, p.status pedido_status,
+              ep.lat, ep.lng, ep.criado_em pos_em
+         FROM "${s}".pedido p
+         LEFT JOIN "${s}".cliente c ON c.id = p.cliente_id
+         LEFT JOIN LATERAL (SELECT lat, lng, criado_em FROM "${s}".entrega_posicao WHERE pedido_id = p.id ORDER BY criado_em DESC LIMIT 1) ep ON true
+        WHERE p.motoboy_token = $1 LIMIT 1`, [token]))[0];
+    if (!r) return null;
+    return {
+      pedidoId: r.id, numero: Number(r.numero), clienteNome: r.cliente ?? null, enderecoEntrega: r.endereco_entrega ?? null,
+      status: st(r.entrega_status), rastreioToken: r.rastreio_token ?? null, total: Number(r.total),
+      criadoEm: new Date(r.criado_em).toISOString(), posicao: pos(r), eta: null, pedidoStatus: r.pedido_status,
+    };
   }
 
   async dono(schema: string, pedidoId: string): Promise<DonoEntrega | null> {

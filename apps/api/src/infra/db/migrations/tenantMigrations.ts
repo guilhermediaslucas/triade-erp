@@ -990,4 +990,13 @@ export const tenantMigrations: MigracaoTenant[] = [
       CREATE INDEX IF NOT EXISTS idx_entrega_posicao ON "${s}".entrega_posicao (pedido_id, criado_em DESC);
     `,
   },
+  {
+    // Link do motoboy AVULSO (freelancer, sem login): token que autoriza atualizar a entrega.
+    // Separado do rastreio_token (que é só leitura, do cliente).
+    nome: '071_pedido_motoboy_token',
+    sql: (s) => `
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS motoboy_token text;
+      CREATE UNIQUE INDEX IF NOT EXISTS uq_pedido_motoboy_token ON "${s}".pedido (motoboy_token) WHERE motoboy_token IS NOT NULL;
+    `,
+  },
 ];

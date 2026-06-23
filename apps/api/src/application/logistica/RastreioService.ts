@@ -1,5 +1,5 @@
 import { randomBytes } from 'node:crypto';
-import type { EntregaAtiva, EntregaMotoboy, EtaEntrega, RastreioPublico, RastreioRepository, StatusEntrega } from '../../domain/logistica/Entrega.js';
+import type { EntregaAtiva, EntregaFreelancer, EntregaMotoboy, EtaEntrega, RastreioPublico, RastreioRepository, StatusEntrega } from '../../domain/logistica/Entrega.js';
 import { STATUS_ENTREGA } from '../../domain/logistica/Entrega.js';
 import type { PedidoRepository } from '../../domain/comercial/Pedido.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
@@ -89,5 +89,43 @@ export class RastreioService {
     const d = await this.repo.publicoPorToken(schema, String(token ?? ''));
     if (d && d.posicao && (d.status === 'a_caminho' || d.status === 'chegou')) d.eta = await this.calcEta('pub:' + String(token ?? ''), d.posicao.lat, d.posicao.lng, d.destino);
     return d;
+  }
+
+  // ===== Motoboy AVULSO (freelancer, sem login): atualiza pelo token =====
+  async gerarLinkMotoboy(schema: string, pedidoId: string): Promise<string> {
+    const novo = schema.replace(/^t_/, '') + '.' + randomBytes(8).toString('hex');
+    const tok = await this.repo.garantirMotoboyToken(schema, pedidoId, novo);
+    if (!tok) throw new ErroAplicacao('entrega.nao_motoboy', 400);
+    return tok;
+  }
+  async freelancerEntrega(schema: string, token: any): Promise<EntregaFreelancer | null> {
+    const d = await this.repo.buscarPorMotoboyToken(schema, String(token ?? ''));
+    if (d && d.posicao && (d.status === 'a_caminho' || d.status === 'chegou')) d.eta = await this.calcEta('mb:' + String(token ?? ''), d.posicao.lat, d.posicao.lng, d.enderecoEntrega);
+    return d;
+  }
+  async freelancerStatus(schema: string, token: any, status: any, recebidoPor: any): Promise<void> {
+    if (!STATUS_ENTREGA.includes(status as StatusEntrega)) throw new ErroAplicacao('entrega.status_invalido', 400);
+    const d = await this.repo.buscarPorMotoboyToken(schema, String(token ?? ''));
+    if (!d) throw new ErroAplicacao('pedido.nao_encontrado', 404);
+    let rt = d.rastreioToken;
+    if (status === 'a_caminho' && !rt) rt = schema.replace(/^t_/, '') + '.' + randomBytes(8).toString('hex');
+    if (status === 'entregue') {
+      const quem = String(recebidoPor ?? '').trim();
+      if (!quem) throw new ErroAplicacao('pedido.recebido_obrigatorio', 400);
+      await this.repo.definirStatus(schema, d.pedidoId, 'entregue', rt);
+      const hoje = new Date().toISOString().slice(0, 10);
+      await this.pedidos.definirEntrega(schema, d.pedidoId, hoje, quem);
+      if (d.pedidoStatus === 'expedido') await this.pedidos.mudarStatus(schema, d.pedidoId, 'entregue');
+      return;
+    }
+    await this.repo.definirStatus(schema, d.pedidoId, status as StatusEntrega, rt);
+  }
+  async freelancerPosicao(schema: string, token: any, lat: any, lng: any): Promise<void> {
+    const la = Number(lat), ln = Number(lng);
+    if (!Number.isFinite(la) || !Number.isFinite(ln)) throw new ErroAplicacao('entrega.posicao_invalida', 400);
+    const d = await this.repo.buscarPorMotoboyToken(schema, String(token ?? ''));
+    if (!d) throw new ErroAplicacao('pedido.nao_encontrado', 404);
+    if (d.status !== 'a_caminho' && d.status !== 'chegou') return;
+    await this.repo.registrarPosicao(schema, d.pedidoId, la, ln);
   }
 }
