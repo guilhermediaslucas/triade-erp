@@ -9,6 +9,7 @@ import { Login } from './pages/Login.js';
 import { RedefinirSenha } from './pages/RedefinirSenha.js';
 import { RastreioPublico } from './pages/RastreioPublico.js';
 import { EntregaMotoboyPublico } from './pages/EntregaMotoboyPublico.js';
+import { RotaPublica } from './pages/RotaPublica.js';
 import { MinhasEntregas } from './pages/MinhasEntregas.js';
 import { PainelEntregas } from './pages/PainelEntregas.js';
 import { MontarRota } from './pages/MontarRota.js';
@@ -99,6 +100,7 @@ export function App() {
                 <Route path="/redefinir-senha" element={<RedefinirSenha />} />
                 <Route path="/rastreio/:token" element={<RastreioPublico />} />
                 <Route path="/entrega/:token" element={<EntregaMotoboyPublico />} />
+                <Route path="/rota/:token" element={<RotaPublica />} />
                 <Route path="/" element={<Protegida><PainelInicial /></Protegida>} />
                 <Route path="/entregas/minhas" element={<Protegida cap="logistica.entrega.atualizar"><MinhasEntregas /></Protegida>} />
                 <Route path="/logistica/entregas" element={<Protegida cap="logistica.entrega.ver"><PainelEntregas /></Protegida>} />

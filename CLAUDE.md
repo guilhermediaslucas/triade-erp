@@ -204,6 +204,22 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   referências remanescentes a idiomaPadrao/timezonePadrao/setIdioma/idiomas/IDIOMAS no `apps/web`). **Pendente Gui:**
   `npm run build -w @triade/web` (validar!) → commit+push → `scripts\app-apk.bat`.
 
+- **2026-06-23 (Fase 8 — link público de ROTA do freelancer)** — **Migration tenant 073. Sem cap nova.** O freelancer
+  (motoboy avulso, sem login) ganha **um link só com TODAS as paradas dele em ordem** (antes só tinha link por pedido).
+  Agrupado pelo **cadastro de motoboy**: migration **073** `motoboy.rota_token text` (único parcial). Hexagonal:
+  `RotaRepository` += `garantirRotaToken`/`motoboyPorRotaToken`/`paradasPublicas` (paradas expedidas do motoboy, ordem_rota,
+  com status + última posição via LATERAL); tipos `ParadaPublica`/`RotaPublica` em `domain/logistica/Rota.ts`.
+  **`RastreioService` ganhou o `rotaRepo` no construtor** (3º param; composition compartilha 1 `rotaRepo` entre Rastreio e
+  Rota) + métodos `gerarLinkRota`/`rotaPublica`/`rotaStatus`/`rotaPosicao` (reusam ETA-cache, `repo.dono` p/ checar que o
+  pedido é do motoboy do token, e a mesma lógica de status/entrega do freelancer por-pedido). Token = `<codigo>.<aleatório>`
+  (tenant sai do prefixo). Rotas: `POST /logistica/rota/:motoboyId/link` (cap `logistica.entrega.ver`) + **públicas**
+  `GET /rota-publica/:token`, `PATCH /rota-publica/:token/:pedidoId/status`, `POST /rota-publica/:token/:pedidoId/posicao`.
+  **Front:** `MontarRota` ganhou botão **"Link do motoboy (avulso)"** (copia `/rota/<token>`); página pública
+  `RotaPublica.tsx` (rota `/rota/:token`, fora do Layout) — lista as paradas numeradas com status + botão A caminho/Cheguei/
+  Entregue por parada, **GPS** (`navigator.geolocation.watchPosition`) enviado p/ a parada ativa, mapa+ETA da ativa. i18n
+  `rota.link_*`/`rota.publica_titulo`/`rota.pendentes`/`rota.tudo_entregue` (só pt). **Validação:** hand-review. **Pendente
+  Gui:** `npm run build -w @triade/web` → commit+push (Render aplica 073) → `scripts\app-apk.bat`.
+
 - **2026-06-22 (Fase 8 — parte 3: Montar rota + mapa suave JS SDK)** — **Migration tenant 072. Sem cap nova.**
   **Item 5 (mapa suave):** `MapaEntrega.tsx` reescrito do iframe Embed p/ o **Google Maps JS SDK** — o pin do motoboy desliza
   (`marker.setPosition` + `map.panTo`, sem reload/flicker) e a rota é desenhada **uma vez** por destino (`DirectionsService`/

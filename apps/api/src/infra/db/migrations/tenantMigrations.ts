@@ -1004,4 +1004,10 @@ export const tenantMigrations: MigracaoTenant[] = [
     nome: '072_pedido_ordem_rota',
     sql: (s) => `ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS ordem_rota int;`,
   },
+  {
+    // Link público de rota do motoboy avulso (freelancer, sem login): token "<codigo>.<aleatório>".
+    nome: '073_motoboy_rota_token',
+    sql: (s) => `ALTER TABLE "${s}".motoboy ADD COLUMN IF NOT EXISTS rota_token text;
+      CREATE UNIQUE INDEX IF NOT EXISTS ix_${s}_motoboy_rota_token ON "${s}".motoboy (rota_token) WHERE rota_token IS NOT NULL;`,
+  },
 ];

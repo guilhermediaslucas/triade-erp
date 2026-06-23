@@ -57,6 +57,15 @@ export function MontarRota() {
     finally { setSalvando(false); }
   }
 
+  // Link público de rota p/ o motoboy avulso (freelancer, sem login) — todas as paradas num link só.
+  async function linkRota() {
+    try {
+      const r = await api.post<{ token: string }>('/logistica/rota/' + motoboyId + '/link', {}, token!);
+      const url = window.location.origin + '/rota/' + r.token;
+      navigator.clipboard?.writeText(url).then(() => toast(t('rota.link_copiado'))).catch(() => window.prompt(t('rota.link_freelancer'), url));
+    } catch (e) { setErro((e as ErroApi).chaveI18n); }
+  }
+
   return (
     <div>
       <div className="crumb">{t('rota.crumb')}</div>
@@ -78,6 +87,7 @@ export function MontarRota() {
           <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
             <button className="btn-ghost" onClick={otimizar} disabled={otimizando || paradas.length < 2}><Ic name="i-clock" className="sm" /> {otimizando ? t('rota.otimizando') : t('rota.otimizar')}</button>
             <button className="btn-primary" onClick={salvar} disabled={salvando}>{salvando ? t('rota.salvando') : t('rota.salvar')}</button>
+            <button className="btn-ghost" onClick={linkRota} title={t('rota.link_freelancer_dica')}><Ic name="i-clip" className="sm" /> {t('rota.link_freelancer')}</button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {paradas.map((p, i) => (

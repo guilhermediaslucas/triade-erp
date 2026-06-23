@@ -125,6 +125,7 @@ export function montarDependencias() {
   const freteCampanhaRepo = new SqlFreteCampanhaRepository(AppDataSource);
   const descontoPedidoRepo = new SqlDescontoPedidoRepository(AppDataSource);
   const configFiscalRepo = new SqlConfigFiscalRepository(AppDataSource);
+  const rotaRepo = new SqlRotaRepository(AppDataSource);
   const r2Storage = new R2Storage(env.r2AccountId, env.r2AccessKeyId, env.r2SecretAccessKey, env.r2Bucket);
 
   return {
@@ -167,8 +168,8 @@ export function montarDependencias() {
     pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, precoClienteRepo, clientesRepo, estoqueRepo, etiquetaRepo, tituloRepo, condicaoRepo, motoboysRepo, usuariosRepo, freteCampanhaRepo, descontoPedidoRepo),
     freteCampanhasService: new FreteCampanhasService(freteCampanhaRepo),
     descontosPedidoService: new DescontosPedidoService(descontoPedidoRepo),
-    rastreioService: new RastreioService(new SqlRastreioRepository(AppDataSource), pedidoRepo),
-    rotaService: new RotaService(new SqlRotaRepository(AppDataSource), empresasRepo),
+    rastreioService: new RastreioService(new SqlRastreioRepository(AppDataSource), pedidoRepo, rotaRepo),
+    rotaService: new RotaService(rotaRepo, empresasRepo),
     condicoesService: new CondicoesService(condicaoRepo),
     financeiroService: new FinanceiroService(tituloRepo, pedidoRepo),
     categoriasFinanceirasService: new CategoriasFinanceirasService(catFinRepo),

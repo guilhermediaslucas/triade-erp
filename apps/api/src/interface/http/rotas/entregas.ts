@@ -39,6 +39,10 @@ export function rotasEntregas(deps: Dependencias): Router {
   r.post('/logistica/rota/otimizar', aut, az('logistica.entrega.ver'), async (req, res: Response) => {
     try { const b = req.body ?? {}; res.json({ ordem: await deps.rotaService.otimizar(sch(req), b.motoboyId, b.ordem) }); } catch (e) { tratarErro(res, e); }
   });
+  // Gera (ou retorna) o link público de ROTA do motoboy avulso (freelancer): /rota/<token>.
+  r.post('/logistica/rota/:motoboyId/link', aut, az('logistica.entrega.ver'), async (req, res: Response) => {
+    try { res.json({ token: await deps.rastreioService.gerarLinkRota(sch(req), req.params.motoboyId) }); } catch (e) { tratarErro(res, e); }
+  });
   // PÚBLICO (sem login): link de acompanhamento do cliente. O token é "<codigo>.<aleatório>",
   // então o código da empresa (tenant) sai do próprio token.
   r.get('/rastreio/:token', async (req: Request, res: Response) => {
@@ -88,6 +92,35 @@ export function rotasEntregas(deps: Dependencias): Router {
       if (!emp) { res.status(404).json({ erro: 'rastreio.nao_encontrado' }); return; }
       const b = req.body ?? {};
       await deps.rastreioService.freelancerPosicao(emp.schemaName, req.params.token, b.lat, b.lng);
+      res.json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
+  });
+
+  // PÚBLICO — ROTA do motoboy avulso (várias paradas num link só), token "<codigo>.<aleatório>".
+  r.get('/rota-publica/:token', async (req: Request, res: Response) => {
+    try {
+      const emp = await empPorToken(String(req.params.token));
+      if (!emp) { res.status(404).json({ erro: 'rastreio.nao_encontrado' }); return; }
+      const d = await deps.rastreioService.rotaPublica(emp.schemaName, req.params.token);
+      if (!d) { res.status(404).json({ erro: 'rastreio.nao_encontrado' }); return; }
+      res.json(d);
+    } catch (e) { tratarErro(res, e); }
+  });
+  r.patch('/rota-publica/:token/:pedidoId/status', async (req: Request, res: Response) => {
+    try {
+      const emp = await empPorToken(String(req.params.token));
+      if (!emp) { res.status(404).json({ erro: 'rastreio.nao_encontrado' }); return; }
+      const b = req.body ?? {};
+      await deps.rastreioService.rotaStatus(emp.schemaName, req.params.token, req.params.pedidoId!, b.status, b.recebidoPor);
+      res.json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
+  });
+  r.post('/rota-publica/:token/:pedidoId/posicao', async (req: Request, res: Response) => {
+    try {
+      const emp = await empPorToken(String(req.params.token));
+      if (!emp) { res.status(404).json({ erro: 'rastreio.nao_encontrado' }); return; }
+      const b = req.body ?? {};
+      await deps.rastreioService.rotaPosicao(emp.schemaName, req.params.token, req.params.pedidoId!, b.lat, b.lng);
       res.json({ ok: true });
     } catch (e) { tratarErro(res, e); }
   });
