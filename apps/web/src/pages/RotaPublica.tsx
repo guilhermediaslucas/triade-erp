@@ -32,6 +32,8 @@ export function RotaPublica() {
   // Parada ativa = a que está em rota (envia o GPS p/ ela).
   const ativa = rota?.paradas.find((p) => p.status === 'a_caminho' || p.status === 'chegou') ?? null;
   const ativoId = ativa?.pedidoId ?? null;
+  // Foco do mapa: a parada em rota OU, antes de iniciar, a próxima parada pendente (preview do destino).
+  const foco = ativa ?? (rota?.paradas.find((p) => p.status !== 'entregue') ?? null);
   useEffect(() => {
     if (!ativoId) { if (watchRef.current != null) { navigator.geolocation?.clearWatch(watchRef.current); watchRef.current = null; } return; }
     if (!('geolocation' in navigator)) { setErro('rastreio.sem_gps'); return; }
@@ -76,10 +78,10 @@ export function RotaPublica() {
 
       {erro && <div className="alerta-erro" style={{ marginBottom: 10 }}>{t(erro)}</div>}
 
-      {ativa && ativa.posicao && (
+      {foco && (foco.enderecoEntrega || foco.posicao) && (
         <div className="card" style={{ marginBottom: 12 }}>
-          <MapaEntrega lat={ativa.posicao.lat} lng={ativa.posicao.lng} destino={ativa.enderecoEntrega} altura={280} />
-          {ativa.eta && <div style={{ textAlign: 'center', marginTop: 8, fontWeight: 500 }}>{t('rastreio.faltam')} {ativa.eta.min} min · {ativa.eta.km.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} km</div>}
+          <MapaEntrega lat={foco.posicao?.lat ?? null} lng={foco.posicao?.lng ?? null} destino={foco.enderecoEntrega} altura={280} />
+          {foco.eta && <div style={{ textAlign: 'center', marginTop: 8, fontWeight: 500 }}>{t('rastreio.faltam')} {foco.eta.min} min · {foco.eta.km.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} km</div>}
         </div>
       )}
 

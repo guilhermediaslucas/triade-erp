@@ -190,6 +190,13 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-23 (Preview do destino também nas telas públicas)** — Só frontend. `RastreioPublico` (link do cliente),
+  `EntregaMotoboyPublico` (link avulso por pedido) e `RotaPublica` (link de rota) agora mostram o **mapa do destino** mesmo
+  **antes** do motoboy iniciar (status aguardando): reusa o `MapaEntrega` em modo destino-only (geocode). `RastreioPublico`:
+  mapa some só no 'entregue'; em aguardando mostra destino + nota "aguardando". `RotaPublica`: novo `foco` = parada em rota OU
+  1ª pendente. Sem migration, sem cap. Depende da `VITE_GOOGLE_MAPS_KEY` (com Geocoding API). **Pendente Gui:**
+  `cd /d C:\Users\guilherme.dias\Desktop\ERP_TRIADE` → `npm run build -w @triade/web` → commit+push.
+
 - **2026-06-23 (Mapa de entregas maior + preview do destino antes da corrida)** — Só frontend. **`MapaEntrega.tsx` reescrito:**
   além do modo "posição do motoboy + rota" (a_caminho/chegou), agora tem **preview do DESTINO sem GPS** — quando há só o endereço
   de entrega, **geocodifica** (`maps.Geocoder`) e centraliza o mapa no destino (mostra antes de "A caminho"). Rota agora enquadra
