@@ -55,6 +55,8 @@ export function SpriteIcones() {
       <symbol id="i-arrow-up" viewBox="0 0 24 24"><polyline points="6 14 12 8 18 14" /></symbol>
       <symbol id="i-arrow-down" viewBox="0 0 24 24"><polyline points="6 10 12 16 18 10" /></symbol>
       <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z" /></symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z" /><circle cx="12" cy="10" r="2.6" /></symbol>
+      <symbol id="i-nav" viewBox="0 0 24 24"><path d="M21 3 3 10.5l7.5 2.8L13.3 21z" /></symbol>
     </svg>
   );
 }

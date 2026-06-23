@@ -15,6 +15,13 @@ interface Entrega { pedidoId: string; numero: number; clienteNome: string | null
 
 const corStatus = (s: StatusEntrega) => s === 'entregue' ? 'st-verde' : s === 'chegou' ? 'st-ciano' : s === 'a_caminho' ? 'st-azul' : 'st-cinza';
 
+// Abre o Google Maps com a rota até o endereço (no Android o sistema oferece o Waze também).
+function navegar(endereco: string | null) {
+  if (!endereco) return;
+  const url = 'https://www.google.com/maps/dir/?api=1&travelmode=driving&destination=' + encodeURIComponent(endereco);
+  window.open(url, '_blank');
+}
+
 export function MinhasEntregas() {
   const { token } = useAuth(); const { t } = useI18n();
   const toast = useToast();
@@ -31,8 +38,7 @@ export function MinhasEntregas() {
   }
   useEffect(() => { carregar(); /* eslint-disable-next-line */ }, []);
 
-  // GPS: enquanto houver entrega em rota (a_caminho/chegou), acompanha a posição e a envia
-  // para cada entrega ativa. Usa a geolocalização do navegador (no app, requer permissão de localização).
+  // GPS: enquanto houver entrega em rota (a_caminho/chegou), envia a posição.
   const ativasIds = entregas.filter((e) => e.status === 'a_caminho' || e.status === 'chegou').map((e) => e.pedidoId);
   const ativasKey = ativasIds.join(',');
   useEffect(() => {
@@ -65,7 +71,6 @@ export function MinhasEntregas() {
     /* eslint-disable-next-line */
   }, [ativasKey]);
 
-  // Avança o status (A caminho / Cheguei). "Entregue" passa pelo modal de código.
   async function avancar(e: Entrega, status: StatusEntrega) {
     setErro(null);
     try {
@@ -80,55 +85,69 @@ export function MinhasEntregas() {
     : s === 'chegou' ? { st: 'entregue', k: 'rastreio.btn_entregue' }
     : null;
 
-  // Parada "atual": a que está em rota; se nenhuma, a primeira da lista (a próxima a sair).
+  // Modo foco: a parada ATUAL (em rota, ou a 1ª da fila) ocupa a tela; as demais ficam recolhidas.
   const idxAtual = (() => {
     const i = entregas.findIndex((e) => e.status === 'a_caminho' || e.status === 'chegou');
     return i >= 0 ? i : (entregas.length ? 0 : -1);
   })();
-  const pendentes = entregas.length;
+  const total = entregas.length;
+  const atual = idxAtual >= 0 ? entregas[idxAtual]! : null;
+  const proximas = entregas.filter((_, i) => i !== idxAtual);
 
   return (
-    <div>
+    <div style={{ maxWidth: 560, margin: '0 auto' }}>
       <div className="crumb">{t('rastreio.crumb_minhas')}</div>
       <div className="page-head"><div><h1 className="page-titulo" style={{ marginBottom: 2 }}>{t('rastreio.minhas')}</h1><div className="muted page-sub">{t('rastreio.minhas_sub')}</div></div></div>
       {erro && <div className="alerta-erro">{t(erro)}</div>}
       {ativasIds.length > 0 && <div className="alerta-ok" style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Ic name="i-truck" className="sm" /> {t('rastreio.gps_ativo')}</div>}
-      {!carregando && pendentes > 0 && <div className="muted" style={{ marginBottom: 10, fontSize: 13 }}>{pendentes} {t('rota.pendentes')} · {t('rastreio.siga_rota')}</div>}
       {carregando && <div className="muted">{t('common.carregando')}</div>}
-      {!carregando && entregas.length === 0 && <div className="card" style={{ textAlign: 'center', padding: 40 }}><div className="muted">{t('rastreio.sem_entregas')}</div></div>}
+      {!carregando && total === 0 && <div className="card" style={{ textAlign: 'center', padding: 40 }}><div className="muted">{t('rastreio.sem_entregas')}</div></div>}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {entregas.map((e, i) => {
-          const prox = proximo(e.status);
-          const atual = i === idxAtual;
-          return (
-            <div key={e.pedidoId} className="card" style={atual ? { outline: '2px solid var(--accent)', outlineOffset: 0 } : undefined}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                <span style={{ flex: '0 0 34px', height: 34, borderRadius: '50%', background: atual ? 'var(--accent)' : 'var(--borda)', color: atual ? '#fff' : 'var(--muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{i + 1}</span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                    <div><b>{numeroPedido(e.numero)}</b> · {e.clienteNome ?? '—'} · <b>{moeda(e.total)}</b></div>
-                    <span className={'pill ' + corStatus(e.status)}>{atual && e.status === 'aguardando' ? t('rastreio.proxima') : t('rastreio.st.' + e.status)}</span>
-                  </div>
-                  <div className="muted" style={{ fontSize: 13, marginTop: 4 }}><Ic name="i-pin" className="sm" /> {e.enderecoEntrega ?? '—'}</div>
-                </div>
-              </div>
-              {(e.enderecoEntrega || e.posicao) && (
-                <div style={{ marginTop: 10 }}>
-                  <MapaEntrega lat={e.posicao?.lat ?? null} lng={e.posicao?.lng ?? null} destino={e.enderecoEntrega} altura={260} />
-                  {e.eta && <div style={{ marginTop: 6, fontWeight: 500, fontSize: 13 }}><Ic name="i-clock" className="sm" /> {t('rastreio.faltam')} {e.eta.min} min · {e.eta.km.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} km</div>}
-                </div>
-              )}
-              {prox && (
-                <button className="btn-primary" style={{ width: '100%', marginTop: 12 }}
-                  onClick={() => prox.st === 'entregue' ? setConfirmar(e) : avancar(e, prox.st)}>
-                  {t(prox.k)}
-                </button>
-              )}
+      {atual && (() => {
+        const prox = proximo(atual.status);
+        return (
+          <div className="card" style={{ border: '2px solid var(--accent)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <b>{t('rastreio.entrega')} {idxAtual + 1} {t('rastreio.de')} {total}{total - idxAtual - 1 > 0 ? ` · ${total - idxAtual - 1} ${t('rastreio.restantes')}` : ''}</b>
+              <span className={'pill ' + corStatus(atual.status)}>{t('rastreio.st.' + atual.status)}</span>
             </div>
-          );
-        })}
-      </div>
+
+            {(atual.enderecoEntrega || atual.posicao) && (
+              <div style={{ margin: '10px 0' }}>
+                <MapaEntrega lat={atual.posicao?.lat ?? null} lng={atual.posicao?.lng ?? null} destino={atual.enderecoEntrega} altura={220} />
+              </div>
+            )}
+
+            <div style={{ fontSize: 12, letterSpacing: '.4px', textTransform: 'uppercase', color: 'var(--muted)' }}>{t('rastreio.parada_atual')}</div>
+            <div style={{ fontWeight: 600, fontSize: 17, marginTop: 2 }}>{numeroPedido(atual.numero)} · {atual.clienteNome ?? '—'} · {moeda(atual.total)}</div>
+            <div style={{ fontSize: 14, color: 'var(--ink)', marginTop: 4, display: 'flex', alignItems: 'flex-start', gap: 6 }}><Ic name="i-pin" className="sm" /> {atual.enderecoEntrega ?? '—'}</div>
+            {atual.eta && <div className="muted" style={{ fontSize: 13, marginTop: 6 }}><Ic name="i-clock" className="sm" /> {t('rastreio.faltam')} {atual.eta.min} min · {atual.eta.km.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} km</div>}
+
+            <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
+              <button className="btn-ghost" style={{ flex: 1 }} disabled={!atual.enderecoEntrega} onClick={() => navegar(atual.enderecoEntrega)}><Ic name="i-nav" className="sm" /> {t('rastreio.navegar')}</button>
+              {prox && <button className="btn-primary" style={{ flex: 1 }} onClick={() => prox.st === 'entregue' ? setConfirmar(atual) : avancar(atual, prox.st)}>{t(prox.k)}</button>}
+            </div>
+          </div>
+        );
+      })()}
+
+      {proximas.length > 0 && (
+        <div className="card" style={{ marginTop: 12 }}>
+          <div className="muted" style={{ fontSize: 13, marginBottom: 8 }}>{t('rastreio.proximas_paradas')} · {proximas.length}</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {entregas.map((e, i) => i === idxAtual ? null : (
+              <div key={e.pedidoId} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', borderTop: '0.5px solid var(--borda)' }}>
+                <span style={{ flex: '0 0 26px', height: 26, borderRadius: '50%', background: 'var(--borda)', color: 'var(--muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 13 }}>{i + 1}</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13 }}><b>{numeroPedido(e.numero)}</b> · {e.clienteNome ?? '—'}</div>
+                  <div className="muted" style={{ fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.enderecoEntrega ?? '—'}</div>
+                </div>
+                <button className="btn-ghost btn-mini" disabled={!e.enderecoEntrega} onClick={() => navegar(e.enderecoEntrega)}><Ic name="i-nav" className="sm" /></button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {confirmar && (
         <ConfirmarEntrega

@@ -190,6 +190,18 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-23 (Minhas entregas em "modo foco" + botão Navegar — estilo app de entrega)** — Pesquisa de padrões (iFood
+  Entregador/Loggi/Uber/Route4Me): apps de entrega trabalham em **modo foco** (uma parada por vez) + **deep-link de navegação**
+  para o Waze/Google Maps (nenhum faz turn-by-turn dentro do app). `MinhasEntregas.tsx` **reescrita** nesse modelo: a **parada
+  atual** (em rota, ou a 1ª da fila) ocupa a tela — header "Entrega X de N · M restantes", mapa 220px, "PARADA ATUAL", pedido/
+  cliente/valor, endereço grande, ETA, e **dois botões grandes**: **Navegar** (abre `https://www.google.com/maps/dir/?api=1&
+  destination=<endereço>` via `window.open` — no Android o sistema oferece o Waze) + a ação (A caminho/Cheguei/Entregue, com o
+  modal de código no Entregue). Abaixo, **"Próximas paradas"** recolhidas (numeradas pela ordem da rota, com botão Navegar por
+  parada). Ícones novos no sprite: `i-pin`, `i-nav`. i18n `rastreio.entrega`/`de`/`restantes`/`parada_atual`/`proximas_paradas`/
+  `navegar` (pt). Decisão do Gui: modo foco completo + Navegar = Google Maps. **Sem migration, sem cap.** (A `RotaPublica` do
+  freelancer pode ganhar o mesmo Navegar depois, se quiser.) **Pendente Gui:** `cd /d C:\Users\guilherme.dias\Desktop\ERP_TRIADE`
+  → `npm run build -w @triade/web` → commit+push → `scripts\app-apk.bat`.
+
 - **2026-06-23 (Mapa no APK: chave do Maps faltava no build LOCAL)** — Diagnóstico ao vivo (print do app): a tela nova do motoboy
   já estava no APK, mas o mapa caía no **fallback** mesmo com o site funcionando. **Causa:** a `VITE_GOOGLE_MAPS_KEY` estava só no
   **Cloudflare** (build do site); o **build local** que o `scripts\app-apk.bat` roda (`npm run build -w @triade/web`) lê o
