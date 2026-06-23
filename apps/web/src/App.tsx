@@ -7,6 +7,9 @@ import { ToastProvider } from './components/Toast.js';
 import { ThemeProvider } from './theme/ThemeContext.js';
 import { Login } from './pages/Login.js';
 import { RedefinirSenha } from './pages/RedefinirSenha.js';
+import { RastreioPublico } from './pages/RastreioPublico.js';
+import { MinhasEntregas } from './pages/MinhasEntregas.js';
+import { PainelEntregas } from './pages/PainelEntregas.js';
 import { DashboardSerie } from './pages/DashboardSerie.js';
 import { DashboardTV } from './pages/DashboardTV.js';
 import { DashboardTVExpedicao } from './pages/DashboardTVExpedicao.js';
@@ -92,7 +95,10 @@ export function App() {
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/redefinir-senha" element={<RedefinirSenha />} />
+                <Route path="/rastreio/:token" element={<RastreioPublico />} />
                 <Route path="/" element={<Protegida><PainelInicial /></Protegida>} />
+                <Route path="/entregas/minhas" element={<Protegida cap="logistica.entrega.atualizar"><MinhasEntregas /></Protegida>} />
+                <Route path="/logistica/entregas" element={<Protegida cap="logistica.entrega.ver"><PainelEntregas /></Protegida>} />
                 <Route path="/dashboard/serie/:tipo" element={<Protegida cap="dashboard.ver"><DashboardSerie /></Protegida>} />
                 <Route path="/dashboard/tv" element={<ProtectedRoute capability="dashboard.ver"><DashboardTV /></ProtectedRoute>} />
                 <Route path="/estoque/tv" element={<ProtectedRoute capability="comercial.pedido.listar"><DashboardTVExpedicao /></ProtectedRoute>} />

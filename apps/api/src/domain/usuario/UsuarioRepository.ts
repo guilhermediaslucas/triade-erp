@@ -22,5 +22,6 @@ export interface UsuarioRepository {
   definirAtivo(schema: string, id: string, ativo: boolean): Promise<void>;
   definirSenha(schema: string, id: string, senhaHash: string): Promise<void>;
   definirTrocarSenha(schema: string, id: string, valor: boolean): Promise<void>;
+  vincularMotoboy(schema: string, id: string, motoboyId: string | null): Promise<void>;
   capabilities(schema: string, usuarioId: string): Promise<string[]>;
 }

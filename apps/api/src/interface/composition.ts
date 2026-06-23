@@ -53,6 +53,8 @@ import { FreteService } from '../application/comercial/FreteService.js';
 import { SqlFreteCampanhaRepository } from '../infra/repositories/SqlFreteCampanhaRepository.js';
 import { SqlDescontoPedidoRepository } from '../infra/repositories/SqlDescontoPedidoRepository.js';
 import { DescontosPedidoService } from '../application/comercial/DescontosPedidoService.js';
+import { SqlRastreioRepository } from '../infra/repositories/SqlRastreioRepository.js';
+import { RastreioService } from '../application/logistica/RastreioService.js';
 import { FreteCampanhasService } from '../application/comercial/FreteCampanhasService.js';
 import { SqlGestaoFreteRepository } from '../infra/repositories/SqlGestaoFreteRepository.js';
 import { GestaoFretesService } from '../application/comercial/GestaoFretesService.js';
@@ -163,6 +165,7 @@ export function montarDependencias() {
     pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, precoClienteRepo, clientesRepo, estoqueRepo, etiquetaRepo, tituloRepo, condicaoRepo, motoboysRepo, usuariosRepo, freteCampanhaRepo, descontoPedidoRepo),
     freteCampanhasService: new FreteCampanhasService(freteCampanhaRepo),
     descontosPedidoService: new DescontosPedidoService(descontoPedidoRepo),
+    rastreioService: new RastreioService(new SqlRastreioRepository(AppDataSource), pedidoRepo),
     condicoesService: new CondicoesService(condicaoRepo),
     financeiroService: new FinanceiroService(tituloRepo, pedidoRepo),
     categoriasFinanceirasService: new CategoriasFinanceirasService(catFinRepo),

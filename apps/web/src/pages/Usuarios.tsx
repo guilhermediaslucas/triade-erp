@@ -5,7 +5,7 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { Avatar } from '../components/Avatar.js';
 import { Ic } from '../components/Icones.js';
 
-interface UsuarioResumo { id: string; nome: string; email: string; ativo: boolean; perfilId: string | null; perfilNome: string | null; foto: string | null; vendedorId: string | null; }
+interface UsuarioResumo { id: string; nome: string; email: string; ativo: boolean; perfilId: string | null; perfilNome: string | null; foto: string | null; vendedorId: string | null; motoboyId: string | null; }
 interface Perfil { id: string; nome: string; }
 
 export function Usuarios() {
@@ -195,7 +195,7 @@ function ModalAcessoEmpresas({ emailInicial, onFechar, onSalvo }: { emailInicial
 }
 
 function ModalUsuario({ usuario, perfis, onFechar, onSalvo }: {
-  usuario: { id: string; nome: string; perfilId: string | null; foto: string | null; vendedorId: string | null } | null;
+  usuario: { id: string; nome: string; perfilId: string | null; foto: string | null; vendedorId: string | null; motoboyId: string | null } | null;
   perfis: Perfil[]; onFechar: () => void; onSalvo: () => void;
 }) {
   const { token } = useAuth();
@@ -208,12 +208,18 @@ function ModalUsuario({ usuario, perfis, onFechar, onSalvo }: {
   const [foto, setFoto] = useState<string | null>(usuario?.foto ?? null);
   const [vendedorId, setVendedorId] = useState(usuario?.vendedorId ?? '');
   const [vendedores, setVendedores] = useState<{ id: string; nome: string }[]>([]);
+  const [motoboyId, setMotoboyId] = useState(usuario?.motoboyId ?? '');
+  const [motoboys, setMotoboys] = useState<{ id: string; nome: string }[]>([]);
   const [trocarSenha, setTrocarSenha] = useState(true);   // 1º acesso: exigir troca (pré-marcado)
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => { api.get<{ id: string; nome: string }[]>('/vendedores', token!).then(setVendedores).catch(() => {}); /* eslint-disable-next-line */ }, []);
+  useEffect(() => {
+    api.get<{ id: string; nome: string }[]>('/vendedores', token!).then(setVendedores).catch(() => {});
+    api.get<{ id: string; nome: string; ativo?: boolean }[]>('/motoboys', token!).then((l) => setMotoboys(l.filter((m) => m.ativo !== false))).catch(() => {});
+    /* eslint-disable-next-line */
+  }, []);
 
   function escolherFoto(e: ChangeEvent<HTMLInputElement>) {
     const arq = e.target.files?.[0];
@@ -227,8 +233,13 @@ function ModalUsuario({ usuario, perfis, onFechar, onSalvo }: {
   async function salvar() {
     setErro(null); setSalvando(true);
     try {
-      if (editando) await api.put('/usuarios/' + usuario!.id, { nome, perfilId: perfilId || null, foto, vendedorId: vendedorId || null }, token!);
-      else await api.post('/usuarios', { nome, email, senha, perfilId: perfilId || null, foto, vendedorId: vendedorId || null, trocarSenha }, token!);
+      if (editando) {
+        await api.put('/usuarios/' + usuario!.id, { nome, perfilId: perfilId || null, foto, vendedorId: vendedorId || null }, token!);
+        await api.patch('/usuarios/' + usuario!.id + '/motoboy', { motoboyId: motoboyId || null }, token!);
+      } else {
+        const r = await api.post<{ id: string }>('/usuarios', { nome, email, senha, perfilId: perfilId || null, foto, vendedorId: vendedorId || null, trocarSenha }, token!);
+        if (r?.id && motoboyId) await api.patch('/usuarios/' + r.id + '/motoboy', { motoboyId }, token!);
+      }
       onSalvo();
     } catch (e) { setErro((e as ErroApi).chaveI18n); setSalvando(false); }
   }
@@ -272,6 +283,12 @@ function ModalUsuario({ usuario, perfis, onFechar, onSalvo }: {
             {vendedores.map((v) => <option key={v.id} value={v.id}>{v.nome}</option>)}
           </select>
           <small className="hint">{t('usuarios.vendedor_hint')}</small>
+        </label>
+        <label className="campo">{t('usuarios.motoboy')}
+          <select value={motoboyId} onChange={(e) => setMotoboyId(e.target.value)}>
+            <option value="">{t('usuarios.motoboy_nenhum')}</option>
+            {motoboys.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
+          </select>
         </label>
         {erro && <div className="alerta-erro">{t(erro)}</div>}
         <div className="modal-acoes">

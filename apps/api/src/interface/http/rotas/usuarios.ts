@@ -44,6 +44,14 @@ export function rotasUsuarios(deps: Dependencias): Router {
     } catch (e) { tratarErro(res, e); }
   });
 
+  r.patch('/usuarios/:id/motoboy', autenticar, autorizar('acesso.usuario.gerenciar'), async (req, res: Response) => {
+    try {
+      await deps.usuariosService.vincularMotoboy(schema(req), req.params.id!, (req.body ?? {}).motoboyId ?? null);
+      auditar(req, { modulo: 'Segurança', entidade: 'Usuario', descricao: 'Vinculou/desvinculou motoboy de um usuário' });
+      res.json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
+  });
+
   r.patch('/usuarios/:id/senha', autenticar, autorizar('acesso.usuario.gerenciar'), async (req, res: Response) => {
     try {
       await deps.usuariosService.definirSenha(schema(req), req.params.id!, (req.body ?? {}).senha);

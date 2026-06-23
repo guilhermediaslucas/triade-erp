@@ -23,6 +23,7 @@ interface Grupo { rotulo?: string; icone?: string; secoes: Secao[]; }
 // têm ícone (texto recuado), igual ao mockup.
 const GRUPOS: Grupo[] = [
   { secoes: [{ itens: [{ rotulo: 'menu.dashboard', icone: 'i-grid', to: '/', cap: 'dashboard.ver' }] }] },
+  { secoes: [{ itens: [{ rotulo: 'menu.minhas_entregas', icone: 'i-truck', to: '/entregas/minhas', cap: 'logistica.entrega.atualizar' }] }] },
   {
     rotulo: 'menu.comercial', icone: 'i-cart',
     secoes: [{ itens: [
@@ -66,6 +67,7 @@ const GRUPOS: Grupo[] = [
     secoes: [{ itens: [
       { rotulo: 'menu.gestao_fretes', to: '/logistica/fretes', cap: 'logistica.frete.ver' },
       { rotulo: 'menu.campanhas_frete', to: '/logistica/campanhas-frete', cap: 'logistica.frete.ver' },
+      { rotulo: 'menu.painel_entregas', to: '/logistica/entregas', cap: 'logistica.entrega.ver' },
     ] }],
   },
   { secoes: [{ itens: [{ rotulo: 'menu.relatorios', icone: 'i-chart', to: '/relatorios', cap: 'relatorios.ver' }] }] },

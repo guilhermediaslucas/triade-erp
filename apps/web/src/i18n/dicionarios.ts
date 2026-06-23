@@ -3243,6 +3243,53 @@ Object.assign(pt, { 'fin.taxa_cartao': 'Taxa do cartão', 'fin.liquido_cartao': 
 Object.assign(en, { 'fin.taxa_cartao': 'Card fee', 'fin.liquido_cartao': 'Net received' });
 Object.assign(es, { 'fin.taxa_cartao': 'Tasa de la tarjeta', 'fin.liquido_cartao': 'Neto recibido' });
 
+// ===== Rastreio do motoboy (entrega + mapa) =====
+Object.assign(pt, {
+  'menu.minhas_entregas': 'Minhas entregas', 'menu.painel_entregas': 'Entregas (mapa)',
+  'cap.logistica.entrega.ver': 'Ver entregas / painel de rastreio', 'cap.logistica.entrega.atualizar': 'App do motoboy (atualizar status/posição)',
+  'rastreio.crumb_minhas': 'Logística / Minhas entregas', 'rastreio.minhas': 'Minhas entregas', 'rastreio.minhas_sub': 'As entregas atribuídas a você. Inicie a corrida para enviar sua localização.',
+  'rastreio.gps_ativo': 'Localização ativa — enviando sua posição.', 'rastreio.sem_entregas': 'Nenhuma entrega no momento.', 'rastreio.sem_gps': 'Este dispositivo não tem GPS/localização.',
+  'rastreio.quem_recebeu': 'Quem recebeu o pedido?', 'rastreio.atualizado': 'Entrega atualizada.', 'rastreio.link_copiado': 'Link copiado!', 'rastreio.link_cliente': 'Link de acompanhamento do cliente:',
+  'rastreio.copiar_link': 'Copiar link do cliente', 'rastreio.btn_a_caminho': 'Iniciar (A caminho)', 'rastreio.btn_cheguei': 'Cheguei', 'rastreio.btn_entregue': 'Entregue',
+  'rastreio.st.aguardando': 'Aguardando', 'rastreio.st.a_caminho': 'A caminho', 'rastreio.st.chegou': 'Chegou', 'rastreio.st.entregue': 'Entregue',
+  'rastreio.crumb_painel': 'Logística / Entregas', 'rastreio.painel': 'Entregas em rota', 'rastreio.painel_sub': 'Acompanhe os motoboys no mapa em tempo real.', 'rastreio.sem_ativas': 'Nenhuma entrega em rota agora.',
+  'rastreio.selecione': 'Selecione uma entrega para ver no mapa.', 'rastreio.atualizado_em': 'Atualizado em',
+  'rastreio.sem_posicao': 'Aguardando a localização do motoboy…', 'rastreio.lat': 'Lat', 'rastreio.lng': 'Lng', 'rastreio.ver_mapa': 'Ver no Google Maps',
+  'rastreio.nao_encontrado': 'Acompanhamento não encontrado ou expirado.', 'rastreio.pedido': 'Pedido', 'rastreio.entregador': 'Entregador',
+  'rastreio.entregue_msg': 'Pedido entregue. Obrigado!', 'rastreio.aguardando_msg': 'Seu pedido está sendo preparado. Acompanhe por aqui.',
+  'usuarios.motoboy': 'Motoboy vinculado', 'usuarios.motoboy_nenhum': 'Nenhum (não é motoboy)',
+});
+Object.assign(en, {
+  'menu.minhas_entregas': 'My deliveries', 'menu.painel_entregas': 'Deliveries (map)',
+  'cap.logistica.entrega.ver': 'View deliveries / tracking panel', 'cap.logistica.entrega.atualizar': 'Courier app (update status/position)',
+  'rastreio.crumb_minhas': 'Logistics / My deliveries', 'rastreio.minhas': 'My deliveries', 'rastreio.minhas_sub': 'Deliveries assigned to you. Start the trip to share your location.',
+  'rastreio.gps_ativo': 'Location active — sending your position.', 'rastreio.sem_entregas': 'No deliveries right now.', 'rastreio.sem_gps': 'This device has no GPS/location.',
+  'rastreio.quem_recebeu': 'Who received the order?', 'rastreio.atualizado': 'Delivery updated.', 'rastreio.link_copiado': 'Link copied!', 'rastreio.link_cliente': 'Customer tracking link:',
+  'rastreio.copiar_link': 'Copy customer link', 'rastreio.btn_a_caminho': 'Start (On the way)', 'rastreio.btn_cheguei': 'Arrived', 'rastreio.btn_entregue': 'Delivered',
+  'rastreio.st.aguardando': 'Waiting', 'rastreio.st.a_caminho': 'On the way', 'rastreio.st.chegou': 'Arrived', 'rastreio.st.entregue': 'Delivered',
+  'rastreio.crumb_painel': 'Logistics / Deliveries', 'rastreio.painel': 'Deliveries in transit', 'rastreio.painel_sub': 'Track couriers on the map in real time.', 'rastreio.sem_ativas': 'No deliveries in transit now.',
+  'rastreio.selecione': 'Select a delivery to view on the map.', 'rastreio.atualizado_em': 'Updated at',
+  'rastreio.sem_posicao': 'Waiting for the courier location…', 'rastreio.lat': 'Lat', 'rastreio.lng': 'Lng', 'rastreio.ver_mapa': 'Open in Google Maps',
+  'rastreio.nao_encontrado': 'Tracking not found or expired.', 'rastreio.pedido': 'Order', 'rastreio.entregador': 'Courier',
+  'rastreio.entregue_msg': 'Order delivered. Thank you!', 'rastreio.aguardando_msg': 'Your order is being prepared. Follow it here.',
+  'usuarios.motoboy': 'Linked courier', 'usuarios.motoboy_nenhum': 'None (not a courier)',
+});
+Object.assign(es, {
+  'menu.minhas_entregas': 'Mis entregas', 'menu.painel_entregas': 'Entregas (mapa)',
+  'cap.logistica.entrega.ver': 'Ver entregas / panel de rastreo', 'cap.logistica.entrega.atualizar': 'App del motoboy (actualizar estado/posición)',
+  'rastreio.crumb_minhas': 'Logística / Mis entregas', 'rastreio.minhas': 'Mis entregas', 'rastreio.minhas_sub': 'Las entregas asignadas a ti. Inicia el viaje para enviar tu ubicación.',
+  'rastreio.gps_ativo': 'Ubicación activa — enviando tu posición.', 'rastreio.sem_entregas': 'Ninguna entrega por ahora.', 'rastreio.sem_gps': 'Este dispositivo no tiene GPS/ubicación.',
+  'rastreio.quem_recebeu': '¿Quién recibió el pedido?', 'rastreio.atualizado': 'Entrega actualizada.', 'rastreio.link_copiado': '¡Enlace copiado!', 'rastreio.link_cliente': 'Enlace de seguimiento del cliente:',
+  'rastreio.copiar_link': 'Copiar enlace del cliente', 'rastreio.btn_a_caminho': 'Iniciar (En camino)', 'rastreio.btn_cheguei': 'Llegué', 'rastreio.btn_entregue': 'Entregado',
+  'rastreio.st.aguardando': 'Esperando', 'rastreio.st.a_caminho': 'En camino', 'rastreio.st.chegou': 'Llegó', 'rastreio.st.entregue': 'Entregado',
+  'rastreio.crumb_painel': 'Logística / Entregas', 'rastreio.painel': 'Entregas en ruta', 'rastreio.painel_sub': 'Sigue a los motoboys en el mapa en tiempo real.', 'rastreio.sem_ativas': 'Ninguna entrega en ruta ahora.',
+  'rastreio.selecione': 'Selecciona una entrega para verla en el mapa.', 'rastreio.atualizado_em': 'Actualizado el',
+  'rastreio.sem_posicao': 'Esperando la ubicación del motoboy…', 'rastreio.lat': 'Lat', 'rastreio.lng': 'Lng', 'rastreio.ver_mapa': 'Abrir en Google Maps',
+  'rastreio.nao_encontrado': 'Seguimiento no encontrado o expirado.', 'rastreio.pedido': 'Pedido', 'rastreio.entregador': 'Repartidor',
+  'rastreio.entregue_msg': 'Pedido entregado. ¡Gracias!', 'rastreio.aguardando_msg': 'Tu pedido se está preparando. Síguelo aquí.',
+  'usuarios.motoboy': 'Motoboy vinculado', 'usuarios.motoboy_nenhum': 'Ninguno (no es motoboy)',
+});
+
 // ===== DRE por competência =====
 Object.assign(pt, {
   'menu.dre': 'DRE', 'dre.titulo': 'DRE (resultado por competência)',

@@ -26,6 +26,7 @@ import { rotasMetas } from './rotas/metas.js';
 import { rotasFrete } from './rotas/frete.js';
 import { rotasLogistica } from './rotas/logistica.js';
 import { rotasDescontos } from './rotas/descontos.js';
+import { rotasEntregas } from './rotas/entregas.js';
 import { rotasPedidos } from './rotas/pedidos.js';
 import { rotasEstoque } from './rotas/estoque.js';
 import { rotasFinanceiro } from './rotas/financeiro.js';
@@ -113,6 +114,7 @@ export function criarServidor(): Express {
   app.use(rotasFrete(deps));
   app.use(rotasLogistica(deps));
   app.use(rotasDescontos(deps));
+  app.use(rotasEntregas(deps));
   app.use(rotasPedidos(deps));
   app.use(rotasEstoque(deps));
   app.use(rotasFinanceiro(deps));

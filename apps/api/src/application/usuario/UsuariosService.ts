@@ -69,6 +69,13 @@ export class UsuariosService {
     await this.usuarios.definirAtivo(schema, id, ativo);
   }
 
+  // Vincula (ou desvincula) o login a um cadastro de motoboy — usado pelo app do motoboy.
+  async vincularMotoboy(schema: string, id: string, motoboyId: string | null): Promise<void> {
+    const u = await this.usuarios.buscarPorId(schema, id);
+    if (!u) throw new ErroAplicacao('usuario.nao_encontrado', 404);
+    await this.usuarios.vincularMotoboy(schema, id, (motoboyId && String(motoboyId)) || null);
+  }
+
   async definirSenha(schema: string, id: string, senha: string): Promise<void> {
     if (!senha || senha.length < 6) throw new ErroAplicacao('usuario.senha_curta', 400);
     const u = await this.usuarios.buscarPorId(schema, id);

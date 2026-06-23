@@ -22,5 +22,7 @@ export interface UsuarioResumo {
   foto: string | null;
   vendedorId: string | null;
   vendedorNome: string | null;
+  motoboyId: string | null;
+  motoboyNome: string | null;
   trocarSenha: boolean;
 }

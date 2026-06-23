@@ -970,4 +970,24 @@ export const tenantMigrations: MigracaoTenant[] = [
       ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS desconto numeric(14,2) NOT NULL DEFAULT 0;
     `,
   },
+  {
+    // Rastreio da entrega (última milha): status + token público + posição do motoboy.
+    // entrega_status: aguardando | a_caminho | chegou | entregue. rastreio_token = link público do cliente.
+    // usuario.motoboy_id vincula um login ao cadastro de motoboy (vê só as entregas dele).
+    nome: '070_rastreio_entrega',
+    sql: (s) => `
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS entrega_status text NOT NULL DEFAULT 'aguardando';
+      ALTER TABLE "${s}".pedido ADD COLUMN IF NOT EXISTS rastreio_token text;
+      CREATE UNIQUE INDEX IF NOT EXISTS uq_pedido_rastreio_token ON "${s}".pedido (rastreio_token) WHERE rastreio_token IS NOT NULL;
+      ALTER TABLE "${s}".usuario ADD COLUMN IF NOT EXISTS motoboy_id uuid REFERENCES "${s}".motoboy(id) ON DELETE SET NULL;
+      CREATE TABLE IF NOT EXISTS "${s}".entrega_posicao (
+        id         uuid PRIMARY KEY,
+        pedido_id  uuid NOT NULL REFERENCES "${s}".pedido(id) ON DELETE CASCADE,
+        lat        numeric(10,7) NOT NULL,
+        lng        numeric(10,7) NOT NULL,
+        criado_em  timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_entrega_posicao ON "${s}".entrega_posicao (pedido_id, criado_em DESC);
+    `,
+  },
 ];

@@ -188,6 +188,35 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-22 (Fase 8 — Rastreio do motoboy)** — **Módulo de entrega/rastreio dentro do TRIADE. Migration tenant 070. Caps novas (relogar).**
+  Decisões do Gui: **login do motoboy no app** (vínculo usuario↔motoboy) + **tudo de uma vez**. **Migration 070:** `pedido` +=
+  `entrega_status` (aguardando|a_caminho|chegou|entregue, default aguardando) + `rastreio_token` (link público, único); `usuario` +=
+  `motoboy_id` (FK→motoboy); tabela `entrega_posicao` (pedido_id, lat, lng, criado_em — trajeto, última linha = posição atual).
+  **Caps novas** (módulo Logística): `logistica.entrega.ver` (painel) e `logistica.entrega.atualizar` (app do motoboy). **Perfil padrão
+  novo "Motoboy"** (só as 2 caps; `garantirPerfisPadrao` cria no boot). `logistica.entrega.ver` add ao perfil **Estoque**. **Backend
+  (hexagonal):** `domain/logistica/Entrega.ts` (StatusEntrega + RastreioRepository), `SqlRastreioRepository`, `application/logistica/
+  RastreioService` (recebe `pedidoRepo` p/ fechar o pedido no 'entregue' — exige quem recebeu, reusa `definirEntrega`+`mudarStatus`).
+  **Token público = `<codigo>.<aleatório>`** (codigo = schema sem `t_`) → o link `/rastreio/:token` já carrega o tenant. Rotas
+  (`entregas.ts`): `GET /entregas/minhas` (motoboy, resolve motoboy pelo `usuario.motoboy_id`), `PATCH /entregas/:id/status`,
+  `POST /entregas/:id/posicao`, `GET /entregas/ativas` (painel), e **`GET /rastreio/:token` PÚBLICO** (sem auth; resolve schema via
+  `empresasRepo.buscarPorCodigo`). Vínculo: `PATCH /usuarios/:id/motoboy` (cap `acesso.usuario.gerenciar`) + `usuario.motoboy_id` no
+  listar; tela Usuários ganhou select **"Motoboy vinculado"**. **Frontend:** `MinhasEntregas.tsx` (motoboy: lista + botões A caminho/
+  Cheguei/Entregue + **GPS via `navigator.geolocation.watchPosition`** enviando posição p/ as entregas em rota + copiar link do cliente),
+  `PainelEntregas.tsx` (empresa: entregas ativas + **mapa**, polling 10s), `RastreioPublico.tsx` (página pública fora do Layout, rota
+  `/rastreio/:token`, timeline de status + mapa, polling 10s), `components/MapaEntrega.tsx` (**Google Maps Embed** mode place; precisa
+  `VITE_GOOGLE_MAPS_KEY` de navegador; sem chave → fallback com link). Menu: **"Minhas entregas"** (cap `entrega.atualizar`, item topo)
+  + **"Entregas (mapa)"** na Logística (cap `entrega.ver`). i18n pt/en/es (`rastreio.*`). **Sem dep npm nova** (GPS via browser API).
+  **Validação:** hand-review (sandbox tsc não-confiável; build local = fonte de verdade). **Pendente Gui:** `npm install` (relink shared
+  p/ caps novas) → `npm run build -w @triade/web` (validar!) → commit+push (Render aplica 070 + cria perfil Motoboy + sincroniza caps no
+  Administrador) → **relogar** → `scripts\app-apk.bat`. **Setup p/ funcionar:** (1) **`VITE_GOOGLE_MAPS_KEY`** no Cloudflare Pages (chave
+  de navegador do Google Maps, restrita por referrer) — sem ela o mapa cai no fallback de link. (2) Criar **usuário p/ cada motoboy**,
+  perfil **Motoboy**, e **vincular ao cadastro de motoboy** (select em Usuários). (3) **GPS no APK:** o `navigator.geolocation` funciona
+  no **navegador do celular** (o motoboy pode logar pelo site no celular); no **APK** exige permissão de localização no AndroidManifest
+  (ACCESS_FINE_LOCATION) + geolocation habilitado no WebView — se não pegar, usar o site no navegador ou adicionar `@capacitor/geolocation`
+  depois. **Fluxo:** pedido vira **expedido** com motoboy escolhido → aparece em "Minhas entregas" do motoboy → ele dá "A caminho"
+  (gera token + começa a enviar GPS) → cliente acompanha por `/rastreio/<token>` → "Cheguei" → "Entregue" (pede quem recebeu, fecha o
+  pedido). **Doc do projeto:** `Info/RASTREIO-MOTOBOY.md` (atualizar status p/ "implementado").
+
 - **2026-06-22 (follow-up)** — **4 ajustes do Gui (sem migration nova; 1 cap nova → relogar).**
   (1) **Desconto por total no Novo pedido:** endpoint `GET /comercial/descontos/resolver?clienteId=&subtotal=`
   (`DescontosPedidoService.resolver`) + efeito no `NovoPedido` (keyed em clienteId/subtotal) → mostra a linha de desconto e

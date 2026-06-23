@@ -42,6 +42,8 @@ export const CAPABILITIES: Capability[] = [
   { id: 'cadastros.favorecido.gerenciar', moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.favorecido.gerenciar' },
   { id: 'logistica.frete.ver',         moduloChave: 'cap.modulo.logistica', labelChave: 'cap.logistica.frete.ver' },
   { id: 'logistica.frete.gerenciar',    moduloChave: 'cap.modulo.logistica', labelChave: 'cap.logistica.frete.gerenciar' },
+  { id: 'logistica.entrega.ver',        moduloChave: 'cap.modulo.logistica', labelChave: 'cap.logistica.entrega.ver' },
+  { id: 'logistica.entrega.atualizar',  moduloChave: 'cap.modulo.logistica', labelChave: 'cap.logistica.entrega.atualizar' },
   { id: 'cadastros.catfin.listar',       moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.catfin.listar' },
   { id: 'cadastros.catfin.gerenciar',    moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.catfin.gerenciar' },
   { id: 'comercial.preco.listar',    moduloChave: 'cap.modulo.comercial', labelChave: 'cap.comercial.preco.listar' },
@@ -131,7 +133,12 @@ export const PERFIS_PADRAO: PerfilPadrao[] = [
     nome: 'Estoque', descricao: 'Apenas Estoque/Expedição',
     caps: ['dashboard.ver', 'estoque.saldo.ver', 'comercial.disponibilidade.ver', 'estoque.entrada.criar', 'estoque.baixa.criar', 'estoque.inventario.ver', 'estoque.inventario.gerenciar',
       'comercial.pedido.listar', 'comercial.pedido.gerenciar', 'comercial.pedido.separar', 'comercial.pedido.expedir', 'financeiro.compra.criar', 'cadastros.produto.listar',
-      'cadastros.forma_entrega.listar', 'cadastros.motoboy.listar', 'fiscal.nota.ver', 'fiscal.nota.emitir', 'relatorios.ver', 'relatorios.validade.ver', 'relatorios.parado.ver', 'relatorios.perdas.ver'],
+      'cadastros.forma_entrega.listar', 'cadastros.motoboy.listar', 'fiscal.nota.ver', 'fiscal.nota.emitir', 'relatorios.ver', 'relatorios.validade.ver', 'relatorios.parado.ver', 'relatorios.perdas.ver',
+      'logistica.entrega.ver'],
+  },
+  {
+    nome: 'Motoboy', descricao: 'App do motoboy — só as entregas atribuídas a ele',
+    caps: ['logistica.entrega.ver', 'logistica.entrega.atualizar'],
   },
   {
     nome: 'Gestão à Vista Comercial', descricao: 'Painel de vendas em TV (somente leitura)',

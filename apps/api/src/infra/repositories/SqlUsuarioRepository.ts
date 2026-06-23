@@ -44,16 +44,18 @@ export class SqlUsuarioRepository implements UsuarioRepository {
   async listar(schema: string): Promise<UsuarioResumo[]> {
     const s = validarSchema(schema);
     const linhas = await this.ds.query(
-      `SELECT u.id, u.nome, u.email, u.ativo, u.perfil_id, u.foto, u.vendedor_id, u.trocar_senha, p.nome AS perfil_nome, v.nome AS vendedor_nome
+      `SELECT u.id, u.nome, u.email, u.ativo, u.perfil_id, u.foto, u.vendedor_id, u.motoboy_id, u.trocar_senha, p.nome AS perfil_nome, v.nome AS vendedor_nome, mb.nome AS motoboy_nome
          FROM "${s}".usuario u
          LEFT JOIN "${s}".perfil p ON p.id = u.perfil_id
          LEFT JOIN "${s}".vendedor v ON v.id = u.vendedor_id
+         LEFT JOIN "${s}".motoboy mb ON mb.id = u.motoboy_id
         ORDER BY u.nome`,
     );
     return linhas.map((r: any) => ({
       id: r.id, nome: r.nome, email: r.email, ativo: r.ativo,
       perfilId: r.perfil_id ?? null, perfilNome: r.perfil_nome ?? null, foto: r.foto ?? null,
       vendedorId: r.vendedor_id ?? null, vendedorNome: r.vendedor_nome ?? null,
+      motoboyId: r.motoboy_id ?? null, motoboyNome: r.motoboy_nome ?? null,
       trocarSenha: r.trocar_senha === true,
     }));
   }
@@ -96,6 +98,10 @@ export class SqlUsuarioRepository implements UsuarioRepository {
   async definirTrocarSenha(schema: string, id: string, valor: boolean): Promise<void> {
     const s = validarSchema(schema);
     await this.ds.query(`UPDATE "${s}".usuario SET trocar_senha = $2 WHERE id = $1`, [id, valor]);
+  }
+  async vincularMotoboy(schema: string, id: string, motoboyId: string | null): Promise<void> {
+    const s = validarSchema(schema);
+    await this.ds.query(`UPDATE "${s}".usuario SET motoboy_id = $2 WHERE id = $1`, [id, motoboyId || null]);
   }
 
   async capabilities(schema: string, usuarioId: string): Promise<string[]> {
