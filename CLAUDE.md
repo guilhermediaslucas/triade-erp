@@ -190,6 +190,15 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-23 (Mapa no APK: chave do Maps faltava no build LOCAL)** — Diagnóstico ao vivo (print do app): a tela nova do motoboy
+  já estava no APK, mas o mapa caía no **fallback** mesmo com o site funcionando. **Causa:** a `VITE_GOOGLE_MAPS_KEY` estava só no
+  **Cloudflare** (build do site); o **build local** que o `scripts\app-apk.bat` roda (`npm run build -w @triade/web`) lê o
+  `apps/web/.env.production`, que **só tinha `VITE_API_URL`** → no APK a chave ficava vazia (`!KEY`) → fallback. **Fix:** adicionada
+  `VITE_GOOGLE_MAPS_KEY=AIzaSyBpHIY...VVD4Iogs` ao `apps/web/.env.production` (arquivo **committado**, exceção no `.gitignore`; é
+  chave de navegador já pública e restrita por referrer, com `https://localhost/*` liberado p/ o WebView). Agora o build local do
+  APK embute a chave. **Pendente Gui:** `cd /d C:\Users\guilherme.dias\Desktop\ERP_TRIADE` → `npm run build -w @triade/web` →
+  commit+push → `scripts\app-apk.bat` → instalar o APK novo (o mapa deve renderizar embutido no app).
+
 - **2026-06-23 (Entrega só por código de 4 dígitos + tela do motoboy melhorada + máscara de telefone)** — Decisões do Gui.
   **(1) Confirmação da entrega só pelo código (sem "quem recebeu"):** nos 3 fluxos do motoboy (`mudarStatus`, `freelancerStatus`,
   `rotaStatus`) removida a exigência de `recebidoPor`; mantido `exigirCodigoTelefone` (4 últimos dígitos do telefone do cliente);
