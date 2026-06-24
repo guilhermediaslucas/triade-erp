@@ -218,7 +218,10 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   `.sb-baixar-app`), só fora do app nativo e quando há `VITE_APK_URL`. Mesma URL alimenta o botão "Baixar nova versão" do
   toast. **Abandonada a ideia de commitar a APK em `apps/web/public/`** (revertido o copy do `app-apk.bat` e a exceção no
   `.gitignore`; a APK de 28 MB que foi parar no commit `6be2996` deve sair com `git rm --cached apps/web/public/triade.apk`).
-  Fluxo de release da APK: `app-apk.bat` → criar Release vX.Y.Z e anexar o `app-debug.apk`. (2) **APK: busca vira lupa + botão Voltar**
+  Fluxo de release da APK: `app-apk.bat` → criar Release vX.Y.Z e anexar o `app-debug.apk`. **Auto-bump:** o `app-apk.bat`
+  roda `scripts\bump-versao.mjs` como passo [0/3] — incrementa o **patch** (x.y.z→x.y.(z+1)) e sincroniza os 3
+  `package.json` (raiz/web/api) ANTES do build, então a APK e a API já saem com a versão nova (sem editar à mão). Faz
+  replace só da linha `"version"`. Major/minor sobem manualmente quando quiser. (2) **APK: busca vira lupa + botão Voltar**
   (espelha o FinPessoais) — no mobile/APK a `.topbar-busca` virou botão compacto 40×40 (só a lupa); botão **Voltar**
   (`.topbar-voltar`, `nav(-1)`) na topbar **só no app nativo** (`Capacitor.isNativePlatform()`). (3) **Fix do build da
   APK (JDK 21):** os plugins do Capacitor 8 exigem `jvmToolchain(21)` e a máquina só tinha Java 17 → adicionado o

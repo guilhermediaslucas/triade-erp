@@ -37,6 +37,10 @@ echo *** Nao encontrei um JDK 21. Instale o Temurin JDK 21 (https://adoptium.net
 :java_ok
 echo Java: %JAVA_HOME%
 
+echo === [0/3] Subindo a versao (patch +1) nos package.json...
+call node scripts\bump-versao.mjs
+if errorlevel 1 goto erro
+
 echo === [1/3] Recompilando o front (pega as mudancas de codigo)...
 call npm run build -w @triade/web
 if errorlevel 1 goto erro
