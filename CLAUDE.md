@@ -221,11 +221,14 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   Fluxo de release da APK: `app-apk.bat` → criar Release vX.Y.Z e anexar o `app-debug.apk`. **Auto-bump:** o `app-apk.bat`
   roda `scripts\bump-versao.mjs` como passo [0/3] — incrementa o **patch** (x.y.z→x.y.(z+1)) e sincroniza os 3
   `package.json` (raiz/web/api) ANTES do build, então a APK e a API já saem com a versão nova (sem editar à mão). Faz
-  replace só da linha `"version"`. Major/minor sobem manualmente quando quiser. **Release 1-clique:** `scripts\release.bat`
-  faz tudo numa tacada — chama o `app-apk.bat` (bump+build+APK) → `git add/commit/push` (commit "Release vX.Y.Z") → cria o
-  **GitHub Release** com o `app-debug.apk` via `gh release create ... --latest` (se o GitHub CLI `gh` estiver instalado/logado;
-  senão imprime o passo a passo manual). Lê a versão nova via `node -p require('./apps/web/package.json').version`.
-  (2) **APK: busca vira lupa + botão Voltar**
+  replace só da linha `"version"`. Major/minor sobem manualmente quando quiser. **Release automático (igual FinPessoais):**
+  `.github/workflows/apk.yml` (novo) — a cada **push no main** o GitHub builda o web + compila o **app-debug.apk** na nuvem
+  (ubuntu, **JDK 21**, assina com o `triade.keystore` do repo) e publica/atualiza a **Release `v<versão>`** com o APK
+  (`gh release create/upload --clobber`), que vira a **Latest** → o link `releases/latest/download/app-debug.apk` (site + app)
+  sempre serve a versão nova. O **site** é deployado em paralelo pelo Cloudflare. `scripts\release.bat` agora só faz
+  **bump (patch) + commit + push** (não builda APK local); o resto é automático no GitHub. `scripts\app-apk.bat` virou só
+  **build LOCAL p/ testar no celular** (não sobe versão nem publica). **Importante:** o link só muda depois que o Action
+  publica a Release nova — enquanto o Latest for v0.1.0, o site baixa v0.1.0. (2) **APK: busca vira lupa + botão Voltar**
   (espelha o FinPessoais) — no mobile/APK a `.topbar-busca` virou botão compacto 40×40 (só a lupa); botão **Voltar**
   (`.topbar-voltar`, `nav(-1)`) na topbar **só no app nativo** (`Capacitor.isNativePlatform()`). (3) **Fix do build da
   APK (JDK 21):** os plugins do Capacitor 8 exigem `jvmToolchain(21)` e a máquina só tinha Java 17 → adicionado o

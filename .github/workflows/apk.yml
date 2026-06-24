@@ -1,0 +1,59 @@
+name: Build APK
+
+# A cada push no main: builda o web, compila o app-debug.apk e publica/atualiza
+# a release "v<versão do package.json>" com o APK anexado. Como ela vira a "Latest",
+# o link de download do site e o botão "Baixar nova versão" do app sempre pegam o APK certo.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Capacitor 8 exige JDK 21 para compilar os plugins.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Ler versão do package.json
+        id: ver
+        run: echo "v=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Build web + sync Android
+        working-directory: apps/web
+        run: |
+          npm run build
+          npx cap sync android
+
+      - name: Compilar APK (debug, assinado com o keystore do repo)
+        working-directory: apps/web/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Publicar release com o APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+          V: ${{ steps.ver.outputs.v }}
+        run: |
+          APK="apps/web/android/app/build/outputs/apk/debug/app-debug.apk"
+          if gh release view "v$V" >/dev/null 2>&1; then
+            gh release upload "v$V" "$APK" --clobber
+          else
+            gh release create "v$V" "$APK" --title "Tríade ERP v$V" --notes "Build automático do APK para a versão $V." --latest
+          fi
