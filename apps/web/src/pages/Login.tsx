@@ -88,7 +88,7 @@ export function Login() {
             </div>
             {erro && <div className="login-erro">{t(erro)}</div>}
             <button type="submit" className="login-btn" disabled={carregando}>{carregando ? t('login.entrando') : t('login.entrar')}</button>
-            <div className="login-footer">{t('login.dev')} <b>Guilherme Dias</b><br />TRÍADE ERP © 2026 · v0.1.0</div>
+            <div className="login-footer">{t('login.dev')} <b>Guilherme Dias</b><br />TRÍADE ERP © 2026 · v{__APP_VERSION__}</div>
           </form>
         </div>
       </div>
