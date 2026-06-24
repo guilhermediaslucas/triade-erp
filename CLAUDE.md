@@ -247,6 +247,14 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   (Suporte | Baixar app, cada um `flex:1`) e `.sb-ver-row` (pílula de versão | crédito **"por Guilherme Dias"** `.sb-ver-aut`);
   "Baixar app (Android)"→"Baixar app" p/ caber lado a lado. E (8) **barra de rolagem** estilizada (conteúdo segue
   `--ink`; menu lateral escuro com polegar claro `rgba(255,255,255,.18)`) — `styles.css`. **Sem migration, sem cap.**
+  **Addendum 2 (mesma data):** (9) **Versão da tela de login** deixou de ser chumbada (`v0.1.0`) → `v{__APP_VERSION__}`
+  (`Login.tsx`); era o único lugar que ainda mostrava número fixo. (10) **Sininho respeita "limpar notificações":** novo
+  `lib/notificacoes.ts` (mapa `{chave: qtdQuandoConcluiu}` em `localStorage triade_notif_concluidas` + evento `notif-mudou`;
+  `estaOculta` = qtd atual ≤ qtd concluída → reaparece sozinho se chegarem itens novos). `Sino.tsx` e `Notificacoes.tsx`
+  agora compartilham esse estado e se atualizam na hora (antes o sino recalculava dos dados e ignorava o "concluídas").
+  Migra o formato antigo (array de chaves → mapa com Infinity). (11) **Seletor de empresa movido do topbar p/ o menu**
+  (`.sidebar-empresa`, abaixo da logo) — nomes longos de empresa empurravam e cortavam o botão "Sair" no topbar; no menu
+  fica full-width com ellipsis. **Sem migration, sem cap.** **Pendente Gui:** `scripts\release.bat`.
 
 - **2026-06-23 (Minhas entregas em "modo foco" + botão Navegar — estilo app de entrega)** — Pesquisa de padrões (iFood
   Entregador/Loggi/Uber/Route4Me): apps de entrega trabalham em **modo foco** (uma parada por vez) + **deep-link de navegação**

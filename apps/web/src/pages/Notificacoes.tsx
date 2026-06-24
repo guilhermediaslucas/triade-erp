@@ -4,6 +4,7 @@ import { api } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { Ic } from '../components/Icones.js';
+import { lerConcluidas, estaOculta, concluir as concluirNotif, reabrir as reabrirNotif, concluirVarias, EVENTO_NOTIF } from '../lib/notificacoes.js';
 
 interface Grupo { chave: string; icone: string; tint: string; qtd: number; to: string; }
 const hoje0 = () => new Date(new Date().toISOString().slice(0, 10) + 'T00:00:00').getTime();
@@ -14,16 +15,16 @@ export function Notificacoes() {
   const { t } = useI18n();
   const [grupos, setGrupos] = useState<Grupo[]>([]);
   const [carregando, setCarregando] = useState(true);
-  // Notificações concluídas (dispensadas) ficam salvas por usuário no navegador.
-  const CHAVE_LS = 'triade_notif_concluidas';
-  const [concluidas, setConcluidas] = useState<Set<string>>(() => {
-    try { return new Set(JSON.parse(localStorage.getItem(CHAVE_LS) || '[]') as string[]); } catch { return new Set(); }
-  });
+  // Notificações concluídas (mapa chave->qtd), compartilhado com o Sino.
+  const [concluidas, setConcluidas] = useState<Record<string, number>>(() => lerConcluidas());
   const [mostrarConcl, setMostrarConcl] = useState(false);
-  function persistir(s: Set<string>) { try { localStorage.setItem(CHAVE_LS, JSON.stringify([...s])); } catch { /* */ } }
-  function concluir(chave: string) { setConcluidas((cur) => { const n = new Set(cur); n.add(chave); persistir(n); return n; }); }
-  function reabrir(chave: string) { setConcluidas((cur) => { const n = new Set(cur); n.delete(chave); persistir(n); return n; }); }
-  function concluirTodas() { setConcluidas((cur) => { const n = new Set(cur); grupos.forEach((g) => n.add(g.chave)); persistir(n); return n; }); }
+  useEffect(() => {
+    const sync = () => setConcluidas(lerConcluidas());
+    window.addEventListener(EVENTO_NOTIF, sync);
+    window.addEventListener('storage', sync);
+    return () => { window.removeEventListener(EVENTO_NOTIF, sync); window.removeEventListener('storage', sync); };
+  }, []);
+  function concluirTodas() { concluirVarias(grupos.map((g) => ({ chave: g.chave, qtd: g.qtd }))); }
 
   useEffect(() => {
     (async () => {
@@ -54,15 +55,15 @@ export function Notificacoes() {
     /* eslint-disable-next-line */
   }, [token]);
 
-  const qtdConcl = grupos.filter((g) => concluidas.has(g.chave)).length;
-  const visiveis = grupos.filter((g) => mostrarConcl || !concluidas.has(g.chave));
+  const qtdConcl = grupos.filter((g) => estaOculta(concluidas, g.chave, g.qtd)).length;
+  const visiveis = grupos.filter((g) => mostrarConcl || !estaOculta(concluidas, g.chave, g.qtd));
   return (
     <div>
       <div className="crumb">{t('notif.crumb')}</div><h1 className="page-titulo">{t('notif.titulo')}</h1><p className="muted page-sub">{t('notif.sub')}</p>
       {carregando && <div className="muted">{t('common.carregando')}</div>}
       {!carregando && grupos.length > 0 && (
         <div className="toolbar" style={{ marginBottom: 8, gap: 8 }}>
-          {grupos.some((g) => !concluidas.has(g.chave)) && (
+          {grupos.some((g) => !estaOculta(concluidas, g.chave, g.qtd)) && (
             <button className="btn-ghost btn-mini" onClick={concluirTodas}><Ic name="i-check" className="sm" /> {t('notif.limpar_todas')}</button>
           )}
           {qtdConcl > 0 && (
@@ -79,7 +80,7 @@ export function Notificacoes() {
         <div className="card">
           <div className="notif-lista">
             {visiveis.map((g) => {
-              const feito = concluidas.has(g.chave);
+              const feito = estaOculta(concluidas, g.chave, g.qtd);
               return (
                 <div key={g.chave} className={'notif-item' + (feito ? ' feito' : '')}>
                   <div className={'kpi-ic sm ' + g.tint}><Ic name={g.icone} className="sm" /></div>
@@ -87,8 +88,8 @@ export function Notificacoes() {
                   <div className="notif-txt">{t(g.chave)}</div>
                   <Link to={g.to} className="lnk" style={{ color: 'var(--accent)', fontWeight: 600 }}>{t('dash.ver_todos')} →</Link>
                   {feito
-                    ? <button className="btn-ghost btn-mini" onClick={() => reabrir(g.chave)}>{t('notif.reabrir')}</button>
-                    : <button className="btn-ghost btn-mini" onClick={() => concluir(g.chave)}><Ic name="i-check" className="sm" /> {t('notif.concluir')}</button>}
+                    ? <button className="btn-ghost btn-mini" onClick={() => reabrirNotif(g.chave)}>{t('notif.reabrir')}</button>
+                    : <button className="btn-ghost btn-mini" onClick={() => concluirNotif(g.chave, g.qtd)}><Ic name="i-check" className="sm" /> {t('notif.concluir')}</button>}
                 </div>
               );
             })}

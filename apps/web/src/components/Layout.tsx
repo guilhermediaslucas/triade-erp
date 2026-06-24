@@ -173,6 +173,7 @@ export function Layout({ children }: { children: ReactNode }) {
               ? <div className="brand-empresa">{fantasia}</div>
               : null}
         </div>
+        <div className="sidebar-empresa"><EmpresaSwitcher /></div>
         <nav className="nav">
           <div className="nav-label">{t('menu.principal')}</div>
           {GRUPOS.map((g, gi) => {
@@ -259,7 +260,6 @@ export function Layout({ children }: { children: ReactNode }) {
             <kbd>Ctrl K</kbd>
           </button>
           <div className="topbar-dir">
-            <EmpresaSwitcher />
             <BotaoTelaCheia />
             <button className="btn-tema" onClick={alternar} title={t('tema.alternar')}><Ic name={escuro ? 'i-sun' : 'i-moon'} className="sm" /></button>
             <Sino />

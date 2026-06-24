@@ -5,6 +5,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { useToast } from './Toast.js';
 import { Ic } from './Icones.js';
+import { lerConcluidas, estaOculta, EVENTO_NOTIF } from '../lib/notificacoes.js';
 
 interface Grupo { chave: string; icone: string; qtd: number; to: string; }
 
@@ -21,6 +22,8 @@ export function Sino() {
   const nav = useNavigate();
   const [grupos, setGrupos] = useState<Grupo[]>([]);
   const [aberto, setAberto] = useState(false);
+  // Notificações dispensadas (concluídas) — compartilhado com a tela de Notificações.
+  const [concluidas, setConcluidas] = useState<Record<string, number>>(() => lerConcluidas());
   // Última contagem de "aguardando separação" — para disparar toast quando aumenta.
   const prevSepRef = useRef<number | null>(null);
 
@@ -97,7 +100,16 @@ export function Sino() {
     /* eslint-disable-next-line */
   }, [token]);
 
-  const total = grupos.reduce((a, g) => a + g.qtd, 0);
+  // Reage quando o usuário limpa/reabre notificações (mesma aba ou outra aba).
+  useEffect(() => {
+    const sync = () => setConcluidas(lerConcluidas());
+    window.addEventListener(EVENTO_NOTIF, sync);
+    window.addEventListener('storage', sync);
+    return () => { window.removeEventListener(EVENTO_NOTIF, sync); window.removeEventListener('storage', sync); };
+  }, []);
+
+  const visiveis = grupos.filter((g) => !estaOculta(concluidas, g.chave, g.qtd));
+  const total = visiveis.reduce((a, g) => a + g.qtd, 0);
   function ir(to: string) { setAberto(false); nav(to); }
 
   return (
@@ -110,8 +122,8 @@ export function Sino() {
           <div className="sino-overlay" onClick={() => setAberto(false)} />
           <div className="sino-painel">
             <div className="sino-cab">{t('sino.titulo')}</div>
-            {grupos.length === 0 && <div className="sino-vazio">{t('sino.vazio')}</div>}
-            {grupos.map((g) => (
+            {visiveis.length === 0 && <div className="sino-vazio">{t('sino.vazio')}</div>}
+            {visiveis.map((g) => (
               <button key={g.chave} className="sino-item" onClick={() => ir(g.to)}>
                 <span className="sino-ic"><Ic name={g.icone} className="sm" /></span>
                 <span className="sino-lbl">{t(g.chave)}</span>
