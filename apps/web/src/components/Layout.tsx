@@ -224,16 +224,20 @@ export function Layout({ children }: { children: ReactNode }) {
             <div className="lg">TR<span>Í</span>ADE</div>
             <div className="tg">E R P</div>
           </div>
-          <button type="button" className="sidebar-foot-sup sidebar-foot-btn" onClick={() => setSuporteOpen(true)}>
-            <Ic name="i-help" /><div><b>{t('menu.suporte')}</b><small>{t('menu.suporte_sub')}</small></div>
-          </button>
-          {!nativo && apkUrl && (
-            <button type="button" className="sb-baixar-app" onClick={() => setQrOpen(true)}>
-              <Ic name="i-download" /><span>Baixar app (Android)</span>
+          <div className="sb-row">
+            <button type="button" className="sidebar-foot-sup sidebar-foot-btn" onClick={() => setSuporteOpen(true)}>
+              <Ic name="i-help" /><div><b>{t('menu.suporte')}</b><small>{t('menu.suporte_sub')}</small></div>
             </button>
-          )}
-          <button type="button" className="sb-ver-pill" onClick={() => setNovidadesOpen(true)} title="Ver novidades">Tríade ERP v{__APP_VERSION__}</button>
-          <div className="sb-ver-aut">por Guilherme Dias</div>
+            {!nativo && apkUrl && (
+              <button type="button" className="sb-baixar-app" onClick={() => setQrOpen(true)}>
+                <Ic name="i-download" /><span>Baixar app (Android)</span>
+              </button>
+            )}
+          </div>
+          <div className="sb-ver-row">
+            <button type="button" className="sb-ver-pill" onClick={() => setNovidadesOpen(true)} title="Ver novidades">Tríade ERP v{__APP_VERSION__}</button>
+            <div className="sb-ver-aut">por Guilherme Dias</div>
+          </div>
         </div>
       </aside>
       <div className="app-main">
