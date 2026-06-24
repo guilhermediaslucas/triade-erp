@@ -83,6 +83,7 @@ import { DescontosPedido } from './pages/DescontosPedido.js';
 import { Layout } from './components/Layout.js';
 import { ScrollToTop } from './components/ScrollToTop.js';
 import { ProtectedRoute } from './components/ProtectedRoute.js';
+import { NovaVersao } from './components/NovaVersao.js';
 
 function Protegida({ children, cap, soSuper }: { children: ReactNode; cap?: string; soSuper?: boolean }) {
   return <ProtectedRoute capability={cap} soSuperAdmin={soSuper}><Layout>{children}</Layout></ProtectedRoute>;
@@ -177,6 +178,7 @@ export function App() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </BrowserRouter>
+            <NovaVersao />
           </ToastProvider>
         </BrandingProvider>
       </AuthProvider>

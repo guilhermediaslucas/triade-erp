@@ -190,6 +190,28 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-24 (Aviso de nova versão no web e APK — portado do FinPessoais)** — Mesmo mecanismo do FinPessoais.
+  **`apps/web/vite.config.ts`:** lê a versão do `apps/web/package.json`, gera um `buildId` único por build, injeta
+  `__APP_VERSION__`/`__BUILD_ID__` via `define` e grava `dist/version.json` no `closeBundle` (mantidos proxy `/api` +
+  porta 5173). **`apps/web/src/vite-env.d.ts`** (novo): declara os 2 globais. **`components/NovaVersao.tsx`** (novo):
+  toast que checa a cada 3 min (e ao focar a aba) — **web/PWA** compara o `buildId` do `/version.json` → "Recarregar
+  agora" (limpa SW + caches e reload); **APK nativo** (`Capacitor.isNativePlatform`) compara a versão semver de
+  `GET ${VITE_API_URL}/version` com `__APP_VERSION__` → "Baixar nova versão" (abre **`VITE_APK_URL`**, se preenchida;
+  vazia = só avisa). Não roda em DEV. Renderizado 1× global no `App.tsx` (dentro do ToastProvider). **`components/
+  Novidades.tsx`** (novo): modal changelog no padrão de modal do TRIADE (`modal-fundo`/`modal-acoes`/`btn-primary`,
+  ícone `i-help`), aberto pela **pílula `.sb-ver-pill` "Tríade ERP v{__APP_VERSION__}"** no rodapé do menu (`Layout.tsx`).
+  **`Suporte.tsx`:** `const VERSAO` deixou de ser chumbado (`'0.1.0'`) → `__APP_VERSION__`. **CSS** (`styles.css`):
+  `.nv-toast`/`.nv-ic`/`.nv-body`/`.nv-tt`/`.nv-sub`/`.nv-act`/`.nv-x` + `@keyframes nv-rise` + `.sb-ver-pill` + `.nov-list`
+  (tokens do TRIADE: `--borda`/`--card`/`--radius`/`--muted`/`--accent-soft`/`--side-fg`). **Backend** (`server.ts`):
+  `GET /version` → `{ versao }` lido do `apps/api/package.json` (`readFileSync`, `process.cwd()` = apps/api via
+  `start:prod`), público como o `/health`, coberto pelo CORS existente (o APK já consome a API). **`.env.production`:**
+  add `VITE_APK_URL=` (vazia; preencher com a URL pública do .apk p/ ativar o botão de download no app). **Novo fluxo de
+  release:** subir a versão nos `package.json` (web + api) → build/deploy; o site avisa p/ recarregar (buildId muda a cada
+  deploy) e o APK avisa p/ baixar (quando o semver do backend > versão embutida). **Sem migration, sem cap.** **Validação:**
+  hand-review (tsc do sandbox segue não-confiável aqui — build local = fonte de verdade). **Pendente Gui:**
+  `cd /d C:\Users\guilherme.dias\Desktop\ERP_TRIADE` → `npm run build -w @triade/web` → commit+push (Render pega o
+  `/version`) → `scripts\app-apk.bat`. Para o botão no APK: hospedar o .apk numa URL e setar `VITE_APK_URL`.
+
 - **2026-06-23 (Minhas entregas em "modo foco" + botão Navegar — estilo app de entrega)** — Pesquisa de padrões (iFood
   Entregador/Loggi/Uber/Route4Me): apps de entrega trabalham em **modo foco** (uma parada por vez) + **deep-link de navegação**
   para o Waze/Google Maps (nenhum faz turn-by-turn dentro do app). `MinhasEntregas.tsx` **reescrita** nesse modelo: a **parada

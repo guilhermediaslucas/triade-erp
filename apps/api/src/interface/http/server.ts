@@ -1,4 +1,6 @@
 import express, { type Express, type Request, type Response, type NextFunction } from 'express';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { AppDataSource } from '../../infra/db/data-source.js';
 import { env } from '../../infra/config/env.js';
 import { montarDependencias } from '../composition.js';
@@ -40,6 +42,13 @@ import { rotasSuporte } from './rotas/suporte.js';
 import { rotasAuditoria } from './rotas/auditoria.js';
 import { rotasAnexos } from './rotas/anexos.js';
 import { criarAuditoria } from './middlewares/auditoria.js';
+
+/** Versão do backend (do package.json) — exposta em GET /version p/ o app checar atualizações. */
+const VERSAO_APP = (() => {
+  try {
+    return (JSON.parse(readFileSync(resolve(process.cwd(), 'package.json'), 'utf-8')) as { version?: string }).version ?? '0.0.0';
+  } catch { return '0.0.0'; }
+})();
 
 export function criarServidor(): Express {
   const app = express();
@@ -89,6 +98,9 @@ export function criarServidor(): Express {
       res.status(503).json({ status: 'erro', db: 'sem conexao', ...(detalhe ? { detalhe } : {}) });
     }
   });
+
+  // Versão do app (do package.json) — o APK consulta p/ detectar versão nova.
+  app.get('/version', (_req: Request, res: Response) => res.json({ versao: VERSAO_APP }));
 
   app.use(rotasAuth(deps));
   app.use(rotasMe(deps));

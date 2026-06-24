@@ -981,3 +981,28 @@ body.theme-dark .pill-erro { background: #3a1d1d; color: #f4a7a0; }
 body.theme-dark .pill-aviso { background: #3a2c12; color: #f0c270; }
 body.theme-dark .pill-info { background: #16263f; color: #93c0f4; }
 body.theme-dark .pill-neutro { background: #232733; color: #aab2c2; }
+
+/* Aviso de nova versão (toast) */
+.nv-toast { position: fixed; right: 18px; bottom: 18px; width: 344px; max-width: calc(100vw - 32px); z-index: 9000;
+  background: var(--card); border: 1px solid var(--borda); border-radius: var(--radius);
+  box-shadow: 0 8px 30px rgba(0,0,0,.28), 0 2px 8px rgba(0,0,0,.16);
+  padding: 14px 14px 13px; display: flex; gap: 12px; align-items: flex-start; animation: nv-rise .25s ease; }
+@keyframes nv-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.nv-ic { width: 36px; height: 36px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; flex: none; }
+.nv-ic svg { width: 19px; height: 19px; }
+.nv-body { flex: 1; min-width: 0; }
+.nv-tt { font-weight: 700; font-size: 14px; line-height: 1.25; color: var(--ink); }
+.nv-sub { font-size: 12.5px; color: var(--muted); margin-top: 3px; line-height: 1.45; }
+.nv-act { margin-top: 9px; display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; color: var(--accent); font-weight: 700; font-size: 13px; cursor: pointer; padding: 0; }
+.nv-act svg { width: 14px; height: 14px; }
+.nv-x { background: none; border: 0; color: var(--muted); font-size: 18px; line-height: 1; cursor: pointer; padding: 2px 4px; flex: none; }
+.nv-x:hover { color: var(--ink); }
+@media (max-width: 560px) { .nv-toast { left: 16px; right: 16px; width: auto; } }
+
+/* Pílula de versão no rodapé do menu */
+.sb-ver-pill { background: transparent; border: 1px solid rgba(255,255,255,.14); color: var(--side-fg); border-radius: 999px; padding: 3px 9px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.sb-ver-pill:hover { color: #fff; border-color: rgba(255,255,255,.3); }
+
+/* Lista do modal de novidades */
+.nov-list { margin: 4px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; }
+.nov-list li { font-size: 13.5px; line-height: 1.45; color: var(--ink); }

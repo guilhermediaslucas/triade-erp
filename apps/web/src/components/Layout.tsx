@@ -12,6 +12,7 @@ import { EmpresaSwitcher } from './EmpresaSwitcher.js';
 import { Ic, SpriteIcones } from './Icones.js';
 import { TrocarSenha } from './TrocarSenha.js';
 import { Suporte } from './Suporte.js';
+import { Novidades } from './Novidades.js';
 
 interface Item { rotulo: string; icone?: string; to: string; cap?: string; soSuperAdmin?: boolean; }
 interface Secao { sublabel?: string; itens: Item[]; }
@@ -144,6 +145,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const [sairOpen, setSairOpen] = useState(false);
   const [senhaOpen, setSenhaOpen] = useState(false);
   const [suporteOpen, setSuporteOpen] = useState(false);
+  const [novidadesOpen, setNovidadesOpen] = useState(false);
   // Drawer mobile: a sidebar vira off-canvas abaixo do breakpoint (CSS). Fecha ao navegar.
   const [menuAberto, setMenuAberto] = useState(false);
   const fecharMenu = () => setMenuAberto(false);
@@ -219,6 +221,7 @@ export function Layout({ children }: { children: ReactNode }) {
           <button type="button" className="sidebar-foot-sup sidebar-foot-btn" onClick={() => setSuporteOpen(true)}>
             <Ic name="i-help" /><div><b>{t('menu.suporte')}</b><small>{t('menu.suporte_sub')}</small></div>
           </button>
+          <button type="button" className="sb-ver-pill" onClick={() => setNovidadesOpen(true)} title="Ver novidades">Tríade ERP v{__APP_VERSION__}</button>
         </div>
       </aside>
       <div className="app-main">
@@ -262,6 +265,7 @@ export function Layout({ children }: { children: ReactNode }) {
       {/* 1º login com senha provisória: força a troca antes de liberar o sistema. */}
       {trocarSenha && !senhaOpen && <TrocarSenha obrigatorio onFechar={limparTrocarSenha} />}
       {suporteOpen && <Suporte onFechar={() => setSuporteOpen(false)} />}
+      {novidadesOpen && <Novidades onFechar={() => setNovidadesOpen(false)} />}
     </div>
   );
 }

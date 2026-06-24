@@ -6,8 +6,8 @@ import { useI18n } from '../i18n/I18nContext.js';
 import { useToast } from './Toast.js';
 import { Ic } from './Icones.js';
 
-// Versão do app (espelha apps/web/package.json — vai junto no chamado p/ contexto).
-const VERSAO = '0.1.0';
+// Versão do app — vem de apps/web/package.json via __APP_VERSION__ (injetado pelo Vite).
+const VERSAO = __APP_VERSION__;
 const TIPOS = ['erro', 'sugestao', 'duvida'] as const;
 type Tipo = (typeof TIPOS)[number];
 const ICONE: Record<Tipo, string> = { erro: 'i-x', sugestao: 'i-help', duvida: 'i-help' };
