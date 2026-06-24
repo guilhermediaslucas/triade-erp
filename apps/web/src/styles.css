@@ -807,6 +807,23 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
 .topbar-recolher:hover { border-color: var(--accent); }
 .app-shell.menu-recolhido .sidebar { display: none; }
 
+/* Botão Voltar (só renderizado no app nativo/APK) */
+.topbar-voltar {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; flex: none; padding: 0;
+  background: var(--bg); border: 1px solid var(--borda); border-radius: 10px;
+  color: var(--ink); cursor: pointer;
+}
+.topbar-voltar:hover { border-color: var(--accent); }
+
+/* Link "Baixar app" no rodapé do menu */
+.sb-baixar-app {
+  display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px;
+  color: var(--side-fg); font-size: 12px; font-weight: 600; text-decoration: none;
+}
+.sb-baixar-app:hover { background: rgba(255,255,255,.07); color: #fff; }
+.sb-baixar-app svg { width: 15px; height: 15px; }
+
 /* Badge de contagem no botão "Filtros" */
 .flt-badge {
   display: inline-flex; align-items: center; justify-content: center;
@@ -848,8 +865,9 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
 
   /* --- Topbar compacta --- */
   .topbar { height: 58px; gap: 8px; padding: 0 12px; }
-  .topbar-busca { flex: 1 1 0; min-width: 0; max-width: none; padding: 9px 11px; }
-  .topbar-dir { min-width: 0; flex: none; }
+  /* Busca vira só a lupa (botão compacto) no mobile/APK */
+  .topbar-busca { flex: 0 0 auto; width: 40px; height: 40px; min-width: 0; max-width: none; padding: 0; justify-content: center; }
+  .topbar-dir { min-width: 0; flex: none; margin-left: auto; }
   .topbar-busca-ph, .topbar-busca kbd { display: none; }
   .topbar-dir { gap: 8px; }
   .topbar-user { font-size: 0; gap: 0; }   /* esconde o nome, mantém o avatar */

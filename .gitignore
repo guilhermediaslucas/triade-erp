@@ -62,3 +62,5 @@ apps/web/ios/App/output/
 *.apk
 *.aab
 *.ipa
+# Exceção: a APK publicada no site (servida em /triade.apk e usada p/ download/atualização) vai pro Git
+!apps/web/public/triade.apk

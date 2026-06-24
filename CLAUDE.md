@@ -210,7 +210,19 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   deploy) e o APK avisa p/ baixar (quando o semver do backend > versão embutida). **Sem migration, sem cap.** **Validação:**
   hand-review (tsc do sandbox segue não-confiável aqui — build local = fonte de verdade). **Pendente Gui:**
   `cd /d C:\Users\guilherme.dias\Desktop\ERP_TRIADE` → `npm run build -w @triade/web` → commit+push (Render pega o
-  `/version`) → `scripts\app-apk.bat`. Para o botão no APK: hospedar o .apk numa URL e setar `VITE_APK_URL`.
+  `/version`) → `scripts\app-apk.bat`.
+  **Addendum (mesma data):** (1) **Download da APK no site** (lógica "no Git"): o `scripts\app-apk.bat` agora **copia a
+  APK gerada p/ `apps/web/public/triade.apk`** (exceção no `.gitignore` `!apps/web/public/triade.apk`, pois `*.apk` é
+  global). O site serve em `/triade.apk`; `VITE_APK_URL` setado p/ `https://triade-erp.pages.dev/triade.apk` (trocar p/
+  o domínio quando quiser). **Link "Baixar app (Android)"** no rodapé do menu (`Layout.tsx`, `.sb-baixar-app`), só fora
+  do app nativo e quando há `VITE_APK_URL`. Mesma URL alimenta o botão "Baixar nova versão" do toast. Fluxo: `app-apk.bat`
+  → commit+push (a APK em public/ vai junto e o Cloudflare a publica). (2) **APK: busca vira lupa + botão Voltar**
+  (espelha o FinPessoais) — no mobile/APK a `.topbar-busca` virou botão compacto 40×40 (só a lupa); botão **Voltar**
+  (`.topbar-voltar`, `nav(-1)`) na topbar **só no app nativo** (`Capacitor.isNativePlatform()`). (3) **Fix do build da
+  APK (JDK 21):** os plugins do Capacitor 8 exigem `jvmToolchain(21)` e a máquina só tinha Java 17 → adicionado o
+  **Foojay resolver** no `apps/web/android/settings.gradle` (`org.gradle.toolchains.foojay-resolver-convention 0.9.0`)
+  p/ o Gradle baixar/achar o JDK 21 sozinho. Se o auto-download falhar (rede), instalar **Temurin JDK 21** e limpar o
+  cache parcial: `rmdir /s /q "%USERPROFILE%\.gradle\jdks"` antes de re-rodar o `app-apk.bat`.
 
 - **2026-06-23 (Minhas entregas em "modo foco" + botão Navegar — estilo app de entrega)** — Pesquisa de padrões (iFood
   Entregador/Loggi/Uber/Route4Me): apps de entrega trabalham em **modo foco** (uma parada por vez) + **deep-link de navegação**

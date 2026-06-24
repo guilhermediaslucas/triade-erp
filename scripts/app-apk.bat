@@ -14,13 +14,26 @@ if not exist "apps\web\android\gradlew.bat" (
   exit /b 1
 )
 
-REM --- Garante um Java 17 (o do Android Studio, "jbr") para o gradle ---
+REM --- Capacitor 8 exige JDK 21 p/ COMPILAR: o Gradle precisa RODAR sobre o JDK 21 ---
+REM (com Java 17 da o erro "invalid source release: 21").
+set "JH21="
+REM 1) JDK 21 instalado (Temurin/Oracle/Microsoft)
+for /d %%d in ("C:\Program Files\Eclipse Adoptium\jdk-21*") do if exist "%%d\bin\java.exe" set "JH21=%%d"
+for /d %%d in ("C:\Program Files\Java\jdk-21*") do if exist "%%d\bin\java.exe" set "JH21=%%d"
+for /d %%d in ("C:\Program Files\Microsoft\jdk-21*") do if exist "%%d\bin\java.exe" set "JH21=%%d"
+REM 2) JDK 21 baixado automaticamente pelo Gradle (Foojay), em %USERPROFILE%\.gradle\jdks
+if not defined JH21 for /d %%d in ("%USERPROFILE%\.gradle\jdks\*21*") do (
+  if exist "%%d\bin\java.exe" set "JH21=%%d"
+  for /d %%e in ("%%d\jdk-21*") do if exist "%%e\bin\java.exe" set "JH21=%%e"
+)
+if defined JH21 set "JAVA_HOME=%JH21%" & goto java_ok
+
+REM 3) Sem JDK 21: tenta o JAVA_HOME atual / o jbr do Android Studio (se for Java 17, vai falhar)
 if exist "%JAVA_HOME%\bin\java.exe" goto java_ok
 if exist "C:\Program Files\Android\Android Studio\jbr\bin\java.exe" set "JAVA_HOME=C:\Program Files\Android\Android Studio\jbr" & goto java_ok
 if exist "%LOCALAPPDATA%\Programs\Android Studio\jbr\bin\java.exe" set "JAVA_HOME=%LOCALAPPDATA%\Programs\Android Studio\jbr" & goto java_ok
 if exist "%ProgramFiles%\Android\Android Studio\jbr\bin\java.exe" set "JAVA_HOME=%ProgramFiles%\Android\Android Studio\jbr" & goto java_ok
-echo *** Nao encontrei o Java do Android Studio (jbr). Abra o app pelo Android Studio
-echo     pelo menos uma vez, ou me avise o caminho onde instalou o Android Studio.
+echo *** Nao encontrei um JDK 21. Instale o Temurin JDK 21 (https://adoptium.net) e rode de novo. ***
 :java_ok
 echo Java: %JAVA_HOME%
 
@@ -43,6 +56,12 @@ popd
 if errorlevel 1 goto erro
 
 set "APK=apps\web\android\app\build\outputs\apk\debug\app-debug.apk"
+
+REM --- Publica a APK no site: copia p/ apps\web\public\triade.apk ---
+REM Assim o arquivo vai no Git e o site o serve em /triade.apk (link "Baixar app").
+copy /Y "%APK%" "apps\web\public\triade.apk" >nul
+if errorlevel 1 (echo *** Aviso: nao consegui copiar a APK p/ apps\web\public\triade.apk ***) else (echo APK publicada em apps\web\public\triade.apk - vai pro Git e e servida pelo site no proximo deploy.)
+
 echo.
 echo ============================================================
 echo  APK GERADO:

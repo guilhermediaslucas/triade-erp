@@ -1,5 +1,6 @@
 import { useState, Fragment, type ReactNode } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { Capacitor } from '@capacitor/core';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { useBranding } from '../branding/BrandingContext.js';
@@ -146,6 +147,10 @@ export function Layout({ children }: { children: ReactNode }) {
   const [senhaOpen, setSenhaOpen] = useState(false);
   const [suporteOpen, setSuporteOpen] = useState(false);
   const [novidadesOpen, setNovidadesOpen] = useState(false);
+  const nav = useNavigate();
+  const nativo = Capacitor.isNativePlatform();
+  // URL pública do .apk (para baixar/atualizar o app). Vazia = sem botão de download.
+  const apkUrl = (import.meta.env.VITE_APK_URL as string | undefined) || '';
   // Drawer mobile: a sidebar vira off-canvas abaixo do breakpoint (CSS). Fecha ao navegar.
   const [menuAberto, setMenuAberto] = useState(false);
   const fecharMenu = () => setMenuAberto(false);
@@ -221,6 +226,11 @@ export function Layout({ children }: { children: ReactNode }) {
           <button type="button" className="sidebar-foot-sup sidebar-foot-btn" onClick={() => setSuporteOpen(true)}>
             <Ic name="i-help" /><div><b>{t('menu.suporte')}</b><small>{t('menu.suporte_sub')}</small></div>
           </button>
+          {!nativo && apkUrl && (
+            <a className="sb-baixar-app" href={apkUrl} target="_blank" rel="noopener" download>
+              <Ic name="i-download" /><span>Baixar app (Android)</span>
+            </a>
+          )}
           <button type="button" className="sb-ver-pill" onClick={() => setNovidadesOpen(true)} title="Ver novidades">Tríade ERP v{__APP_VERSION__}</button>
         </div>
       </aside>
@@ -232,6 +242,11 @@ export function Layout({ children }: { children: ReactNode }) {
           <button type="button" className="topbar-recolher" onClick={toggleRecolher} aria-label={t('menu.recolher')} title={t('menu.recolher')}>
             <Ic name="i-menu" />
           </button>
+          {nativo && (
+            <button type="button" className="topbar-voltar" onClick={() => nav(-1)} aria-label="Voltar" title="Voltar">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+            </button>
+          )}
           <button type="button" className="topbar-busca" onClick={() => window.dispatchEvent(new Event('abrir-busca'))} title="Ctrl+K">
             <Ic name="i-search" className="sm" />
             <span className="topbar-busca-ph">{t('busca.placeholder')}</span>

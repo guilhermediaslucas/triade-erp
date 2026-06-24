@@ -1,3 +1,10 @@
+// Permite ao Gradle baixar/achar automaticamente um JDK (ex.: Java 21, exigido pelos
+// plugins do Capacitor 8) quando o JDK local não bate — evita o erro
+// "Cannot find a Java installation ... matching languageVersion=21".
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.9.0'
+}
+
 include ':app'
 include ':capacitor-cordova-android-plugins'
 project(':capacitor-cordova-android-plugins').projectDir = new File('./capacitor-cordova-android-plugins/')
