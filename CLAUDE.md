@@ -240,8 +240,9 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   diante atualiza normal. (5) **Tarja vermelha → cor do menu:** `theme-color` do `index.html` e `theme_color` do
   `manifest.webmanifest` de `#dc2626` → **`#0f172a`** (cor do menu; é estático, não white-label). (6) **Download via QR:** o
   botão "Baixar app (Android)" do rodapé agora abre um **modal com QR code** (img de `api.qrserver.com` codificando a
-  `VITE_APK_URL`) p/ o celular escanear; link direto como fallback. (7) **Rodapé alinhado** (`.sidebar-foot` flex column,
-  ícones 18px fixos, recuo 8px, pílula `align-self:flex-start`) e (8) **barra de rolagem** estilizada (conteúdo segue
+  `VITE_APK_URL`) p/ o celular escanear; link direto como fallback. (7) **Rodapé centralizado** (`.sidebar-foot` flex column
+  `align-items:center`; Suporte/Baixar app com `justify-content:center`; pílula `align-self:center`) + crédito
+  **"por Guilherme Dias"** (`.sb-ver-aut`) e (8) **barra de rolagem** estilizada (conteúdo segue
   `--ink`; menu lateral escuro com polegar claro `rgba(255,255,255,.18)`) — `styles.css`. **Sem migration, sem cap.**
 
 - **2026-06-23 (Minhas entregas em "modo foco" + botão Navegar — estilo app de entrega)** — Pesquisa de padrões (iFood
