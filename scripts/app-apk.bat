@@ -56,16 +56,13 @@ popd
 if errorlevel 1 goto erro
 
 set "APK=apps\web\android\app\build\outputs\apk\debug\app-debug.apk"
-
-REM --- Publica a APK no site: copia p/ apps\web\public\triade.apk ---
-REM Assim o arquivo vai no Git e o site o serve em /triade.apk (link "Baixar app").
-copy /Y "%APK%" "apps\web\public\triade.apk" >nul
-if errorlevel 1 (echo *** Aviso: nao consegui copiar a APK p/ apps\web\public\triade.apk ***) else (echo APK publicada em apps\web\public\triade.apk - vai pro Git e e servida pelo site no proximo deploy.)
-
 echo.
 echo ============================================================
 echo  APK GERADO:
 echo     %CD%\%APK%
+echo.
+echo  PUBLICAR: crie um GitHub Release (tag vX.Y.Z) e anexe este app-debug.apk.
+echo  O site/app usam a URL "releases/latest/download/app-debug.apk".
 echo.
 echo  Como instalar no celular:
 echo   - Mande esse arquivo .apk pro celular (WhatsApp, Drive, e-mail

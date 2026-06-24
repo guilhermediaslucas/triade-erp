@@ -211,12 +211,14 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   hand-review (tsc do sandbox segue não-confiável aqui — build local = fonte de verdade). **Pendente Gui:**
   `cd /d C:\Users\guilherme.dias\Desktop\ERP_TRIADE` → `npm run build -w @triade/web` → commit+push (Render pega o
   `/version`) → `scripts\app-apk.bat`.
-  **Addendum (mesma data):** (1) **Download da APK no site** (lógica "no Git"): o `scripts\app-apk.bat` agora **copia a
-  APK gerada p/ `apps/web/public/triade.apk`** (exceção no `.gitignore` `!apps/web/public/triade.apk`, pois `*.apk` é
-  global). O site serve em `/triade.apk`; `VITE_APK_URL` setado p/ `https://triade-erp.pages.dev/triade.apk` (trocar p/
-  o domínio quando quiser). **Link "Baixar app (Android)"** no rodapé do menu (`Layout.tsx`, `.sb-baixar-app`), só fora
-  do app nativo e quando há `VITE_APK_URL`. Mesma URL alimenta o botão "Baixar nova versão" do toast. Fluxo: `app-apk.bat`
-  → commit+push (a APK em public/ vai junto e o Cloudflare a publica). (2) **APK: busca vira lupa + botão Voltar**
+  **Addendum (mesma data):** (1) **Download da APK via GitHub Releases** (decisão do Gui — não incha o repo): a APK é
+  anexada como asset `app-debug.apk` num **GitHub Release** (tag vX.Y.Z). `VITE_APK_URL` =
+  `https://github.com/guilhermediaslucas/triade-erp/releases/latest/download/app-debug.apk` (o "latest/download" sempre
+  aponta p/ o Release marcado como Latest). **Link "Baixar app (Android)"** no rodapé do menu (`Layout.tsx`,
+  `.sb-baixar-app`), só fora do app nativo e quando há `VITE_APK_URL`. Mesma URL alimenta o botão "Baixar nova versão" do
+  toast. **Abandonada a ideia de commitar a APK em `apps/web/public/`** (revertido o copy do `app-apk.bat` e a exceção no
+  `.gitignore`; a APK de 28 MB que foi parar no commit `6be2996` deve sair com `git rm --cached apps/web/public/triade.apk`).
+  Fluxo de release da APK: `app-apk.bat` → criar Release vX.Y.Z e anexar o `app-debug.apk`. (2) **APK: busca vira lupa + botão Voltar**
   (espelha o FinPessoais) — no mobile/APK a `.topbar-busca` virou botão compacto 40×40 (só a lupa); botão **Voltar**
   (`.topbar-voltar`, `nav(-1)`) na topbar **só no app nativo** (`Capacitor.isNativePlatform()`). (3) **Fix do build da
   APK (JDK 21):** os plugins do Capacitor 8 exigem `jvmToolchain(21)` e a máquina só tinha Java 17 → adicionado o
