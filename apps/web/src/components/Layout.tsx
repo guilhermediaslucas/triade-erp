@@ -147,6 +147,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const [senhaOpen, setSenhaOpen] = useState(false);
   const [suporteOpen, setSuporteOpen] = useState(false);
   const [novidadesOpen, setNovidadesOpen] = useState(false);
+  const [qrOpen, setQrOpen] = useState(false);
   const nav = useNavigate();
   const nativo = Capacitor.isNativePlatform();
   // URL pública do .apk (para baixar/atualizar o app). Vazia = sem botão de download.
@@ -227,11 +228,12 @@ export function Layout({ children }: { children: ReactNode }) {
             <Ic name="i-help" /><div><b>{t('menu.suporte')}</b><small>{t('menu.suporte_sub')}</small></div>
           </button>
           {!nativo && apkUrl && (
-            <a className="sb-baixar-app" href={apkUrl} target="_blank" rel="noopener" download>
+            <button type="button" className="sb-baixar-app" onClick={() => setQrOpen(true)}>
               <Ic name="i-download" /><span>Baixar app (Android)</span>
-            </a>
+            </button>
           )}
           <button type="button" className="sb-ver-pill" onClick={() => setNovidadesOpen(true)} title="Ver novidades">Tríade ERP v{__APP_VERSION__}</button>
+          <div className="sb-ver-aut">por Guilherme Dias</div>
         </div>
       </aside>
       <div className="app-main">
@@ -281,6 +283,15 @@ export function Layout({ children }: { children: ReactNode }) {
       {trocarSenha && !senhaOpen && <TrocarSenha obrigatorio onFechar={limparTrocarSenha} />}
       {suporteOpen && <Suporte onFechar={() => setSuporteOpen(false)} />}
       {novidadesOpen && <Novidades onFechar={() => setNovidadesOpen(false)} />}
+      {qrOpen && (
+        <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 340, textAlign: 'center' }}>
+          <h2 style={{ justifyContent: 'center' }}><Ic name="i-download" /> Baixar app (Android)</h2>
+          <p style={{ color: 'var(--muted)', fontSize: 13, marginTop: 0 }}>Aponte a câmera do celular para o QR code para baixar o app.</p>
+          <img className="qr-img" alt="QR code para baixar o app" src={`https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=10&data=${encodeURIComponent(apkUrl)}`} />
+          <p style={{ fontSize: 12, marginBottom: 0 }}><a href={apkUrl} target="_blank" rel="noopener">Ou abra o link direto</a></p>
+          <div className="modal-acoes"><button className="btn-primary" onClick={() => setQrOpen(false)}>Fechar</button></div>
+        </div></div>
+      )}
     </div>
   );
 }

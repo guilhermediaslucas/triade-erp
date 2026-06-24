@@ -221,13 +221,28 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   Fluxo de release da APK: `app-apk.bat` → criar Release vX.Y.Z e anexar o `app-debug.apk`. **Auto-bump:** o `app-apk.bat`
   roda `scripts\bump-versao.mjs` como passo [0/3] — incrementa o **patch** (x.y.z→x.y.(z+1)) e sincroniza os 3
   `package.json` (raiz/web/api) ANTES do build, então a APK e a API já saem com a versão nova (sem editar à mão). Faz
-  replace só da linha `"version"`. Major/minor sobem manualmente quando quiser. (2) **APK: busca vira lupa + botão Voltar**
+  replace só da linha `"version"`. Major/minor sobem manualmente quando quiser. **Release 1-clique:** `scripts\release.bat`
+  faz tudo numa tacada — chama o `app-apk.bat` (bump+build+APK) → `git add/commit/push` (commit "Release vX.Y.Z") → cria o
+  **GitHub Release** com o `app-debug.apk` via `gh release create ... --latest` (se o GitHub CLI `gh` estiver instalado/logado;
+  senão imprime o passo a passo manual). Lê a versão nova via `node -p require('./apps/web/package.json').version`.
+  (2) **APK: busca vira lupa + botão Voltar**
   (espelha o FinPessoais) — no mobile/APK a `.topbar-busca` virou botão compacto 40×40 (só a lupa); botão **Voltar**
   (`.topbar-voltar`, `nav(-1)`) na topbar **só no app nativo** (`Capacitor.isNativePlatform()`). (3) **Fix do build da
   APK (JDK 21):** os plugins do Capacitor 8 exigem `jvmToolchain(21)` e a máquina só tinha Java 17 → adicionado o
   **Foojay resolver** no `apps/web/android/settings.gradle` (`org.gradle.toolchains.foojay-resolver-convention 0.9.0`)
-  p/ o Gradle baixar/achar o JDK 21 sozinho. Se o auto-download falhar (rede), instalar **Temurin JDK 21** e limpar o
-  cache parcial: `rmdir /s /q "%USERPROFILE%\.gradle\jdks"` antes de re-rodar o `app-apk.bat`.
+  p/ o Gradle baixar/achar o JDK 21 sozinho. **`app-apk.bat` agora prioriza um JDK 21 como `JAVA_HOME`** (Program Files
+  Temurin/Oracle/Microsoft → o baixado pelo Foojay em `.gradle\jdks` → senão jbr 17, que falha com `invalid source release: 21`).
+  Se faltar, instalar **Temurin JDK 21** (adoptium.net). (4) **Assinatura fixa da APK** (resolve o "assinaturas diferentes"
+  ao instalar por cima, que aconteceu no FinPessoais): keystore commitado `apps/web/android/app/triade.keystore`
+  (alias `triade`, senha `triade123`) + `signingConfigs.triade` aplicado a **debug e release** no `app/build.gradle`. Assim
+  toda build, em qualquer máquina, assina igual → updates instalam por cima. **ATENÇÃO:** como a chave mudou (era a debug
+  default), a 1ª APK nova **não instala por cima** da já instalada → **desinstalar o app uma vez** e instalar a nova; daí em
+  diante atualiza normal. (5) **Tarja vermelha → cor do menu:** `theme-color` do `index.html` e `theme_color` do
+  `manifest.webmanifest` de `#dc2626` → **`#0f172a`** (cor do menu; é estático, não white-label). (6) **Download via QR:** o
+  botão "Baixar app (Android)" do rodapé agora abre um **modal com QR code** (img de `api.qrserver.com` codificando a
+  `VITE_APK_URL`) p/ o celular escanear; link direto como fallback. (7) **Rodapé alinhado** (`.sidebar-foot` flex column,
+  ícones 18px fixos, recuo 8px, pílula `align-self:flex-start`) e (8) **barra de rolagem** estilizada (conteúdo segue
+  `--ink`; menu lateral escuro com polegar claro `rgba(255,255,255,.18)`) — `styles.css`. **Sem migration, sem cap.**
 
 - **2026-06-23 (Minhas entregas em "modo foco" + botão Navegar — estilo app de entrega)** — Pesquisa de padrões (iFood
   Entregador/Loggi/Uber/Route4Me): apps de entrega trabalham em **modo foco** (uma parada por vez) + **deep-link de navegação**

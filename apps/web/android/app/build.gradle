@@ -16,8 +16,22 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    // Keystore fixo do Tríade: assina SEMPRE com a mesma chave, em qualquer máquina,
+    // p/ as atualizações instalarem por cima sem o erro "assinaturas diferentes".
+    signingConfigs {
+        triade {
+            storeFile file('triade.keystore')
+            storePassword 'triade123'
+            keyAlias 'triade'
+            keyPassword 'triade123'
+        }
+    }
     buildTypes {
+        debug {
+            signingConfig signingConfigs.triade
+        }
         release {
+            signingConfig signingConfigs.triade
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

@@ -98,12 +98,13 @@ a { text-decoration: none; color: inherit; }
 .nav-subitem { display: block; padding: 9px 12px 9px 46px; border-radius: 8px; font-size: 13px; color: var(--side-fg); opacity: .78; cursor: pointer; }
 .nav-subitem:hover { background: rgba(255,255,255,.08); opacity: 1; }
 .nav-subitem.active { background: var(--accent); color: #fff; opacity: 1; }
-.sidebar-foot { margin-top: auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.1); }
-.side-brand-foot { display: flex; flex-direction: column; align-items: center; padding: 14px 0 12px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,.1); }
+.sidebar-foot { margin-top: auto; padding: 10px 8px; border-top: 1px solid rgba(255,255,255,.1); display: flex; flex-direction: column; align-items: stretch; gap: 4px; }
+.side-brand-foot { display: flex; flex-direction: column; align-items: center; padding: 12px 0; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,.1); }
 .side-brand-foot .lg { font-size: 22px; font-weight: 800; letter-spacing: .5px; color: #fff; line-height: 1; }
 .side-brand-foot .lg span { color: #e1483b; }
 .side-brand-foot .tg { font-size: 9px; letter-spacing: 4px; color: rgba(255,255,255,.5); font-weight: 600; margin-top: 2px; }
-.sidebar-foot-sup { display: flex; align-items: center; gap: 10px; padding: 4px 8px; opacity: .85; }
+.sidebar-foot-sup { display: flex; align-items: center; gap: 10px; padding: 7px 8px; opacity: .85; }
+.sidebar-foot-sup svg { width: 18px; height: 18px; flex: none; }
 .sidebar-foot-sup b { display: block; font-size: 13px; font-weight: 500; line-height: 1.2; }
 .sidebar-foot-sup small { display: block; font-size: 11px; color: rgba(255,255,255,.5); }
 .app-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
@@ -816,13 +817,17 @@ body.theme-dark { --line2:#21262f; --muted2:#71778a; --accent2-soft:#10303a; }
 }
 .topbar-voltar:hover { border-color: var(--accent); }
 
-/* Link "Baixar app" no rodapé do menu */
+/* Botão "Baixar app" no rodapé do menu (abre o QR code) */
 .sb-baixar-app {
-  display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px;
-  color: var(--side-fg); font-size: 12px; font-weight: 600; text-decoration: none;
+  display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 8px;
+  color: var(--side-fg); font-size: 13px; font-weight: 500; text-decoration: none;
+  width: 100%; background: none; border: 0; cursor: pointer; font-family: inherit; text-align: left;
 }
 .sb-baixar-app:hover { background: rgba(255,255,255,.07); color: #fff; }
-.sb-baixar-app svg { width: 15px; height: 15px; }
+.sb-baixar-app svg { width: 18px; height: 18px; flex: none; }
+
+/* QR code do download (modal) */
+.qr-img { width: 220px; height: 220px; margin: 4px auto 10px; display: block; border-radius: 10px; background: #fff; padding: 8px; box-sizing: border-box; }
 
 /* Badge de contagem no botão "Filtros" */
 .flt-badge {
@@ -1018,8 +1023,21 @@ body.theme-dark .pill-neutro { background: #232733; color: #aab2c2; }
 @media (max-width: 560px) { .nv-toast { left: 16px; right: 16px; width: auto; } }
 
 /* Pílula de versão no rodapé do menu */
-.sb-ver-pill { background: transparent; border: 1px solid rgba(255,255,255,.14); color: var(--side-fg); border-radius: 999px; padding: 3px 9px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.sb-ver-pill { align-self: flex-start; margin: 4px 0 0 8px; background: transparent; border: 1px solid rgba(255,255,255,.14); color: var(--side-fg); border-radius: 999px; padding: 3px 9px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit; }
 .sb-ver-pill:hover { color: #fff; border-color: rgba(255,255,255,.3); }
+
+/* ===== Barras de rolagem (discretas, no tom do tema) ===== */
+/* Conteúdo geral (claro/escuro): segue o --ink, então adapta ao tema */
+* { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--ink) 25%, transparent) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--ink) 22%, transparent); border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
+::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--ink) 40%, transparent); background-clip: padding-box; }
+/* Menu lateral é sempre escuro → polegar claro */
+.sidebar .nav { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.22) transparent; }
+.sidebar .nav::-webkit-scrollbar { width: 8px; }
+.sidebar .nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,.18); border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
+.sidebar .nav::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.34); background-clip: padding-box; }
 
 /* Lista do modal de novidades */
 .nov-list { margin: 4px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; }
