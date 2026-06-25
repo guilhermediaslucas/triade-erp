@@ -18,6 +18,7 @@ export function TabelaPreco() {
   const { t } = useI18n();
   const pode = temCapability('comercial.preco.gerenciar');
   const [modo, setModo] = useState<'base' | 'cliente'>('base');
+  const [busca, setBusca] = useState('');
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [clienteId, setClienteId] = useState('');
   const [novoCli, setNovoCli] = useState(false);
@@ -92,6 +93,10 @@ export function TabelaPreco() {
     else { setCli([]); setClienteId(''); setValores({}); setCliMeta({}); }
   }
 
+  const q = busca.trim().toLowerCase();
+  const baseFiltrada = q ? base.filter((p) => p.produtoNome.toLowerCase().includes(q)) : base;
+  const cliFiltrada = q ? cli.filter((p) => p.produtoNome.toLowerCase().includes(q)) : cli;
+
   return (
     <div>
       <div className="crumb">{t('precos.crumb')}</div>
@@ -103,6 +108,7 @@ export function TabelaPreco() {
         <div className="tab-head">
           <h3>{t('precos.tabela')}</h3>
           <div className="tab-head-acoes">
+            <div className="busca-box-tb"><Ic name="i-search" className="sm" /><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('precos.buscar')} /></div>
             <select value={modo} onChange={(e) => trocarModo(e.target.value as 'base' | 'cliente')}>
               <option value="base">{t('precos.modo_base')}</option><option value="cliente">{t('precos.modo_cliente')}</option>
             </select>
@@ -120,8 +126,8 @@ export function TabelaPreco() {
           <table className="tabela">
             <thead><tr><th>{t('precos.produto')}</th><th style={{ width: 180 }}>{t('precos.preco_fixo')}</th><th>{t('precos.camp_vigente')}</th><th style={{ textAlign: 'right' }}>{t('camp.titulo')}</th></tr></thead>
             <tbody>
-              {base.length === 0 && <tr><td colSpan={4} className="vazio">{t('precos.sem_produtos')}</td></tr>}
-              {base.map((p) => (
+              {baseFiltrada.length === 0 && <tr><td colSpan={4} className="vazio">{t('precos.sem_produtos')}</td></tr>}
+              {baseFiltrada.map((p) => (
                 <tr key={p.produtoId} className={p.ativo ? '' : 'linha-inativa'}>
                   <td>{p.produtoNome}</td>
                   <td>{pode ? <MoedaInput className="preco-inp" value={valores[p.produtoId] ?? ''} onChange={(n) => setValores({ ...valores, [p.produtoId]: String(n) })} /> : moeda(p.preco)}</td>
@@ -136,8 +142,8 @@ export function TabelaPreco() {
           <table className="tabela">
             <thead><tr><th>{t('precos.produto')}</th><th>{t('precos.preco_base')}</th><th style={{ width: 160 }}>{t('precos.preco_cliente')}</th><th style={{ width: 300 }}>{t('precos.vigencia')}</th></tr></thead>
             <tbody>
-              {cli.length === 0 && <tr><td colSpan={4} className="vazio">{t('precos.sem_produtos')}</td></tr>}
-              {cli.map((p) => {
+              {cliFiltrada.length === 0 && <tr><td colSpan={4} className="vazio">{t('precos.sem_produtos')}</td></tr>}
+              {cliFiltrada.map((p) => {
                 const meta = cliMeta[p.produtoId] ?? { tipo: 'fixo' as TipoCli, de: '', ate: '' };
                 const periodo = meta.tipo === 'periodo';
                 return (

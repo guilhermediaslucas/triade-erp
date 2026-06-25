@@ -157,7 +157,7 @@ export function montarDependencias() {
     taxasCartaoService: new TaxasCartaoService(new SqlFormaPagamentoTaxaRepository(AppDataSource)),
     preferenciasService: new PreferenciasService(new SqlPreferenciaUsuarioRepository(AppDataSource)),
     favorecidosService: new FavorecidosService(favorecidosRepo),
-    produtosService: new ProdutosService(produtosRepo),
+    produtosService: new ProdutosService(produtosRepo, precoBaseRepo),
     clientesService: new ClientesService(clientesRepo),
     fornecedoresService: new FornecedoresService(fornecedoresRepo),
     vendedoresService: new VendedoresService(vendedoresRepo),

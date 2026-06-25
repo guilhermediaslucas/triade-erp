@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { Ic } from '../components/Icones.js';
 import { ImportadorPlanilha, type CampoImport } from '../components/ImportadorPlanilha.js';
+import { MoedaInput } from '../components/MoedaInput.js';
 
 const CAMPOS_PRODUTO: CampoImport[] = [
   { chave: 'nome', rotulo: 'Nome', obrigatorio: true, exemplo: 'Toxina Botulínica 100U', aliases: ['produto', 'descricao', 'descrição'] },
@@ -15,12 +16,12 @@ const CAMPOS_PRODUTO: CampoImport[] = [
 ];
 
 interface Produto {
-  id: string; nome: string;
+  id: string; nome: string; precoBase: number;
   unidade: string; estoqueMinimo: number; localizacao: string | null; registroAnvisa: string | null;
   ncm: string | null; cfop: string | null; cstFiscal: string | null; origemFiscal: string | null; ativo: boolean;
 }
 const UNIDADES = ['UN', 'CX', 'ML', 'G', 'KG', 'FR', 'AMP'];
-const vazio = (): Produto => ({ id: '', nome: '', unidade: 'UN', estoqueMinimo: 0, localizacao: '', registroAnvisa: '', ncm: '', cfop: '', cstFiscal: '', origemFiscal: '', ativo: true });
+const vazio = (): Produto => ({ id: '', nome: '', precoBase: 0, unidade: 'UN', estoqueMinimo: 0, localizacao: '', registroAnvisa: '', ncm: '', cfop: '', cstFiscal: '', origemFiscal: '', ativo: true });
 
 export function Produtos() {
   const { token, temCapability } = useAuth();
@@ -64,7 +65,7 @@ export function Produtos() {
       {erro && <div className="alerta-erro">{t(erro)}</div>}
 
       <div className="toolbar">
-        <div className="busca-box-tb"><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('produtos.buscar')} /></div>
+        <div className="busca-box-tb"><Ic name="i-search" className="sm" /><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('produtos.buscar')} /></div>
       </div>
 
       <div className="card pad0"><table className="tabela tabela-cards">
@@ -96,7 +97,7 @@ function FormProduto({ prod, onFechar, onSalvo }: { prod: Produto; onFechar: () 
   const set = (c: keyof Produto, v: any) => setF({ ...f, [c]: v });
   async function salvar() {
     setErro(null); setSalv(true);
-    const corpo = { nome: f.nome, unidade: f.unidade, estoqueMinimo: Number(f.estoqueMinimo), localizacao: f.localizacao, registroAnvisa: f.registroAnvisa, ncm: f.ncm, cfop: f.cfop, cstFiscal: f.cstFiscal, origemFiscal: f.origemFiscal };
+    const corpo = { nome: f.nome, preco: Number(f.precoBase) || 0, unidade: f.unidade, estoqueMinimo: Number(f.estoqueMinimo), localizacao: f.localizacao, registroAnvisa: f.registroAnvisa, ncm: f.ncm, cfop: f.cfop, cstFiscal: f.cstFiscal, origemFiscal: f.origemFiscal };
     try { if (novo) await api.post('/produtos', corpo, token!); else await api.put('/produtos/' + prod.id, corpo, token!); onSalvo(); }
     catch (e) { setErro((e as ErroApi).chaveI18n); setSalv(false); }
   }
@@ -110,15 +111,16 @@ function FormProduto({ prod, onFechar, onSalvo }: { prod: Produto; onFechar: () 
       <div className="card form-pagina">
         <label className="campo">{t('produtos.nome')}<input value={f.nome} onChange={(e) => set('nome', e.target.value)} autoFocus /></label>
         <div className="cores-grid">
+          <label className="campo">{t('produtos.preco')}<MoedaInput value={f.precoBase ?? 0} onChange={(n) => set('precoBase', n)} /></label>
           <label className="campo">{t('produtos.unidade')}
             <select value={f.unidade} onChange={(e) => set('unidade', e.target.value)}>{UNIDADES.map((u) => <option key={u} value={u}>{u}</option>)}</select>
           </label>
-          <label className="campo">{t('produtos.minimo')}<input type="number" step="1" min="0" value={f.estoqueMinimo} onChange={(e) => set('estoqueMinimo', e.target.value)} /></label>
         </div>
         <div className="cores-grid">
+          <label className="campo">{t('produtos.minimo')}<input type="number" step="1" min="0" value={f.estoqueMinimo} onChange={(e) => set('estoqueMinimo', e.target.value)} /></label>
           <label className="campo">{t('produtos.local')}<input value={f.localizacao ?? ''} onChange={(e) => set('localizacao', e.target.value)} placeholder={t('produtos.local_ph')} /></label>
-          <label className="campo">{t('produtos.anvisa')}<input value={f.registroAnvisa ?? ''} onChange={(e) => set('registroAnvisa', e.target.value)} /></label>
         </div>
+        <label className="campo">{t('produtos.anvisa')}<input value={f.registroAnvisa ?? ''} onChange={(e) => set('registroAnvisa', e.target.value)} /></label>
         <h3 className="emp-sec" style={{ marginTop: 14 }}>{t('produtos.fiscal')}</h3>
         <div className="muted" style={{ fontSize: 12, marginBottom: 8 }}>{t('produtos.fiscal_hint')}</div>
         <div className="cores-grid">

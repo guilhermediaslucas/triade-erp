@@ -190,6 +190,17 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-24 (Preço no cadastro de produto [compartilhado com a Tabela de preço] + busca na Tabela de preço)** — O preço
+  vive em `preco_base` (fonte única, = "Preço fixo" da Tabela de preço). Agora o **cadastro de produto** lê/grava esse mesmo
+  valor: **Backend** — `ProdutoResumo += precoBase`; `SqlProdutoRepository.listar` traz `preco_base` por subquery;
+  `ProdutosService` recebe `precoBaseRepo` (composition) e no `criar`/`editar` grava o preço base quando vem `e.preco`
+  (valida ≥0, `produto.preco_invalido`). **Frontend** (`Produtos.tsx`): campo **Preço (R$)** (`MoedaInput`) no FormProduto,
+  preenchido de `precoBase`, enviado no corpo; nota atualizada ("mesmo preço da Tabela de preço — reflete nos dois lados").
+  Editar no produto OU na Tabela de preço altera o mesmo `preco_base`. **Busca interna:** add caixa de busca **live** no
+  cabeçalho da **Tabela de preço** (filtra por nome nos modos base e por cliente; `precos.buscar`); **Produtos/Clientes/
+  Fornecedores já tinham** busca (só padronizei a lupa no Produtos). **Taxas de cartão** segue sem busca (não pedida). **Sem
+  migration, sem cap.** **Pendente Gui:** `scripts\release.bat`.
+
 - **2026-06-24 (Aviso de nova versão no web e APK — portado do FinPessoais)** — Mesmo mecanismo do FinPessoais.
   **`apps/web/vite.config.ts`:** lê a versão do `apps/web/package.json`, gera um `buildId` único por build, injeta
   `__APP_VERSION__`/`__BUILD_ID__` via `define` e grava `dist/version.json` no `closeBundle` (mantidos proxy `/api` +

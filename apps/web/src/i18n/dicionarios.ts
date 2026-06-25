@@ -482,7 +482,7 @@ Object.assign(es, {
 // --- Fidelidade Produto/Fornecedor/Vendedor ---
 Object.assign(pt, {
   'produtos.local': 'Localização', 'produtos.local_ph': 'Depósito / prateleira', 'produtos.anvisa': 'Registro ANVISA',
-  'produtos.nota_preco': 'O preço de venda é definido em Comercial › Tabela de preço (será criado na Fase 3). Lote e validade pertencem à entrada de estoque.',
+  'produtos.nota_preco': 'O preço é o mesmo da Tabela de preço (Comercial) — alterar aqui reflete lá, e vice-versa. Lote e validade pertencem à entrada de estoque.',
   'vendedores.regiao': 'Região / carteira', 'vendedores.vendas_mes': 'Vendas (mês)', 'vendedores.regiao_ph': 'Ex.: SP Capital, Interior SP',
   'vendedores.meta': 'Meta mensal (R$)', 'vendedores.regra_geral': 'Seguir regra geral de comissão (ignora o % individual)',
   'vendedores.regra_geral_curta': 'Regra geral', 'vendedor.meta_invalida': 'Meta mensal inválida.',
@@ -510,7 +510,7 @@ Object.assign(pt, {
   'precos.titulo': 'Tabela de preço', 'precos.sub': 'Preço base de venda por produto (usado nos pedidos).',
   'precos.produto': 'Produto', 'precos.preco_base': 'Preço base (R$)', 'precos.sem_produtos': 'Cadastre produtos primeiro.',
   'precos.sub_full': 'Preço base do produto (fixo + campanha/período) e preços negociados por cliente',
-  'precos.tabela': 'Tabela', 'precos.salvar_tabela': 'Salvar tabela', 'precos.salvo_tabela': 'Tabela salva.',
+  'precos.tabela': 'Tabela', 'precos.salvar_tabela': 'Salvar tabela', 'precos.salvo_tabela': 'Tabela salva.', 'precos.buscar': 'Buscar produto…',
   'precos.preco_fixo': 'Preço fixo (R$)', 'precos.camp_vigente': 'Campanha vigente', 'precos.usa_fixo': '— (usa preço fixo)',
 });
 Object.assign(en, {

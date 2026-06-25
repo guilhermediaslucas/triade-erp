@@ -13,7 +13,7 @@ export interface Produto {
   ativo: boolean;
   criadoEm: Date;
 }
-export interface ProdutoResumo extends Produto {}
+export interface ProdutoResumo extends Produto { precoBase: number }
 export interface NovoProduto {
   nome: string;
   unidade: string;

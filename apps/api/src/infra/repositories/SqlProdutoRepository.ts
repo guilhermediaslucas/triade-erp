@@ -16,8 +16,10 @@ export class SqlProdutoRepository implements ProdutoRepository {
   constructor(private readonly ds: DataSource) {}
   async listar(schema: string): Promise<ProdutoResumo[]> {
     const s = validarSchema(schema);
-    const linhas = await this.ds.query(`SELECT p.* FROM "${s}".produto p ORDER BY p.nome`);
-    return linhas.map((r: any) => mapProduto(r));
+    const linhas = await this.ds.query(
+      `SELECT p.*, COALESCE((SELECT pb.preco FROM "${s}".preco_base pb WHERE pb.produto_id = p.id), 0) AS preco_base
+         FROM "${s}".produto p ORDER BY p.nome`);
+    return linhas.map((r: any) => ({ ...mapProduto(r), precoBase: Number(r.preco_base) || 0 }));
   }
   async buscarPorId(schema: string, id: string): Promise<Produto | null> {
     const s = validarSchema(schema);

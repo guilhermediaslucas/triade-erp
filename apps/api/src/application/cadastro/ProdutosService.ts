@@ -1,4 +1,5 @@
 import type { NovoProduto, ProdutoRepository, ProdutoResumo } from '../../domain/cadastro/Produto.js';
+import type { PrecoBaseRepository } from '../../domain/comercial/PrecoBase.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 
 const limpo = (v: any): string | null => (v && String(v).trim() !== '' ? String(v).trim() : null);
@@ -6,7 +7,17 @@ const limpo = (v: any): string | null => (v && String(v).trim() !== '' ? String(
 export class ProdutosService {
   constructor(
     private readonly produtos: ProdutoRepository,
+    // Preço base (mesma fonte da Tabela de preço) — o cadastro de produto grava aqui.
+    private readonly precoBase?: PrecoBaseRepository,
   ) {}
+
+  // Grava o preço base (compartilhado com a Tabela de preço) quando o campo veio no payload.
+  private async definirPreco(schema: string, id: string, e: any): Promise<void> {
+    if (!this.precoBase || e?.preco === undefined || e?.preco === null || e?.preco === '') return;
+    const p = Number(e.preco);
+    if (!Number.isFinite(p) || p < 0) throw new ErroAplicacao('produto.preco_invalido', 400);
+    await this.precoBase.definir(schema, id, p);
+  }
   listar(schema: string): Promise<ProdutoResumo[]> { return this.produtos.listar(schema); }
 
   private async validar(_schema: string, e: any): Promise<NovoProduto> {
@@ -27,10 +38,15 @@ export class ProdutosService {
       ncm: ncmDigitos || null, cfop: cfop || null, cstFiscal: limpo(e.cstFiscal), origemFiscal: origem,
     };
   }
-  async criar(schema: string, e: any): Promise<string> { return this.produtos.criar(schema, await this.validar(schema, e)); }
+  async criar(schema: string, e: any): Promise<string> {
+    const id = await this.produtos.criar(schema, await this.validar(schema, e));
+    await this.definirPreco(schema, id, e);
+    return id;
+  }
   async editar(schema: string, id: string, e: any): Promise<void> {
     if (!(await this.produtos.buscarPorId(schema, id))) throw new ErroAplicacao('cadastro.nao_encontrado', 404);
     await this.produtos.atualizar(schema, id, await this.validar(schema, e));
+    await this.definirPreco(schema, id, e);
   }
   async alternarAtivo(schema: string, id: string, ativo: boolean): Promise<void> {
     if (!(await this.produtos.buscarPorId(schema, id))) throw new ErroAplicacao('cadastro.nao_encontrado', 404);
