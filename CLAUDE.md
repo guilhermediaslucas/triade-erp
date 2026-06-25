@@ -198,8 +198,11 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   preenchido de `precoBase`, enviado no corpo; nota atualizada ("mesmo preço da Tabela de preço — reflete nos dois lados").
   Editar no produto OU na Tabela de preço altera o mesmo `preco_base`. **Busca interna:** add caixa de busca **live** no
   cabeçalho da **Tabela de preço** (filtra por nome nos modos base e por cliente; `precos.buscar`); **Produtos/Clientes/
-  Fornecedores já tinham** busca (só padronizei a lupa no Produtos). **Taxas de cartão** segue sem busca (não pedida). **Sem
-  migration, sem cap.** **Pendente Gui:** `scripts\release.bat`.
+  Fornecedores já tinham** busca (só padronizei a lupa no Produtos). **Taxas de cartão** segue sem busca (não pedida).
+  **Novo pedido — produto por digitação:** o `<select>` de produto por item virou **input com `datalist`** (`np-produtos`):
+  `ItemForm += texto`; `setProdutoTexto` guarda o texto e resolve `produtoId` via `idDoNome` (nome exato); input mostra
+  `it.texto ?? nomeDoId(produtoId)` (preenche nome ao editar pedido existente). Filtra ao digitar, igual aos demais campos.
+  **Sem migration, sem cap.** **Pendente Gui:** `scripts\release.bat`.
 
 - **2026-06-24 (Aviso de nova versão no web e APK — portado do FinPessoais)** — Mesmo mecanismo do FinPessoais.
   **`apps/web/vite.config.ts`:** lê a versão do `apps/web/package.json`, gera um `buildId` único por build, injeta

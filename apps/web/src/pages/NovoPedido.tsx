@@ -19,7 +19,7 @@ interface Vendedor { id: string; nome: string; }
 interface Motoboy { id: string; nome: string; ativo: boolean; }
 interface Condicao { id: string; nome: string; parcelas: number; }
 interface PrecoProduto { produtoId: string; produtoNome: string; preco: number; ativo: boolean; }
-interface ItemForm { produtoId: string; quantidade: string; }
+interface ItemForm { produtoId: string; quantidade: string; texto?: string; }
 interface FreteCalculo { frete: number; distanciaKm: number | null; memo: string | null; }
 interface NovoEndereco { logradouro: string; numero: string; complemento: string; bairro: string; cep: string; cidade: string; uf: string; }
 
@@ -220,6 +220,8 @@ export function NovoPedido() {
   useEffect(() => { if (pixTrava && condicaoId) setCondicaoId(''); /* eslint-disable-next-line */ }, [pixTrava]);
 
   const precoDe = (pid: string) => produtos.find((p) => p.produtoId === pid)?.preco ?? 0;
+  const idDoNome = (nome: string) => produtos.find((p) => p.produtoNome.toLowerCase() === nome.trim().toLowerCase())?.produtoId ?? '';
+  const nomeDoId = (id: string) => produtos.find((p) => p.produtoId === id)?.produtoNome ?? '';
   const subDe = (it: ItemForm) => precoDe(it.produtoId) * (Number(it.quantidade) || 0);
   const subtotal = useMemo(() => itens.reduce((acc, it) => acc + subDe(it), 0), [itens, produtos]);
   const freteCusto = Number(frete) || 0;
@@ -251,6 +253,8 @@ export function NovoPedido() {
   }, [clienteId, subtotal]);
 
   function setItem(i: number, campo: keyof ItemForm, val: string) { setItens(itens.map((it, idx) => idx === i ? { ...it, [campo]: val } : it)); }
+  // Produto por digitação (datalist): guarda o texto e resolve o id pelo nome exato.
+  function setProdutoTexto(i: number, texto: string) { setItens(itens.map((it, idx) => idx === i ? { ...it, texto, produtoId: idDoNome(texto) } : it)); }
   function addItem() { setItens([...itens, { produtoId: '', quantidade: '1' }]); }
   function delItem(i: number) { setItens(itens.filter((_, idx) => idx !== i)); setSel(new Set()); }
   function toggleSel(i: number) { const s = new Set(sel); s.has(i) ? s.delete(i) : s.add(i); setSel(s); }
@@ -419,6 +423,7 @@ export function NovoPedido() {
           <span><b>{sel.size}</b> {t('pedidos.itens_sel')}</span>
           <span>{t('pedidos.total_sel')}: <b>{moeda(totalSel)}</b></span>
         </div>
+        <datalist id="np-produtos">{produtos.map((pp) => <option key={pp.produtoId} value={pp.produtoNome} />)}</datalist>
         <table className="tabela" style={{ marginTop: 6 }}>
           <thead><tr>
             <th style={{ width: 36 }}><input type="checkbox" checked={itens.length > 0 && sel.size === itens.length} onChange={toggleTodos} /></th>
@@ -432,10 +437,7 @@ export function NovoPedido() {
               <tr key={i} className={sel.has(i) ? 'linha-sel' : ''}>
                 <td><input type="checkbox" checked={sel.has(i)} onChange={() => toggleSel(i)} /></td>
                 <td>
-                  <select value={it.produtoId} onChange={(e) => setItem(i, 'produtoId', e.target.value)} style={{ width: '100%' }}>
-                    <option value="">{t('pedidos.escolha_produto')}</option>
-                    {produtos.map((pp) => <option key={pp.produtoId} value={pp.produtoId}>{pp.produtoNome}</option>)}
-                  </select>
+                  <input list="np-produtos" value={it.texto ?? nomeDoId(it.produtoId)} onChange={(e) => setProdutoTexto(i, e.target.value)} placeholder={t('pedidos.escolha_produto')} style={{ width: '100%' }} />
                 </td>
                 <td><input type="number" min="0" step="1" value={it.quantidade} onChange={(e) => setItem(i, 'quantidade', e.target.value)} style={{ width: 70 }} /></td>
                 <td>{!it.produtoId ? '—' : !estoqueOk ? '—' : <b style={{ color: excede ? '#e1483b' : '#16a34a' }}>{dispDe(it.produtoId)}</b>}</td>
