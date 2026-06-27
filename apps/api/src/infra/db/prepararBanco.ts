@@ -20,6 +20,7 @@ export async function prepararBanco(ds: DataSource): Promise<void> {
     `SELECT schema_name, codigo FROM public.empresa WHERE ativo = true`);
   let tenants = 0;
   for (const e of empresas) {
+   try {
     const s = validarSchema(e.schema_name);
     const perfil = (await ds.query(`SELECT id FROM "${s}".perfil WHERE nome = $1`, ['Administrador']))[0];
     if (perfil) {
@@ -43,6 +44,7 @@ export async function prepararBanco(ds: DataSource): Promise<void> {
     // Backfill: classifica títulos sem categoria (automáticos pela origem; resto por tipo) — idempotente.
     try { await classificarTitulosSemCategoria(ds, e.schema_name); } catch (err) { console.warn('[db] classificação de títulos falhou em', e.schema_name, err); }
     tenants++;
+   } catch (err) { console.warn('[db] preparo do tenant', e.schema_name, 'falhou (segue os demais):', err); }
   }
   console.log(`[db] capabilities + perfis padrão sincronizados em ${tenants} tenant(s).`);
 }

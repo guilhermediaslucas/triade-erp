@@ -190,6 +190,20 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-24 (Tenant Teste com schema incompleto + blindagem do migrador)** — Sintoma: empresa **Teste** dava
+  "Ocorreu um erro" no Dashboard/telas; log do Render: `QueryFailedError: relation "t_teste.pedido" does not exist`
+  (code 42P01). Causa: o `t_teste` foi criado numa fase antiga e **alguma migração entre a 003 e a 008 falha nele**;
+  como o `migrarTenant` aplicava em ordem e **parava na 1ª falha**, as tabelas seguintes (`pedido`, etc.) nunca foram
+  criadas. Pior: `migrarTudo` **abortava os demais tenants** se um falhasse, e o loop de capabilities/seeds do
+  `prepararBanco` idem. **Correção (blindagem, `migrate.ts`+`prepararBanco.ts`):** `migrarTenant` agora faz try/catch
+  por migração e **loga o nome da migração culpada** (`[db] migração 0XX falhou no tenant t_teste: …`) antes de propagar;
+  `migrarTudo` isola **por tenant** (um schema quebrado não impede os outros); `prepararBanco` envolve o preparo de cada
+  tenant em try/catch. **Migrações em si estão OK p/ schema novo** (o iSKINS foi criado assim e funciona) → é divergência
+  específica do Teste. **Correção do Teste (Gui):** opção A (rápida, perde dado de teste) — Super-admin › Empresas →
+  excluir Teste → criar de novo (migra do zero, igual iSKINS); opção B (preserva dado) — após este deploy, ler no log de
+  boot a linha `[db] migração … falhou no tenant t_teste` e me mandar p/ eu tornar essa migração idempotente. **Sem
+  migration nova, sem cap.** **Pendente Gui:** `scripts\release.bat` (aplica a blindagem) → checar log de boot.
+
 - **2026-06-24 (Preço no cadastro de produto [compartilhado com a Tabela de preço] + busca na Tabela de preço)** — O preço
   vive em `preco_base` (fonte única, = "Preço fixo" da Tabela de preço). Agora o **cadastro de produto** lê/grava esse mesmo
   valor: **Backend** — `ProdutoResumo += precoBase`; `SqlProdutoRepository.listar` traz `preco_base` por subquery;

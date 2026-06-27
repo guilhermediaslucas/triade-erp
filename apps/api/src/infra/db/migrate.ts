@@ -48,9 +48,15 @@ export async function migrarTenant(ds: DataSource, schema: string): Promise<stri
   const aplicadas: string[] = [];
   for (const m of tenantMigrations) {
     if (await jaAplicada(ds, s, m.nome)) continue;
-    await ds.query(m.sql(s));
-    await registrar(ds, s, m.nome);
-    aplicadas.push(`${s}/${m.nome}`);
+    try {
+      await ds.query(m.sql(s));
+      await registrar(ds, s, m.nome);
+      aplicadas.push(`${s}/${m.nome}`);
+    } catch (err) {
+      // Nomeia a migração culpada (fica claro no log de boot qual travou o tenant).
+      console.error(`[db] migração ${m.nome} falhou no tenant ${s}:`, err);
+      throw err;
+    }
   }
   return aplicadas;
 }
@@ -69,7 +75,12 @@ export async function migrarTudo(ds: DataSource): Promise<string[]> {
     `SELECT schema_name FROM public.empresa WHERE ativo = true`,
   );
   for (const e of empresas) {
-    todas.push(...(await migrarTenant(ds, e.schema_name)));
+    // Isola por tenant: um schema quebrado não impede a migração dos outros.
+    try {
+      todas.push(...(await migrarTenant(ds, e.schema_name)));
+    } catch (err) {
+      console.error(`[db] migração do tenant ${e.schema_name} interrompida (segue os demais):`, err);
+    }
   }
   return todas;
 }
