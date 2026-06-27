@@ -190,6 +190,15 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-24 (Backup automático grátis do banco — GitHub Action pg_dump)** — Após a perda de dados do tenant Teste
+  (Neon Free: janela de PITR de só 6h, sem snapshot → irrecuperável), criado `.github/workflows/backup.yml`: cron diário
+  (06:00 UTC) + `workflow_dispatch` que roda **`pg_dump -Fc`** (via docker `postgres:17`, cobre PG 16/17 do Neon) do banco
+  inteiro — **um dump cobre todos os tenants** (public + t_iskins/t_maids/…) — e guarda como **artifact** do GitHub
+  (retenção 90 dias). Grátis, off-repo. **Setup Gui:** GitHub → Settings → Secrets and variables → Actions → secret
+  **`DB_URL`** = string de conexão **DIRETA** do Neon (sem `-pooler`, com `sslmode=require`). Restore: baixar o `.dump`
+  do artifact → `pg_restore` num branch/DB Neon (use `--schema=t_xxx` p/ um tenant). **Pago vs grátis:** PITR longo /
+  snapshots agendados do Neon = pago; este pg_dump = grátis. **Não substitui** cuidado, mas dá backup diário off-site.
+
 - **2026-06-24 (Tenant Teste com schema incompleto + blindagem do migrador)** — Sintoma: empresa **Teste** dava
   "Ocorreu um erro" no Dashboard/telas; log do Render: `QueryFailedError: relation "t_teste.pedido" does not exist`
   (code 42P01). Causa: o `t_teste` foi criado numa fase antiga e **alguma migração entre a 003 e a 008 falha nele**;

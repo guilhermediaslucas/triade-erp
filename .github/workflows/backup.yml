@@ -1,0 +1,38 @@
+name: Backup do banco
+
+# Backup diário do banco (Neon) via pg_dump. Um único dump cobre TODOS os tenants
+# (public + t_iskins, t_maids, etc.), pois são schemas do mesmo banco. O arquivo é
+# guardado como "artifact" do GitHub (download pela aba Actions; retenção 90 dias).
+# Grátis. Para rodar na hora: aba Actions → "Backup do banco" → Run workflow.
+on:
+  schedule:
+    - cron: "0 6 * * *"   # 06:00 UTC (~03:00 BRT) todo dia
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Gerar dump (pg_dump 17 via docker)
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+        run: |
+          if [ -z "$DB_URL" ]; then
+            echo "*** Defina o secret DB_URL (string de conexão DIRETA do Neon) em Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+          STAMP=$(date -u +%Y%m%d-%H%M)
+          mkdir -p backup
+          # -Fc = formato custom (comprimido, restaurável com pg_restore); usa pg_dump 17 (cobre Postgres 16/17 do Neon)
+          docker run --rm postgres:17 pg_dump --no-owner --no-privileges -Fc "$DB_URL" > "backup/triade-$STAMP.dump"
+          ls -lh backup
+
+      - name: Subir o backup como artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-backup
+          path: backup/*.dump
+          retention-days: 90
