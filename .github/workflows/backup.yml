@@ -16,7 +16,7 @@ jobs:
   backup:
     runs-on: ubuntu-latest
     steps:
-      - name: Gerar dump (pg_dump 17 via docker)
+      - name: Gerar dump (pg_dump 18 via docker)
         env:
           DB_URL: ${{ secrets.DB_URL }}
         run: |
@@ -26,8 +26,8 @@ jobs:
           fi
           STAMP=$(date -u +%Y%m%d-%H%M)
           mkdir -p backup
-          # -Fc = formato custom (comprimido, restaurável com pg_restore); usa pg_dump 17 (cobre Postgres 16/17 do Neon)
-          docker run --rm postgres:17 pg_dump --no-owner --no-privileges -Fc "$DB_URL" > "backup/triade-$STAMP.dump"
+          # -Fc = formato custom (comprimido, restaurável com pg_restore); usa pg_dump 18 (o Neon roda Postgres 18.x)
+          docker run --rm postgres:18 pg_dump --no-owner --no-privileges -Fc "$DB_URL" > "backup/triade-$STAMP.dump"
           ls -lh backup
 
       - name: Subir o backup como artifact
