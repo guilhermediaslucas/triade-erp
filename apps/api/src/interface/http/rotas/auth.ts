@@ -56,6 +56,11 @@ export function rotasAuth(deps: Dependencias): Router {
   r.put('/auth/senha', autenticar, async (req: Request, res: Response) => {
     const u = req.usuario!;
     const { senhaAtual, novaSenha } = req.body ?? {};
+    // Conta pública de demonstração não troca a própria senha (evita trancar todos).
+    const demoEmail = (process.env.DEMO_EMAIL ?? 'teste@teste.com.br').toLowerCase();
+    if (!u.superAdmin && u.email.toLowerCase() === demoEmail) {
+      res.status(403).json({ erro: 'auth.demo_sem_troca_senha' }); return;
+    }
     try {
       await deps.autenticarUsuario.trocarSenha(
         { superAdmin: !!u.superAdmin, email: u.email, schema: u.schema, sub: u.sub },

@@ -84,6 +84,7 @@ const pt: Dict = {
   'senha.trocar': 'Trocar senha', 'senha.atual': 'Senha atual', 'senha.nova': 'Nova senha', 'senha.confirmar': 'Confirmar nova senha',
   'senha.ok': 'Senha alterada com sucesso.', 'senha.divergem': 'A confirmação não confere com a nova senha.',
   'auth.senha_atual_invalida': 'Senha atual incorreta.',
+  'auth.demo_sem_troca_senha': 'A conta de demonstração não pode trocar a senha.',
   'usuario.perfil_invalido': 'Perfil inválido.', 'usuario.nao_encontrado': 'Usuário não encontrado.',
   'perfil.nome_invalido': 'Informe um nome de perfil válido.', 'perfil.capability_invalida': 'Permissão inválida.',
   'perfil.nao_encontrado': 'Perfil não encontrado.',

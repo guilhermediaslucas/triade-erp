@@ -1,0 +1,39 @@
+name: Reset da empresa de demonstração
+
+# Recria a empresa pública de demonstração (codigo "demo") do zero todos os dias,
+# para que qualquer visitante possa testar o sistema sem sujar os dados para sempre.
+# Login da demo: teste@teste.com.br / teste123.
+# Para rodar na hora: aba Actions → "Reset da empresa de demonstração" → Run workflow.
+on:
+  schedule:
+    - cron: "0 7 * * *"   # 07:00 UTC (~04:00 BRT) todo dia
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Compilar shared (se houver)
+        run: npm run build -w @triade/shared --if-present
+
+      - name: Recriar a empresa de demonstração
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+        run: |
+          if [ -z "$DB_URL" ]; then
+            echo "*** Defina o secret DB_URL (string de conexão DIRETA do Neon) em Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+          npm run db:seed-demo -w @triade/api

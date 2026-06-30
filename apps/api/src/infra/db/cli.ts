@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { AppDataSource } from './data-source.js';
 import { migrarTudo } from './migrate.js';
 import { seedDemo } from './seed.js';
+import { seedDemonstracao } from './demoSeed.js';
 
 async function main(): Promise<void> {
   const comando = process.argv[2];
@@ -17,8 +18,11 @@ async function main(): Promise<void> {
       } else {
         console.log(`Empresa demo ja existia (nada recriado).\n  Empresa: ${r.empresa} | Usuario: ${r.usuario}`);
       }
+    } else if (comando === 'seed-demo') {
+      await seedDemonstracao(AppDataSource);
+      console.log('Empresa de demonstracao recriada.  Login: teste@teste.com.br / teste123');
     } else {
-      console.error('Uso: cli.ts <migrate|seed>');
+      console.error('Uso: cli.ts <migrate|seed|seed-demo>');
       process.exitCode = 1;
     }
   } finally {

@@ -199,8 +199,22 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   botão "Instalar" dispara a instalação nativa, "Agora não" guarda 7 dias em `triade_pwa_dispensado`; some no APK/Capacitor
   ou se já instalado). Montado no `App.tsx` ao lado do `<NovaVersao/>`. Sem migration, sem cap, sem i18n nova (texto pt-BR
   direto, como o `NovaVersao`). Validação: hand-review. **Pendente do Gui:** `scripts\release.bat`.
-  **PRÓXIMO (combinado):** acesso de **demonstração** — empresa demo populada + perfil "Demonstração" (operacional, testa
-  de verdade, sem Usuários/Perfis/Empresa) + login público + bloqueio de troca de senha + **reset diário** (GitHub Action).
+
+- **2026-06-30 (Acesso de demonstração — empresa demo populada + reset diário).** **(1)** Novo
+  `infra/db/demoSeed.ts` (`seedDemonstracao`): recria do zero a empresa **`demo`** (`t_demo`, fantasia
+  "Demonstração", ativa) — DROP SCHEMA CASCADE + provision + migrarTenant; cria o perfil **"Demonstração"**
+  (operacional: `CAPABILITY_IDS_GERAIS` **menos `acesso.*`** → testa criar/editar, mas sem Usuários/Perfis/
+  Empresa) e o usuário público **teste@teste.com.br / teste123**; popula catálogo fictício (3 categorias, 8
+  produtos com preço + `preco_base` + `estoque_lote`/`estoque_movimento` de carga, 4 clientes, 2 fornecedores,
+  2 vendedores). Idempotente (recriável). **(2)** CLI `db/cli.ts` ganhou o comando **`seed-demo`** + script
+  `npm run db:seed-demo -w @triade/api`. **(3)** Bloqueio: `PUT /auth/senha` rejeita troca de senha da conta
+  demo (`!superAdmin && email === DEMO_EMAIL`, env `DEMO_EMAIL` default `teste@teste.com.br`; chave
+  `auth.demo_sem_troca_senha` no dicionário). **(4)** Login: caixa de demonstração **abaixo do "Entrar"**
+  (`.login-demo` vermelho) + botão "Entrar como demonstração" (`entrarDemo` loga direto). **(5)** Reset diário:
+  `.github/workflows/demo-reset.yml` (cron 07:00 UTC + manual) roda o `db:seed-demo` contra o Neon (reusa o
+  secret `DB_URL`). Sem migration nova (reusa as tabelas existentes). Validação: hand-review (tsc do sandbox
+  inválido — null bytes do mount). **Pendente do Gui:** `scripts\release.bat` + rodar **`npm run db:seed-demo
+  -w @triade/api`** uma vez (cria a empresa demo no Neon) + conferir o workflow no GitHub (Run workflow).
 
 - **2026-06-24 (Backup automático grátis do banco — GitHub Action pg_dump)** — Após a perda de dados do tenant Teste
   (Neon Free: janela de PITR de só 6h, sem snapshot → irrecuperável), criado `.github/workflows/backup.yml`: cron diário

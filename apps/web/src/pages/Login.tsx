@@ -50,6 +50,18 @@ export function Login() {
     finally { setCarregando(false); }
   }
 
+  // Entra direto na conta pública de demonstração (perfil operacional, reset diário).
+  async function entrarDemo() {
+    setErro(null); setCarregando(true);
+    setEmail('teste@teste.com.br'); setSenha('teste123');
+    try {
+      await login('teste@teste.com.br', 'teste123', lembrar);
+      navigate('/');
+    }
+    catch (ex) { setErro((ex as ErroApi).chaveI18n ?? 'erro.interno'); }
+    finally { setCarregando(false); }
+  }
+
   return (
     <div className="login">
       <SpriteIcones />
@@ -88,6 +100,11 @@ export function Login() {
             </div>
             {erro && <div className="login-erro">{t(erro)}</div>}
             <button type="submit" className="login-btn" disabled={carregando}>{carregando ? t('login.entrando') : t('login.entrar')}</button>
+            <div className="login-demo">
+              <div className="login-demo-h">Só quer conhecer? Use a conta de demonstração</div>
+              <div className="login-demo-cred">E-mail <b>teste@teste.com.br</b> · Senha <b>teste123</b></div>
+              <button type="button" className="login-demo-btn" onClick={entrarDemo} disabled={carregando}>Entrar como demonstração</button>
+            </div>
             <div className="login-footer">{t('login.dev')} <b>Guilherme Dias</b><br />TRÍADE ERP © 2026 · v{__APP_VERSION__}</div>
           </form>
         </div>
