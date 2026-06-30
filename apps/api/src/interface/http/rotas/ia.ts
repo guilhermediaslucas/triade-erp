@@ -25,5 +25,21 @@ export function rotasIa(deps: Dependencias): Router {
     }
   });
 
+  // Aplica uma ação proposta pela IA, após o usuário confirmar (gate da escrita
+  // é feito dentro do serviço, pela capability da ação).
+  r.post('/ia/aplicar', aut, az('ia.assistente.usar'), async (req: Request, res: Response) => {
+    try {
+      const u = req.usuario!;
+      const { proposta } = req.body ?? {};
+      const out = await deps.assistenteService.aplicar(
+        { schema: u.schema, sub: u.sub, superAdmin: !!u.superAdmin },
+        proposta,
+      );
+      res.json(out);
+    } catch (e) {
+      tratarErro(res, e);
+    }
+  });
+
   return r;
 }

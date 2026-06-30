@@ -3,7 +3,8 @@ import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
 import { api, type ErroApi } from '../api/client.js';
 
-type Msg = { role: 'user' | 'assistant'; texto: string };
+type Proposta = { tipo: string; titulo: string; resumo: [string, string][]; dados: Record<string, unknown> };
+type Msg = { role: 'user' | 'assistant'; texto: string; proposta?: Proposta; pStatus?: 'pendente' | 'aplicada' | 'descartada' };
 
 const SUGESTOES = [
   'Quanto faturei esse mês?',
@@ -35,13 +36,28 @@ export function AssistenteIA() {
     setMsgs((m) => [...m, { role: 'user', texto: q }]);
     setCarregando(true);
     try {
-      const out = await api.post<{ resposta: string; modelo: string }>('/ia/perguntar', { texto: q, historico }, token!);
-      setMsgs((m) => [...m, { role: 'assistant', texto: out.resposta }]);
+      const out = await api.post<{ resposta: string; modelo: string; proposta?: Proposta }>('/ia/perguntar', { texto: q, historico }, token!);
+      setMsgs((m) => [...m, { role: 'assistant', texto: out.resposta, proposta: out.proposta, pStatus: out.proposta ? 'pendente' : undefined }]);
     } catch (e) {
       setMsgs((m) => [...m, { role: 'assistant', texto: t((e as ErroApi).chaveI18n ?? 'ia.falhou') }]);
     } finally {
       setCarregando(false);
     }
+  }
+
+  async function confirmar(idx: number, proposta: Proposta) {
+    setCarregando(true);
+    try {
+      const out = await api.post<{ mensagem: string }>('/ia/aplicar', { proposta }, token!);
+      setMsgs((m) => m.map((x, i) => (i === idx ? { ...x, pStatus: 'aplicada' } : x)).concat({ role: 'assistant', texto: '✅ ' + out.mensagem }));
+    } catch (e) {
+      setMsgs((m) => m.concat({ role: 'assistant', texto: t((e as ErroApi).chaveI18n ?? 'ia.falhou') }));
+    } finally {
+      setCarregando(false);
+    }
+  }
+  function descartar(idx: number) {
+    setMsgs((m) => m.map((x, i) => (i === idx ? { ...x, pStatus: 'descartada' } : x)));
   }
 
   // Fechar limpa a conversa → reabrir começa na tela de opções.
@@ -75,7 +91,27 @@ export function AssistenteIA() {
                 </div>
               )}
               {msgs.map((m, i) => (
-                <div key={i} className={'ia-msg ' + (m.role === 'user' ? 'ia-me' : 'ia-resp')}>{m.texto}</div>
+                <div key={i} className="ia-linha">
+                  {m.texto && <div className={'ia-msg ' + (m.role === 'user' ? 'ia-me' : 'ia-resp')}>{m.texto}</div>}
+                  {m.proposta && (
+                    <div className="ia-acao">
+                      <div className="ia-acao-h">Ação proposta — {m.proposta.titulo}</div>
+                      {m.proposta.resumo.map(([k, v], j) => (
+                        <div className="ia-acao-l" key={j}><span>{k}</span><span>{v}</span></div>
+                      ))}
+                      {m.pStatus === 'pendente' ? (
+                        <div className="ia-acao-bt">
+                          <button className="ia-ok" onClick={() => confirmar(i, m.proposta!)} disabled={carregando}>Confirmar e criar</button>
+                          <button className="ia-no" onClick={() => descartar(i)} disabled={carregando}>Descartar</button>
+                        </div>
+                      ) : (
+                        <div className={'ia-acao-st ' + (m.pStatus === 'aplicada' ? 'ok' : 'no')}>
+                          {m.pStatus === 'aplicada' ? '✓ Aplicada' : 'Descartada'}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               ))}
               {carregando && <div className="ia-msg ia-resp ia-typing">Consultando…</div>}
               <div ref={fimRef} />

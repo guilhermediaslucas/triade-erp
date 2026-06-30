@@ -135,10 +135,11 @@ export function montarDependencias() {
   const pedidosService = new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, precoClienteRepo, clientesRepo, estoqueRepo, etiquetaRepo, tituloRepo, condicaoRepo, motoboysRepo, usuariosRepo, freteCampanhaRepo, descontoPedidoRepo);
   const estoqueService = new EstoqueService(estoqueRepo, etiquetaRepo);
   const financeiroService = new FinanceiroService(tituloRepo, pedidoRepo);
+  const clientesService = new ClientesService(clientesRepo);
   const claudeProvider = new ClaudeProvider(env.iaApiKey);
   const assistenteService = new AssistenteService(
     claudeProvider, claudeProvider.configurado(), usuariosRepo,
-    { dashboard: dashboardService, pedidos: pedidosService, estoque: estoqueService, financeiro: financeiroService },
+    { dashboard: dashboardService, pedidos: pedidosService, estoque: estoqueService, financeiro: financeiroService, clientes: clientesService },
     env.iaModeloBase, env.iaModeloAvancado,
   );
 
@@ -173,7 +174,7 @@ export function montarDependencias() {
     preferenciasService: new PreferenciasService(new SqlPreferenciaUsuarioRepository(AppDataSource)),
     favorecidosService: new FavorecidosService(favorecidosRepo),
     produtosService: new ProdutosService(produtosRepo, precoBaseRepo),
-    clientesService: new ClientesService(clientesRepo),
+    clientesService,
     fornecedoresService: new FornecedoresService(fornecedoresRepo),
     vendedoresService: new VendedoresService(vendedoresRepo),
     motoboysService: new MotoboysService(motoboysRepo),

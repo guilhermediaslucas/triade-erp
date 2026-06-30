@@ -551,7 +551,7 @@ Object.assign(pt, {
   'meta.valor_invalido': 'Valor de meta inválido (informe um número ≥ 0).', 'meta.ano_invalido': 'Ano inválido.', 'meta.mes_invalido': 'Mês inválido.',
   'cap.modulo.painel': 'Painéis (TV)', 'cap.painel.tv_comercial': 'Painel TV — Comercial', 'cap.painel.tv_expedicao': 'Painel TV — Expedição',
   'cap.modulo.ia': 'Assistente (IA)', 'cap.ia.assistente.usar': 'Usar o assistente (IA)', 'cap.ia.modelo_avancado': 'Modelo avançado (Sonnet)',
-  'ia.nao_configurada': 'O assistente de IA ainda não está configurado.', 'ia.falhou': 'Não consegui responder agora. Tente de novo.', 'ia.pergunta_vazia': 'Escreva uma pergunta.',
+  'ia.nao_configurada': 'O assistente de IA ainda não está configurado.', 'ia.falhou': 'Não consegui responder agora. Tente de novo.', 'ia.pergunta_vazia': 'Escreva uma pergunta.', 'ia.acao_desconhecida': 'Ação não reconhecida.',
   'pedidos.titulo': 'Pedidos - Comercial', 'pedidos.novo': 'Novo pedido', 'pedidos.numero': 'Número', 'pedidos.data': 'Data',
   'pedidos.cliente': 'Cliente', 'pedidos.vendedor': 'Vendedor', 'pedidos.status': 'Status', 'pedidos.total': 'Total',
   'pedidos.vendedor_travado': 'Fixo no seu usuário — você só inclui pedido para si.', 'pedidos.vendedor_voce': 'Você',

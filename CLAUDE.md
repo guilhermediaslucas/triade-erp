@@ -203,8 +203,20 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   sugestões + chat + chip do modelo Haiku/Sonnet), montado no `Layout`. **Envs novas:** `ANTHROPIC_API_KEY`,
   `IA_MODELO_BASE` (default `claude-haiku-4-5-20251001`), `IA_MODELO_AVANCADO` (default `claude-sonnet-4-6`). Sem
   migration. Validação: tsc da API limpo; web só com o ruído de NUL do mount no Layout (build local = verdade).
-  **Fase 2** (ações propostas com confirmação) e **Fase 3** (proativo) ficam p/ depois. **Pendente do Gui:**
-  `scripts\release.bat` + criar a **chave Anthropic** e setar `ANTHROPIC_API_KEY` no Render + relogar (caps novas).
+  **Pendente do Gui:** `scripts\release.bat` + criar a **chave Anthropic** e setar `ANTHROPIC_API_KEY` no Render +
+  relogar (caps novas). **Fase 3** (proativo/agendado) fica p/ depois.
+
+- **2026-06-30 (Assistente IA — Fase 2: ação proposta + confirmação).** A IA passou a **propor escrita** (1ª
+  ação: **criar cliente**) sem aplicar sozinha. `AssistenteService`: ferramenta `propor_criar_cliente` (cap
+  `cadastros.cliente.gerenciar`) cujo `run` devolve `{__proposta}`; o loop **interrompe** ao ver a proposta e
+  retorna `{resposta, modelo, proposta}` (não aplica). Novo `aplicar(ctx, proposta)` revalida a **capability de
+  escrita** e chama `ClientesService.criar` (auditado pelo middleware genérico). System prompt passa a permitir
+  propor quando o usuário tem a cap; senão segue só-consulta. Rota `POST /ia/aplicar` (gate `ia.assistente.usar`).
+  **Front (`AssistenteIA.tsx`):** a resposta com `proposta` vira um **card "Ação proposta — Criar cliente"** com
+  resumo dos campos + **Confirmar e criar / Descartar**; confirmar chama `/ia/aplicar` e marca "✓ Aplicada".
+  Demo (sem `ia.*`) e título/pedido/produto (precisam resolver IDs de cadastro) ficam de fora por ora — plugam no
+  mesmo mecanismo depois. Sem migration. Validação: tsc da API limpo; web só com ruído de NUL do mount (arquivo
+  íntegro pelo file-tool; build local = verdade). **Pendente do Gui:** `scripts\release.bat`.
 
 - **2026-06-30 (Showcase no login + convite de instalação PWA — espelhado do FinPessoais)** — Aprovado por preview
   (`Info/mockups/login-showcase-preview.html`, em **vermelho** a pedido do Gui). **(1) Showcase animado no login:**
