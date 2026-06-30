@@ -84,6 +84,7 @@ import { Layout } from './components/Layout.js';
 import { ScrollToTop } from './components/ScrollToTop.js';
 import { ProtectedRoute } from './components/ProtectedRoute.js';
 import { NovaVersao } from './components/NovaVersao.js';
+import { InstalarApp } from './components/InstalarApp.js';
 
 function Protegida({ children, cap, soSuper }: { children: ReactNode; cap?: string; soSuper?: boolean }) {
   return <ProtectedRoute capability={cap} soSuperAdmin={soSuper}><Layout>{children}</Layout></ProtectedRoute>;
@@ -179,6 +180,7 @@ export function App() {
               </Routes>
             </BrowserRouter>
             <NovaVersao />
+            <InstalarApp />
           </ToastProvider>
         </BrandingProvider>
       </AuthProvider>

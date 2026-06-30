@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Preview — showcase de telas no login (Tríade)</title>
+<style>
+  :root{
+    --accent:#dc2626; --accent2:#22c55e; --ink:#1f2430; --muted:#8a90a2;
+    --bg:#f4f5fa; --card:#ffffff; --line:#e8e9f1; --soft:#fdeaea;
+    --hero1:#451521; --hero2:#270c12;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#0c0a18;color:#e9e9f2;font-family:"Segoe UI",Inter,system-ui,Arial,sans-serif;padding:26px}
+  .ttl{text-align:center;font-size:14px;color:#c7c4e0;margin:0 0 4px}
+  .sub{text-align:center;font-size:12.5px;color:#8a86a8;margin:0 0 20px}
+
+  /* hero do login (painel roxo) com a janela de navegador */
+  .hero{max-width:760px;margin:0 auto;background:linear-gradient(160deg,var(--hero1),var(--hero2));border-radius:20px;padding:30px;box-shadow:0 24px 70px rgba(0,0,0,.5)}
+  .brand{font-size:24px;font-weight:800;letter-spacing:1px;color:#fff}
+  .brand span{color:var(--accent)} .brand small{font-size:12px;color:#b9b4e6;font-weight:700;margin-left:4px}
+  .htag{color:#b9b4e6;font-size:13px;margin:6px 0 18px}
+
+  /* janela */
+  .win{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.45);color:var(--ink)}
+  .win-bar{display:flex;align-items:center;gap:7px;padding:9px 12px;background:#f1f1f7;border-bottom:1px solid var(--line)}
+  .dot{width:10px;height:10px;border-radius:50%}.r{background:#ff5f57}.y{background:#febc2e}.g{background:#28c840}
+  .win-url{margin-left:10px;font-size:11px;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:6px;padding:3px 10px}
+  .win-body{display:flex;height:300px}
+  .side{width:120px;background:#fbfbfe;border-right:1px solid var(--line);padding:12px 8px;flex:none}
+  .side .lg{font-size:13px;font-weight:800;color:var(--ink);padding:2px 6px 10px}.side .lg span{color:var(--accent)}
+  .nav{font-size:11.5px;color:var(--muted);padding:7px 8px;border-radius:7px;display:flex;align-items:center;gap:7px;margin-bottom:2px}
+  .nav i{width:8px;height:8px;border-radius:2px;background:#cfd0e0}
+  .nav.on{background:var(--soft);color:var(--accent);font-weight:700}.nav.on i{background:var(--accent)}
+  .stage{flex:1;position:relative;overflow:hidden;background:var(--bg)}
+  .scr{position:absolute;inset:0;padding:14px;opacity:0;animation:cycle 25s infinite}
+  .scr-h{font-size:13px;font-weight:800;margin:0 0 10px}
+  .scr-h small{font-weight:600;color:var(--muted);font-size:11px;margin-left:6px}
+
+  @keyframes cycle{
+    0%,2%{opacity:0;transform:translateY(6px)}
+    4%,18%{opacity:1;transform:translateY(0)}
+    20%,100%{opacity:0;transform:translateY(-6px)}
+  }
+  .s1{animation-delay:0s}.s2{animation-delay:5s}.s3{animation-delay:10s}.s4{animation-delay:15s}.s5{animation-delay:20s}
+
+  /* KPIs */
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px}
+  .kpi .l{font-size:10px;color:var(--muted)}.kpi .v{font-size:15px;font-weight:800;margin-top:3px}
+  .bars{display:flex;align-items:flex-end;gap:8px;height:90px;margin-top:12px;padding:10px;background:#fff;border:1px solid var(--line);border-radius:9px}
+  .bars i{flex:1;background:linear-gradient(var(--accent),#f3a3a3);border-radius:4px 4px 0 0}
+
+  /* listas/tabela */
+  .rowt{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:6px;font-size:12px}
+  .pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px}
+  .pill.az{background:#e7efff;color:#2563eb}.pill.vd{background:#e7f8ee;color:#16a34a}.pill.am{background:#fef3d8;color:#b4790a}.pill.rx{background:#fdeaea;color:var(--accent)}
+  .muted{color:var(--muted)} .mono{font-variant-numeric:tabular-nums}
+
+  /* kanban pedidos */
+  .kb{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .kbc{background:#fff;border:1px solid var(--line);border-radius:9px;padding:8px;min-height:0}
+  .kbc .t{font-size:10.5px;font-weight:700;margin-bottom:7px;display:flex;justify-content:space-between}
+  .kbi{background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:6px;font-size:10.5px;margin-bottom:5px}
+
+  /* mapa motoboys */
+  .map{position:relative;height:100%;border-radius:9px;overflow:hidden;background:
+     linear-gradient(0deg,rgba(220,38,38,.06),rgba(220,38,38,.06)),
+     repeating-linear-gradient(0deg,#e9eaf4 0 1px,transparent 1px 34px),
+     repeating-linear-gradient(90deg,#e9eaf4 0 1px,transparent 1px 34px),#f7f7fc;border:1px solid var(--line)}
+  .road{position:absolute;background:#dcdcec}
+  .moto{position:absolute;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:11px;font-weight:800;box-shadow:0 3px 8px rgba(0,0,0,.25)}
+  .route{position:absolute;border-top:2px dashed var(--accent);opacity:.6}
+  .legend{position:absolute;right:8px;bottom:8px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:10px}
+  .lgrow{display:flex;align-items:center;gap:6px;margin:2px 0}.ldot{width:8px;height:8px;border-radius:50%}
+</style>
+</head>
+<body>
+  <p class="ttl">Tríade ERP — telas passando sozinhas no login (loop)</p>
+  <p class="sub">Mini-telas estilizadas (CSS), trocam a cada ~5s · este preview anima de verdade</p>
+
+  <div class="hero">
+    <div class="brand">TR<span>Í</span>ADE <small>ERP</small></div>
+    <div class="htag">Gestão completa: comercial, estoque, financeiro e logística — em um só lugar.</div>
+
+    <div class="win">
+      <div class="win-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="win-url">app.triade-erp.com</span>
+      </div>
+      <div class="win-body">
+        <div class="side">
+          <div class="lg">TR<span>Í</span>ADE</div>
+          <div class="nav on"><i></i>Dashboard</div>
+          <div class="nav"><i></i>Comercial</div>
+          <div class="nav"><i></i>Estoque</div>
+          <div class="nav"><i></i>Financeiro</div>
+          <div class="nav"><i></i>Logística</div>
+          <div class="nav"><i></i>Relatórios</div>
+        </div>
+        <div class="stage">
+
+          <!-- 1 Dashboard -->
+          <div class="scr s1">
+            <div class="scr-h">Dashboard <small>visão geral</small></div>
+            <div class="kpis">
+              <div class="kpi"><div class="l">Faturamento mês</div><div class="v">R$ 184.230</div></div>
+              <div class="kpi"><div class="l">Pedidos</div><div class="v">312</div></div>
+              <div class="kpi"><div class="l">Ticket médio</div><div class="v">R$ 590</div></div>
+            </div>
+            <div class="bars"><i style="height:55%"></i><i style="height:72%"></i><i style="height:48%"></i><i style="height:88%"></i><i style="height:66%"></i><i style="height:95%"></i></div>
+          </div>
+
+          <!-- 2 Comercial / Pedidos -->
+          <div class="scr s2">
+            <div class="scr-h">Comercial · Pedidos <small>workflow</small></div>
+            <div class="kb">
+              <div class="kbc"><div class="t">Novo <span class="muted">3</span></div>
+                <div class="kbi">#1042 · Maria ME<br><span class="muted">R$ 1.250</span></div>
+                <div class="kbi">#1043 · Bar do João<br><span class="muted">R$ 480</span></div>
+              </div>
+              <div class="kbc"><div class="t">Separação <span class="muted">2</span></div>
+                <div class="kbi">#1039 · Mercado Sul<br><span class="muted">R$ 2.980</span></div>
+              </div>
+              <div class="kbc"><div class="t">Expedição <span class="muted">1</span></div>
+                <div class="kbi">#1037 · Padaria Pão<br><span class="muted">R$ 740</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3 Estoque / Produtos -->
+          <div class="scr s3">
+            <div class="scr-h">Estoque · Produtos <small>saldo</small></div>
+            <div class="rowt"><span><b>Refrigerante 2L</b> <span class="muted">· SKU 8841</span></span><span class="pill vd">240 un</span></div>
+            <div class="rowt"><span><b>Água 500ml (fardo)</b> <span class="muted">· SKU 2210</span></span><span class="pill am">38 un</span></div>
+            <div class="rowt"><span><b>Suco Uva 1L</b> <span class="muted">· SKU 5567</span></span><span class="pill rx">112 un</span></div>
+            <div class="rowt"><span><b>Energético 250ml</b> <span class="muted">· SKU 9003</span></span><span class="pill vd">410 un</span></div>
+          </div>
+
+          <!-- 4 Financeiro / Relatórios -->
+          <div class="scr s4">
+            <div class="scr-h">Financeiro <small>a pagar / a receber · fluxo</small></div>
+            <div class="kpis">
+              <div class="kpi"><div class="l">A receber</div><div class="v" style="color:#16a34a">R$ 92.400</div></div>
+              <div class="kpi"><div class="l">A pagar</div><div class="v" style="color:#e1483b">R$ 61.180</div></div>
+              <div class="kpi"><div class="l">Saldo projetado</div><div class="v">R$ 31.220</div></div>
+            </div>
+            <div class="rowt" style="margin-top:10px"><span>Boleto · Fornecedor Alfa</span><span class="pill am">vence 02/07</span></div>
+            <div class="rowt"><span>Recebível · Mercado Sul</span><span class="pill vd">pago</span></div>
+          </div>
+
+          <!-- 5 Mapa motoboys -->
+          <div class="scr s5">
+            <div class="scr-h">Logística · Mapa dos motoboys <small>ao vivo</small></div>
+            <div class="map">
+              <div class="route" style="left:18%;top:40%;width:34%;transform:rotate(18deg)"></div>
+              <div class="route" style="left:50%;top:60%;width:30%;transform:rotate(-12deg)"></div>
+              <div class="moto" style="left:16%;top:36%;background:#dc2626">M1</div>
+              <div class="moto" style="left:52%;top:54%;background:#22c55e">M2</div>
+              <div class="moto" style="left:74%;top:30%;background:#f59e0b">M3</div>
+              <div class="legend">
+                <div class="lgrow"><span class="ldot" style="background:#dc2626"></span>M1 · entregando</div>
+                <div class="lgrow"><span class="ldot" style="background:#22c55e"></span>M2 · a caminho</div>
+                <div class="lgrow"><span class="ldot" style="background:#f59e0b"></span>M3 · retornando</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="sub" style="margin-top:22px">Mostra Dashboard → Pedidos → Estoque → Financeiro → Mapa dos motoboys, em loop. Aprove ou peça ajuste (ordem, telas, cores) que eu aplico no login do Tríade.</p>
+</body>
+</html>

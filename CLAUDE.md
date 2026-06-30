@@ -190,6 +190,18 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-30 (Showcase no login + convite de instalação PWA — espelhado do FinPessoais)** — Aprovado por preview
+  (`Info/mockups/login-showcase-preview.html`, em **vermelho** a pedido do Gui). **(1) Showcase animado no login:**
+  `PreviewSistema` (em `Login.tsx`) deixou de ser uma janela estática e virou um **carrossel CSS de 5 telas** passando
+  sozinho em loop (Dashboard/KPIs → Comercial/Pedidos → Estoque/Produtos → Financeiro → **Mapa dos motoboys**); reusa a
+  janela/sidebar (`lh-preview`/`lhp-*`) + classes novas `.lhs-*` (`@keyframes lhs-cycle`, delays s1..s5). **(2) Convite de
+  instalação (PWA):** novo `components/InstalarApp.tsx` (captura `beforeinstallprompt`, banner próprio vermelho `.pwa-*`,
+  botão "Instalar" dispara a instalação nativa, "Agora não" guarda 7 dias em `triade_pwa_dispensado`; some no APK/Capacitor
+  ou se já instalado). Montado no `App.tsx` ao lado do `<NovaVersao/>`. Sem migration, sem cap, sem i18n nova (texto pt-BR
+  direto, como o `NovaVersao`). Validação: hand-review. **Pendente do Gui:** `scripts\release.bat`.
+  **PRÓXIMO (combinado):** acesso de **demonstração** — empresa demo populada + perfil "Demonstração" (operacional, testa
+  de verdade, sem Usuários/Perfis/Empresa) + login público + bloqueio de troca de senha + **reset diário** (GitHub Action).
+
 - **2026-06-24 (Backup automático grátis do banco — GitHub Action pg_dump)** — Após a perda de dados do tenant Teste
   (Neon Free: janela de PITR de só 6h, sem snapshot → irrecuperável), criado `.github/workflows/backup.yml`: cron diário
   (06:00 UTC) + `workflow_dispatch` que roda **`pg_dump -Fc`** (via docker `postgres:17`, cobre PG 16/17 do Neon) do banco

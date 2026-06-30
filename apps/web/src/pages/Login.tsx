@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.js';
 import { useI18n } from '../i18n/I18nContext.js';
@@ -97,8 +97,26 @@ export function Login() {
   );
 }
 
-// Janela de "navegador" com um mini-dashboard no hero do login (igual ao mockup).
-// Puramente ilustrativo (dados estáticos), some no mobile junto com o hero.
+// Janela de "navegador" com as telas do sistema passando sozinhas (showcase em
+// loop). Puramente ilustrativo, some no mobile junto com o hero.
+const kpi = (l: string, v: string, cor?: string) => (
+  <div style={{ background: '#fff', border: '1px solid #e8e9f1', borderRadius: 9, padding: 9 }}>
+    <div style={{ fontSize: 10, color: '#8a90a2' }}>{l}</div>
+    <div style={{ fontSize: 15, fontWeight: 800, marginTop: 3, color: cor ?? '#1f2430' }}>{v}</div>
+  </div>
+);
+const row = (esq: ReactNode, pill: string, cls: string) => (
+  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', border: '1px solid #e8e9f1', borderRadius: 8, padding: '7px 10px', marginBottom: 6, fontSize: 12 }}>
+    <span>{esq}</span><span className={'lhs-pill ' + cls}>{pill}</span>
+  </div>
+);
+const kb = (t: string, n: string, itens: string[]) => (
+  <div style={{ background: '#fff', border: '1px solid #e8e9f1', borderRadius: 9, padding: 8 }}>
+    <div style={{ fontSize: 10.5, fontWeight: 700, marginBottom: 7, display: 'flex', justifyContent: 'space-between' }}>{t}<span style={{ color: '#8a90a2' }}>{n}</span></div>
+    {itens.map((i, k) => <div key={k} style={{ background: '#f7f7fc', border: '1px solid #e8e9f1', borderRadius: 7, padding: 6, fontSize: 10.5, marginBottom: 5 }}>{i}</div>)}
+  </div>
+);
+
 function PreviewSistema() {
   return (
     <div className="lh-preview" aria-hidden="true">
@@ -111,35 +129,67 @@ function PreviewSistema() {
           <div className="lhp-logo">TR<span>Í</span>ADE</div>
           <div className="lhp-nav on">Dashboard</div>
           <div className="lhp-nav">Comercial</div>
-          <div className="lhp-nav">Financeiro</div>
           <div className="lhp-nav">Estoque</div>
-          <div className="lhp-nav">Relatórios</div>
+          <div className="lhp-nav">Financeiro</div>
+          <div className="lhp-nav">Logística</div>
         </div>
-        <div className="lhp-main">
-          <div className="lhp-kpis">
-            <div className="lhp-kpi"><span>Vendas do mês</span><b>R$ 2,14M</b></div>
-            <div className="lhp-kpi"><span>Pedidos</span><b>1.234</b></div>
-            <div className="lhp-kpi"><span>A receber</span><b>R$ 2,65M</b></div>
-            <div className="lhp-kpi"><span>Clientes</span><b>1.256</b></div>
-          </div>
-          <div className="lhp-charts">
-            <div className="lhp-card">
-              <div className="lhp-card-t">Faturamento</div>
-              <svg viewBox="0 0 240 80" preserveAspectRatio="none" style={{ width: '100%', height: 64 }}>
-                <polygon points="0,80 0,62 40,58 80,50 120,52 160,38 200,24 235,8 235,80" fill="#dc2626" opacity="0.10" />
-                <polyline points="0,62 40,58 80,50 120,52 160,38 200,24 235,8" fill="none" stroke="#dc2626" strokeWidth="2.5" />
-              </svg>
+        <div className="lhp-main lhs-stage">
+
+          {/* 1 — Dashboard */}
+          <div className="lhs-scr lhs-s1">
+            <h4>Dashboard <small>visão geral</small></h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
+              {kpi('Faturamento', 'R$ 184.230')}{kpi('Pedidos', '312')}{kpi('Ticket médio', 'R$ 590')}
             </div>
-            <div className="lhp-card">
-              <div className="lhp-card-t">Por categoria</div>
-              <svg viewBox="0 0 80 80" style={{ width: 60, height: 60, display: 'block', margin: '4px auto 0' }}>
-                <circle cx="40" cy="40" r="28" fill="none" stroke="#ececf2" strokeWidth="11" />
-                <circle cx="40" cy="40" r="28" fill="none" stroke="#7b61ff" strokeWidth="11" strokeDasharray="70 106" transform="rotate(-90 40 40)" />
-                <circle cx="40" cy="40" r="28" fill="none" stroke="#3b82f6" strokeWidth="11" strokeDasharray="44 132" strokeDashoffset="-70" transform="rotate(-90 40 40)" />
-                <circle cx="40" cy="40" r="28" fill="none" stroke="#ea9213" strokeWidth="11" strokeDasharray="32 144" strokeDashoffset="-114" transform="rotate(-90 40 40)" />
-              </svg>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 78, marginTop: 10, padding: 10, background: '#fff', border: '1px solid #e8e9f1', borderRadius: 9 }}>
+              {[55, 72, 48, 88, 66, 95].map((h, i) => <i key={i} style={{ flex: 1, height: h + '%', borderRadius: '4px 4px 0 0', background: 'linear-gradient(#dc2626,#f3a3a3)' }} />)}
             </div>
           </div>
+
+          {/* 2 — Comercial / Pedidos */}
+          <div className="lhs-scr lhs-s2">
+            <h4>Comercial · Pedidos <small>workflow</small></h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
+              {kb('Novo', '3', ['#1042 · Maria ME', '#1043 · Bar do João'])}
+              {kb('Separação', '2', ['#1039 · Mercado Sul'])}
+              {kb('Expedição', '1', ['#1037 · Padaria Pão'])}
+            </div>
+          </div>
+
+          {/* 3 — Estoque / Produtos */}
+          <div className="lhs-scr lhs-s3">
+            <h4>Estoque · Produtos <small>saldo</small></h4>
+            {row(<><b>Refrigerante 2L</b> <span style={{ color: '#8a90a2' }}>· SKU 8841</span></>, '240 un', 'vd')}
+            {row(<><b>Água 500ml (fardo)</b> <span style={{ color: '#8a90a2' }}>· SKU 2210</span></>, '38 un', 'am')}
+            {row(<><b>Suco Uva 1L</b> <span style={{ color: '#8a90a2' }}>· SKU 5567</span></>, '112 un', 'rx')}
+            {row(<><b>Energético 250ml</b> <span style={{ color: '#8a90a2' }}>· SKU 9003</span></>, '410 un', 'vd')}
+          </div>
+
+          {/* 4 — Financeiro */}
+          <div className="lhs-scr lhs-s4">
+            <h4>Financeiro <small>a pagar / a receber · fluxo</small></h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
+              {kpi('A receber', 'R$ 92.400', '#16a34a')}{kpi('A pagar', 'R$ 61.180', '#e1483b')}{kpi('Saldo proj.', 'R$ 31.220')}
+            </div>
+            <div style={{ marginTop: 10 }}>
+              {row(<>Boleto · Fornecedor Alfa</>, 'vence 02/07', 'am')}
+              {row(<>Recebível · Mercado Sul</>, 'pago', 'vd')}
+            </div>
+          </div>
+
+          {/* 5 — Mapa dos motoboys */}
+          <div className="lhs-scr lhs-s5">
+            <h4>Logística · Mapa dos motoboys <small>ao vivo</small></h4>
+            <div className="lhs-map">
+              <div className="lhs-moto" style={{ left: '16%', top: '34%', background: '#dc2626' }}>M1</div>
+              <div className="lhs-moto" style={{ left: '52%', top: '54%', background: '#22c55e' }}>M2</div>
+              <div className="lhs-moto" style={{ left: '74%', top: '28%', background: '#f59e0b' }}>M3</div>
+              <div style={{ position: 'absolute', right: 8, bottom: 8, background: '#fff', border: '1px solid #e8e9f1', borderRadius: 8, padding: '6px 8px', fontSize: 10 }}>
+                <div>🔴 M1 · entregando</div><div>🟢 M2 · a caminho</div><div>🟠 M3 · retornando</div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
