@@ -204,9 +204,13 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   `infra/db/demoSeed.ts` (`seedDemonstracao`): recria do zero a empresa **`demo`** (`t_demo`, fantasia
   "Demonstração", ativa) — DROP SCHEMA CASCADE + provision + migrarTenant; cria o perfil **"Demonstração"**
   (operacional: `CAPABILITY_IDS_GERAIS` **menos `acesso.*`** → testa criar/editar, mas sem Usuários/Perfis/
-  Empresa) e o usuário público **teste@teste.com.br / teste123**; popula catálogo fictício (3 categorias, 8
-  produtos com preço + `preco_base` + `estoque_lote`/`estoque_movimento` de carga, 4 clientes, 2 fornecedores,
-  2 vendedores). Idempotente (recriável). **(2)** CLI `db/cli.ts` ganhou o comando **`seed-demo`** + script
+  Empresa) e o usuário público **teste@teste.com.br / teste123**. **Branding "TESTE Aesthetics"** (logo SVG
+  azul→teal recriada + `cor_primaria`/`cor_secundaria`). Popula dados **ricos** de estética: 5 categorias +
+  12 produtos (toxina/preenchedor/bioestimulador/skincare/descartáveis) com `preco_base` + estoque, 5 clínicas,
+  2 fornecedores, 3 vendedores, **~38 pedidos espalhados em 6 meses** (status válidos + 3 orçamentos) com itens
+  + **títulos a receber** (parte pagos) e **7 contas a pagar** → o **dashboard aparece com faturamento/KPIs/
+  gráficos**. `pago_em` calculado em JS (Date), não como string SQL. Idempotente (recriável). **Reset diário é
+  automático** pelo `demo-reset.yml` (cron) que roda este seed. **(2)** CLI `db/cli.ts` ganhou o comando **`seed-demo`** + script
   `npm run db:seed-demo -w @triade/api`. **(3)** Bloqueio: `PUT /auth/senha` rejeita troca de senha da conta
   demo (`!superAdmin && email === DEMO_EMAIL`, env `DEMO_EMAIL` default `teste@teste.com.br`; chave
   `auth.demo_sem_troca_senha` no dicionário). **(4)** Login: caixa de demonstração **abaixo do "Entrar"**
