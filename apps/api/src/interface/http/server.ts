@@ -69,13 +69,24 @@ export function criarServidor(): Express {
     next();
   });
 
-  // CORS: permite o site (frontend) chamar a API. A origem vem de CORS_ORIGIN
-  // (padrao '*'). Responde o preflight (OPTIONS) direto.
+  // CORS: permite o site (frontend) chamar a API. CORS_ORIGIN pode ser '*' OU uma
+  // LISTA separada por vírgula (ex.: "https://a.com,https://b.pages.dev"). O header
+  // Access-Control-Allow-Origin só aceita UMA origem ou '*', então ecoamos a origem
+  // do pedido quando ela está na lista. Responde o preflight (OPTIONS) direto.
+  const origensPermitidas = env.corsOrigin.split(',').map((o) => o.trim()).filter(Boolean);
   app.use((req: Request, res: Response, next: NextFunction) => {
-    res.header('Access-Control-Allow-Origin', env.corsOrigin);
+    const origem = req.headers.origin;
+    if (env.corsOrigin === '*') {
+      res.header('Access-Control-Allow-Origin', '*');
+    } else if (origem && origensPermitidas.includes(origem)) {
+      res.header('Access-Control-Allow-Origin', origem);
+      res.header('Vary', 'Origin');
+    } else if (origensPermitidas.length === 1) {
+      res.header('Access-Control-Allow-Origin', origensPermitidas[0]);
+      res.header('Vary', 'Origin');
+    }
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-    if (env.corsOrigin !== '*') res.header('Vary', 'Origin');
     if (req.method === 'OPTIONS') { res.sendStatus(204); return; }
     next();
   });

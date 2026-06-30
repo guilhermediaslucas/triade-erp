@@ -63,8 +63,9 @@ export async function seedDemonstracao(ds: DataSource): Promise<void> {
   ];
   for (const p of prods) {
     const pid = uuid();
-    await ds.query(`INSERT INTO "${SCHEMA}".produto (id, nome, categoria_id, unidade, preco, estoque_minimo) VALUES ($1,$2,$3,'UN',$4,$5)`,
-      [pid, p.nome, cats[p.cat].id, p.preco, p.min]);
+    // OBS: produto.preco foi removido em migration posterior — o preço vive em preco_base.
+    await ds.query(`INSERT INTO "${SCHEMA}".produto (id, nome, categoria_id, unidade, estoque_minimo) VALUES ($1,$2,$3,'UN',$4)`,
+      [pid, p.nome, cats[p.cat].id, p.min]);
     await ds.query(`INSERT INTO "${SCHEMA}".preco_base (produto_id, preco) VALUES ($1,$2)`, [pid, p.preco]);
     const loteId = uuid();
     await ds.query(`INSERT INTO "${SCHEMA}".estoque_lote (id, produto_id, lote, quantidade, custo_unitario) VALUES ($1,$2,$3,$4,$5)`,
