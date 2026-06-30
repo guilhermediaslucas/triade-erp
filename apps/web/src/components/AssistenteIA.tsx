@@ -44,6 +44,9 @@ export function AssistenteIA() {
     }
   }
 
+  // Fechar limpa a conversa → reabrir começa na tela de opções.
+  function fechar() { setAberto(false); setMsgs([]); setTexto(''); }
+
   return (
     <>
       <button className="ia-fab" onClick={() => setAberto(true)} title="Assistente (IA)" aria-label="Assistente (IA)">
@@ -53,13 +56,13 @@ export function AssistenteIA() {
       </button>
 
       {aberto && (
-        <div className="ia-overlay" onClick={() => setAberto(false)}>
+        <div className="ia-overlay" onClick={fechar}>
           <div className="ia-modal" onClick={(e) => e.stopPropagation()}>
             <div className="ia-head">
               <span className="ia-ic">✦</span>
               <span className="ia-tt">Assistente (IA)</span>
               <span className="ia-mod">{modelo}</span>
-              <button className="ia-x" onClick={() => setAberto(false)} aria-label="Fechar">✕</button>
+              <button className="ia-x" onClick={fechar} aria-label="Fechar">✕</button>
             </div>
 
             <div className="ia-body">
