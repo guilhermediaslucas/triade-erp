@@ -190,6 +190,22 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-06-30 (Assistente IA — Fase 1, só consulta).** Aprovado por preview
+  (`Info/mockups/assistente-ia-preview.html`) + desenho (`Info/IA-ASSISTENTE.md`). **Hexagonal:** porta
+  `domain/ia/LlmProvider.ts` + adapter `infra/ia/ClaudeProvider.ts` (Anthropic Messages API via fetch nativo,
+  tool-calling; sem `ANTHROPIC_API_KEY` → `configurado()=false` e a rota recusa). `application/ia/AssistenteService.ts`
+  orquestra: resolve o **modelo pelo perfil** (`ia.modelo_avancado` → Sonnet, senão Haiku), monta o catálogo de
+  **4 ferramentas de leitura** filtrado por capability (`resumo_geral`/dashboard, `listar_pedidos`, `estoque_posicao`,
+  `titulos_financeiros`), executa o loop tool_use→tool_result (máx 5), tudo escopado ao schema do token.
+  Rota `POST /ia/perguntar` (gate `ia.assistente.usar`). **Caps novas** `ia.assistente.usar` + `ia.modelo_avancado`
+  (módulo `cap.modulo.ia`) — Diretor (TODAS) ganha as duas; Comercial/Financeiro/Estoque ganham `ia.assistente.usar`;
+  **demo NÃO recebe ia.*** (sem custo público). **Front:** `components/AssistenteIA.tsx` (FAB vermelho + modal `.ia-*`,
+  sugestões + chat + chip do modelo Haiku/Sonnet), montado no `Layout`. **Envs novas:** `ANTHROPIC_API_KEY`,
+  `IA_MODELO_BASE` (default `claude-haiku-4-5-20251001`), `IA_MODELO_AVANCADO` (default `claude-sonnet-4-6`). Sem
+  migration. Validação: tsc da API limpo; web só com o ruído de NUL do mount no Layout (build local = verdade).
+  **Fase 2** (ações propostas com confirmação) e **Fase 3** (proativo) ficam p/ depois. **Pendente do Gui:**
+  `scripts\release.bat` + criar a **chave Anthropic** e setar `ANTHROPIC_API_KEY` no Render + relogar (caps novas).
+
 - **2026-06-30 (Showcase no login + convite de instalação PWA — espelhado do FinPessoais)** — Aprovado por preview
   (`Info/mockups/login-showcase-preview.html`, em **vermelho** a pedido do Gui). **(1) Showcase animado no login:**
   `PreviewSistema` (em `Login.tsx`) deixou de ser uma janela estática e virou um **carrossel CSS de 5 telas** passando

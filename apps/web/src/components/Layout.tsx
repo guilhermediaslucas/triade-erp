@@ -13,6 +13,7 @@ import { EmpresaSwitcher } from './EmpresaSwitcher.js';
 import { Ic, SpriteIcones } from './Icones.js';
 import { TrocarSenha } from './TrocarSenha.js';
 import { Suporte } from './Suporte.js';
+import { AssistenteIA } from './AssistenteIA.js';
 import { Novidades } from './Novidades.js';
 
 interface Item { rotulo: string; icone?: string; to: string; cap?: string; soSuperAdmin?: boolean; }
@@ -286,6 +287,7 @@ export function Layout({ children }: { children: ReactNode }) {
       {/* 1º login com senha provisória: força a troca antes de liberar o sistema. */}
       {trocarSenha && !senhaOpen && <TrocarSenha obrigatorio onFechar={limparTrocarSenha} />}
       {suporteOpen && <Suporte onFechar={() => setSuporteOpen(false)} />}
+      <AssistenteIA />
       {novidadesOpen && <Novidades onFechar={() => setNovidadesOpen(false)} />}
       {qrOpen && (
         <div className="modal-fundo"><div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 340, textAlign: 'center' }}>

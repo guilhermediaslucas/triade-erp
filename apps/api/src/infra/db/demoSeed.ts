@@ -14,7 +14,8 @@ export const DEMO_EMAIL = 'teste@teste.com.br';
 
 // Perfil "Demonstração": OPERACIONAL (testa de verdade), mas SEM administração de
 // acesso (Usuários/Perfis/Empresa). Reusa as caps gerais menos as de "acesso.*".
-const CAPS_DEMO = CAPABILITY_IDS_GERAIS.filter((id) => !id.startsWith('acesso.'));
+// (exclui acesso.* e ia.* — demo não administra acesso nem gasta a API de IA pública)
+const CAPS_DEMO = CAPABILITY_IDS_GERAIS.filter((id) => !id.startsWith('acesso.') && !id.startsWith('ia.'));
 
 const uuid = () => randomUUID();
 const pick = <T>(a: T[]): T => a[Math.floor(Math.random() * a.length)];

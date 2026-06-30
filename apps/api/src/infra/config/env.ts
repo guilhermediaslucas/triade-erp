@@ -51,6 +51,13 @@ export const env = {
   r2AccessKeyId: process.env.R2_ACCESS_KEY_ID ?? '',
   r2SecretAccessKey: process.env.R2_SECRET_ACCESS_KEY ?? '',
   r2Bucket: process.env.R2_BUCKET ?? '',
+  // Assistente (IA). Sem ANTHROPIC_API_KEY o assistente fica DESLIGADO (rota responde
+  // "não configurado", não quebra nada). Modelo base p/ todos; avançado p/ quem tem a cap.
+  iaApiKey: process.env.ANTHROPIC_API_KEY ?? '',
+  iaModeloBase: process.env.IA_MODELO_BASE ?? 'claude-haiku-4-5-20251001',
+  iaModeloAvancado: process.env.IA_MODELO_AVANCADO ?? 'claude-sonnet-4-6',
+  // Conta pública de demonstração: não pode trocar a própria senha (evita lockout).
+  demoEmail: (process.env.DEMO_EMAIL ?? 'teste@teste.com.br').toLowerCase(),
   nodeEnv: process.env.NODE_ENV ?? 'development',
   get isProd(): boolean {
     return this.nodeEnv === 'production';

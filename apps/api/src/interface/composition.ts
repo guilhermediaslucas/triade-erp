@@ -94,6 +94,8 @@ import { ClienteAnexosService } from '../application/pessoa/ClienteAnexosService
 import { ResendEmailSender } from '../infra/email/ResendEmailSender.js';
 import { SqlResetSenhaRepository } from '../infra/repositories/SqlResetSenhaRepository.js';
 import { RecuperarSenha } from '../application/auth/RecuperarSenha.js';
+import { ClaudeProvider } from '../infra/ia/ClaudeProvider.js';
+import { AssistenteService } from '../application/ia/AssistenteService.js';
 
 export function montarDependencias() {
   const empresasRepo = new SqlEmpresaRepository(AppDataSource);
@@ -128,7 +130,20 @@ export function montarDependencias() {
   const rotaRepo = new SqlRotaRepository(AppDataSource);
   const r2Storage = new R2Storage(env.r2AccountId, env.r2AccessKeyId, env.r2SecretAccessKey, env.r2Bucket);
 
+  // Serviços de leitura reusados pelo Assistente (IA).
+  const dashboardService = new DashboardService(new SqlDashboardRepository(AppDataSource), new SqlMetaRepository(AppDataSource));
+  const pedidosService = new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, precoClienteRepo, clientesRepo, estoqueRepo, etiquetaRepo, tituloRepo, condicaoRepo, motoboysRepo, usuariosRepo, freteCampanhaRepo, descontoPedidoRepo);
+  const estoqueService = new EstoqueService(estoqueRepo, etiquetaRepo);
+  const financeiroService = new FinanceiroService(tituloRepo, pedidoRepo);
+  const claudeProvider = new ClaudeProvider(env.iaApiKey);
+  const assistenteService = new AssistenteService(
+    claudeProvider, claudeProvider.configurado(), usuariosRepo,
+    { dashboard: dashboardService, pedidos: pedidosService, estoque: estoqueService, financeiro: financeiroService },
+    env.iaModeloBase, env.iaModeloAvancado,
+  );
+
   return {
+    assistenteService,
     tokens,
     usuariosRepo,
     empresasRepo,
@@ -165,21 +180,21 @@ export function montarDependencias() {
     precosService: new PrecosService(precoBaseRepo, precoClienteRepo),
     freteService: new FreteService(freteConfigRepo, empresasRepo),
     gestaoFretesService: new GestaoFretesService(new SqlGestaoFreteRepository(AppDataSource), tituloRepo),
-    pedidosService: new PedidosService(pedidoRepo, produtosRepo, precoBaseRepo, precoClienteRepo, clientesRepo, estoqueRepo, etiquetaRepo, tituloRepo, condicaoRepo, motoboysRepo, usuariosRepo, freteCampanhaRepo, descontoPedidoRepo),
+    pedidosService,
     freteCampanhasService: new FreteCampanhasService(freteCampanhaRepo),
     descontosPedidoService: new DescontosPedidoService(descontoPedidoRepo),
     rastreioService: new RastreioService(new SqlRastreioRepository(AppDataSource), pedidoRepo, rotaRepo),
     rotaService: new RotaService(rotaRepo, empresasRepo),
     condicoesService: new CondicoesService(condicaoRepo),
-    financeiroService: new FinanceiroService(tituloRepo, pedidoRepo),
+    financeiroService,
     categoriasFinanceirasService: new CategoriasFinanceirasService(catFinRepo),
     contasContabeisService: new ContasContabeisService(new SqlContaContabilRepository(AppDataSource)),
     comprasService: new ComprasService(produtosRepo, tituloRepo, recebimentoRepo, estoqueRepo, etiquetaRepo, catFinRepo),
     comissoesService: new ComissoesService(new SqlComissaoRepository(AppDataSource), tituloRepo),
     contasService: new ContasService(new SqlContaCorrenteRepository(AppDataSource)),
-    dashboardService: new DashboardService(new SqlDashboardRepository(AppDataSource), new SqlMetaRepository(AppDataSource)),
+    dashboardService,
     relatoriosService: new RelatoriosService(new SqlRelatorioRepository(AppDataSource)),
-    estoqueService: new EstoqueService(estoqueRepo, etiquetaRepo),
+    estoqueService,
     inventarioService: new InventarioService(inventarioRepo, etiquetaRepo, estoqueRepo),
     crmService: new CrmService(new SqlCrmRepository(AppDataSource), clientesRepo),
     metasService: new MetasService(new SqlMetaRepository(AppDataSource)),

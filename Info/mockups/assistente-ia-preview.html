@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Preview — Assistente (IA) do Tríade</title>
+<style>
+  :root{
+    --accent:#dc2626; --ink:#1f2430; --muted:#8a90a2; --card:#ffffff; --line:#e8e9f1;
+    --bg:#f4f5fa; --soft:#fdeaea; --ok:#16a34a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#0c0e14;color:#e6e8ee;font-family:"Segoe UI",Inter,system-ui,Arial,sans-serif;padding:24px}
+  .ttl{text-align:center;font-size:14px;color:#cfd4df;margin:0 0 4px}
+  .sub{text-align:center;font-size:12.5px;color:#8a90a2;margin:0 0 20px}
+  .row{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .lbl{text-align:center;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#9aa1b1;margin-bottom:10px}
+
+  .modal{width:560px;max-width:100%;background:var(--card);color:var(--ink);border-radius:16px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.5);display:flex;flex-direction:column}
+  .m-head{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}
+  .m-ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(150deg,#ef4444,#b91c1c);color:#fff;font-size:15px}
+  .m-tt{font-size:16px;font-weight:800}
+  .m-mod{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid #f3c7c7;border-radius:999px;padding:3px 10px}
+  .m-x{color:var(--muted);font-size:16px;cursor:pointer;margin-left:8px}
+  .m-body{padding:16px 18px;display:flex;flex-direction:column;gap:12px;min-height:240px}
+
+  /* empty state */
+  .empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:14px 0}
+  .empty p{font-size:13.5px;color:var(--muted);max-width:380px;margin:0}
+  .chips{display:flex;flex-direction:column;gap:8px;width:100%;max-width:420px}
+  .chip{border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);font-size:13px;padding:9px 14px;cursor:pointer;text-align:center}
+  .chip:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* conversa */
+  .msg{max-width:82%;font-size:13.5px;line-height:1.5;padding:10px 13px;border-radius:12px}
+  .me{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+  .ia{align-self:flex-start;background:var(--bg);border:1px solid var(--line);border-bottom-left-radius:4px}
+  .ia b{color:var(--ink)}
+  .tbl{margin-top:8px;border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:12.5px}
+  .tbl .tr{display:flex;justify-content:space-between;padding:6px 10px;background:#fff}
+  .tbl .tr:nth-child(even){background:#fafafe}
+  .tbl .tr b{font-variant-numeric:tabular-nums}
+
+  /* card de ação proposta */
+  .acao{align-self:flex-start;max-width:90%;border:1px solid #f3c7c7;border-left:3px solid var(--accent);background:#fff;border-radius:10px;padding:12px 14px}
+  .acao-h{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--accent);margin-bottom:6px}
+  .acao-l{display:flex;justify-content:space-between;font-size:13px;margin:3px 0}
+  .acao-l span:first-child{color:var(--muted)}
+  .acao-bt{display:flex;gap:8px;margin-top:12px}
+  .b-ok{flex:1;border:0;border-radius:8px;padding:8px;font-weight:700;font-size:13px;background:var(--accent);color:#fff;cursor:pointer}
+  .b-no{flex:1;border:1px solid var(--line);border-radius:8px;padding:8px;font-weight:700;font-size:13px;background:#fff;color:var(--muted);cursor:pointer}
+
+  .m-foot{border-top:1px solid var(--line);padding:12px 18px}
+  .m-input{display:flex;gap:10px;align-items:center}
+  .m-input input{flex:1;border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:13.5px;color:var(--ink);background:var(--bg)}
+  .m-send{width:42px;height:42px;border-radius:10px;border:0;background:var(--accent);color:#fff;font-size:16px;cursor:pointer}
+  .m-note{font-size:11.5px;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+  <p class="ttl">Assistente (IA) — Tríade ERP</p>
+  <p class="sub">Vermelho da marca · responde sobre seus dados e propõe ações (você confirma antes)</p>
+
+  <div class="row">
+
+    <!-- Estado inicial (vazio) -->
+    <div>
+      <div class="lbl">Abertura (sugestões)</div>
+      <div class="modal">
+        <div class="m-head">
+          <span class="m-ic">✦</span><span class="m-tt">Assistente (IA)</span>
+          <span class="m-mod">⚡ Haiku · perfil Comercial</span>
+          <span class="m-x">✕</span>
+        </div>
+        <div class="m-body">
+          <div class="empty">
+            <p>Pergunte sobre vendas, pedidos, estoque e financeiro — ou peça uma ação. Tudo é mostrado para você confirmar antes de aplicar.</p>
+            <div class="chips">
+              <button class="chip">Quanto faturei esse mês?</button>
+              <button class="chip">Quais clientes pararam de comprar?</button>
+              <button class="chip">Que produtos estão abaixo do mínimo?</button>
+              <button class="chip">Pipeline de pedidos em aberto</button>
+            </div>
+          </div>
+        </div>
+        <div class="m-foot">
+          <div class="m-input"><input placeholder="Pergunte ou peça uma ação…" /><button class="m-send">➤</button></div>
+          <div class="m-note">A IA propõe; nada é alterado sem a sua confirmação.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conversa em andamento (Sonnet, diretoria) -->
+    <div>
+      <div class="lbl">Em uso (perfil Diretoria → Sonnet)</div>
+      <div class="modal">
+        <div class="m-head">
+          <span class="m-ic">✦</span><span class="m-tt">Assistente (IA)</span>
+          <span class="m-mod">★ Sonnet · perfil Diretor</span>
+          <span class="m-x">✕</span>
+        </div>
+        <div class="m-body">
+          <div class="msg me">Quanto faturei esse mês e quem mais vendeu?</div>
+          <div class="msg ia">
+            Em junho/2026 você faturou <b>R$ 184.230</b> em 312 pedidos (ticket médio R$ 590). Top vendedores:
+            <div class="tbl">
+              <div class="tr"><span>Carla Mendes</span><b>R$ 92.400</b></div>
+              <div class="tr"><span>Aline Costa</span><b>R$ 58.110</b></div>
+              <div class="tr"><span>Rafael Souza</span><b>R$ 33.720</b></div>
+            </div>
+          </div>
+          <div class="msg me">Cria um pedido pra Clínica Derma Bella com 2 Toxina 100U</div>
+          <div class="acao">
+            <div class="acao-h">Ação proposta — criar pedido</div>
+            <div class="acao-l"><span>Cliente</span><span>Clínica Derma Bella</span></div>
+            <div class="acao-l"><span>Item</span><span>2 × Toxina Botulínica 100U</span></div>
+            <div class="acao-l"><span>Total</span><span><b>R$ 1.840,00</b></span></div>
+            <div class="acao-bt"><button class="b-ok">Confirmar e criar</button><button class="b-no">Descartar</button></div>
+          </div>
+        </div>
+        <div class="m-foot">
+          <div class="m-input"><input placeholder="Pergunte ou peça uma ação…" /><button class="m-send">➤</button></div>
+          <div class="m-note">A IA propõe; nada é alterado sem a sua confirmação · respeita suas permissões.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="sub" style="margin-top:22px">O chip do topo mostra o modelo em uso (Haiku/Sonnet) conforme o perfil. Aprove o visual/fluxo (ou peça ajustes) que eu sigo pro backend.</p>
+</body>
+</html>
