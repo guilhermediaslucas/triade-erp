@@ -50,7 +50,7 @@ export function AssistenteIA() {
     setCarregando(true);
     try {
       const out = await api.post<{ mensagem: string }>('/ia/aplicar', { proposta }, token!);
-      setMsgs((m) => m.map((x, i) => (i === idx ? { ...x, pStatus: 'aplicada' } : x)).concat({ role: 'assistant', texto: '✅ ' + out.mensagem }));
+      setMsgs((m) => [...m.map((x, i): Msg => (i === idx ? { ...x, pStatus: 'aplicada' } : x)), { role: 'assistant', texto: '✅ ' + out.mensagem }]);
     } catch (e) {
       setMsgs((m) => m.concat({ role: 'assistant', texto: t((e as ErroApi).chaveI18n ?? 'ia.falhou') }));
     } finally {

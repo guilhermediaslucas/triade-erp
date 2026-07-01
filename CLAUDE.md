@@ -190,6 +190,24 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-07-01 (Site travado em 0.1.17 no Cloudflare — erro de tipo real quebrava o `vite build`).** Sintoma: login
+  mostrava **v0.1.17** enquanto Render/API estava em **v0.1.21** (repo + os 3 package.json em 0.1.21). Confirmado ao vivo:
+  `https://triade-erp.pages.dev/version.json` = `{"versao":"0.1.17"}` → **o Cloudflare estava travado 4 releases atrás**,
+  não era cache do navegador. **Causa:** a API sobe no Render via **`tsx`** (roda o TS direto, sem compilar) → deploya
+  **mesmo com erro de tipo**; já o site exige `tsc -b` + `vite build`, e havia um **erro de tipo legítimo** em
+  `apps/web/src/components/AssistenteIA.tsx:53` — em `{ ...x, pStatus: 'aplicada' }` o TS alargava `'aplicada'` p/ `string`,
+  incompatível com `Msg.pStatus`. Isso quebrava o build do Cloudflare desde a 0.1.18; ele seguia servindo o último build bom
+  (0.1.17). **Escapou** porque os lotes recentes foram validados por hand-review (tsc do sandbox não-confiável). **Fix (1
+  linha):** `setMsgs((m) => [...m.map((x, i): Msg => (i === idx ? { ...x, pStatus: 'aplicada' } : x)), { role: 'assistant',
+  texto: '✅ ' + out.mensagem }]);` (anotação `: Msg` no callback do map + array literal no lugar de `.concat`; comportamento
+  idêntico). **Validação:** extraí o HEAD via `git archive` p/ diretório limpo (bypassa a truncagem do mount), symlinquei o
+  `@triade/shared` real e rodei `tsc -b`: sem o fix = TS2345; com o fix = **exit 0**. **LIÇÃO:** o Render/API deploya com erro
+  de tipo (tsx), o Cloudflare/web NÃO — sempre rodar **`npm run build -w @triade/web` local** antes do release; se o site
+  não sobe de versão mas a API sim, é build do web quebrado. O erro de `@triade/shared` que aparece junto no build local é o
+  incidente conhecido (node_modules sem o link do workspace) → **`npm install` na raiz** recria o link; no Cloudflare não
+  ocorre (install limpo). **Sem migration, sem cap.** **Pendente Gui:** `npm install` (raiz) → `npm run build -w @triade/web`
+  (validar) → `scripts\release.bat`.
+
 - **2026-06-30 (Assistente IA — Fase 1, só consulta).** Aprovado por preview
   (`Info/mockups/assistente-ia-preview.html`) + desenho (`Info/IA-ASSISTENTE.md`). **Hexagonal:** porta
   `domain/ia/LlmProvider.ts` + adapter `infra/ia/ClaudeProvider.ts` (Anthropic Messages API via fetch nativo,
