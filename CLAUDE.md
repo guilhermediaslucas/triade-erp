@@ -190,6 +190,23 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-07-01 (Perfis: "Permissão inválida" ao salvar perfil customizado — permissão obsoleta gravada no banco).** Sintoma:
+  admin editava um perfil (não o Administrador) e o Salvar dava `perfil.capability_invalida` ("Permissão inválida"), sem
+  importar o que marcava/desmarcava. **Causa:** o perfil tinha, salva no banco, uma **capability removida em atualização
+  passada** (ex.: `cadastros.categoria.*`, `cadastros.marca.*`, `relatorios.categorias.ver`, `superadmin.empresa.provisionar`).
+  O editor carrega **todas** as caps gravadas em `caps`, mas só desenha checkbox para as que **ainda existem** no catálogo →
+  a obsoleta fica invisível (sem como desmarcar) e é reenviada a cada Salvar; `PerfisService.validar` fazia loop e **rejeitava**
+  o id desconhecido (400). Descartado descompasso de versão: catálogo da 0.1.17 (site no ar) == HEAD == API 0.1.22 (confirmado
+  por `git diff` e `/version` ao vivo). O Administrador não sofre porque é ressincronizado no boot; só pega perfis customizados
+  antigos. **Fix (backend, sem migration):** em `application/perfil/PerfisService.ts` a validação de nome virou `validarNome` e
+  as caps passam por `soConhecidas()` (`caps.filter(capabilityExiste)`) em `criar`/`editar` — **ignora** ids obsoletos/desconhecidos
+  em vez de travar; o perfil **se auto-limpa** no próximo salvamento. Mesmo tratamento em `PerfilMultiEmpresa.sincronizar`
+  (super-admin) — trocado o loop que lançava por `.filter(capabilityExiste)`. **Trade-off:** se o site ficar mais novo que a API
+  e mandar uma cap nova, ela é silenciosamente descartada (melhor que travar). Falta (opcional) o filtro espelho na tela
+  (`Perfis.tsx` `EditorPerfil`, `caps` inicial = `perfil.capabilities.filter(...)`) p/ quando o site for republicado. **Sem
+  migration, sem cap nova, sem web build obrigatório** (site 0.1.17 segue). **Pendente Gui:** `scripts\release.bat` (bump+commit+push;
+  Render pega o backend via tsx) → reeditar o perfil e Salvar (limpa a cap morta).
+
 - **2026-07-01 (Site travado em 0.1.17 no Cloudflare — erro de tipo real quebrava o `vite build`).** Sintoma: login
   mostrava **v0.1.17** enquanto Render/API estava em **v0.1.21** (repo + os 3 package.json em 0.1.21). Confirmado ao vivo:
   `https://triade-erp.pages.dev/version.json` = `{"versao":"0.1.17"}` → **o Cloudflare estava travado 4 releases atrás**,

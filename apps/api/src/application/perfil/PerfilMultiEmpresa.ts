@@ -49,8 +49,8 @@ export class PerfilMultiEmpresa {
   async sincronizar(e: SincronizarPerfilEntrada): Promise<{ criadas: string[]; atualizadas: string[] }> {
     const nome = String(e.nome ?? '').trim();
     if (nome.length < 2) throw new ErroAplicacao('perfil.nome_invalido', 400);
-    const caps = [...new Set((e.capabilities ?? []).map(String))];
-    for (const c of caps) if (!capabilityExiste(c)) throw new ErroAplicacao('perfil.capability_invalida', 400);
+    // Mantém só permissões que ainda existem no catálogo (descarta obsoletas/desconhecidas).
+    const caps = [...new Set((e.capabilities ?? []).map(String).filter(capabilityExiste))];
     const descricao = String(e.descricao ?? '').trim();
     const alvo = nome.toLowerCase();
     const selecionadas = new Set((e.empresas ?? []).map((c) => String(c).trim().toLowerCase()));
