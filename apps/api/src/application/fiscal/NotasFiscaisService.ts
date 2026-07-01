@@ -42,7 +42,8 @@ export class NotasFiscaisService {
   async emitir(schema: string, empresaCodigo: string, pedidoId: string): Promise<NotaFiscal> {
     const pedido = await this.pedidos.buscarPorId(schema, pedidoId);
     if (!pedido) throw new ErroAplicacao('pedido.nao_encontrado', 404);
-    if (pedido.status !== 'expedido' && pedido.status !== 'entregue') throw new ErroAplicacao('fiscal.nota.status_invalido', 400);
+    // Emissão liberada a partir de "Pedido Pronto" (separacao) — inclui expedido/entregue.
+    if (pedido.status !== 'separacao' && pedido.status !== 'expedido' && pedido.status !== 'entregue') throw new ErroAplicacao('fiscal.nota.status_invalido', 400);
 
     const existente = await this.notas.buscarPorPedido(schema, pedidoId);
     if (existente && (existente.status === 'autorizado' || existente.status === 'processando')) {

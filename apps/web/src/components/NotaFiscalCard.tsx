@@ -70,7 +70,7 @@ export function NotaFiscalCard({ pedidoId, pedidoStatus, podeEmitir }: { pedidoI
   }
 
   if (carregando) return null;
-  const emitivel = pedidoStatus === 'expedido' || pedidoStatus === 'entregue';
+  const emitivel = pedidoStatus === 'separacao' || pedidoStatus === 'expedido' || pedidoStatus === 'entregue';
 
   return (
     <div className="card" style={{ maxWidth: 820, marginBottom: 16 }}>

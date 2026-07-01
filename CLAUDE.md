@@ -190,6 +190,11 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-07-01 (Emissão de NF-e liberada a partir de "Pedido Pronto"/separação).** Antes só em Expedido/Entregue. Agora inclui
+  `separacao`: backend `NotasFiscaisService.emitir` (validação de status) e frontend `NotaFiscalCard` (`emitivel`) aceitam
+  `separacao | expedido | entregue`; msg `nf.somente_expedido` atualizada ("a partir do Pedido Pronto"). Superset (não removeu
+  expedido/entregue). Sem migration/cap. Se o Gui quiser **só** em separação, restringir os dois pontos.
+
 - **2026-07-01 (Estoque não conseguia separar/expedir no detalhe do pedido).** Regressão da separação de caps de hoje: em
   `PedidoDetalhe.tsx` o bloco de botões de ação (Separar/Expedir/Entregar, `modoExpedicao`) era gated por `podeGerenciar`
   (`comercial.pedido.gerenciar`), que saiu do perfil Estoque → botões sumiam. **Fix:** novo `podeSeparar` (gerenciar OU

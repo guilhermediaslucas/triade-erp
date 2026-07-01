@@ -2977,7 +2977,7 @@ Object.assign(pt, {
   'cap.fiscal.nota.emitir': 'Emitir / cancelar NF-e',
   'nf.titulo': 'Nota fiscal (NF-e)',
   'nf.nao_emitida': 'Nenhuma NF-e emitida para este pedido.',
-  'nf.somente_expedido': 'A NF-e pode ser emitida quando o pedido for expedido ou entregue.',
+  'nf.somente_expedido': 'A NF-e pode ser emitida a partir do Pedido Pronto (separação).',
   'nf.emitir': 'Emitir NF-e',
   'nf.reemitir': 'Emitir novamente',
   'nf.emitida': 'NF-e enviada para autorização.',
