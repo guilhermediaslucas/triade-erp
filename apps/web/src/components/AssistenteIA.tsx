@@ -13,7 +13,7 @@ const SUGESTOES = [
   'Quais títulos a receber estão vencidos?',
 ];
 
-// Assistente (IA) — botão flutuante + modal. Só consulta nesta versão.
+// Assistente (IA) — botão flutuante + modal. Consulta + ações propostas (nível avançado).
 export function AssistenteIA() {
   const { token, temCapability } = useAuth();
   const { t } = useI18n();
@@ -26,7 +26,8 @@ export function AssistenteIA() {
   useEffect(() => { fimRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [msgs, carregando, aberto]);
 
   if (!temCapability('ia.assistente.usar')) return null;
-  const modelo = temCapability('ia.modelo_avancado') ? 'Sonnet' : 'Haiku';
+  const podeAgir = temCapability('ia.modelo_avancado');
+  const modelo = podeAgir ? 'Sonnet' : 'Haiku';
 
   async function enviar(pergunta?: string) {
     const q = (pergunta ?? texto).trim();
@@ -84,7 +85,7 @@ export function AssistenteIA() {
             <div className="ia-body">
               {msgs.length === 0 && !carregando && (
                 <div className="ia-empty">
-                  <p>Pergunte sobre vendas, pedidos, estoque e financeiro — eu busco os dados reais da sua empresa.</p>
+                  <p>Pergunte sobre vendas, pedidos, estoque e financeiro — eu busco os dados reais da sua empresa.{podeAgir ? ' Também posso criar pedido, cliente e título: eu monto e você confirma.' : ''}</p>
                   <div className="ia-chips">
                     {SUGESTOES.map((s) => <button key={s} className="ia-chip" type="button" onClick={() => enviar(s)}>{s}</button>)}
                   </div>
@@ -122,7 +123,9 @@ export function AssistenteIA() {
                 <input value={texto} onChange={(e) => setTexto(e.target.value)} placeholder="Pergunte sobre seus dados…" autoFocus />
                 <button type="submit" className="ia-send" disabled={carregando} aria-label="Enviar">➤</button>
               </form>
-              <div className="ia-note">Responde com base nos seus dados e permissões · só consulta nesta versão.</div>
+              <div className="ia-note">{podeAgir
+                ? 'Consulto seus dados e posso criar pedido, cliente e título — você confirma antes de aplicar.'
+                : 'Respondo com base nos seus dados e permissões · nesta versão, apenas consulta.'}</div>
             </div>
           </div>
         </div>

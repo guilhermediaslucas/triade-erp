@@ -144,9 +144,15 @@ export class AssistenteService {
 
     const caps = ctx.superAdmin ? null : await this.usuarios.capabilities(ctx.schema, ctx.sub);
     const tem = (c: string) => ctx.superAdmin || (caps?.includes(c) ?? false);
-    const modelo = tem('ia.modelo_avancado') ? this.modeloAvancado : this.modeloBase;
-    const ferramentas = this.tools.filter((f) => !f.caps || f.caps.some(tem));
-    const podeAgir = ferramentas.some((f) => f.def.name.startsWith('propor_'));
+    const ehAvancado = tem('ia.modelo_avancado');
+    const modelo = ehAvancado ? this.modeloAvancado : this.modeloBase;
+    // Ações (propor_*) são exclusivas do nível avançado (Diretoria/Supervisão): quem
+    // não tem `ia.modelo_avancado` fica só-consulta, mesmo podendo escrever no módulo.
+    const ferramentas = this.tools.filter((f) => {
+      if (f.def.name.startsWith('propor_') && !ehAvancado) return false;
+      return !f.caps || f.caps.some(tem);
+    });
+    const podeAgir = ehAvancado && ferramentas.some((f) => f.def.name.startsWith('propor_'));
     const defs = ferramentas.map((f) => f.def);
 
     const mensagens: MensagemLlm[] = [...historico.slice(-8), { role: 'user', content: texto.trim() }];
@@ -180,6 +186,9 @@ export class AssistenteService {
     const caps = ctx.superAdmin ? null : await this.usuarios.capabilities(ctx.schema, ctx.sub);
     const tem = (c: string) => ctx.superAdmin || (caps?.includes(c) ?? false);
     const nega = () => { throw new ErroAplicacao('auth.sem_permissao', 403); };
+    // Nível avançado (Diretoria/Supervisão) é obrigatório para executar ações;
+    // além disso, cada ação ainda exige a capability de escrita do módulo.
+    if (!tem('ia.modelo_avancado')) nega();
 
     if (proposta?.tipo === 'criar_cliente') {
       if (!tem('cadastros.cliente.gerenciar')) nega();

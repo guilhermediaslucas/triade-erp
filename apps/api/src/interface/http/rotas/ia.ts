@@ -9,7 +9,7 @@ export function rotasIa(deps: Dependencias): Router {
   const aut = criarAutenticar(deps.tokens);
   const az = criarAutorizar(deps.usuariosRepo);
 
-  // Assistente (IA) — só consulta nesta versão. Gateado por capability.
+  // Assistente (IA) — consulta + ações propostas (ações só no nível avançado). Gateado por capability.
   r.post('/ia/perguntar', aut, az('ia.assistente.usar'), async (req: Request, res: Response) => {
     try {
       const u = req.usuario!;

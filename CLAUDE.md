@@ -204,7 +204,8 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   `IA_MODELO_BASE` (default `claude-haiku-4-5-20251001`), `IA_MODELO_AVANCADO` (default `claude-sonnet-4-6`). Sem
   migration. Validação: tsc da API limpo; web só com o ruído de NUL do mount no Layout (build local = verdade).
   **Pendente do Gui:** `scripts\release.bat` + criar a **chave Anthropic** e setar `ANTHROPIC_API_KEY` no Render +
-  relogar (caps novas). **Fase 3** (proativo/agendado) fica p/ depois.
+  relogar (caps novas). **Fase 3 (alertas proativos) DESCARTADA** (decisão do Gui, 2026-06-30): o Tríade já tem
+  esses alertas nativos (Sino: títulos vencidos, estoque baixo, etc.) — não faz sentido gastar IA duplicando.
 
 - **2026-06-30 (Assistente IA — Fase 2: ação proposta + confirmação).** A IA passou a **propor escrita** (1ª
   ação: **criar cliente**) sem aplicar sozinha. `AssistenteService`: ferramenta `propor_criar_cliente` (cap
