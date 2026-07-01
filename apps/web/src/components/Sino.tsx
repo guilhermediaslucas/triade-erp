@@ -31,8 +31,8 @@ export function Sino() {
     if (!token) return;
     const out: Grupo[] = [];
     try {
-      // Pedidos aguardando separação (status aprovado) — para quem tem acesso à Expedição.
-      if (temCapability('comercial.pedido.gerenciar')) {
+      // Pedidos aguardando separação (status aprovado) — para quem atua na Expedição.
+      if (temCapability('estoque.expedicao.ver') || temCapability('comercial.pedido.gerenciar') || temCapability('comercial.pedido.separar') || temCapability('comercial.pedido.expedir')) {
         const peds = await api.get<{ status: string }[]>('/pedidos', token).catch(() => null);
         if (peds) {
           const sep = peds.filter((p) => p.status === 'aprovado').length;
@@ -62,15 +62,10 @@ export function Sino() {
         const baixo = pos ? pos.filter((p) => p.abaixoMinimo).length : 0;
         if (baixo > 0) out.push({ chave: 'sino.estoque_baixo', icone: 'i-box', qtd: baixo, to: '/estoque/posicao' });
       }
-      if (temCapability('estoque.entrada.criar')) {
+      if (temCapability('estoque.recebimento.gerenciar')) {
         const recs = await api.get<unknown[]>('/estoque/recebimentos', token).catch(() => null);
         const qtd = Array.isArray(recs) ? recs.length : 0;
         if (qtd > 0) out.push({ chave: 'sino.recebimentos', icone: 'i-receipt', qtd, to: '/estoque/recebimento' });
-      }
-      if (temCapability('comercial.pedido.gerenciar')) {
-        const peds = await api.get<{ status: string }[]>('/pedidos', token).catch(() => null);
-        const aSeparar = peds ? peds.filter((p) => p.status === 'aprovado').length : 0;
-        if (aSeparar > 0) out.push({ chave: 'sino.aguard_separacao', icone: 'i-box', qtd: aSeparar, to: '/estoque/expedicao' });
       }
       // Chamados de suporte abertos — só para o administrador do sistema.
       if (superAdmin) {

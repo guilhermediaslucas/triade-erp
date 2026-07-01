@@ -2091,7 +2091,7 @@ Object.assign(es, {
 });
 
 // --- Pedidos (crumb + filtro de data) ---
-Object.assign(pt, { 'pedidos.crumb': 'Comercial / Pedidos', 'pedidos.data_de': 'Data início', 'pedidos.data_ate': 'Data fim', 'pedidos.filtro_dica': 'Filtra os pedidos pela data de criação.', 'pedidos.filtrar': 'Filtrar', 'pedidos.col_retirada': 'Aguardando retirada' });
+Object.assign(pt, { 'pedidos.crumb': 'Comercial / Pedidos', 'pedidos.data_de': 'Data início', 'pedidos.data_ate': 'Data fim', 'pedidos.filtro_dica': 'Filtra os pedidos pela data de criação.', 'pedidos.filtrar': 'Filtrar', 'pedidos.col_retirada': 'Aguardando retirada', 'pedidos.hoje': 'Hoje' });
 Object.assign(en, { 'pedidos.crumb': 'Sales / Orders', 'pedidos.data_de': 'Start date', 'pedidos.data_ate': 'End date', 'pedidos.filtro_dica': 'Filters orders by creation date.', 'pedidos.filtrar': 'Filter', 'pedidos.col_retirada': 'Awaiting pickup' });
 Object.assign(es, { 'pedidos.crumb': 'Comercial / Pedidos', 'pedidos.data_de': 'Fecha inicio', 'pedidos.data_ate': 'Fecha fin', 'pedidos.filtro_dica': 'Filtra los pedidos por fecha de creación.', 'pedidos.filtrar': 'Filtrar', 'pedidos.col_retirada': 'Esperando retiro' });
 

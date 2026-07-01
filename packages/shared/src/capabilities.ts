@@ -136,7 +136,7 @@ export const PERFIS_PADRAO: PerfilPadrao[] = [
   },
   {
     nome: 'Estoque', descricao: 'Apenas Estoque/Expedição',
-    caps: ['dashboard.ver', 'ia.assistente.usar', 'estoque.expedicao.ver', 'estoque.saldo.ver', 'comercial.disponibilidade.ver', 'estoque.entrada.criar', 'estoque.recebimento.gerenciar', 'estoque.baixa.criar', 'estoque.inventario.ver', 'estoque.inventario.gerenciar',
+    caps: ['dashboard.ver', 'ia.assistente.usar', 'estoque.expedicao.ver', 'estoque.saldo.ver', 'estoque.entrada.criar', 'estoque.recebimento.gerenciar', 'estoque.baixa.criar', 'estoque.inventario.ver', 'estoque.inventario.gerenciar',
       'comercial.pedido.separar', 'comercial.pedido.expedir', 'financeiro.compra.criar', 'cadastros.produto.listar',
       'cadastros.forma_entrega.listar', 'cadastros.motoboy.listar', 'fiscal.nota.ver', 'fiscal.nota.emitir', 'relatorios.ver', 'relatorios.validade.ver', 'relatorios.parado.ver', 'relatorios.perdas.ver',
       'logistica.entrega.ver', 'logistica.volume.ver'],

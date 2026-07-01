@@ -85,6 +85,7 @@ export function Pedidos() {
           <input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('pedidos.busca_num_ph')} />
           <button type="submit" className="btn-primary btn-mini">{t('pedidos.busca_num_btn')}</button>
         </form>
+        <button className="btn-ghost" onClick={() => { const h = new Date().toISOString().slice(0, 10); setDe(h); setAte(h); }}>{t('pedidos.hoje')}</button>
         <FiltrosModal count={qtdFiltros} onLimpar={limparFiltros} titulo={t('pedidos.titulo')}>
           <label className="campo">{t('pedidos.data_de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
           <label className="campo">{t('pedidos.data_ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>

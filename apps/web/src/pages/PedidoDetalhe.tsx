@@ -53,6 +53,7 @@ export function PedidoDetalhe() {
   const [motoboys, setMotoboys] = useState<{ id: string; nome: string; ativo: boolean }[]>([]);
   const [modal, setModal] = useState<'envio' | 'entrega' | null>(null);
   const podeExpedir = podeGerenciar || temCapability('comercial.pedido.expedir');
+  const podeSeparar = podeGerenciar || temCapability('comercial.pedido.separar');
   const [alterarForma, setAlterarForma] = useState(false);
   const [refazer, setRefazer] = useState(false);
   const [histForma, setHistForma] = useState<HistForma[]>([]);
@@ -256,12 +257,12 @@ export function PedidoDetalhe() {
           <div><span>{t('pedidos.frete')}</span><b>{moeda(p.frete)}</b></div>
           <div className="total-grande"><span>{t('pedidos.total')}</span><b>{moeda(p.total)}</b></div>
         </div>
-        {modoExpedicao && podeGerenciar && proximos.length > 0 && (
+        {modoExpedicao && (podeSeparar || podeExpedir) && proximos.length > 0 && (
           <div className="acoes-status">
             {proximos.map((s) => (
               s === 'separacao'
-                ? <button key={s} className="btn-primary" onClick={abrirSeparacao}><Ic name="i-tag" className="sm" /> {t('sep.acao')}</button>
-                : <button key={s} className={s === 'cancelado' ? 'btn-ghost' : 'btn-primary'} onClick={() => mudar(s)}>{t('pedidos.acao.' + s)}</button>
+                ? (podeSeparar ? <button key={s} className="btn-primary" onClick={abrirSeparacao}><Ic name="i-tag" className="sm" /> {t('sep.acao')}</button> : null)
+                : (podeExpedir ? <button key={s} className={s === 'cancelado' ? 'btn-ghost' : 'btn-primary'} onClick={() => mudar(s)}>{t('pedidos.acao.' + s)}</button> : null)
             ))}
           </div>
         )}

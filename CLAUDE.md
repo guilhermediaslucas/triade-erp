@@ -190,6 +190,37 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-07-01 (Estoque não conseguia separar/expedir no detalhe do pedido).** Regressão da separação de caps de hoje: em
+  `PedidoDetalhe.tsx` o bloco de botões de ação (Separar/Expedir/Entregar, `modoExpedicao`) era gated por `podeGerenciar`
+  (`comercial.pedido.gerenciar`), que saiu do perfil Estoque → botões sumiam. **Fix:** novo `podeSeparar` (gerenciar OU
+  `comercial.pedido.separar`); o bloco agora aparece com `(podeSeparar || podeExpedir)` e cada botão é gated à parte
+  (Separar→`podeSeparar`, demais→`podeExpedir`). Backend já aceitava separar/expedir. Só frontend. (O Kanban de Expedição não
+  tinha esse gate — arrastar já dependia só do backend.)
+
+- **2026-07-01 (Sino: notificação de separação/recebimento não chegava + botão "Hoje" nos pedidos).** **(a) Sino:** o grupo
+  "aguardando separação" era gated só por `comercial.pedido.gerenciar` (que saiu do perfil Estoque hoje) → quem separa com
+  `separar`/`expedir`/`estoque.expedicao.ver` não recebia. Agora o gate é **any-of** `estoque.expedicao.ver` OU
+  `comercial.pedido.gerenciar` OU `comercial.pedido.separar` OU `comercial.pedido.expedir`; removido o **bloco duplicado**
+  (`sino.aguard_separacao` ficou órfão, inerte). O grupo "recebimentos" passou de `estoque.entrada.criar` p/
+  `estoque.recebimento.gerenciar` (casa com a tela/API novas). Só `Sino.tsx`. **(b) Botão "Hoje":** nas telas **Pedidos**
+  (Comercial, `Pedidos.tsx`) e **Expedição** (`KanbanExpedicao.tsx`), botão que seta o filtro de data para o dia
+  (`new Date().toISOString().slice(0,10)`, mesma base do `noPeriodo`). i18n `pedidos.hoje` (pt). Sem backend/migration.
+
+- **2026-07-01 (Disponibilidade vazava pro Estoque).** O item **Disponibilidade** vive no grupo **Comercial** (`Layout.tsx`,
+  cap `comercial.disponibilidade.ver`) e o perfil padrão **Estoque** tinha essa cap → usuário de Estoque via o grupo Comercial só
+  com a Disponibilidade. **Fix:** removida `comercial.disponibilidade.ver` do perfil padrão Estoque (Estoque usa "Posição de
+  estoque"/`estoque.saldo.ver`). A cap segue existindo (Comercial mantém). **Perfis Estoque já existentes:** desmarcar
+  "Disponibilidade de produtos" manualmente (não migram sozinhos). Sem migration.
+
+- **2026-07-01 (CLI: espelhar todos os perfis de uma empresa para as demais — `db:espelhar-perfis`).** Pedido do Gui: replicar
+  os perfis da empresa **Maid** para todas as outras. Novo `infra/db/espelharPerfis.ts` (`espelharPerfis(ds, codigoOrigem)`):
+  lê todos os perfis do tenant de origem e, para cada um, chama `PerfilMultiEmpresa.sincronizar` nas demais empresas **ativas**
+  (upsert por nome — cria se não existe, atualiza permissões se existe; **modo "manter"**: não remove perfis exclusivos das
+  outras empresas; `soConhecidas` descarta caps obsoletas). Comando no `db/cli.ts` (`espelhar-perfis <codigoOrigem>`; sem arg
+  imprime uso; origem inexistente lista as empresas ativas) + script `npm run db:espelhar-perfis`. **Roda contra o Neon** (o Gui
+  executa local com `DB_URL` de produção, igual ao `db:seed-demo`). **Uso:** `npm run db:espelhar-perfis -w @triade/api -- maids`
+  (confirmar o código real da Maid; se errar, o comando lista os códigos ativos). Sem migration, sem deploy (é utilitário local).
+
 - **2026-07-01 (Permissões separadas: Volume de entregas, Kanban Expedição×Comercial, Recebimento×Entrada). 3 caps novas.**
   Pedido do Gui: telas que compartilhavam permissão viraram marcáveis à parte no perfil. **Caps novas** (em `packages/shared`):
   `logistica.volume.ver` (Logística), `estoque.expedicao.ver` (Estoque), `estoque.recebimento.gerenciar` (Estoque) + labels pt.

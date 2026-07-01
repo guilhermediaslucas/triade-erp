@@ -76,6 +76,7 @@ export function KanbanExpedicao() {
         <label className="campo" style={{ margin: 0 }}>{t('pedidos.data_de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} style={{ maxWidth: 180 }} /></label>
         <label className="campo" style={{ margin: 0 }}>{t('pedidos.data_ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} style={{ maxWidth: 180 }} /></label>
         <button className="btn-primary" onClick={() => setFiltro({ de, ate })}><Ic name="i-search" className="sm" /> {t('pedidos.filtrar')}</button>
+        <button className="btn-ghost" onClick={() => { const h = new Date().toISOString().slice(0, 10); setDe(h); setAte(h); setFiltro({ de: h, ate: h }); }}>{t('pedidos.hoje')}</button>
         <button className="btn-ghost" onClick={() => { setDe(''); setAte(''); setFiltro({ de: '', ate: '' }); }}>{t('fin.f_limpar')}</button>
         <span className="muted" style={{ fontSize: 12, marginLeft: 'auto' }}>{t('pedidos.filtro_dica')}</span>
       </div>
