@@ -86,7 +86,7 @@ import { ProtectedRoute } from './components/ProtectedRoute.js';
 import { NovaVersao } from './components/NovaVersao.js';
 import { InstalarApp } from './components/InstalarApp.js';
 
-function Protegida({ children, cap, soSuper }: { children: ReactNode; cap?: string; soSuper?: boolean }) {
+function Protegida({ children, cap, soSuper }: { children: ReactNode; cap?: string | string[]; soSuper?: boolean }) {
   return <ProtectedRoute capability={cap} soSuperAdmin={soSuper}><Layout>{children}</Layout></ProtectedRoute>;
 }
 
@@ -108,7 +108,7 @@ export function App() {
                 <Route path="/entregas/minhas" element={<Protegida cap="logistica.entrega.atualizar"><MinhasEntregas /></Protegida>} />
                 <Route path="/logistica/entregas" element={<Protegida cap="logistica.entrega.ver"><PainelEntregas /></Protegida>} />
                 <Route path="/logistica/rota" element={<Protegida cap="logistica.entrega.ver"><MontarRota /></Protegida>} />
-                <Route path="/logistica/volume-entregas" element={<Protegida cap="logistica.entrega.ver"><VolumeEntregas /></Protegida>} />
+                <Route path="/logistica/volume-entregas" element={<Protegida cap="logistica.volume.ver"><VolumeEntregas /></Protegida>} />
                 <Route path="/dashboard/serie/:tipo" element={<Protegida cap="dashboard.ver"><DashboardSerie /></Protegida>} />
                 <Route path="/dashboard/tv" element={<ProtectedRoute capability="dashboard.ver"><DashboardTV /></ProtectedRoute>} />
                 <Route path="/estoque/tv" element={<ProtectedRoute capability="comercial.pedido.listar"><DashboardTVExpedicao /></ProtectedRoute>} />
@@ -121,15 +121,15 @@ export function App() {
                 <Route path="/comercial/pedidos" element={<Protegida cap="comercial.pedido.listar"><Pedidos /></Protegida>} />
                 <Route path="/comercial/pedidos/novo" element={<Protegida cap="comercial.pedido.criar"><NovoPedido /></Protegida>} />
                 <Route path="/comercial/pedidos/:id/editar" element={<Protegida cap="comercial.pedido.criar"><NovoPedido /></Protegida>} />
-                <Route path="/comercial/pedidos/:id/romaneio" element={<ProtectedRoute capability="comercial.pedido.listar"><Romaneio /></ProtectedRoute>} />
-                <Route path="/comercial/pedidos/:id" element={<Protegida cap="comercial.pedido.listar"><PedidoDetalhe /></Protegida>} />
+                <Route path="/comercial/pedidos/:id/romaneio" element={<ProtectedRoute capability={['comercial.pedido.listar', 'estoque.expedicao.ver']}><Romaneio /></ProtectedRoute>} />
+                <Route path="/comercial/pedidos/:id" element={<Protegida cap={['comercial.pedido.listar', 'estoque.expedicao.ver']}><PedidoDetalhe /></Protegida>} />
                 <Route path="/comercial/precos" element={<Protegida cap="comercial.preco.listar"><TabelaPreco /></Protegida>} />
                 <Route path="/comercial/descontos" element={<Protegida cap="comercial.preco.listar"><DescontosPedido /></Protegida>} />
                 <Route path="/comercial/crm" element={<Protegida cap="comercial.crm.ver"><Crm /></Protegida>} />
                 <Route path="/comercial/metas" element={<Protegida cap="comercial.meta.ver"><Metas /></Protegida>} />
                 <Route path="/comercial/analise" element={<Protegida cap="comercial.analise.ver"><AnaliseVendas /></Protegida>} />
                 <Route path="/financeiro/notas-fiscais" element={<Protegida cap="fiscal.nota.ver"><NotasFiscais /></Protegida>} />
-                <Route path="/estoque/expedicao" element={<Protegida cap="comercial.pedido.gerenciar"><KanbanExpedicao /></Protegida>} />
+                <Route path="/estoque/expedicao" element={<Protegida cap="estoque.expedicao.ver"><KanbanExpedicao /></Protegida>} />
                 <Route path="/estoque/baixa" element={<Protegida cap="estoque.baixa.criar"><BaixaPerda /></Protegida>} />
                 <Route path="/estoque/posicao" element={<Protegida cap="estoque.saldo.ver"><PosicaoEstoque /></Protegida>} />
                 <Route path="/estoque/disponibilidade" element={<Protegida cap="comercial.disponibilidade.ver"><DisponibilidadeProdutos /></Protegida>} />
@@ -141,7 +141,7 @@ export function App() {
                 <Route path="/financeiro/receber" element={<Protegida cap="financeiro.receber.listar"><Contas tipo="receber" /></Protegida>} />
                 <Route path="/financeiro/conferencia-cartao" element={<Protegida cap="financeiro.receber.listar"><ConferenciaCartao /></Protegida>} />
                 <Route path="/financeiro/nota" element={<Protegida cap="financeiro.compra.criar"><NotaEntrada /></Protegida>} />
-                <Route path="/estoque/recebimento" element={<Protegida cap="estoque.entrada.criar"><Recebimento /></Protegida>} />
+                <Route path="/estoque/recebimento" element={<Protegida cap="estoque.recebimento.gerenciar"><Recebimento /></Protegida>} />
                 <Route path="/financeiro/comissoes" element={<Protegida cap="financeiro.comissao.ver"><Comissoes /></Protegida>} />
                 <Route path="/financeiro/conciliacao" element={<Protegida cap="financeiro.conciliacao.ver"><Conciliacao /></Protegida>} />
                 <Route path="/financeiro/fluxo" element={<Protegida cap="financeiro.fluxo.ver"><FluxoCaixa /></Protegida>} />

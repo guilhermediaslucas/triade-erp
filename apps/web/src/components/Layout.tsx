@@ -56,11 +56,11 @@ const GRUPOS: Grupo[] = [
   {
     rotulo: 'menu.estoque_exp', icone: 'i-box',
     secoes: [{ itens: [
-      { rotulo: 'menu.expedicao', to: '/estoque/expedicao', cap: 'comercial.pedido.gerenciar' },
+      { rotulo: 'menu.expedicao', to: '/estoque/expedicao', cap: 'estoque.expedicao.ver' },
       { rotulo: 'menu.posicao', to: '/estoque/posicao', cap: 'estoque.saldo.ver' },
       { rotulo: 'menu.consultar_etiqueta', to: '/estoque/etiqueta', cap: 'estoque.saldo.ver' },
       { rotulo: 'menu.entrada', to: '/estoque/entrada', cap: 'estoque.entrada.criar' },
-      { rotulo: 'menu.recebimento', to: '/estoque/recebimento', cap: 'estoque.entrada.criar' },
+      { rotulo: 'menu.recebimento', to: '/estoque/recebimento', cap: 'estoque.recebimento.gerenciar' },
       { rotulo: 'menu.baixa', to: '/estoque/baixa', cap: 'estoque.baixa.criar' },
       { rotulo: 'menu.inventario', to: '/estoque/inventario', cap: 'estoque.inventario.ver' },
     ] }],
@@ -72,7 +72,7 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'menu.campanhas_frete', to: '/logistica/campanhas-frete', cap: 'logistica.frete.ver' },
       { rotulo: 'menu.painel_entregas', to: '/logistica/entregas', cap: 'logistica.entrega.ver' },
       { rotulo: 'menu.montar_rota', to: '/logistica/rota', cap: 'logistica.entrega.ver' },
-      { rotulo: 'menu.volume_entregas', to: '/logistica/volume-entregas', cap: 'logistica.entrega.ver' },
+      { rotulo: 'menu.volume_entregas', to: '/logistica/volume-entregas', cap: 'logistica.volume.ver' },
     ] }],
   },
   { secoes: [{ itens: [{ rotulo: 'menu.relatorios', icone: 'i-chart', to: '/relatorios', cap: 'relatorios.ver' }] }] },

@@ -18,14 +18,14 @@ export function rotasPedidos(deps: Dependencias): Router {
   const tem = criarTemCaps(deps.usuariosRepo);
   const sch = (req: Request) => req.usuario!.schema;
 
-  r.get('/pedidos', aut, az('comercial.pedido.listar'), async (req, res: Response) => {
+  r.get('/pedidos', aut, az(['comercial.pedido.listar', 'estoque.expedicao.ver']), async (req, res: Response) => {
     try { res.json(await deps.pedidosService.listar(sch(req))); } catch (e) { tratarErro(res, e); }
   });
   // Busca por número (PE-000142 ou 142) — precede '/pedidos/:id' por ser segmento distinto.
   r.get('/pedidos/numero/:numero', aut, az('comercial.pedido.listar'), async (req, res: Response) => {
     try { res.json(await deps.pedidosService.obterPorNumero(sch(req), req.params.numero!)); } catch (e) { tratarErro(res, e); }
   });
-  r.get('/pedidos/:id', aut, az('comercial.pedido.listar'), async (req, res: Response) => {
+  r.get('/pedidos/:id', aut, az(['comercial.pedido.listar', 'estoque.expedicao.ver']), async (req, res: Response) => {
     try { res.json(await deps.pedidosService.obter(sch(req), req.params.id!)); } catch (e) { tratarErro(res, e); }
   });
   r.post('/pedidos', aut, az('comercial.pedido.criar'), async (req, res: Response) => {
@@ -45,6 +45,7 @@ export function rotasPedidos(deps: Dependencias): Router {
     // Autorização por destino: cancelar e expedir/entregar têm cap própria (ou gerenciar).
     const querer = (b.status === 'cancelado' || b.status === 'orcamento') ? ['comercial.pedido.cancelar', GERENCIAR]
       : (b.status === 'expedido' || b.status === 'entregue') ? ['comercial.pedido.expedir', GERENCIAR]
+      : (b.status === 'separacao') ? ['comercial.pedido.separar', 'comercial.pedido.expedir', GERENCIAR]
       : [GERENCIAR];
     if (!(await tem(req, querer))) { res.status(403).json({ erro: 'auth.sem_permissao' }); return; }
     try {

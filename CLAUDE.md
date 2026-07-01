@@ -190,6 +190,27 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-07-01 (Permissões separadas: Volume de entregas, Kanban Expedição×Comercial, Recebimento×Entrada). 3 caps novas.**
+  Pedido do Gui: telas que compartilhavam permissão viraram marcáveis à parte no perfil. **Caps novas** (em `packages/shared`):
+  `logistica.volume.ver` (Logística), `estoque.expedicao.ver` (Estoque), `estoque.recebimento.gerenciar` (Estoque) + labels pt.
+  **(1) Volume de entregas** deixou de usar `logistica.entrega.ver` → agora `logistica.volume.ver` (menu, rota
+  `/logistica/volume-entregas`, backend `GET /relatorios/volume-entregas`). **(2) Kanban Expedição × Comercial:** o Kanban de
+  Expedição (Estoque) lia `GET /pedidos` com `comercial.pedido.listar`, e essa cap também ligava o menu **Comercial › Pedidos** →
+  todo perfil de Estoque via o Kanban do Comercial. Agora a Expedição (menu + rota `/estoque/expedicao`) usa `estoque.expedicao.ver`;
+  o backend `GET /pedidos` e `/pedidos/:id` aceitam **any-of** `['comercial.pedido.listar','estoque.expedicao.ver']`; as rotas de
+  **detalhe** (`/comercial/pedidos/:id`) e **romaneio** idem (o `ProtectedRoute`/`Protegida` passaram a aceitar `string | string[]`
+  any-of). A transição de status para **`separacao`** (arrastar no Kanban) passou a aceitar `['comercial.pedido.separar',
+  'comercial.pedido.expedir', GERENCIAR]` (antes só `gerenciar`) — senão o Estoque, sem `gerenciar`, não moveria p/ "Em separação".
+  **(3) Recebimento × Entrada:** o **Recebimento** (menu, rota `/estoque/recebimento`, backend `GET /estoque/recebimentos` +
+  `POST /estoque/recebimentos/:id/receber`) saiu de `estoque.entrada.criar` para a nova `estoque.recebimento.gerenciar`; a **Entrada
+  de estoque** segue em `estoque.entrada.criar`. **Perfil padrão Estoque** atualizado: trocou `comercial.pedido.listar`/`gerenciar`
+  por `estoque.expedicao.ver` (mantém `separar`/`expedir`), + `logistica.volume.ver` + `estoque.recebimento.gerenciar`. **Comercial**
+  inalterado (segue com `comercial.pedido.listar`/`gerenciar`). **Sem migration.** Backend sobe via tsx no Render. **Pendentes/avisos:**
+  (a) **caps novas só aparecem como checkbox após republicar o site** (travado em 0.1.17) + **relogar**; (b) **perfis de Estoque já
+  existentes NÃO migram sozinhos** (só o Administrador ressincroniza no boot) → reeditar o perfil: desmarcar os de pedido do Comercial
+  e marcar "Ver expedição (Kanban)"/"Recebimento de mercadorias"/"Ver volume de entregas". **Pendente Gui:** `npm run build -w
+  @triade/web` (validar) → `scripts\release.bat`.
+
 - **2026-07-01 (Perfis: "Permissão inválida" ao salvar perfil customizado — permissão obsoleta gravada no banco).** Sintoma:
   admin editava um perfil (não o Administrador) e o Salvar dava `perfil.capability_invalida` ("Permissão inválida"), sem
   importar o que marcava/desmarcava. **Causa:** o perfil tinha, salva no banco, uma **capability removida em atualização

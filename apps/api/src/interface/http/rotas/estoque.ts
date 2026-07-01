@@ -56,10 +56,10 @@ export function rotasEstoque(deps: Dependencias): Router {
       res.status(201).json(out);
     } catch (e) { tratarErro(res, e); }
   });
-  r.get('/estoque/recebimentos', aut, az('estoque.entrada.criar'), async (req, res: Response) => {
+  r.get('/estoque/recebimentos', aut, az('estoque.recebimento.gerenciar'), async (req, res: Response) => {
     try { res.json(await deps.comprasService.listarPendentes(sch(req))); } catch (e) { tratarErro(res, e); }
   });
-  r.post('/estoque/recebimentos/:id/receber', aut, az('estoque.entrada.criar'), async (req, res: Response) => {
+  r.post('/estoque/recebimentos/:id/receber', aut, az('estoque.recebimento.gerenciar'), async (req, res: Response) => {
     try {
       const rec: any = await deps.recebimentoRepo.buscarPorId(sch(req), req.params.id!).catch(() => null);
       await deps.comprasService.receber(sch(req), req.params.id!, req.body ?? {});
