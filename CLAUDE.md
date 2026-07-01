@@ -214,9 +214,13 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   propor quando o usuário tem a cap; senão segue só-consulta. Rota `POST /ia/aplicar` (gate `ia.assistente.usar`).
   **Front (`AssistenteIA.tsx`):** a resposta com `proposta` vira um **card "Ação proposta — Criar cliente"** com
   resumo dos campos + **Confirmar e criar / Descartar**; confirmar chama `/ia/aplicar` e marca "✓ Aplicada".
-  Demo (sem `ia.*`) e título/pedido/produto (precisam resolver IDs de cadastro) ficam de fora por ora — plugam no
-  mesmo mecanismo depois. Sem migration. Validação: tsc da API limpo; web só com ruído de NUL do mount (arquivo
-  íntegro pelo file-tool; build local = verdade). **Pendente do Gui:** `scripts\release.bat`.
+  **Ações cobertas:** `criar_cliente`, **`criar_pedido`** e **`criar_titulo`** (a pagar/receber). Para pedido/título
+  a IA usa ferramentas de leitura novas (`listar_clientes`/`listar_produtos`/`listar_categorias_financeiras`, gateadas
+  por `cadastros.*.listar`) p/ **resolver os IDs pelos nomes** e então propõe; o `aplicar` revalida a cap de escrita
+  (`comercial.pedido.criar` / `financeiro.{pagar,receber}.gerenciar`) e chama `PedidosService.criar` (com ator
+  `{usuarioId, superAdmin}`) / `FinanceiroService.criar`. O front (card) é genérico — vale p/ as 3 ações. Demo (sem
+  `ia.*`) não acessa. Sem migration. Validação: tsc da API limpo; web só com ruído de NUL do mount (arquivos íntegros
+  pelo file-tool; build local = verdade). **Pendente do Gui:** `scripts\release.bat`.
 
 - **2026-06-30 (Showcase no login + convite de instalação PWA — espelhado do FinPessoais)** — Aprovado por preview
   (`Info/mockups/login-showcase-preview.html`, em **vermelho** a pedido do Gui). **(1) Showcase animado no login:**

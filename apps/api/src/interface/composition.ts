@@ -136,10 +136,13 @@ export function montarDependencias() {
   const estoqueService = new EstoqueService(estoqueRepo, etiquetaRepo);
   const financeiroService = new FinanceiroService(tituloRepo, pedidoRepo);
   const clientesService = new ClientesService(clientesRepo);
+  const produtosService = new ProdutosService(produtosRepo, precoBaseRepo);
+  const categoriasFinanceirasService = new CategoriasFinanceirasService(catFinRepo);
   const claudeProvider = new ClaudeProvider(env.iaApiKey);
   const assistenteService = new AssistenteService(
     claudeProvider, claudeProvider.configurado(), usuariosRepo,
-    { dashboard: dashboardService, pedidos: pedidosService, estoque: estoqueService, financeiro: financeiroService, clientes: clientesService },
+    { dashboard: dashboardService, pedidos: pedidosService, estoque: estoqueService, financeiro: financeiroService,
+      clientes: clientesService, produtos: produtosService, categoriasFinanceiras: categoriasFinanceirasService },
     env.iaModeloBase, env.iaModeloAvancado,
   );
 
@@ -173,7 +176,7 @@ export function montarDependencias() {
     taxasCartaoService: new TaxasCartaoService(new SqlFormaPagamentoTaxaRepository(AppDataSource)),
     preferenciasService: new PreferenciasService(new SqlPreferenciaUsuarioRepository(AppDataSource)),
     favorecidosService: new FavorecidosService(favorecidosRepo),
-    produtosService: new ProdutosService(produtosRepo, precoBaseRepo),
+    produtosService,
     clientesService,
     fornecedoresService: new FornecedoresService(fornecedoresRepo),
     vendedoresService: new VendedoresService(vendedoresRepo),
@@ -188,7 +191,7 @@ export function montarDependencias() {
     rotaService: new RotaService(rotaRepo, empresasRepo),
     condicoesService: new CondicoesService(condicaoRepo),
     financeiroService,
-    categoriasFinanceirasService: new CategoriasFinanceirasService(catFinRepo),
+    categoriasFinanceirasService,
     contasContabeisService: new ContasContabeisService(new SqlContaContabilRepository(AppDataSource)),
     comprasService: new ComprasService(produtosRepo, tituloRepo, recebimentoRepo, estoqueRepo, etiquetaRepo, catFinRepo),
     comissoesService: new ComissoesService(new SqlComissaoRepository(AppDataSource), tituloRepo),
