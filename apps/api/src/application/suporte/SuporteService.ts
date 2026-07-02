@@ -54,7 +54,8 @@ export class SuporteService {
     private readonly email?: EmailSender,
     private readonly destino?: string,
     private readonly llm?: LlmProvider,
-    private readonly modelo?: string,
+    private readonly modelo?: string,           // base (Haiku) — triagem/dúvida/sugestão
+    private readonly modeloAvancado?: string,   // avançado (Sonnet) — chamados de ERRO (mais técnicos)
   ) {}
 
   listar(): Promise<Chamado[]> { return this.repo.listar(); }
@@ -111,7 +112,9 @@ export class SuporteService {
       + '"status": "em_andamento|resolvido"}. Dúvida simples pode ser "resolvido"; erro/sugestão a investigar, "em_andamento".';
     const conteudo = `Tipo informado: ${c.tipo}\nAssunto: ${c.assunto}\nDescrição: ${c.descricao}\n`
       + `Tela: ${c.tela || '—'}\nVersão: ${c.versao || '—'}\nEmpresa: ${c.empresaCodigo}\nUsuário: ${c.usuarioNome}`;
-    const r = await this.llm.chamar(this.modelo, system, [{ role: 'user', content: conteudo }], []);
+    // Erros (mais técnicos) usam o modelo avançado (Sonnet) quando disponível; o resto usa o base (Haiku).
+    const modelo = (c.tipo === 'erro' && this.modeloAvancado) ? this.modeloAvancado : this.modelo;
+    const r = await this.llm.chamar(modelo, system, [{ role: 'user', content: conteudo }], []);
     const j = extrairJson(r.texto) ?? {};
     const urg = ['alta', 'media', 'baixa'].includes(j.urgencia) ? j.urgencia : 'media';
     const tp = TIPOS_CHAMADO.includes(j.tipo) ? j.tipo : c.tipo;

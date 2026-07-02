@@ -230,7 +230,9 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   "Disponibilidade de produtos" manualmente (não migram sozinhos). Sem migration.
 
 - **2026-07-02 (IA nos chamados de suporte — triagem + resposta sugerida + aplicar).** Pedido do Gui (versão "completa"). Reusa o
-  `ClaudeProvider`/`LlmProvider` + `ANTHROPIC_API_KEY` já existentes (modelo base = Haiku via `env.iaModeloBase`). **Sem migration,
+  `ClaudeProvider`/`LlmProvider` + `ANTHROPIC_API_KEY` já existentes. **Modelo:** chamados do tipo **erro** usam o avançado (Sonnet,
+  `env.iaModeloAvancado`); dúvida/sugestão e a triagem em lote usam o base (Haiku, `env.iaModeloBase`) — `SuporteService` recebe os dois
+  no construtor e escolhe em `analisar`. **Sem migration,
   sem cap nova** (tela é super-admin). `SuporteService` ganhou `llm?`/`modelo?` no construtor + 3 métodos: `analisar(id)` (1 chamada
   à IA, system pede JSON `{modulo, urgencia, tipo, causa, resposta, status}`, parse defensivo `extrairJson`), `analisarPendentes()`
   (triagem em lote módulo+urgência de todos os abertos, 1 chamada → `[{id, modulo, urgencia}]`) e `responder(id, status, resposta)`

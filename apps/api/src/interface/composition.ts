@@ -217,6 +217,7 @@ export function montarDependencias() {
       env.suporteEmailDestino,
       claudeProvider,
       env.iaModeloBase,
+      env.iaModeloAvancado,
     ),
     auditoriaRepo: new SqlLogAcaoRepository(AppDataSource),
     anexosService: new AnexosService(new SqlTituloAnexoRepository(AppDataSource), r2Storage),
