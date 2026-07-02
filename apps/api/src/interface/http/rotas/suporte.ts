@@ -44,5 +44,22 @@ export function rotasSuporte(deps: Dependencias): Router {
     } catch (e) { tratarErro(res, e); }
   });
 
+  // IA: análise de um chamado (triagem + causa + resposta sugerida + status sugerido).
+  r.post('/suporte/:id/analisar-ia', aut, exigirSuperAdmin, async (req: Request, res: Response) => {
+    try { res.json(await deps.suporteService.analisar(req.params.id!)); } catch (e) { tratarErro(res, e); }
+  });
+  // IA: triagem em lote (módulo + urgência) de todos os chamados abertos.
+  r.post('/suporte/analisar-pendentes', aut, exigirSuperAdmin, async (_req: Request, res: Response) => {
+    try { res.json(await deps.suporteService.analisarPendentes()); } catch (e) { tratarErro(res, e); }
+  });
+  // Aplicar: muda o status + envia a resposta (editada) ao autor por e-mail.
+  r.post('/suporte/:id/aplicar', aut, exigirSuperAdmin, async (req: Request, res: Response) => {
+    try {
+      const b = req.body ?? {};
+      await deps.suporteService.responder(req.params.id!, b.status, b.resposta ?? '');
+      res.json({ ok: true });
+    } catch (e) { tratarErro(res, e); }
+  });
+
   return r;
 }

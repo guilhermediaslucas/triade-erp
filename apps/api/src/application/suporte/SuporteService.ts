@@ -2,8 +2,23 @@ import type { Chamado, ChamadoRepository, NovoChamado, StatusChamado, TipoChamad
 import { STATUS_CHAMADO, TIPOS_CHAMADO } from '../../domain/superadmin/Chamado.js';
 import { ErroAplicacao } from '../../domain/erros/ErroAplicacao.js';
 import type { AnexoEmail, EmailSender } from '../../domain/ports/EmailSender.js';
+import type { LlmProvider } from '../../domain/ia/LlmProvider.js';
 
 const ROTULO_TIPO: Record<TipoChamado, string> = { erro: 'Erro', sugestao: 'Sugestão', duvida: 'Dúvida' };
+
+// Resultado da análise de um chamado pela IA.
+export interface AnaliseChamado {
+  modulo: string;
+  urgencia: 'alta' | 'media' | 'baixa';
+  tipo: TipoChamado;
+  causa: string;
+  resposta: string;
+  status: StatusChamado;
+}
+function extrairJson(txt: string): any {
+  const m = txt.match(/[[{][\s\S]*[\]}]/);
+  try { return JSON.parse(m ? m[0] : txt); } catch { return null; }
+}
 function escaparHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
@@ -38,6 +53,8 @@ export class SuporteService {
     private readonly repo: ChamadoRepository,
     private readonly email?: EmailSender,
     private readonly destino?: string,
+    private readonly llm?: LlmProvider,
+    private readonly modelo?: string,
   ) {}
 
   listar(): Promise<Chamado[]> { return this.repo.listar(); }
@@ -78,6 +95,62 @@ export class SuporteService {
     await this.repo.definirStatus(id, st, st === 'resolvido' ? new Date() : null);
     // Avisa o autor por e-mail nas movimentações relevantes (best-effort).
     try { await this.notificarUsuario(chamado, st); } catch { /* notificação é best-effort */ }
+  }
+
+  // Analisa um chamado com a IA: triagem (módulo/urgência/tipo), causa provável,
+  // resposta sugerida e status sugerido. Retorna JSON estruturado.
+  async analisar(id: string): Promise<AnaliseChamado> {
+    if (!this.llm || !this.modelo) throw new ErroAplicacao('ia.nao_configurada', 400);
+    const c = await this.repo.buscarPorId(id);
+    if (!c) throw new ErroAplicacao('suporte.nao_encontrado', 404);
+    const system = 'Você é o suporte técnico do ERP Tríade (gestão para distribuidoras de produtos estéticos B2B). '
+      + 'Analise o chamado e responda SOMENTE com um JSON válido, sem texto fora do JSON, no formato: '
+      + '{"modulo": "Comercial|Financeiro|Estoque|Logística|Cadastros|Configurações|Relatórios|Outro", '
+      + '"urgencia": "alta|media|baixa", "tipo": "erro|sugestao|duvida", "causa": "causa provável, curta", '
+      + '"resposta": "resposta cordial e objetiva ao usuário, em pt-BR, pronta para enviar", '
+      + '"status": "em_andamento|resolvido"}. Dúvida simples pode ser "resolvido"; erro/sugestão a investigar, "em_andamento".';
+    const conteudo = `Tipo informado: ${c.tipo}\nAssunto: ${c.assunto}\nDescrição: ${c.descricao}\n`
+      + `Tela: ${c.tela || '—'}\nVersão: ${c.versao || '—'}\nEmpresa: ${c.empresaCodigo}\nUsuário: ${c.usuarioNome}`;
+    const r = await this.llm.chamar(this.modelo, system, [{ role: 'user', content: conteudo }], []);
+    const j = extrairJson(r.texto) ?? {};
+    const urg = ['alta', 'media', 'baixa'].includes(j.urgencia) ? j.urgencia : 'media';
+    const tp = TIPOS_CHAMADO.includes(j.tipo) ? j.tipo : c.tipo;
+    const st = j.status === 'resolvido' ? 'resolvido' : 'em_andamento';
+    return {
+      modulo: String(j.modulo ?? 'Outro'), urgencia: urg, tipo: tp,
+      causa: String(j.causa ?? ''), resposta: String(j.resposta ?? ''), status: st,
+    };
+  }
+
+  // Triagem em lote (módulo + urgência) de todos os chamados abertos, numa única chamada à IA.
+  async analisarPendentes(): Promise<{ id: string; modulo: string; urgencia: string }[]> {
+    if (!this.llm || !this.modelo) throw new ErroAplicacao('ia.nao_configurada', 400);
+    const abertos = (await this.repo.listar()).filter((c) => c.status === 'aberto');
+    if (abertos.length === 0) return [];
+    const lista = abertos.map((c, i) => `${i + 1}. [${c.tipo}] ${c.assunto} — ${c.descricao.slice(0, 200)}`).join('\n');
+    const system = 'Classifique cada chamado do ERP Tríade. Responda SOMENTE um JSON array, sem texto fora do JSON: '
+      + '[{"n": número do item, "modulo": string, "urgencia": "alta|media|baixa"}].';
+    const r = await this.llm.chamar(this.modelo, system, [{ role: 'user', content: lista }], []);
+    const arr = extrairJson(r.texto);
+    if (!Array.isArray(arr)) return [];
+    return arr.map((x: any) => ({ id: abertos[Number(x?.n) - 1]?.id ?? '', modulo: String(x?.modulo ?? ''), urgencia: String(x?.urgencia ?? '') }))
+      .filter((x) => x.id);
+  }
+
+  // "Aplicar": muda o status e envia a resposta (editada pelo super-admin) ao autor por e-mail.
+  async responder(id: string, status: string, resposta: string): Promise<void> {
+    const st = String(status ?? '').trim() as StatusChamado;
+    if (!STATUS_CHAMADO.includes(st)) throw new ErroAplicacao('suporte.status_invalido', 400);
+    const c = await this.repo.buscarPorId(id);
+    if (!c) throw new ErroAplicacao('suporte.nao_encontrado', 404);
+    await this.repo.definirStatus(id, st, st === 'resolvido' ? new Date() : null);
+    const txt = String(resposta ?? '').trim();
+    if (txt && this.email && c.usuarioEmail) {
+      const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1f2430;">`
+        + `<p style="margin:0 0 8px;">Sobre o seu chamado <b>"${escaparHtml(c.assunto)}"</b>:</p>`
+        + `<p style="white-space:pre-wrap;background:#f4f5fa;border:1px solid #ececf2;border-radius:8px;padding:12px;">${escaparHtml(txt)}</p></div>`;
+      try { await this.email.enviar({ para: c.usuarioEmail, assunto: `[Suporte TRIADE] Sobre: ${c.assunto}`, html, texto: txt }); } catch { /* best-effort */ }
+    }
   }
 
   // E-mail ao autor do chamado quando vira "em andamento" ou "resolvido".

@@ -229,6 +229,20 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   estoque"/`estoque.saldo.ver`). A cap segue existindo (Comercial mantém). **Perfis Estoque já existentes:** desmarcar
   "Disponibilidade de produtos" manualmente (não migram sozinhos). Sem migration.
 
+- **2026-07-02 (IA nos chamados de suporte — triagem + resposta sugerida + aplicar).** Pedido do Gui (versão "completa"). Reusa o
+  `ClaudeProvider`/`LlmProvider` + `ANTHROPIC_API_KEY` já existentes (modelo base = Haiku via `env.iaModeloBase`). **Sem migration,
+  sem cap nova** (tela é super-admin). `SuporteService` ganhou `llm?`/`modelo?` no construtor + 3 métodos: `analisar(id)` (1 chamada
+  à IA, system pede JSON `{modulo, urgencia, tipo, causa, resposta, status}`, parse defensivo `extrairJson`), `analisarPendentes()`
+  (triagem em lote módulo+urgência de todos os abertos, 1 chamada → `[{id, modulo, urgencia}]`) e `responder(id, status, resposta)`
+  (**Aplicar** = muda status + envia a resposta editada ao autor por e-mail, best-effort se Resend configurado). Rotas super-admin em
+  `suporte.ts`: `POST /suporte/:id/analisar-ia`, `POST /suporte/analisar-pendentes`, `POST /suporte/:id/aplicar`. Wiring: composition
+  injeta `claudeProvider` + `env.iaModeloBase` no `SuporteService`. **Front** (`ChamadosSuporte.tsx`): botão "Analisar com IA" no modal
+  do chamado → painel (chips módulo/urgência/tipo + causa + **resposta editável** + select de status + Aplicar/Descartar); botão
+  "Analisar pendentes" no topo (badge de módulo·urgência por linha). CSS `.ia-painel*` (theme-safe). i18n pt (`chamados.analisar_ia`,
+  `analise_ia`, `causa`, `resposta_sugerida`, `aplicar`, `urg_*`). Mock aprovado antes de codar. **Validação:** build web+API no sandbox
+  (filtro do ruído de truncamento) = zero erros de tipo reais. **Pendente Gui:** `npm run build -w @triade/web` → `scripts\release.bat`.
+  Requer `ANTHROPIC_API_KEY` no Render (já setada p/ o assistente). O envio da resposta por e-mail depende do Resend configurado.
+
 - **2026-07-02 (Fase 9? — NF-e RECEBIDAS por CNPJ: importar compras da SEFAZ p/ Contas a pagar + Estoque, via Focus MDe).**
   Pedido do Gui: puxar as NF-e emitidas contra o CNPJ da empresa (Distribuição DF-e / Manifestação do Destinatário) e dar entrada.
   **Migration tenant 074** `nfe_recebida` (chave única, emitente, numero/serie, emissao, valor, status pendente/importada/ignorada,

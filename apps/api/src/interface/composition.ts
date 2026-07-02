@@ -215,6 +215,8 @@ export function montarDependencias() {
       new SqlChamadoRepository(AppDataSource),
       emailSender,
       env.suporteEmailDestino,
+      claudeProvider,
+      env.iaModeloBase,
     ),
     auditoriaRepo: new SqlLogAcaoRepository(AppDataSource),
     anexosService: new AnexosService(new SqlTituloAnexoRepository(AppDataSource), r2Storage),
