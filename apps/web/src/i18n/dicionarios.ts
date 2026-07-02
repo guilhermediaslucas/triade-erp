@@ -2234,6 +2234,21 @@ Object.assign(es, { 'concil.crumb': 'Financiero / Conciliación bancaria' });
 
 // --- Dashboard gráficos ---
 Object.assign(pt, { 'dash.faturamento': 'Faturamento (6 meses)', 'dash.por_categoria': 'Vendas por categoria', 'dash.saldos': 'Saldos bancários', 'dash.total': 'Total' });
+Object.assign(pt, {
+  'menu.nfe_recebidas': 'NF-e recebidas',
+  'nfrec.crumb': 'Financeiro / NF-e recebidas', 'nfrec.titulo': 'NF-e recebidas',
+  'nfrec.sub': 'Notas emitidas contra o seu CNPJ, capturadas na SEFAZ via Focus',
+  'nfrec.buscar': 'Buscar novas notas', 'nfrec.buscando': 'Buscando…', 'nfrec.buscou': 'Notas recebidas:',
+  'nfrec.f_todas': 'Todas', 'nfrec.pendente': 'Pendente', 'nfrec.importada': 'Importada',
+  'nfrec.fornecedor': 'Fornecedor', 'nfrec.nf': 'NF / série', 'nfrec.emissao': 'Emissão', 'nfrec.valor': 'Valor', 'nfrec.situacao': 'Situação',
+  'nfrec.nenhuma': 'Nenhuma NF-e recebida. Clique em "Buscar novas notas".',
+  'nfrec.importar': 'Importar', 'nfrec.importada_ok': 'NF-e importada.',
+  'nfrec.gerar_titulo': 'Gerar título no Contas a pagar', 'nfrec.gerar_titulo_hint': 'Desmarque para notas de bonificação (sem pagamento).',
+  'nfrec.vencimento': 'Vencimento', 'nfrec.categoria': 'Categoria financeira', 'nfrec.sem_categoria': '(sem categoria)',
+  'nfrec.entrada_estoque': 'Dar entrada no estoque', 'nfrec.entrada_hint': 'Escolha quais itens entram e a qual produto do Tríade cada um corresponde.',
+  'nfrec.entra': 'Entra?', 'nfrec.item': 'Item da nota', 'nfrec.qtd': 'Qtd', 'nfrec.produto': 'Produto no Tríade', 'nfrec.escolha_produto': 'Escolha o produto',
+  'fiscal.recebida.nao_encontrada': 'NF-e recebida não encontrada.', 'fiscal.recebida.ja_importada': 'Esta NF-e já foi importada.',
+});
 Object.assign(en, { 'dash.faturamento': 'Revenue (6 months)', 'dash.por_categoria': 'Sales by category', 'dash.saldos': 'Bank balances', 'dash.total': 'Total' });
 Object.assign(es, { 'dash.faturamento': 'Facturación (6 meses)', 'dash.por_categoria': 'Ventas por categoría', 'dash.saldos': 'Saldos bancarios', 'dash.total': 'Total' });
 
@@ -2975,6 +2990,7 @@ Object.assign(pt, {
   'cap.modulo.fiscal': 'Fiscal',
   'cap.fiscal.nota.ver': 'Ver / baixar notas fiscais',
   'cap.fiscal.nota.emitir': 'Emitir / cancelar NF-e',
+  'cap.fiscal.recebida.ver': 'Ver NF-e recebidas', 'cap.fiscal.recebida.importar': 'Importar NF-e recebidas',
   'nf.titulo': 'Nota fiscal (NF-e)',
   'nf.nao_emitida': 'Nenhuma NF-e emitida para este pedido.',
   'nf.somente_expedido': 'A NF-e pode ser emitida a partir do Pedido Pronto (separação).',

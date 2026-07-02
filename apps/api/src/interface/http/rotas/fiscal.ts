@@ -96,5 +96,19 @@ export function rotasFiscal(deps: Dependencias): Router {
   r.get('/pedidos/:id/nota/danfe', aut, az('fiscal.nota.ver'), (req: Request, res: Response) => baixar(req, res, 'danfe'));
   r.get('/pedidos/:id/nota/xml', aut, az('fiscal.nota.ver'), (req: Request, res: Response) => baixar(req, res, 'xml'));
 
+  // NF-e RECEBIDAS (compras): consulta por CNPJ na SEFAZ (via Focus) + importação p/ contas a pagar / estoque.
+  r.get('/fiscal/nfe-recebidas', aut, az('fiscal.recebida.ver'), async (req: Request, res: Response) => {
+    try { res.json(await deps.nfeRecebidasService.listar(sch(req), { status: req.query.status, de: req.query.de, ate: req.query.ate })); }
+    catch (e) { tratarErro(res, e); }
+  });
+  r.post('/fiscal/nfe-recebidas/buscar', aut, az('fiscal.recebida.ver'), async (req: Request, res: Response) => {
+    try { res.json(await deps.nfeRecebidasService.buscarNovas(sch(req), emp(req))); }
+    catch (e) { tratarErro(res, e); }
+  });
+  r.post('/fiscal/nfe-recebidas/:chave/importar', aut, az('fiscal.recebida.importar'), async (req: Request, res: Response) => {
+    try { res.json(await deps.nfeRecebidasService.importar(sch(req), req.params.chave!, req.body ?? {})); }
+    catch (e) { tratarErro(res, e); }
+  });
+
   return r;
 }

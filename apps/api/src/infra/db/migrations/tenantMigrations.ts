@@ -1010,4 +1010,32 @@ export const tenantMigrations: MigracaoTenant[] = [
     sql: (s) => `ALTER TABLE "${s}".motoboy ADD COLUMN IF NOT EXISTS rota_token text;
       CREATE UNIQUE INDEX IF NOT EXISTS ix_${s}_motoboy_rota_token ON "${s}".motoboy (rota_token) WHERE rota_token IS NOT NULL;`,
   },
+  {
+    // NF-e recebidas (compras): notas emitidas contra o CNPJ da empresa, capturadas na SEFAZ via Focus.
+    // status: pendente (só resumo/ciente) | importada (gerou título e/ou entrada) | ignorada.
+    // nfe_map_item lembra o item do fornecedor (código) → produto do Tríade, por CNPJ do emitente.
+    nome: '074_nfe_recebida',
+    sql: (s) => `
+      CREATE TABLE IF NOT EXISTS "${s}".nfe_recebida (
+        id uuid PRIMARY KEY,
+        chave text NOT NULL UNIQUE,
+        emitente_cnpj text,
+        emitente_nome text,
+        numero text,
+        serie text,
+        emissao date,
+        valor numeric(14,2) NOT NULL DEFAULT 0,
+        status text NOT NULL DEFAULT 'pendente',
+        titulo_id text,
+        itens jsonb NOT NULL DEFAULT '[]',
+        criado_em timestamptz NOT NULL DEFAULT now()
+      );
+      CREATE TABLE IF NOT EXISTS "${s}".nfe_map_item (
+        id uuid PRIMARY KEY,
+        emitente_cnpj text NOT NULL,
+        codigo_item text NOT NULL,
+        produto_id text NOT NULL,
+        UNIQUE (emitente_cnpj, codigo_item)
+      );`,
+  },
 ];

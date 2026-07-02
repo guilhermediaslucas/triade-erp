@@ -229,6 +229,31 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   estoque"/`estoque.saldo.ver`). A cap segue existindo (Comercial mantém). **Perfis Estoque já existentes:** desmarcar
   "Disponibilidade de produtos" manualmente (não migram sozinhos). Sem migration.
 
+- **2026-07-02 (Fase 9? — NF-e RECEBIDAS por CNPJ: importar compras da SEFAZ p/ Contas a pagar + Estoque, via Focus MDe).**
+  Pedido do Gui: puxar as NF-e emitidas contra o CNPJ da empresa (Distribuição DF-e / Manifestação do Destinatário) e dar entrada.
+  **Migration tenant 074** `nfe_recebida` (chave única, emitente, numero/serie, emissao, valor, status pendente/importada/ignorada,
+  titulo_id, itens jsonb) + `nfe_map_item` (emitente_cnpj+codigo_item → produto_id, p/ lembrar o mapeamento item→produto por
+  fornecedor). **Caps novas** `fiscal.recebida.ver`/`fiscal.recebida.importar` (módulo Fiscal) — add ao perfil padrão Financeiro.
+  **Hexagonal:** porta `domain/fiscal/ReceptorFiscal` (+ tipos NfeRecebida/ItemNfeRecebida) + adapter `infra/fiscal/FocusNFeReceptor`
+  (Basic auth como o emissor; `GET /v2/nfes_recebidas`, ciência automática `POST /v2/nfes_recebidas/:chave/manifesto {tipo:'ciencia'}`,
+  baixa+parseia o XML por regex p/ itens/emitente/total — **sem dependência nova**). Domínio `NotaRecebida` + `SqlNFeRecebidaRepository`
+  (upsert por chave, mapaFornecedor/salvarMapa). `application/fiscal/NFeRecebidasService`: `buscarNovas` (token do ambiente da config
+  fiscal → adapter → upsert), `listar` (sugere produto de cada item pelo mapa do fornecedor), `importar(chave, {gerarTitulo, vencimento,
+  categoriaFinanceiraId, itens[]})` — gera título a pagar (reusa `TituloRepository.criar` origem 'compra') se `gerarTitulo` (desligável
+  p/ **bonificação**) + entrada no estoque via `EstoqueRepository.registrarEntrada` só dos itens marcados/mapeados (qtd/custo da nota),
+  salvando o mapa. Rotas em `fiscal.ts`: `GET /fiscal/nfe-recebidas`, `POST /fiscal/nfe-recebidas/buscar`,
+  `POST /fiscal/nfe-recebidas/:chave/importar`. Wiring composition (`nfeRecebidasService`). **Frontend:** menu **Financeiro › NF-e
+  recebidas** + rota + `NFeRecebidas.tsx` (lista + chips de status + "Buscar novas notas") + **modal de importação** (toggle "Gerar
+  título"+vencimento+categoria; toggle "Dar entrada no estoque" + tabela de itens com checkbox "entra" e select do produto pré-preenchido
+  pela sugestão). Mocks aprovados pelo Gui antes de codar. i18n pt (`nfrec.*`, `menu.nfe_recebidas`, `fiscal.recebida.*`). **Validação:**
+  build web+API no sandbox (com filtro do ruído de truncamento do mount) = **zero erros de tipo reais**; arquivos novos compilaram limpos.
+  **ATENÇÃO — adapter Focus a AFINAR:** não consegui abrir a doc da API de recebidas (SPA); os **endpoints e nomes de campo do Focus
+  são best-guess** (`nfes_recebidas`, `manifesto`, `caminho_xml_nota_fiscal`, etc.) e precisam ser conferidos contra respostas reais,
+  como o emissor foi afinado. Leitura defensiva (`pick` de vários nomes). **Pré-requisitos (Focus):** certificado A1 + "Recebimento de
+  NFes" ligado + token em Dados da empresa › Fiscal (já feitos pelo Gui). **Pendente Gui:** `npm run build -w @triade/web` →
+  `scripts\release.bat` (Render aplica a 074 + as caps no Administrador) → **relogar** → testar "Buscar novas notas" e afinar o adapter
+  com o retorno real do Focus.
+
 - **2026-07-02 (TELA BRANCA pós-deploy = API do Render TRAVADA em 0.1.22 + guard no Dashboard).** Sintoma: após atualizar, o
   sistema fica em tela branca (login OK; quebra no Dashboard). **Causa:** o **Render/API está travado na 0.1.22** (site já em
   0.1.28) — a API **não redeploya desde a 0.1.22**, então `/dashboard` não devolve o campo novo `vendasPorCategoria`; o

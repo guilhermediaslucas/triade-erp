@@ -186,6 +186,7 @@ a { text-decoration: none; color: inherit; }
 .btn-hoje { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 .btn-hoje:hover { background: var(--accent); color: var(--accent-fg); }
 body.theme-dark .btn-hoje { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.check-linha { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
 .btn-link { background: none; border: 0; color: var(--accent); font-weight: 600; font-size: 13px; cursor: pointer; padding: 2px 6px; }
 .btn-link:hover { text-decoration: underline; }
 .tabela { width: 100%; border-collapse: collapse; font-size: 14px; }

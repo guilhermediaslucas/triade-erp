@@ -19,6 +19,9 @@ import { ConfigFiscalService } from '../application/fiscal/ConfigFiscalService.j
 import { SqlNotaFiscalRepository } from '../infra/repositories/SqlNotaFiscalRepository.js';
 import { FocusNFeEmissor } from '../infra/fiscal/FocusNFeEmissor.js';
 import { NotasFiscaisService } from '../application/fiscal/NotasFiscaisService.js';
+import { FocusNFeReceptor } from '../infra/fiscal/FocusNFeReceptor.js';
+import { SqlNFeRecebidaRepository } from '../infra/repositories/SqlNFeRecebidaRepository.js';
+import { NFeRecebidasService } from '../application/fiscal/NFeRecebidasService.js';
 import { SqlProdutoRepository } from '../infra/repositories/SqlProdutoRepository.js';
 import { ProdutosService } from '../application/cadastro/ProdutosService.js';
 import { SqlCategoriaRepository } from '../infra/repositories/SqlCategoriaRepository.js';
@@ -170,6 +173,7 @@ export function montarDependencias() {
     empresaService: new EmpresaService(empresasRepo, migrador, usuariosRepo, hash),
     provisionarEmpresa: new ProvisionarEmpresa(empresasRepo, migrador, perfisRepo, usuariosRepo, hash),
     configFiscalService: new ConfigFiscalService(configFiscalRepo),
+    nfeRecebidasService: new NFeRecebidasService(new FocusNFeReceptor(), configFiscalRepo, new SqlNFeRecebidaRepository(AppDataSource), tituloRepo, estoqueRepo),
     notasFiscaisService: new NotasFiscaisService(
       new SqlNotaFiscalRepository(AppDataSource), pedidoRepo, produtosRepo, clientesRepo,
       empresasRepo, configFiscalRepo, new FocusNFeEmissor(),

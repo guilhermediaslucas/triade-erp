@@ -94,6 +94,8 @@ export const CAPABILITIES: Capability[] = [
   { id: 'relatorios.contabil.vendas.ver',  moduloChave: 'cap.modulo.relatorios_contabil', labelChave: 'cap.relatorios.contabil.vendas' },
   { id: 'fiscal.nota.ver',    moduloChave: 'cap.modulo.fiscal', labelChave: 'cap.fiscal.nota.ver' },
   { id: 'fiscal.nota.emitir', moduloChave: 'cap.modulo.fiscal', labelChave: 'cap.fiscal.nota.emitir' },
+  { id: 'fiscal.recebida.ver',     moduloChave: 'cap.modulo.fiscal', labelChave: 'cap.fiscal.recebida.ver' },
+  { id: 'fiscal.recebida.importar', moduloChave: 'cap.modulo.fiscal', labelChave: 'cap.fiscal.recebida.importar' },
   { id: 'painel.tv_comercial', moduloChave: 'cap.modulo.painel', labelChave: 'cap.painel.tv_comercial' },
   { id: 'painel.tv_expedicao', moduloChave: 'cap.modulo.painel', labelChave: 'cap.painel.tv_expedicao' },
   { id: 'ia.assistente.usar',  moduloChave: 'cap.modulo.ia', labelChave: 'cap.ia.assistente.usar' },
@@ -134,6 +136,7 @@ export const PERFIS_PADRAO: PerfilPadrao[] = [
       'cadastros.catfin.listar', 'cadastros.catfin.gerenciar', 'cadastros.conta.listar', 'cadastros.conta.gerenciar', 'cadastros.tipodoc.listar', 'cadastros.tipodoc.gerenciar',
       'cadastros.banco.listar', 'cadastros.banco.gerenciar', 'cadastros.favorecido.listar', 'cadastros.favorecido.gerenciar',
       'cadastros.taxa_cartao.listar', 'cadastros.taxa_cartao.gerenciar',
+      'fiscal.recebida.ver', 'fiscal.recebida.importar',
       'relatorios.ver', 'relatorios.contabil.pagar.ver', 'relatorios.contabil.receber.ver', 'relatorios.contabil.vendas.ver'],
   },
   {
