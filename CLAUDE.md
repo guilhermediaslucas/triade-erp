@@ -229,6 +229,18 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   estoque"/`estoque.saldo.ver`). A cap segue existindo (Comercial mantém). **Perfis Estoque já existentes:** desmarcar
   "Disponibilidade de produtos" manualmente (não migram sozinhos). Sem migration.
 
+- **2026-07-02 (TELA BRANCA pós-deploy = API do Render TRAVADA em 0.1.22 + guard no Dashboard).** Sintoma: após atualizar, o
+  sistema fica em tela branca (login OK; quebra no Dashboard). **Causa:** o **Render/API está travado na 0.1.22** (site já em
+  0.1.28) — a API **não redeploya desde a 0.1.22**, então `/dashboard` não devolve o campo novo `vendasPorCategoria`; o
+  `Dashboard.tsx` fazia `d.vendasPorCategoria.length` → TypeError → tela branca (sem error boundary). **Fix imediato (web):**
+  guard `(d.vendasPorCategoria?.length ?? 0) > 0` — o Dashboard renderiza mesmo com API velha (o card "Vendas por categoria" só
+  aparece quando a API tiver o campo). **PROBLEMA DE FUNDO:** a API no Render está 6 releases atrás → **nenhum backend novo está
+  no ar** (perfis `soConhecidas`, caps volume/expedicao/recebimento, rotas `/categorias` + `/dashboard/top-categoria`, gating
+  separacao, NF no Pedido Pronto). Isso explica vários "não funciona" reportados. **Ação Gui:** (1) build+release do site (some a
+  tela branca); (2) **destravar o deploy da API no Render** — checar auto-deploy conectado ao GitHub, logs do último deploy, e
+  fazer **Manual Deploy → latest commit**. A API sobe via `tsx` (start:prod), então não é erro de tipo; provável auto-deploy
+  desconectado/suspenso. Confirmar depois com `GET /version` (deve bater com o local ~0.1.28).
+
 - **2026-07-02 (Categorias de produto REATIVADAS + Dashboard por categoria).** Pedido do Gui: religar as categorias (removidas
   em 18/06) e criar no Dashboard um gráfico de vendas por categoria + seletor de categoria → produtos mais vendidos dela.
   **Descoberta:** os arquivos de categoria (Categoria.ts, SqlCategoriaRepository, CategoriasService, Categorias.tsx) **nunca foram

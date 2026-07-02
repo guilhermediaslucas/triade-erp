@@ -218,7 +218,7 @@ export function Dashboard() {
             ))}
           </div>
         </div>)}
-        {verW('dashboard.por_produto') && d.vendasPorCategoria.length > 0 && (<div className="card">
+        {verW('dashboard.por_produto') && (d.vendasPorCategoria?.length ?? 0) > 0 && (<div className="card">
           <div className="card-head"><h3>{t('dash.por_categoria')}</h3></div>
           <Donut dados={d.vendasPorCategoria.map((x) => ({ nome: x.categoria, total: x.total }))} />
           <select value={catSel} onChange={(e) => setCatSel(e.target.value)} style={{ width: '100%', marginTop: 10 }}>
