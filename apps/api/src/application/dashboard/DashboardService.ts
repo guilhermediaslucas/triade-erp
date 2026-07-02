@@ -8,6 +8,9 @@ const lim = (v: any): string | null => (v && /^\d{4}-\d{2}-\d{2}$/.test(String(v
 export class DashboardService {
   constructor(private readonly repo: DashboardRepository, private readonly metas: MetaRepository) {}
   resumo(schema: string): Promise<ResumoDashboard> { return this.repo.resumo(schema); }
+  topProdutosCategoria(schema: string, categoriaId: any): Promise<{ nome: string; quantidade: number; valor: number }[]> {
+    return this.repo.topProdutosCategoria(schema, categoriaId ? String(categoriaId) : '');
+  }
   serie(schema: string, tipo: any, de: any, ate: any): Promise<SerieDashboard> {
     if (!TIPOS.includes(tipo)) throw new ErroAplicacao('dash.serie_tipo_invalido', 400);
     // Intervalo só se aplica ao "dia"; os demais usam janela fixa.

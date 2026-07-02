@@ -1,6 +1,7 @@
 export interface Produto {
   id: string;
   nome: string;
+  categoriaId: string | null;
   unidade: string;
   estoqueMinimo: number;
   localizacao: string | null;
@@ -13,9 +14,10 @@ export interface Produto {
   ativo: boolean;
   criadoEm: Date;
 }
-export interface ProdutoResumo extends Produto { precoBase: number }
+export interface ProdutoResumo extends Produto { precoBase: number; categoriaNome: string | null }
 export interface NovoProduto {
   nome: string;
+  categoriaId: string | null;
   unidade: string;
   estoqueMinimo: number;
   localizacao: string | null;

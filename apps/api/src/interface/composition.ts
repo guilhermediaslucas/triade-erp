@@ -21,6 +21,8 @@ import { FocusNFeEmissor } from '../infra/fiscal/FocusNFeEmissor.js';
 import { NotasFiscaisService } from '../application/fiscal/NotasFiscaisService.js';
 import { SqlProdutoRepository } from '../infra/repositories/SqlProdutoRepository.js';
 import { ProdutosService } from '../application/cadastro/ProdutosService.js';
+import { SqlCategoriaRepository } from '../infra/repositories/SqlCategoriaRepository.js';
+import { CategoriasService } from '../application/cadastro/CategoriasService.js';
 import { SqlFormaEntregaRepository } from '../infra/repositories/SqlFormaEntregaRepository.js';
 import { FormasEntregaService } from '../application/cadastro/FormasEntregaService.js';
 import { SqlTipoDocumentoRepository } from '../infra/repositories/SqlTipoDocumentoRepository.js';
@@ -106,6 +108,7 @@ export function montarDependencias() {
   const tokens = new JwtGeradorToken(env.jwtSecret);
   const migrador = new TypeOrmMigrador(AppDataSource);
   const produtosRepo = new SqlProdutoRepository(AppDataSource);
+  const categoriasRepo = new SqlCategoriaRepository(AppDataSource);
   const favorecidosRepo = new SqlFavorecidoRepository(AppDataSource);
   const clientesRepo = new SqlClienteRepository(AppDataSource);
   const fornecedoresRepo = new SqlFornecedorRepository(AppDataSource);
@@ -136,7 +139,8 @@ export function montarDependencias() {
   const estoqueService = new EstoqueService(estoqueRepo, etiquetaRepo);
   const financeiroService = new FinanceiroService(tituloRepo, pedidoRepo);
   const clientesService = new ClientesService(clientesRepo);
-  const produtosService = new ProdutosService(produtosRepo, precoBaseRepo);
+  const produtosService = new ProdutosService(produtosRepo, categoriasRepo, precoBaseRepo);
+  const categoriasService = new CategoriasService(categoriasRepo);
   const categoriasFinanceirasService = new CategoriasFinanceirasService(catFinRepo);
   const claudeProvider = new ClaudeProvider(env.iaApiKey);
   const assistenteService = new AssistenteService(
@@ -177,6 +181,7 @@ export function montarDependencias() {
     preferenciasService: new PreferenciasService(new SqlPreferenciaUsuarioRepository(AppDataSource)),
     favorecidosService: new FavorecidosService(favorecidosRepo),
     produtosService,
+    categoriasService,
     clientesService,
     fornecedoresService: new FornecedoresService(fornecedoresRepo),
     vendedoresService: new VendedoresService(vendedoresRepo),

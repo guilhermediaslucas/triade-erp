@@ -31,6 +31,7 @@ import { RelContasReceberContabil } from './pages/RelContasReceberContabil.js';
 import { Auditoria } from './pages/Auditoria.js';
 import { FormasEntrega } from './pages/FormasEntrega.js';
 import { Produtos } from './pages/Produtos.js';
+import { Categorias } from './pages/Categorias.js';
 import { Clientes } from './pages/Clientes.js';
 import { Fornecedores } from './pages/Fornecedores.js';
 import { Vendedores } from './pages/Vendedores.js';
@@ -174,6 +175,7 @@ export function App() {
                 <Route path="/cadastros/motoboys" element={<Protegida cap="cadastros.motoboy.listar"><Motoboys /></Protegida>} />
                 <Route path="/cadastros/formas-entrega" element={<Protegida cap="cadastros.forma_entrega.listar"><FormasEntrega /></Protegida>} />
                 <Route path="/cadastros/produtos" element={<Protegida cap="cadastros.produto.listar"><Produtos /></Protegida>} />
+                <Route path="/cadastros/categorias" element={<Protegida cap="cadastros.categoria.listar"><Categorias /></Protegida>} />
                 <Route path="/superadmin/empresas" element={<Protegida soSuper><Empresas /></Protegida>} />
                 <Route path="/superadmin/chamados" element={<Protegida soSuper><ChamadosSuporte /></Protegida>} />
                 <Route path="*" element={<Navigate to="/" replace />} />

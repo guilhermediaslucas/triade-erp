@@ -25,6 +25,7 @@ interface Resumo {
   faturamentoAnterior: { mes: string; total: number }[];
   metaMensal: number[];
   vendasProduto: { produto: string; total: number }[];
+  vendasPorCategoria: { categoriaId: string | null; categoria: string; total: number }[];
   saldosBancarios: { nome: string; saldo: number }[];
 }
 const CORES = ['#7b61ff', '#3b82f6', '#16a34a', '#ea9213', '#e1483b', '#6366f1'];
@@ -126,7 +127,14 @@ export function Dashboard() {
   const [d, setD] = useState<Resumo | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [drillMes, setDrillMes] = useState<string | null>(null);
+  const [catSel, setCatSel] = useState('');
+  const [topCat, setTopCat] = useState<{ nome: string; quantidade: number; valor: number }[]>([]);
   useEffect(() => { api.get<Resumo>('/dashboard', token!).then(setD).catch((e) => setErro((e as ErroApi).chaveI18n)); /* eslint-disable-next-line */ }, []);
+  useEffect(() => {
+    if (!catSel) { setTopCat([]); return; }
+    api.get<{ nome: string; quantidade: number; valor: number }[]>('/dashboard/top-categoria?categoriaId=' + encodeURIComponent(catSel), token!).then(setTopCat).catch(() => setTopCat([]));
+    /* eslint-disable-next-line */
+  }, [catSel]);
 
   if (erro) return <div className="alerta-erro">{t(erro)}</div>;
   if (!d) return <div className="muted">{t('common.carregando')}</div>;
@@ -209,6 +217,24 @@ export function Dashboard() {
               </div>
             ))}
           </div>
+        </div>)}
+        {verW('dashboard.por_produto') && d.vendasPorCategoria.length > 0 && (<div className="card">
+          <div className="card-head"><h3>{t('dash.por_categoria')}</h3></div>
+          <Donut dados={d.vendasPorCategoria.map((x) => ({ nome: x.categoria, total: x.total }))} />
+          <select value={catSel} onChange={(e) => setCatSel(e.target.value)} style={{ width: '100%', marginTop: 10 }}>
+            <option value="">{t('dash.escolha_categoria')}</option>
+            {d.vendasPorCategoria.filter((c) => c.categoriaId).map((c) => <option key={c.categoriaId!} value={c.categoriaId!}>{c.categoria}</option>)}
+          </select>
+          {catSel && (<div className="lst" style={{ marginTop: 8 }}>
+            {topCat.length === 0 && <div className="it" style={{ color: 'var(--muted)' }}>{t('dash.sem_vendas')}</div>}
+            {topCat.map((p) => (
+              <div key={p.nome} className="it">
+                <div className="thumb"><Ic name="i-drop" /></div>
+                <div><div className="nm">{p.nome}</div><div className="meta">{abrevMoeda(p.valor)}</div></div>
+                <div className="qt">{p.quantidade.toLocaleString('pt-BR')} {t('dash.un')}</div>
+              </div>
+            ))}
+          </div>)}
         </div>)}
       </div>
 

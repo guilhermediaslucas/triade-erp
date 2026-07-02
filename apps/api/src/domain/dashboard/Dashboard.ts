@@ -24,6 +24,7 @@ export interface ResumoDashboard {
   faturamentoAnterior: { mes: string; total: number }[];   // 6 meses imediatamente anteriores (série de comparação)
   metaMensal: number[];                                     // meta mensal repetida por mês (linha/barra de meta)
   vendasProduto: { produto: string; total: number }[];     // top produtos por VALOR (pizza do dashboard)
+  vendasPorCategoria: { categoriaId: string | null; categoria: string; total: number }[]; // vendas agregadas por categoria
   saldosBancarios: { nome: string; saldo: number }[];
 }
 // Série temporal para o drill dos KPIs (clique no card → gráfico do período).
@@ -55,6 +56,8 @@ export interface DrillFaturamento {
 }
 export interface DashboardRepository {
   resumo(schema: string): Promise<ResumoDashboard>;
+  // Top produtos mais vendidos de UMA categoria (últimos 30 dias). categoriaId vazio = sem categoria.
+  topProdutosCategoria(schema: string, categoriaId: string): Promise<{ nome: string; quantidade: number; valor: number }[]>;
   serie(schema: string, tipo: TipoSerie, de: string | null, ate: string | null): Promise<SerieDashboard>;
   serieItens(schema: string, tipo: TipoSerie, de: string | null, ate: string | null): Promise<ItemSerie[]>;
   drillFaturamento(schema: string, mes: string): Promise<DrillFaturamento>;

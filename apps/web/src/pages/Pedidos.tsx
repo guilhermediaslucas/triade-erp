@@ -35,7 +35,9 @@ export function Pedidos() {
   const nav = useNavigate();
   const [itens, setItens] = useState<PedidoResumo[]>([]);
   const [erro, setErro] = useState<string | null>(null);
-  const [de, setDe] = useState(''); const [ate, setAte] = useState('');
+  const [de, setDe] = useState(() => { try { return localStorage.getItem('triade_ped_de') || ''; } catch { return ''; } });
+  const [ate, setAte] = useState(() => { try { return localStorage.getItem('triade_ped_ate') || ''; } catch { return ''; } });
+  useEffect(() => { try { localStorage.setItem('triade_ped_de', de); localStorage.setItem('triade_ped_ate', ate); } catch { /* ignora */ } }, [de, ate]);
   const [fCli, setFCli] = useState(''); const [fVend, setFVend] = useState(''); const [fForma, setFForma] = useState('');
   const [busca, setBusca] = useState('');
   async function buscarNumero(e?: FormEvent) {
@@ -85,7 +87,7 @@ export function Pedidos() {
           <input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={t('pedidos.busca_num_ph')} />
           <button type="submit" className="btn-primary btn-mini">{t('pedidos.busca_num_btn')}</button>
         </form>
-        <button className="btn-ghost" onClick={() => { const h = new Date().toISOString().slice(0, 10); setDe(h); setAte(h); }}>{t('pedidos.hoje')}</button>
+        <button className="btn-ghost btn-hoje" onClick={() => { const h = new Date().toISOString().slice(0, 10); setDe(h); setAte(h); }}>{t('pedidos.hoje')}</button>
         <FiltrosModal count={qtdFiltros} onLimpar={limparFiltros} titulo={t('pedidos.titulo')}>
           <label className="campo">{t('pedidos.data_de')}<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
           <label className="campo">{t('pedidos.data_ate')}<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>

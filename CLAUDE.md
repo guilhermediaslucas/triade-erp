@@ -190,6 +190,18 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
 
 ## 8. Estado / histórico
 
+- **2026-07-01 (DIAGNÓSTICO: site travado em 0.1.17 é DEPLOY do Cloudflare, não código + toast de versão + filtros persistidos + botão Hoje colorido).**
+  **(1) Toast de nova versão não chega:** o `NovaVersao.tsx` compara `buildId` do `/version.json` — mas o site **continua servindo
+  0.1.17** (`version.json` buildId **1782863368814**, congelado) enquanto a API está em 0.1.27. Logo o buildId nunca muda → toast
+  nunca dispara, **e nenhuma mudança recente está no ar**. **Build do HEAD (0.1.27) valida LIMPO** no sandbox (`git archive HEAD` →
+  `npm install` → `npm run build -w @triade/web` = `tsc -b && vite build`, **EXIT 0**, Node 22, Vite 8; `.nvmrc=22` presente). Ou seja
+  **não é erro de tipo** — o Cloudflare Pages não está publicando desde a 0.1.17. Suspeitos (ver **build log do Cloudflare Pages →
+  Deployments**): Node antigo no Cloudflare (Vite 8 exige ≥20.19; setar env **`NODE_VERSION=22`** em Production+Preview mesmo com
+  `.nvmrc`), auto-deploy desconectado, ou build command/output dir errados (deve ser `npm run build -w @triade/web` / `apps/web/dist`).
+  `release.bat` só faz bump+commit+push (**não builda**), então o erro do Cloudflare passa calado. **(2) Filtros de data persistidos:**
+  Pedidos (`triade_ped_de`/`_ate`) e Expedição (`triade_exp_filtro`) salvam em localStorage e recarregam. **(3) Botão "Hoje" colorido:**
+  classe `.btn-hoje` (usa `--accent`/`--accent-soft` da empresa) nos dois botões. Só frontend.
+
 - **2026-07-01 (Emissão de NF-e liberada a partir de "Pedido Pronto"/separação).** Antes só em Expedido/Entregue. Agora inclui
   `separacao`: backend `NotasFiscaisService.emitir` (validação de status) e frontend `NotaFiscalCard` (`emitivel`) aceitam
   `separacao | expedido | entregue`; msg `nf.somente_expedido` atualizada ("a partir do Pedido Pronto"). Superset (não removeu
@@ -216,6 +228,23 @@ commit/deploy só. Exceção: hotfix de regressão em produção.
   com a Disponibilidade. **Fix:** removida `comercial.disponibilidade.ver` do perfil padrão Estoque (Estoque usa "Posição de
   estoque"/`estoque.saldo.ver`). A cap segue existindo (Comercial mantém). **Perfis Estoque já existentes:** desmarcar
   "Disponibilidade de produtos" manualmente (não migram sozinhos). Sem migration.
+
+- **2026-07-02 (Categorias de produto REATIVADAS + Dashboard por categoria).** Pedido do Gui: religar as categorias (removidas
+  em 18/06) e criar no Dashboard um gráfico de vendas por categoria + seletor de categoria → produtos mais vendidos dela.
+  **Descoberta:** os arquivos de categoria (Categoria.ts, SqlCategoriaRepository, CategoriasService, Categorias.tsx) **nunca foram
+  apagados** e a tabela `categoria` + `produto.categoria_id` seguem no banco (inertes) → **sem migration**, só re-wiring.
+  **Caps novas** `cadastros.categoria.listar/gerenciar` (+ labels) — add aos perfis padrão Comercial e Estoque. **Backend:** rota
+  `/categorias` recriada (era stub) + registrada no server; composition instancia `categoriasRepo`/`categoriasService` e injeta o
+  `CategoriaRepository` no `ProdutosService` (valida `produto.categoria_invalida`); `Produto`/`NovoProduto` voltaram com
+  `categoriaId`, `ProdutoResumo` com `categoriaNome`; `SqlProdutoRepository` volta a ler (JOIN categoria)/gravar `categoria_id`.
+  **Frontend:** menu **Cadastros › Categorias** + rota; `Produtos.tsx` com **seletor no form + chips de filtro + coluna** (pill
+  `tintDe`). **Dashboard por categoria:** `ResumoDashboard.vendasPorCategoria` (id+nome+total, 30d) + método/rota
+  `GET /dashboard/top-categoria?categoriaId=` (top 10 produtos da categoria); `Dashboard.tsx` ganhou card **Vendas por categoria**
+  (Donut) + **select** que puxa os mais vendidos da categoria escolhida (gate `dashboard.por_produto`). i18n pt
+  (`cap.cadastros.categoria.*`, `produtos.todas_categorias`, `dash.por_categoria`, `dash.escolha_categoria`). **Sem migration, cap
+  nova → relogar + republicar.** **Validação:** build no sandbox truncado pelo mount (falsos erros de sintaxe no fim de arquivos
+  grandes); filtrando o ruído, **zero erros de tipo reais** em web e API; JSX conferido à mão (Produtos/Dashboard balanceados).
+  **Pendente Gui:** `npm run build -w @triade/web` (validar local) → `scripts\release.bat` → relogar.
 
 - **2026-07-01 (CLI: espelhar todos os perfis de uma empresa para as demais — `db:espelhar-perfis`).** Pedido do Gui: replicar
   os perfis da empresa **Maid** para todas as outras. Novo `infra/db/espelharPerfis.ts` (`espelharPerfis(ds, codigoOrigem)`):

@@ -18,6 +18,8 @@ export const CAPABILITIES: Capability[] = [
   { id: 'acesso.empresa.editar',    moduloChave: 'cap.modulo.acesso',     labelChave: 'cap.acesso.empresa.editar' },
   { id: 'cadastros.produto.listar',      moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.produto.listar' },
   { id: 'cadastros.produto.gerenciar',   moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.produto.gerenciar' },
+  { id: 'cadastros.categoria.listar',    moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.categoria.listar' },
+  { id: 'cadastros.categoria.gerenciar', moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.categoria.gerenciar' },
   { id: 'cadastros.condicao.listar',     moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.condicao.listar' },
   { id: 'cadastros.condicao.gerenciar',  moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.condicao.gerenciar' },
   { id: 'cadastros.conta.listar',        moduloChave: 'cap.modulo.cadastros', labelChave: 'cap.cadastros.conta.listar' },
@@ -123,7 +125,7 @@ export const PERFIS_PADRAO: PerfilPadrao[] = [
     nome: 'Comercial', descricao: 'Apenas Comercial e relatórios comerciais',
     caps: ['dashboard.ver', 'ia.assistente.usar', 'comercial.preco.listar', 'comercial.preco.gerenciar', 'comercial.pedido.listar', 'comercial.pedido.criar', 'comercial.pedido.gerenciar',
       'comercial.pedido.separar', 'comercial.pedido.expedir', 'comercial.pedido.cancelar',
-      'comercial.crm.ver', 'comercial.crm.gerenciar', 'comercial.meta.ver', 'comercial.meta.gerenciar', 'comercial.analise.ver', 'comercial.disponibilidade.ver', 'comercial.pedido.vendedor_qualquer', 'cadastros.cliente.listar', 'cadastros.cliente.gerenciar', 'cadastros.produto.listar', 'cadastros.vendedor.listar', ...REL_COMERCIAL],
+      'comercial.crm.ver', 'comercial.crm.gerenciar', 'comercial.meta.ver', 'comercial.meta.gerenciar', 'comercial.analise.ver', 'comercial.disponibilidade.ver', 'comercial.pedido.vendedor_qualquer', 'cadastros.cliente.listar', 'cadastros.cliente.gerenciar', 'cadastros.produto.listar', 'cadastros.categoria.listar', 'cadastros.categoria.gerenciar', 'cadastros.vendedor.listar', ...REL_COMERCIAL],
   },
   {
     nome: 'Financeiro', descricao: 'Apenas Financeiro e cadastros financeiros',
@@ -137,7 +139,7 @@ export const PERFIS_PADRAO: PerfilPadrao[] = [
   {
     nome: 'Estoque', descricao: 'Apenas Estoque/Expedição',
     caps: ['dashboard.ver', 'ia.assistente.usar', 'estoque.expedicao.ver', 'estoque.saldo.ver', 'estoque.entrada.criar', 'estoque.recebimento.gerenciar', 'estoque.baixa.criar', 'estoque.inventario.ver', 'estoque.inventario.gerenciar',
-      'comercial.pedido.separar', 'comercial.pedido.expedir', 'financeiro.compra.criar', 'cadastros.produto.listar',
+      'comercial.pedido.separar', 'comercial.pedido.expedir', 'financeiro.compra.criar', 'cadastros.produto.listar', 'cadastros.categoria.listar',
       'cadastros.forma_entrega.listar', 'cadastros.motoboy.listar', 'fiscal.nota.ver', 'fiscal.nota.emitir', 'relatorios.ver', 'relatorios.validade.ver', 'relatorios.parado.ver', 'relatorios.perdas.ver',
       'logistica.entrega.ver', 'logistica.volume.ver'],
   },

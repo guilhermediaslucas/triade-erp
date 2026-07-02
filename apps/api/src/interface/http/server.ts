@@ -20,6 +20,7 @@ import { rotasTaxasCartao } from './rotas/taxasCartao.js';
 import { rotasPreferencias } from './rotas/preferencias.js';
 import { rotasFavorecidos } from './rotas/favorecidos.js';
 import { rotasProdutos } from './rotas/produtos.js';
+import { rotasCategorias } from './rotas/categorias.js';
 import { rotasPessoas } from './rotas/pessoas.js';
 import { rotasMotoboys } from './rotas/motoboys.js';
 import { rotasPrecos } from './rotas/precos.js';
@@ -130,6 +131,7 @@ export function criarServidor(): Express {
   app.use(rotasPreferencias(deps));
   app.use(rotasFavorecidos(deps));
   app.use(rotasProdutos(deps));
+  app.use(rotasCategorias(deps));
   app.use(rotasPessoas(deps));
   app.use(rotasMotoboys(deps));
   app.use(rotasPrecos(deps));

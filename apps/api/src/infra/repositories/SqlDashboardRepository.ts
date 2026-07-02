@@ -125,6 +125,16 @@ export class SqlDashboardRepository implements DashboardRepository {
         WHERE p.criado_em >= now() - interval '30 days'
         GROUP BY 1 ORDER BY total DESC LIMIT 6`);
 
+    // Vendas agregadas por CATEGORIA (últimos 30 dias) — gráfico por categoria no dashboard.
+    const vendasCat = await this.ds.query(
+      `SELECT c.id categoria_id, COALESCE(c.nome, '(sem categoria)') categoria, COALESCE(SUM(pi.subtotal),0) total
+         FROM "${s}".pedido_item pi
+         JOIN "${s}".pedido p ON p.id = pi.pedido_id AND p.${NAO}
+         LEFT JOIN "${s}".produto pr ON pr.id = pi.produto_id
+         LEFT JOIN "${s}".categoria c ON c.id = pr.categoria_id
+        WHERE p.criado_em >= now() - interval '30 days'
+        GROUP BY c.id, c.nome ORDER BY total DESC`);
+
     const saldos = await this.ds.query(
       `SELECT cc.nome, (cc.saldo_inicial
          + COALESCE((SELECT SUM(CASE WHEN t.tipo='receber' THEN t.valor ELSE -t.valor END)
@@ -151,8 +161,26 @@ export class SqlDashboardRepository implements DashboardRepository {
       faturamentoAnterior: fatAnterior.map((r: any) => ({ mes: r.mes, total: um(r.total) })),
       metaMensal: fatMensal.map((r: any) => metaMap[r.mes] ?? 0),
       vendasProduto: vendasProd.map((r: any) => ({ produto: r.produto, total: um(r.total) })),
+      vendasPorCategoria: vendasCat.map((r: any) => ({ categoriaId: r.categoria_id ?? null, categoria: r.categoria, total: um(r.total) })),
       saldosBancarios: saldos.map((r: any) => ({ nome: r.nome, saldo: um(r.saldo) })),
     };
+  }
+
+  // Top produtos mais vendidos de UMA categoria (30 dias). categoriaId vazio = "(sem categoria)".
+  async topProdutosCategoria(schema: string, categoriaId: string): Promise<{ nome: string; quantidade: number; valor: number }[]> {
+    const s = validarSchema(schema);
+    const um = (v: any) => Number(v ?? 0);
+    const NAO = `status NOT IN ('orcamento','cancelado')`;
+    const cond = categoriaId ? 'pr.categoria_id = $1' : 'pr.categoria_id IS NULL';
+    const params = categoriaId ? [categoriaId] : [];
+    const rows = await this.ds.query(
+      `SELECT COALESCE(pr.nome, pi.produto_nome, '—') nome, SUM(pi.quantidade)::numeric q, COALESCE(SUM(pi.subtotal),0) valor
+         FROM "${s}".pedido_item pi
+         JOIN "${s}".pedido p ON p.id = pi.pedido_id AND p.${NAO}
+         LEFT JOIN "${s}".produto pr ON pr.id = pi.produto_id
+        WHERE p.criado_em >= now() - interval '30 days' AND ${cond}
+        GROUP BY 1 ORDER BY q DESC LIMIT 10`, params);
+    return rows.map((r: any) => ({ nome: r.nome, quantidade: um(r.q), valor: um(r.valor) }));
   }
 
   // Série temporal das vendas (pedidos não orçamento/cancelado) para o drill dos KPIs.
